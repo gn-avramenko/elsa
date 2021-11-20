@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain xmlns="http://gridnine.com/elsa/meta-domain" xmlns:common="http://gridnine.com/elsa/meta-common">
+    <document id="com.gridnine.elsa.common.demo.model.domain.DemoUserAccount" x-cache-resolve="true">
+        <property id="name" type="STRING"/>
+        <property id="login" type="STRING"/>
+        <property id="password" type="STRING"/>
+        <code-injection>
+            override fun toString():String = name?:"???"
+        </code-injection>
+    </document>
+    <index id="com.gridnine.elsa.common.demo.model.domain.DemoUserAccountIndex" document="com.gridnine.elsa.common.demo.model.domain.DemoUserAccount">
+        <param name="name" value="value"/>
+        <property id="name" type="STRING"/>
+        <property id="login" type="STRING" x-cache-find="true"/>
+    </index>
+    <entity id="com.gridnine.elsa.common.demo.model.domain.BaseDemoNavigatorVariant" abstract="true">
+        <property id="title" type="STRING"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.demo.model.domain.domain.DemoNavigatorVariant1" extends="com.gridnine.elsa.common.demo.model.domain.BaseDemoNavigatorVariant">
+        <property id="intValue" type="INT"/>
+    </entity>
+</domain>
