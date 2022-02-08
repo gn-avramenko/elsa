@@ -24,9 +24,7 @@ public class DomainMetaRegistry {
 
     @Autowired
     public DomainMetaRegistry(List<DomainMetaRegistryConfigurator> configurators) {
-        configurators.forEach(it ->{
-            it.updateMetaRegistry(this);
-        });
+        configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 
     public Map<String, EnumDescription> getEnums() {

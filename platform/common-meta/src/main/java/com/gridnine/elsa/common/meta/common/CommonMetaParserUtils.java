@@ -36,7 +36,6 @@ public final class CommonMetaParserUtils {
         }
         var children = elm.getChildNodes();
         var childrenLength = children.getLength();
-        loop:
         for (int i = 0; i < childrenLength; i++) {
             var child = children.item(i);
             if (child != null) {

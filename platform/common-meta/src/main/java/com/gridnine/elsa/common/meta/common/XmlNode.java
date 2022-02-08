@@ -15,8 +15,8 @@ public class XmlNode
     private  String name;
 
     private String value;
-    private List<XmlNode> children = new ArrayList<>();
-    private Map<String,String> attributes = new LinkedHashMap<>();
+    private final List<XmlNode> children = new ArrayList<>();
+    private final Map<String,String> attributes = new LinkedHashMap<>();
 
     public String getName() {
         return name;

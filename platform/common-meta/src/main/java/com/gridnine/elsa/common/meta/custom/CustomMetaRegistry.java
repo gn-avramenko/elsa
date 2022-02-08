@@ -7,10 +7,6 @@ package com.gridnine.elsa.common.meta.custom;
 
 import com.gridnine.elsa.common.meta.common.EntityDescription;
 import com.gridnine.elsa.common.meta.common.EnumDescription;
-import com.gridnine.elsa.common.meta.domain.AssetDescription;
-import com.gridnine.elsa.common.meta.domain.DocumentDescription;
-import com.gridnine.elsa.common.meta.domain.DomainMetaRegistryConfigurator;
-import com.gridnine.elsa.common.meta.domain.SearchableProjectionDescription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +21,7 @@ public class CustomMetaRegistry {
 
     @Autowired
     public CustomMetaRegistry(List<CustomMetaRegistryConfigurator> configurators) {
-        configurators.forEach(it ->{
-            it.updateMetaRegistry(this);
-        });
+        configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 
     public Map<String, EnumDescription> getEnums() {

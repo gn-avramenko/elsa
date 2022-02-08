@@ -6,7 +6,6 @@
 package com.gridnine.elsa.common.meta.ui;
 
 import com.gridnine.elsa.common.meta.common.EnumDescription;
-import com.gridnine.elsa.common.meta.domain.DomainMetaRegistryConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashMap;
@@ -23,9 +22,7 @@ public class UiMetaRegistry {
 
     @Autowired
     public UiMetaRegistry(List<UiMetaRegistryConfigurator> configurators) {
-        configurators.forEach(it ->{
-            it.updateMetaRegistry(this);
-        });
+        configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 
     public Map<String, EnumDescription> getEnums() {

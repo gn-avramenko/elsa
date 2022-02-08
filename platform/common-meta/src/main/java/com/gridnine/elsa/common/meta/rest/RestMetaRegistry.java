@@ -24,9 +24,7 @@ public class RestMetaRegistry {
 
     @Autowired
     public RestMetaRegistry(List<RestMetaRegistryConfigurator> configurators) {
-        configurators.forEach(it ->{
-            it.updateMetaRegistry(this);
-        });
+        configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 
     public Map<String, EnumDescription> getEnums() {

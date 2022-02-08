@@ -5,7 +5,6 @@
 
 package com.gridnine.elsa.common.meta.l10n;
 
-import com.gridnine.elsa.common.meta.domain.DomainMetaRegistryConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashMap;
@@ -17,9 +16,7 @@ public class L10nMetaRegistry {
 
     @Autowired
     public L10nMetaRegistry(List<L10nMetaRegistryConfigurator> configurators) {
-        configurators.forEach(it ->{
-            it.updateMetaRegistry(this);
-        });
+        configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 
     public Map<String, L10nMessagesBundleDescription> getBundles() {

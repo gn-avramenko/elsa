@@ -21,9 +21,7 @@ public class DtMetaRegistry {
 
     @Autowired
     public DtMetaRegistry(List<DtMetaRegistryConfigurator> configurators) {
-        configurators.forEach(it ->{
-            it.updateMetaRegistry(this);
-        });
+        configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 
     public Map<String, EnumDescription> getEnums() {

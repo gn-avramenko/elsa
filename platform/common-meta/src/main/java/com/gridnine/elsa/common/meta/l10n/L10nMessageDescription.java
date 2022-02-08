@@ -5,8 +5,6 @@
 
 package com.gridnine.elsa.common.meta.l10n;
 
-import com.gridnine.elsa.common.meta.common.BaseModelElementDescription;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 

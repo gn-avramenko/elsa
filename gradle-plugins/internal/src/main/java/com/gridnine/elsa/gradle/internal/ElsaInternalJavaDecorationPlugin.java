@@ -47,8 +47,10 @@ public class ElsaInternalJavaDecorationPlugin implements Plugin<Project> {
         });
         var ext = (ElsaInternalJavaExtension) target.getExtensions().findByName("elsa-java-configuration");
         var publishing = (PublishingExtension) target.getExtensions().findByName("publishing");
+        assert publishing != null;
         var mp = publishing.getPublications().create("mavenJava", MavenPublication.class);
         mp.from(target.getComponents().findByName("java"));
+        assert ext != null;
         mp.setArtifactId(ext.getArtefactId());
         publishing.getRepositories().maven(mavenArtifactRepository -> {
             mavenArtifactRepository.getCredentials().setUsername(props.getProperty("maven.username"));

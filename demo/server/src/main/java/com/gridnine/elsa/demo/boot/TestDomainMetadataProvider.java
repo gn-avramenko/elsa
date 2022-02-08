@@ -13,6 +13,6 @@ import org.springframework.stereotype.Component;
 public class TestDomainMetadataProvider implements DomainMetaRegistryConfigurator {
     @Override
     public void updateMetaRegistry(DomainMetaRegistry registry) {
-
+        System.out.println("applied provider 1");
     }
 }

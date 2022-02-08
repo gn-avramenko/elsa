@@ -5,9 +5,6 @@
 
 package com.gridnine.elsa.common.meta.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class AssetDescription extends BaseSearchableDescription {
 
     private boolean cacheResolve;
