@@ -1,0 +1,4 @@
+version=0.0.1
+maven.url=http://localhost:18087/repository/maven-releases/
+maven.username=admin
+maven.password=admin

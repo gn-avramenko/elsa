@@ -12,8 +12,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/demo" />
+            <option value="$PROJECT_DIR$/demo/server" />
             <option value="$PROJECT_DIR$/gradle-plugins" />
-            <option value="$PROJECT_DIR$/gradle-plugins/platform" />
+            <option value="$PROJECT_DIR$/gradle-plugins/internal" />
             <option value="$PROJECT_DIR$/platform" />
             <option value="$PROJECT_DIR$/platform/common-meta" />
           </set>

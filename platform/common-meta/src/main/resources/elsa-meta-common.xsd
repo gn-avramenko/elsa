@@ -27,8 +27,6 @@
     </simpleType>
     <complexType name="MetaElementType">
         <attribute name="id" type="string" use="required"/>
-        <attribute name="deprecated" type="boolean"
-                   default="false"/>
     </complexType>
     <complexType name="PropertyType">
         <complexContent>

@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://gridnine.com/elsa/ui"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://gridnine.com/elsa/ui" xmlns:common="http://gridnine.com/elsa/meta-common">
+    <element name="ui">
+        <complexType>
+            <sequence>
+                <choice maxOccurs="unbounded" minOccurs="0">
+                    <element name="enum" type="tns:EnumType"/>
+                    <group ref="tns:Container"/>
+                    <element name="vm-entity" type="tns:VMEntity"/>
+                    <element name="vs-entity" type="tns:VSEntity"/>
+                    <element name="vv-entity" type="tns:VVEntity"/>
+                    <element name = "custom-value-widget" type="tns:CustomValueWidget"/>
+                </choice>
+            </sequence>
+        </complexType>
+    </element>
+    <group name="Container">
+        <choice>
+            <element name="navigator" type="tns:Navigator"/>
+            <element name="grid-container" type="tns:GridContainerType"/>
+            <element name="tile-space" type="tns:TileSpace"/>
+        </choice>
+    </group>
+    <complexType name="EnumType">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <sequence>
+                    <element name="enum-item" maxOccurs="unbounded"
+                             minOccurs="0" type="common:EnumItemType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="TileSpace">
+        <complexContent>
+            <extension base="tns:BaseView">
+                <sequence>
+                    <element name="overview" minOccurs="0">
+                        <complexType>
+                            <group ref="tns:Container" minOccurs="0"/>
+                            <attribute name="caption" type="string" use="required"/>
+                            <attribute name="container-ref" type="string"/>
+                        </complexType>
+                    </element>
+                    <element name="tile" minOccurs="0" maxOccurs="unbounded">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <element name="full-view">
+                                            <complexType>
+                                                <group ref="tns:Container" minOccurs="0"/>
+                                                <attribute name="container-ref" type="string"/>
+                                            </complexType>
+                                        </element>
+                                    </sequence>
+                                    <attribute name="caption" type="string" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="GridContainerType">
+        <complexContent>
+            <extension base="tns:BaseView">
+                <sequence>
+                    <element name="columns" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="column" maxOccurs="unbounded">
+                                    <complexType>
+                                        <attribute name="width" type="tns:PredefinedColumnWidth" default="STANDARD"/>
+                                        <attribute name="custom-width" type="string"/>
+                                    </complexType>
+                                </element>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="row" maxOccurs="unbounded">
+                        <complexType>
+                            <sequence>
+                                <element name="cell" maxOccurs="unbounded">
+                                    <complexType>
+                                        <group ref="tns:Widget"/>
+                                        <attribute name="col-span" type="int" default="1"/>
+                                        <attribute name="caption" type="string"/>
+                                        <attribute name="id" type="string" use="required"/>
+                                    </complexType>
+                                </element>
+                            </sequence>
+                            <attribute name="height" type="tns:PredefinedRowHeight" default="AUTO"/>
+                            <attribute name="custom-height" type="string"/>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="columns-count" type="int"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="Navigator">
+        <complexContent>
+            <extension base="tns:BaseView">
+                <sequence>
+                    <sequence>
+                        <element name="variant" minOccurs="0" maxOccurs="unbounded">
+                            <complexType>
+                                <group ref="tns:Container" minOccurs="0"/>
+                                <attribute name="container-ref" type="string"/>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <group name="Widget">
+        <choice>
+            <element name="date-time-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="date-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="enum-select-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="enumId" use="required"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="enum-multi-select-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="enumId" use="required"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="general-select-box" type="tns:BaseWidget"/>
+            <element name="entity-select-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="objectId" use="required"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="hidden">
+                <complexType>
+                    <attribute name="object-id" use="required"/>
+                </complexType>
+            </element>
+            <element name="boolean-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="integer-number-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="non-nullable" type="boolean" default="false"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="long-number-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="non-nullable" type="boolean" default="false"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="big-decimal-number-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="precision" type="int"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="text-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute type="boolean" name="multiline" default="false"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="rich-text-editor">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="height" type="string" />
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="password-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="image-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <attribute name="max-image-height" type="int"/>
+                            <attribute name="max-image-width" type="int"/>
+                            <attribute name="accept" type="string"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+            <element name="custom-value-widget">
+                <complexType>
+                    <sequence minOccurs="0" maxOccurs="unbounded">
+                        <element name="param" type="common:ParamType"
+                                 maxOccurs="unbounded" minOccurs="0">
+                        </element>
+                    </sequence>
+                    <attribute name="ref" type="string"/>
+                </complexType>
+            </element>
+            <element name="table-box">
+                <complexType>
+                    <complexContent>
+                        <extension base="tns:BaseWidget">
+                            <sequence>
+                                <element name="column" maxOccurs="unbounded">
+                                    <complexType>
+                                        <sequence>
+                                            <group ref="tns:Widget"/>
+                                        </sequence>
+                                        <attribute name="caption" type="string"/>
+                                        <attribute name="pref-width" type="string"/>
+                                        <attribute name="id" use="required"/>
+                                    </complexType>
+                                </element>
+                            </sequence>
+                            <attribute name="id" use="required"/>
+                            <attribute name="hide-tools-column" type="boolean"/>
+                        </extension>
+                    </complexContent>
+                </complexType>
+            </element>
+        </choice>
+    </group>
+    <simpleType name="PredefinedRowHeight">
+        <restriction base="string">
+            <enumeration value="AUTO"/>
+            <enumeration value="REMAINING"/>
+            <enumeration value="CUSTOM"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="PredefinedColumnWidth">
+        <restriction base="string">
+            <enumeration value="STANDARD"/>
+            <enumeration value="REMAINING"/>
+            <enumeration value="CUSTOM"/>
+        </restriction>
+    </simpleType>
+    <complexType name="BaseView">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <sequence>
+                    <element name="interceptor" maxOccurs="unbounded" minOccurs="0" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="BaseInternalMetaElement">
+        <attribute name="id" type="string"/>
+    </complexType>
+    <complexType name="BaseWidget">
+        <attribute name="not-editable" type="boolean" default="false"/>
+    </complexType>
+    <simpleType name="VMPropertyType">
+        <restriction base="string">
+            <enumeration value="STRING" />
+            <enumeration value="ENTITY_REFERENCE"/>
+            <enumeration value="BIG_DECIMAL"/>
+            <enumeration value="ENUM"/>
+            <enumeration value="BOOLEAN"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="VMCollectionType">
+        <restriction base="string">
+            <enumeration value="ENTITY"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="VSPropertyType">
+        <restriction base="string">
+            <enumeration value="STRING" />
+        </restriction>
+    </simpleType>
+    <simpleType name="VVPropertyType">
+        <restriction base="string">
+            <enumeration value="STRING" />
+        </restriction>
+    </simpleType>
+    <complexType name="VMProperty">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="type" type="tns:VMPropertyType" use="required" />
+                <attribute name="object-id" type="string" />
+                <attribute name="non-nullable" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="VMCollection">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="element-type" type="tns:VMCollectionType" use="required" />
+                <attribute name="object-id" type="string" />
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="VSProperty">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="type" type="tns:VSPropertyType" use="required" />
+                <attribute name="non-nullable" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="VVProperty">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="type" type="tns:VVPropertyType" use="required" />
+                <attribute name="non-nullable" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="VMEntity">
+        <complexContent>
+            <extension base="tns:BaseInternalMetaElement">
+                <sequence>
+                    <choice maxOccurs="unbounded" minOccurs="0">
+                        <element name="property" type="tns:VMProperty"/>
+                        <element name="collection" type="tns:VMCollection"/>
+                    </choice>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="VSEntity">
+        <complexContent>
+            <extension base="tns:BaseInternalMetaElement">
+                <sequence>
+                    <choice maxOccurs="unbounded" minOccurs="0">
+                        <element name="property" type="tns:VSProperty"/>
+                    </choice>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="VVEntity">
+        <complexContent>
+            <extension base="tns:BaseInternalMetaElement">
+                <sequence>
+                    <choice maxOccurs="unbounded" minOccurs="0">
+                        <element name="property" type="tns:VVProperty"/>
+                    </choice>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="CustomValueWidget">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <sequence>
+                   <element name="view-model" type="tns:VMEntity"/>
+                    <element name="view-settings" type="tns:VSEntity"/>
+                    <element name="view-validation" type="tns:VVEntity"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>

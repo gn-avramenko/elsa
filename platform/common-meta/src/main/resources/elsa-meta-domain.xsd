@@ -3,7 +3,6 @@
         elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:tns="http://gridnine.com/elsa/meta-domain"
         xmlns:common="http://gridnine.com/elsa/meta-common">
-    <import namespace="http://gridnine.com/elsa/meta-common"/>
     <element name="domain">
         <complexType>
             <sequence>
@@ -17,15 +16,18 @@
                                             <element name="property" type="common:PropertyType"/>
                                             <element name="collection" type="common:CollectionType"/>
                                             <element name="map" type="common:MapType"/>
-                                            <element name="code-injection" type="string"/>
+                                        </choice>
+                                        <choice>
+                                            <element name="caption-expression" type="string"/>
+                                            <element name="localizable-caption-expression" type="string"/>
                                         </choice>
                                     </sequence>
                                     <attribute name="abstract" type="boolean"
                                                default="false"/>
                                     <attribute name="extends" type="string"/>
-                                    <attribute name="x-cache-resolve" type="boolean"
+                                    <attribute name="cache-resolve" type="boolean"
                                                default="false"/>
-                                    <attribute name="x-cache-caption" type="boolean"
+                                    <attribute name="cache-caption" type="boolean"
                                                default="false"/>
                                 </extension>
                             </complexContent>
@@ -40,20 +42,18 @@
                                             <element name="property" type="common:PropertyType"/>
                                             <element name="collection" type="common:CollectionType"/>
                                             <element name="map" type="common:MapType"/>
-                                            <element name="code-injection" type="string"/>
                                         </choice>
                                     </sequence>
                                     <attribute name="abstract" type="boolean"
                                                default="false"/>
                                     <attribute name="extends" type="string"/>
+                                    <attribute name="has-id" type="boolean"/>
                                 </extension>
                             </complexContent>
                         </complexType>
                     </element>
                     <element name="enum">
                         <complexType>
-
-
                             <complexContent>
                                 <extension base="common:MetaElementType">
                                     <sequence>
@@ -64,10 +64,10 @@
                             </complexContent>
                         </complexType>
                     </element>
-                    <element name="index">
+                    <element name="searchable-projection">
                         <complexType>
                             <complexContent>
-                                <extension base="tns:BaseIndexType">
+                                <extension base="tns:BaseSearchableType">
                                     <attribute name="document" type="string" use="required">
                                     </attribute>
                                 </extension>
@@ -77,13 +77,16 @@
                     <element name="asset">
                         <complexType>
                             <complexContent>
-                                <extension base="tns:BaseIndexType">
+                                <extension base="tns:BaseSearchableType">
                                     <sequence>
-                                        <choice maxOccurs="unbounded" minOccurs="0">
-                                            <element name="code-injection" type="string"/>
+                                        <choice>
+                                            <element name="caption-expression" type="string"/>
+                                            <element name="localizable-caption-expression" type="string"/>
                                         </choice>
                                     </sequence>
-                                    <attribute name="x-cache-resolve" type="boolean"
+                                    <attribute name="cache-resolve" type="boolean"
+                                               default="false"/>
+                                    <attribute name="cache-caption" type="boolean"
                                                default="false"/>
                                 </extension>
                             </complexContent>
@@ -93,7 +96,7 @@
             </sequence>
         </complexType>
     </element>
-    <complexType name="BaseIndexType">
+    <complexType name="BaseSearchableType">
         <complexContent>
             <extension base="common:MetaElementType">
                 <sequence>
@@ -103,7 +106,7 @@
                             <complexType>
                                 <complexContent>
                                     <extension base="common:MetaElementType">
-                                        <attribute name="x-cache-find" type="boolean"/>
+                                        <attribute name="cache-find" type="boolean"/>
                                         <attribute name="type" type="tns:DatabasePropertyType" use="required"/>
                                         <attribute name="class-name" type="string"/>
                                     </extension>
@@ -114,13 +117,7 @@
                             <complexType>
                                 <complexContent>
                                     <extension base="common:MetaElementType">
-                                        <sequence>
-                                            <element name="param" type="common:ParamType" maxOccurs="unbounded"
-                                                     minOccurs="0">
-                                            </element>
-                                        </sequence>
-                                        <attribute name="unique" type="boolean">
-                                        </attribute>
+                                        <attribute name="unique" type="boolean"/>
                                         <attribute name="element-type" type="tns:DatabaseCollectionElementType"
                                                    use="required"/>
                                         <attribute name="element-class-name" type="string"/>
@@ -130,6 +127,7 @@
                         </element>
                     </choice>
                 </sequence>
+                <attribute name = "hidden" type="boolean" default="false"/>
             </extension>
         </complexContent>
     </complexType>
