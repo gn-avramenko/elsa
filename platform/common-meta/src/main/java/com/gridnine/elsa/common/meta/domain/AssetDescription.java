@@ -15,6 +15,13 @@ public class AssetDescription extends BaseSearchableDescription {
 
     private String localizableCaptionExpression;
 
+    public AssetDescription() {
+    }
+
+    public AssetDescription(String id) {
+        super(id);
+    }
+
     public boolean isCacheResolve() {
         return cacheResolve;
     }

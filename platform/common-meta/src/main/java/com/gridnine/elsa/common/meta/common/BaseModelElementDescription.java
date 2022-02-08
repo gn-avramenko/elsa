@@ -9,17 +9,15 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public abstract class BaseModelElementDescription {
-    private String id;
+public abstract class BaseModelElementDescription extends BaseElementWitId {
     private final Map<String,String> parameters = new LinkedHashMap<>();
     private final Map<Locale, String> displayNames = new LinkedHashMap<>();
 
-    public String getId() {
-        return id;
+    public BaseModelElementDescription() {
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public BaseModelElementDescription(String id) {
+        super(id);
     }
 
     public Map<String, String> getParameters() {

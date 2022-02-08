@@ -55,7 +55,7 @@
             </extension>
         </complexContent>
     </complexType>
-	<complexType name="ParamType">
+	<complexType name="ParameterType">
 		<attribute use="required" name="name" type="string"/>
 		<attribute use="required" name="value" type="string"/>
 	</complexType>

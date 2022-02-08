@@ -6,5 +6,9 @@
 package com.gridnine.elsa.common.meta.common;
 
 public class EnumItemDescription extends BaseModelElementDescription{
-    //noops
+    public EnumItemDescription() {
+    }
+    public EnumItemDescription(String id) {
+        setId(id);
+    }
 }

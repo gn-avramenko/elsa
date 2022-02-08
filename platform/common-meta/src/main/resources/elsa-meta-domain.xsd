@@ -101,7 +101,7 @@
             <extension base="common:MetaElementType">
                 <sequence>
                     <choice maxOccurs="unbounded" minOccurs="0">
-                        <element name="param" type="common:ParamType"/>
+                        <element name="parameter" type="common:ParameterType"/>
                         <element name="property">
                             <complexType>
                                 <complexContent>

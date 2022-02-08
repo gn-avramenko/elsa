@@ -5,9 +5,9 @@
 
 package com.gridnine.elsa.common.meta.ui;
 
-import com.gridnine.elsa.common.meta.common.BaseModelElementDescription;
+import com.gridnine.elsa.common.meta.common.BaseElementWitId;
 
-public class VVCollectionDescription extends BaseModelElementDescription
+public class VVCollectionDescription extends BaseElementWitId
 {
     private VVCollectionType elementType;
     private String elementClassName;

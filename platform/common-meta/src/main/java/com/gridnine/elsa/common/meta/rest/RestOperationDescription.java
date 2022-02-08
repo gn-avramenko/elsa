@@ -5,15 +5,22 @@
 
 package com.gridnine.elsa.common.meta.rest;
 
-import com.gridnine.elsa.common.meta.common.BaseModelElementDescription;
+import com.gridnine.elsa.common.meta.common.BaseElementWitId;
 
-public class RestOperationDescription extends BaseModelElementDescription {
+public class RestOperationDescription extends BaseElementWitId {
 
     private String groupId;
     private String requestEntity;
     private String responseEntity;
     private String handler;
     private boolean validatable;
+
+    public RestOperationDescription() {
+    }
+
+    public RestOperationDescription(String id) {
+        super(id);
+    }
 
     public String getGroupId() {
         return groupId;

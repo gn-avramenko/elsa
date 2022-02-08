@@ -3,8 +3,8 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.elsa.common.meta.dataTransfer;
+package com.gridnine.elsa.gradle.utils;
 
-public interface DtMetaRegistryConfigurator {
-    void updateMetaRegistry(DtMetaRegistry registry);
+public interface BuildRunnableWithException {
+    void run() throws Exception;
 }

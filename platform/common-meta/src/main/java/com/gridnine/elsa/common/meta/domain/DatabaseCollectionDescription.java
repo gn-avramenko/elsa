@@ -14,6 +14,13 @@ public class DatabaseCollectionDescription extends BaseModelElementDescription {
 
     private String elementClassName;
 
+    public DatabaseCollectionDescription() {
+    }
+
+    public DatabaseCollectionDescription(String id) {
+        super(id);
+    }
+
     public boolean isUnique() {
         return unique;
     }

@@ -14,6 +14,13 @@ public class DatabasePropertyDescription extends BaseModelElementDescription {
 
     private String className;
 
+    public DatabasePropertyDescription() {
+    }
+
+    public DatabasePropertyDescription(String id) {
+        super(id);
+    }
+
     public DatabasePropertyType getType() {
         return type;
     }

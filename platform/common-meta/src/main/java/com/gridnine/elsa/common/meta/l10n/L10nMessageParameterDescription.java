@@ -13,6 +13,13 @@ public class L10nMessageParameterDescription extends BaseModelElementDescription
     private String className;
     private boolean collection;
 
+    public L10nMessageParameterDescription() {
+    }
+
+    public L10nMessageParameterDescription(String id) {
+        super(id);
+    }
+
     public StandardValueType getType() {
         return type;
     }

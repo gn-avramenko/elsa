@@ -6,6 +6,14 @@
 package com.gridnine.elsa.common.meta.common;
 
 public class StandardPropertyDescription extends BaseModelElementDescription{
+
+    public StandardPropertyDescription() {
+    }
+
+    public StandardPropertyDescription(String id) {
+        setId(id);
+    }
+
     private StandardValueType type;
 
     private String className;

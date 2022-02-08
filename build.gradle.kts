@@ -1,3 +1,6 @@
 task("updateLocalGradlePlugins"){
-    //noops
+    group = "elsa"
+}
+task("eCodeGen"){
+    group = "elsa"
 }

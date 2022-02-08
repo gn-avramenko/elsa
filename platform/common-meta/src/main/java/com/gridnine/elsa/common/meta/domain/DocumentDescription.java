@@ -17,6 +17,13 @@ public class DocumentDescription extends EntityDescription {
 
     private String localizableCaptionExpression;
 
+    public DocumentDescription() {
+    }
+
+    public DocumentDescription(String id) {
+        super(id);
+    }
+
     public boolean isCacheResolve() {
         return cacheResolve;
     }
@@ -33,4 +40,19 @@ public class DocumentDescription extends EntityDescription {
         this.cacheCaption = cacheCaption;
     }
 
+    public void setLocalizableCaptionExpression(String localizableCaptionExpression) {
+        this.localizableCaptionExpression = localizableCaptionExpression;
+    }
+
+    public String getLocalizableCaptionExpression() {
+        return localizableCaptionExpression;
+    }
+
+    public void setCaptionExpression(String captionExpression) {
+        this.captionExpression = captionExpression;
+    }
+
+    public String getCaptionExpression() {
+        return captionExpression;
+    }
 }

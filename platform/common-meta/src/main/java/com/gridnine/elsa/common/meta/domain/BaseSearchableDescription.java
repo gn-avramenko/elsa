@@ -14,6 +14,13 @@ public abstract class BaseSearchableDescription extends BaseModelElementDescript
 
     private boolean hidden = false;
 
+    public BaseSearchableDescription() {
+    }
+
+    public BaseSearchableDescription(String id) {
+        super(id);
+    }
+
     private final Map<String,DatabasePropertyDescription> properties = new LinkedHashMap<>();
 
     private final Map<String,DatabaseCollectionDescription> collections = new LinkedHashMap<>();

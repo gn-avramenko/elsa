@@ -1,24 +1,51 @@
-plugins {
-    java
+buildscript {
+    dependencies{
+        classpath(files(File(projectDir.parentFile.parentFile, "gradle/elsa-gradle.jar")))
+    }
+}
+apply<com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin>()
+
+configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
+    codegen {
+        domain("code-gen/domain/demo-elsa-domain.xml",
+            "src/main/java-gen",
+            "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator")
+    }
+}
+apply<com.gridnine.elsa.gradle.plugin.ElsaJavaDecorationPlugin>()
+
+plugins{
     id( "org.springframework.boot") version "2.6.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
-group = "com.gridnine"
-version = "0.0.1"
-
-repositories{
-    mavenCentral()
-}
-
-
 dependencies{
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation(project(":platform:common-meta"))
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    "implementation"("org.springframework.boot:spring-boot-starter-web")
+    "implementation"(project(":platform:common-meta"))
+    "testImplementation"("org.springframework.boot:spring-boot-starter-test")
 }
+
+//plugins {
+//    java
+//    id( "org.springframework.boot") version "2.6.0"
+//    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+//}
+//
+//group = "com.gridnine"
+//version = "0.0.1"
+//
+//repositories{
+//    mavenCentral()
+//}
+//
+//
+//dependencies{
+//    implementation("org.springframework.boot:spring-boot-starter-web")
+//    implementation("org.springframework.boot:spring-boot-starter-actuator")
+//    implementation(project(":platform:common-meta"))
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    testImplementation("org.springframework.boot:spring-boot-starter-test")
+//}
 //
 //
 //java{

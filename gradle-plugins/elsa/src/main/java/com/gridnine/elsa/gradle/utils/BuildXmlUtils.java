@@ -3,7 +3,7 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.elsa.common.meta.common;
+package com.gridnine.elsa.gradle.utils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -12,9 +12,9 @@ import org.w3c.dom.Node;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 
-public final class CommonMetaParserUtils {
-    public static XmlNode parseXml(byte[] content) throws Exception {
-        var result = new XmlNode();
+public final class BuildXmlUtils {
+    public static BuildXmlNode parseXml(byte[] content) throws Exception {
+        var result = new BuildXmlNode();
         var db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc;
         try {
@@ -26,7 +26,7 @@ public final class CommonMetaParserUtils {
         return result;
     }
 
-    private static void updateElm(XmlNode result, Element elm) {
+    private static void updateElm(BuildXmlNode result, Element elm) {
         result.setName(elm.getTagName());
         var attributes = elm.getAttributes();
         var attributeLength = attributes.getLength();
@@ -42,7 +42,7 @@ public final class CommonMetaParserUtils {
                 switch (child.getNodeType()) {
                     case Node.TEXT_NODE, Node.CDATA_SECTION_NODE -> result.setValue(child.getNodeValue());
                     case Node.ELEMENT_NODE -> {
-                        var childNode = new XmlNode();
+                        var childNode = new BuildXmlNode();
                         updateElm(childNode, (Element) child);
                         result.getChildren().add(childNode);
                     }
@@ -51,6 +51,6 @@ public final class CommonMetaParserUtils {
         }
     }
 
-    private CommonMetaParserUtils() {
+    private BuildXmlUtils() {
     }
 }

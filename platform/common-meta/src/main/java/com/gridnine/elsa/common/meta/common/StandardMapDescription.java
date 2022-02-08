@@ -5,7 +5,7 @@
 
 package com.gridnine.elsa.common.meta.common;
 
-public class StandardMapDescription extends BaseModelElementDescription{
+public class StandardMapDescription extends BaseElementWitId{
     private StandardValueType keyType;
 
     private StandardValueType valueType;
@@ -14,14 +14,11 @@ public class StandardMapDescription extends BaseModelElementDescription{
 
     private String valueClassName;
 
-    private boolean unique;
-
-    public boolean isUnique() {
-        return unique;
+    public StandardMapDescription() {
     }
 
-    public void setUnique(boolean unique) {
-        this.unique = unique;
+    public StandardMapDescription(String id) {
+        super(id);
     }
 
     public StandardValueType getKeyType() {

@@ -25,6 +25,13 @@ public class EntityDescription extends BaseModelElementDescription{
 
     private final List<String> codeInjections = new ArrayList<>();
 
+    public EntityDescription() {
+    }
+
+    public EntityDescription(String id) {
+        super(id);
+    }
+
     public boolean isAbstract() {
         return isAbstract;
     }
