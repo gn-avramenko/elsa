@@ -23,7 +23,7 @@ public class DomainMetaRegistryParser {
             MetaDataParsingResult pr = CommonParserUtils.parse(it);
             BuildXmlNode node = pr.node();
             node.getChildren("enum").forEach(child ->
-                    CommonParserUtils.updateEnum(registry.getEnums(), node, pr.localizations()));
+                    CommonParserUtils.updateEnum(registry.getEnums(), child, pr.localizations()));
             node.getChildren("entity").forEach(child ->
                     CommonParserUtils.updateEntity(registry.getEntities(), child));
             node.getChildren("document").forEach(child -> {

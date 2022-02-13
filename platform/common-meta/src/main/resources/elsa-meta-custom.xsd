@@ -20,7 +20,6 @@
                                     <attribute name="abstract" type="boolean"
                                                default="false"/>
                                     <attribute name="extends" type="string"/>
-                                    <attribute name="has-id" type="boolean"/>
                                 </extension>
                             </complexContent>
                         </complexType>

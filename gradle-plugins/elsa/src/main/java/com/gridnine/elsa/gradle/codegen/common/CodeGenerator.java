@@ -10,5 +10,5 @@ import java.util.List;
 import java.util.Set;
 
 public interface CodeGenerator<T extends BaseCodeGenRecord> {
-    void generate(List<T> records, File destDir, Set<File> generatedFiles);
+    void generate(List<T> records, File destDir, Set<File> generatedFiles) throws Exception;
 }

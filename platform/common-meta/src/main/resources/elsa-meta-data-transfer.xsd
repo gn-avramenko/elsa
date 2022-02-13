@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://gridnine.com/elsa/dt"
+<schema targetNamespace="http://gridnine.com/elsa/meta-data-transfer"
         elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:common="http://gridnine.com/elsa/meta-common">
-    <element name="dt-objects">
+    <element name="data-trasfer-objects">
 		<complexType>
 			<sequence>
 				<choice maxOccurs="unbounded" minOccurs="0">

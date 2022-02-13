@@ -33,11 +33,13 @@ public final class CommonParserUtils {
         var content = Files.readAllBytes(file.toPath());
         var node = BuildXmlUtils.parseXml(content);
         var baseName = file.getName().substring(0, file.getName().lastIndexOf("."));
-        var dir = new File(baseName, "l10n");
+        var dir = new File(file.getParentFile(), "l10n");
         var localizations = new LinkedHashMap<String, Map<Locale,String>>();
         if(dir.exists()){
             for(File lf: Objects.requireNonNull(dir.listFiles())){
-                readLocalizations(lf, localizations);
+                if(lf.getName().contains(baseName)) {
+                    readLocalizations(lf, localizations);
+                }
             }
         }
        return new MetaDataParsingResult(node, localizations);

@@ -11,6 +11,6 @@ import org.gradle.api.Project;
 public class ElsaInternalJavaConfigurationPlugin implements Plugin<Project> {
     @Override
     public void apply(Project target) {
-        target.getExtensions().create("elsa-java-configuration", ElsaInternalJavaExtension.class);
+        target.getExtensions().create("elsa-internal-java-configuration", ElsaInternalJavaExtension.class);
     }
 }

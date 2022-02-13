@@ -1,3 +1,6 @@
+plugins {
+    java
+}
 buildscript {
     dependencies{
         classpath(files(File(projectDir.parentFile.parentFile, "gradle/elsa-gradle-internal.jar")))
@@ -11,6 +14,7 @@ configure<com.gridnine.elsa.gradle.internal.ElsaInternalJavaExtension>{
 
 apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaDecorationPlugin>()
 
+
 dependencies{
-    "implementation"("org.springframework:spring-context:5.3.0")
+    implementation("org.springframework:spring-context:5.3.0")
 }

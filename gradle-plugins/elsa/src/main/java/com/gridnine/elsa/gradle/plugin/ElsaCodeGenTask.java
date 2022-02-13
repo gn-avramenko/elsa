@@ -8,7 +8,12 @@ package com.gridnine.elsa.gradle.plugin;
 import com.gridnine.elsa.gradle.codegen.common.BaseCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.elsa.gradle.codegen.common.GeneratorType;
+import com.gridnine.elsa.gradle.codegen.common.JavaCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.custom.JavaCustomCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.rest.JavaRestCodeGenerator;
+import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
+import com.gridnine.elsa.gradle.utils.BuildRunnableWithException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 
@@ -32,10 +37,12 @@ public class ElsaCodeGenTask extends DefaultTask {
             dests.computeIfAbsent(it.getDestinationDir(), t -> new ArrayList<>()).add(it);
         });
         generators.forEach((key, value) -> {
-            @SuppressWarnings("unchecked") var codeGen = (CodeGenerator<BaseCodeGenRecord>)(CodeGenerator) switch (key) {
+            @SuppressWarnings("unchecked") var codeGen = (CodeGenerator<BaseCodeGenRecord>) switch (key) {
                 case JAVA_DOMAIN -> new JavaDomainCodeGenerator();
+                case JAVA_REST -> new JavaRestCodeGenerator();
+                case JAVA_CUSTOM -> new JavaCustomCodeGenerator();
             };
-            value.forEach((key1, value1) -> codeGen.generate(value1, key1, generatedFiles));
+            value.forEach((key1, value1) -> BuildExceptionUtils.wrapException(() -> codeGen.generate(value1, key1, generatedFiles)));
         });
         Set<File> destDirs = new HashSet<>();
         records.forEach(it -> destDirs.add(it.getDestinationDir()));
@@ -50,18 +57,18 @@ public class ElsaCodeGenTask extends DefaultTask {
             }
             if(fileOrDir.isFile()){
                 if(!generatedFiles.contains(fileOrDir)){
-                    fileOrDir.delete();
+                    assert fileOrDir.delete();
                 } else {
                     result.set(true);
                 }
                 return;
             }
-            var subRes = cleanupDirs(Arrays.asList(fileOrDir.listFiles()),generatedFiles);
+            var subRes = cleanupDirs(Arrays.asList(Objects.requireNonNull(fileOrDir.listFiles())),generatedFiles);
             if(subRes){
                 result.set(true);
                 return;
             }
-            fileOrDir.delete();
+            assert fileOrDir.delete();
         });
         return result.get();
     }

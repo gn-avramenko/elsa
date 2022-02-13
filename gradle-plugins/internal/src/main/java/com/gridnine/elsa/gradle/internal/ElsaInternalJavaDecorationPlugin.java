@@ -8,9 +8,11 @@ package com.gridnine.elsa.gradle.internal;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
+import org.gradle.jvm.tasks.Jar;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,23 +47,39 @@ public class ElsaInternalJavaDecorationPlugin implements Plugin<Project> {
             ext.setTargetCompatibility(JavaVersion.VERSION_17);
             ext.withSourcesJar();
         });
-        var ext = (ElsaInternalJavaExtension) target.getExtensions().findByName("elsa-java-configuration");
-        var publishing = (PublishingExtension) target.getExtensions().findByName("publishing");
-        assert publishing != null;
-        var mp = publishing.getPublications().create("mavenJava", MavenPublication.class);
-        mp.from(target.getComponents().findByName("java"));
-        assert ext != null;
-        mp.setArtifactId(ext.getArtefactId());
-        publishing.getRepositories().maven(mavenArtifactRepository -> {
-            mavenArtifactRepository.getCredentials().setUsername(props.getProperty("maven.username"));
-            mavenArtifactRepository.getCredentials().setPassword(props.getProperty("maven.password"));
-            mavenArtifactRepository.setAllowInsecureProtocol(true);
-            try {
-                mavenArtifactRepository.setUrl(new URI(props.getProperty("maven.url")));
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("bad parameter maven.url", e);
-            }
-        });
+        var ext = (ElsaInternalJavaExtension) target.getExtensions().findByName("elsa-internal-java-configuration");
+        if(ext != null) {
+            var publishing = (PublishingExtension) target.getExtensions().findByName("publishing");
+            assert publishing != null;
+            var mp = publishing.getPublications().create("mavenJava", MavenPublication.class);
+            mp.from(target.getComponents().findByName("java"));
+            mp.setArtifactId(ext.getArtefactId());
+            publishing.getRepositories().maven(mavenArtifactRepository -> {
+                mavenArtifactRepository.getCredentials().setUsername(props.getProperty("maven.username"));
+                mavenArtifactRepository.getCredentials().setPassword(props.getProperty("maven.password"));
+                mavenArtifactRepository.setAllowInsecureProtocol(true);
+                try {
+                    mavenArtifactRepository.setUrl(new URI(props.getProperty("maven.url")));
+                } catch (URISyntaxException e) {
+                    throw new IllegalArgumentException("bad parameter maven.url", e);
+                }
+            });
+        }
+        try {
+            target.getTasks().getByName("jar").setEnabled(true);
+        } catch (Exception e){
+            //noops
+        }
+        try {
+            target.getTasks().getByName("bootJar").setEnabled(false);
+        } catch (Exception e){
+            //noops
+        }
+        try {
+            target.getTasks().getByName("sourcesJar", (task) -> ((Jar) task).setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE));
+        } catch (Exception e){
+            //noops
+        }
     }
 
     private File findConfigDir(File dir) {

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public class EntityDescription extends BaseModelElementDescription{
-    private boolean hasId;
 
     private boolean isAbstract;
 
@@ -64,11 +63,4 @@ public class EntityDescription extends BaseModelElementDescription{
         return codeInjections;
     }
 
-    public boolean isHasId() {
-        return hasId;
-    }
-
-    public void setHasId(boolean hasId) {
-        this.hasId = hasId;
-    }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://gridnine.com/elsa/l10n"
+<schema targetNamespace="http://gridnine.com/elsa/meta-l10n"
         elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:common="http://gridnine.com/elsa/meta-common">
     <element name="messages-bundle">
         <complexType>

@@ -14,10 +14,13 @@ gradlePlugin {
         }
     }
 }
-
+repositories{
+    mavenCentral()
+}
 dependencies{
     implementation(project(":platform:common-meta"))
 }
+
 java{
     sourceCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
@@ -27,6 +30,7 @@ val jarArchiveName = "elsa-gradle"
 
 tasks.withType<Jar>{
     archiveBaseName.set(jarArchiveName)
+    from(files(project.file("../../platform/common-meta/build/classes/java/main")))
 }
 
 task("updateLocalGradlePlugins"){

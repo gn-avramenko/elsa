@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://gridnine.com/elsa/ui"
+<schema targetNamespace="http://gridnine.com/elsa/meta-ui"
         elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:tns="http://gridnine.com/elsa/ui" xmlns:common="http://gridnine.com/elsa/meta-common">
+        xmlns:tns="http://gridnine.com/elsa/meta-ui" xmlns:common="http://gridnine.com/elsa/meta-common">
     <element name="ui">
         <complexType>
             <sequence>

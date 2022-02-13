@@ -5,13 +5,13 @@ buildscript {
 }
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin>()
 
-configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
-    codegen {
-        domain("code-gen/domain/demo-elsa-domain.xml",
-            "src/main/java-gen",
-            "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator")
-    }
-}
+//configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
+//    codegen {
+//        domain("code-gen/domain/demo-elsa-domain.xml",
+//            "src/main/java-gen",
+//            "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator")
+//    }
+//}
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaDecorationPlugin>()
 
 plugins{
