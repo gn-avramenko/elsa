@@ -4,90 +4,101 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e17e4d22-a887-40d0-8f9a-b42eaee8d34e" name="Default Changelist" comment="infrastructure">
-      <change afterPath="$PROJECT_DIR$/.idea/modules/demo/server/elsa.demo.server.test.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/CodeGeneratorUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/GenEntityDescription.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/JavaCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/custom/JavaCustomCodeGenRecord.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/custom/JavaCustomCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/custom/JavaCustomConfiguratorCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/domain/JavaDomainConfiguratorCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/domain/JavaDomainEntitiesCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/rest/JavaRestCodeGenRecord.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/rest/JavaRestCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/rest/JavaRestConfiguratorCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/rest/JavaRestEntitiesCodeGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/settings.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/codegen/elsa-core-custom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java-gen/com/gridnine/elsa/common/core/ElsaCommonCoreCustomMetaRegistryConfigurator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/common/Environment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/BaseIdentity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/BaseIntrospectableObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/L10nMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/Localizable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/Xeption.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/XeptionType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/BaseAsset.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/BaseDocument.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/BaseSearchableProjection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/ObjectReference.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/VersionInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/reflection/ElsaReflectionFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/utils/ExceptionUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/utils/LocaleUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/utils/RunnableWithException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/utils/TextUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/codegen/elsa-core-test-domain.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/codegen/elsa-core-test-rest.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/codegen/l10n/elsa-core-test-domain_ru.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/ElsaCommonCoreTestDomainMetaRegistryConfigurator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/ElsaCommonCoreTestRestMetaRegistryConfigurator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/BaseTestDomainNestedDocument.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainAsset.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainDocument.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainDocumentProjection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainNestedDocumentImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestItem.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/rest/TestRestEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/rest/TestRestEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/boot/ReflectionFactoryTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/common/ElsaCoreTestConfiguration.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/common/ElsaCoreTestConfiguration2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java/com/gridnine/elsa/common/core/common/ElsaCoreTestConfiguration.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java/com/gridnine/elsa/common/core/common/TestBase.java" afterDir="false" />
+    <list default="true" id="e17e4d22-a887-40d0-8f9a-b42eaee8d34e" name="Default Changelist" comment="cached objects">
+      <change afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/domain/JavaDomainCachedObjectsCodeGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/lock/LockManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/lock/LockTemplate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/lock/NamedLock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/lock/standard/LocalLock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/lock/standard/StandardLockManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/ClassMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/EnumMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/ReadOnlyArrayList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/ReadOnlyHashMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/ReadOnlyHashSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/CachedCaptionProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/CachedObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/_CachedEntityReference.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/_CachedVersionInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/CachedObjectConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/Cloner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/JsonMarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/JsonUnmarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/SerializationParameters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/AssetMetadataProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/BaseObjectMetadataProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/BaseSearchableMetadataProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/DomainDocumentMetadataProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/EntityMetadataProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/ObjectMetadataProvidersFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/SearchableProjectionMetadataProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/SerializableCollectionDescription.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/SerializableMapDescription.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/SerializablePropertyDescription.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/meta/SerializablePropertyType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/lock/LockTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/serialization/CachedObjectsConverterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/serialization/ClonerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/serialization/DomainSerializationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/serialization/RestSerializationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/_CachedTestDomainAsset.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/_CachedTestDomainDocument.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/_CachedTestDomainNestedDocumentImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/_CachedTestGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/_CachedTestItem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/demo/server/elsa.demo.server.test.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/server/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/demo/server/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/server/src/main/java/com/gridnine/elsa/demo/boot/ElsaDemoApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/server/src/main/java/com/gridnine/elsa/demo/boot/ElsaDemoApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/server/src/main/java/com/gridnine/elsa/demo/boot/TestDomainMetadataProvider.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/server/src/main/java/com/gridnine/elsa/demo/boot/TestDomainMetadataProvider2.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/CodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/CodeGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/GeneratorType.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/GeneratorType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/CodeGeneratorUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/CodeGeneratorUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/custom/JavaCustomCodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/custom/JavaCustomCodeGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/domain/JavaDomainCodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/domain/JavaDomainCodeGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/parser/common/CommonParserUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/parser/common/CommonParserUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/domain/JavaDomainEntitiesCodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/domain/JavaDomainEntitiesCodeGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/rest/JavaRestCodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/rest/JavaRestCodeGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/parser/domain/DomainMetaRegistryParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/parser/domain/DomainMetaRegistryParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/parser/rest/RestMetaRegistryParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/parser/rest/RestMetaRegistryParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaCodeGenTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaCodeGenTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaJavaCodeGenExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaJavaCodeGenExtension.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaJavaConfigurationPlugin.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaJavaDecorationPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaJavaPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaJavaExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/plugin/ElsaJavaExtension.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/utils/BuildTextUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/utils/BuildTextUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/internal/src/main/java/com/gridnine/elsa/gradle/internal/ElsaInternalJavaConfigurationPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/internal/src/main/java/com/gridnine/elsa/gradle/internal/ElsaInternalJavaConfigurationPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle-plugins/internal/src/main/java/com/gridnine/elsa/gradle/internal/ElsaInternalJavaDecorationPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/gradle-plugins/internal/src/main/java/com/gridnine/elsa/gradle/internal/ElsaInternalJavaDecorationPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/elsa-gradle-internal.jar" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/elsa-gradle-internal.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle/elsa-gradle.jar" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/elsa-gradle.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/common-meta/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/common/EntityDescription.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/common/EntityDescription.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-custom.xsd" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-custom.xsd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-data-transfer.xsd" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-data-transfer.xsd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-l10n.xsd" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-l10n.xsd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-rest.xsd" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-rest.xsd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-ui.xsd" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-ui.xsd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/main/codegen/elsa-core-custom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/main/codegen/elsa-core-custom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/main/java-gen/com/gridnine/elsa/common/core/ElsaCommonCoreCustomMetaRegistryConfigurator.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/main/java-gen/com/gridnine/elsa/common/core/ElsaCommonCoreCustomMetaRegistryConfigurator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/common/Environment.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/common/Environment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/Xeption.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/common/Xeption.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/BaseSearchableProjection.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/BaseSearchableProjection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/ObjectReference.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/model/domain/EntityReference.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/reflection/ElsaReflectionFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/reflection/ReflectionFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/codegen/elsa-core-test-domain.xml" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/codegen/elsa-core-test-domain.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/codegen/elsa-core-test-rest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/codegen/elsa-core-test-rest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/codegen/l10n/elsa-core-test-domain_ru.properties" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/codegen/l10n/elsa-core-test-domain_ru.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/ElsaCommonCoreTestDomainMetaRegistryConfigurator.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/ElsaCommonCoreTestDomainMetaRegistryConfigurator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/ElsaCommonCoreTestRestMetaRegistryConfigurator.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/ElsaCommonCoreTestRestMetaRegistryConfigurator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/BaseTestDomainNestedDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/BaseTestDomainNestedDocument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainAsset.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainAsset.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainDocument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainDocumentProjection.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainDocumentProjection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainNestedDocumentImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestDomainNestedDocumentImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/domain/TestItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/rest/TestRestEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/rest/TestRestEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java-gen/com/gridnine/elsa/common/core/test/model/rest/TestRestEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java-gen/com/gridnine/elsa/common/core/test/model/rest/TestRestEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/boot/ReflectionFactoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/reflection/ReflectionFactoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/common/ElsaCoreTestConfiguration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/common/ElsaCoreTestConfiguration2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java/com/gridnine/elsa/common/core/common/ElsaCoreTestConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java/com/gridnine/elsa/common/core/common/ElsaCoreTestConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java/com/gridnine/elsa/common/core/common/TestBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-core/src/testFixtures/java/com/gridnine/elsa/common/core/common/TestBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/custom/CustomMetaRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/custom/CustomMetaRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/dataTransfer/DataTransferMetaRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/dataTransfer/DataTransferMetaRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/domain/AssetDescription.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/domain/AssetDescription.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/domain/DomainMetaRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/domain/DomainMetaRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/l10n/L10nMetaRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/l10n/L10nMetaRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/rest/RestMetaRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/rest/RestMetaRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/ui/UiMetaRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/java/com/gridnine/elsa/common/meta/ui/UiMetaRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-domain.xsd" beforeDir="false" afterPath="$PROJECT_DIR$/platform/common-meta/src/main/resources/elsa-meta-domain.xsd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -220,8 +231,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="AnnotationType" />
-        <option value="Interface" />
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -266,24 +277,24 @@
       <recent name="$PROJECT_DIR$/platform/common-core/src/test/codegen" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/platform/common-core/src/testFixtures" />
       <recent name="$PROJECT_DIR$/demo/server/src/main/java/com/gridnine" />
       <recent name="$PROJECT_DIR$/demo/server/code-gen" />
       <recent name="$PROJECT_DIR$/demo/server/src/java2" />
       <recent name="$PROJECT_DIR$/platform/common-meta/src/main/resources" />
-      <recent name="$PROJECT_DIR$/demo/server" />
     </key>
     <key name="MoveInnerDialog.RECENTS_KEY">
       <recent name="com.gridnine.elsa.gradle.parser.common" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.gridnine.elsa.common.core.test.boot" />
-      <recent name="com.gridnine.elsa.common.core.common" />
-      <recent name="com.gridnine.elsa.common.core.test.common" />
-      <recent name="com.gridnine.elsa.common.core.utils" />
+      <recent name="com.gridnine.elsa.common.core.test.serialization" />
       <recent name="com.gridnine.elsa.common.core.model.domain" />
+      <recent name="com.gridnine.elsa.common.core.model.common" />
+      <recent name="com.gridnine.elsa.gradle.codegen.domain" />
+      <recent name="com.gridnine.elsa.common.core.serialization" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.elsa [eCodeGen]">
+  <component name="RunManager" selected="JUnit.CachedObjectsConverterTest">
     <configuration name="elsa-demo" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="openjdk-17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -292,27 +303,6 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
-    </configuration>
-    <configuration name="elsa [check]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="check" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
     </configuration>
     <configuration name="elsa [eCodeGen]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -326,27 +316,6 @@
         <option name="taskNames">
           <list>
             <option value="eCodeGen" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
-    </configuration>
-    <configuration name="elsa [test]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="test" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -377,10 +346,49 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="All in elsa.platform.common-core.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="CachedObjectsConverterTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="elsa.platform.common-core.test" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TEST_OBJECT" value="package" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.gridnine.elsa.common.core.test.serialization.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.gridnine.elsa.common.core.test.serialization" />
+      <option name="MAIN_CLASS_NAME" value="com.gridnine.elsa.common.core.test.serialization.CachedObjectsConverterTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CachedObjectsConverterTest.testConverter" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="elsa.platform.common-core.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.gridnine.elsa.common.core.test.serialization.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.gridnine.elsa.common.core.test.serialization" />
+      <option name="MAIN_CLASS_NAME" value="com.gridnine.elsa.common.core.test.serialization.CachedObjectsConverterTest" />
+      <option name="METHOD_NAME" value="testConverter" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CachedObjectsConverterTest.testDocumentConverter" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="elsa.platform.common-core.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.gridnine.elsa.common.core.test.serialization.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.gridnine.elsa.common.core.test.serialization" />
+      <option name="MAIN_CLASS_NAME" value="com.gridnine.elsa.common.core.test.serialization.CachedObjectsConverterTest" />
+      <option name="METHOD_NAME" value="testDocumentConverter" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -388,18 +396,18 @@
     <list>
       <item itemvalue="Application.elsa-demo" />
       <item itemvalue="Gradle.elsa [updateLocalGradlePlugins]" />
-      <item itemvalue="Gradle.elsa [test]" />
-      <item itemvalue="JUnit.All in elsa.platform.common-core.test" />
-      <item itemvalue="Gradle.elsa [check]" />
       <item itemvalue="Gradle.elsa [eCodeGen]" />
+      <item itemvalue="JUnit.CachedObjectsConverterTest.testConverter" />
+      <item itemvalue="JUnit.CachedObjectsConverterTest.testDocumentConverter" />
+      <item itemvalue="JUnit.CachedObjectsConverterTest" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.CachedObjectsConverterTest" />
+        <item itemvalue="JUnit.CachedObjectsConverterTest.testDocumentConverter" />
+        <item itemvalue="JUnit.CachedObjectsConverterTest.testConverter" />
         <item itemvalue="Gradle.elsa [eCodeGen]" />
         <item itemvalue="Gradle.elsa [updateLocalGradlePlugins]" />
-        <item itemvalue="Gradle.elsa [test]" />
-        <item itemvalue="Gradle.elsa [check]" />
-        <item itemvalue="JUnit.All in elsa.platform.common-core.test" />
       </list>
     </recent_temporary>
   </component>
@@ -454,7 +462,14 @@
       <option name="project" value="LOCAL" />
       <updated>1644345987014</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="infrastructure">
+      <created>1644777311536</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1644777311536</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -473,7 +488,8 @@
     <MESSAGE value="init" />
     <MESSAGE value="meta" />
     <MESSAGE value="infrastructure" />
-    <option name="LAST_COMMIT_MESSAGE" value="infrastructure" />
+    <MESSAGE value="cached objects" />
+    <option name="LAST_COMMIT_MESSAGE" value="cached objects" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -484,19 +500,9 @@
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/codegen/common/CodeGeneratorUtils.java</url>
-          <line>137</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/gradle-plugins/elsa/src/main/java/com/gridnine/elsa/gradle/parser/common/CommonParserUtils.java</url>
-          <line>108</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/platform/common-core/src/test/java/com/gridnine/elsa/common/core/test/boot/ReflectionFactoryTest.java</url>
-          <line>22</line>
-          <option name="timeStamp" value="12" />
+          <url>file://$PROJECT_DIR$/platform/common-core/src/main/java/com/gridnine/elsa/common/core/serialization/CachedObjectConverter.java</url>
+          <line>65</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

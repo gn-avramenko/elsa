@@ -6,6 +6,7 @@
 package com.gridnine.elsa.gradle.codegen.common;
 
 import com.gridnine.elsa.common.meta.common.*;
+import com.gridnine.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class CodeGeneratorUtils {
                 return currentFile;
             }
         }
+        currentFile.getParentFile().mkdirs();
         Files.writeString(currentFile.toPath(), content);
         return currentFile;
     }
@@ -221,6 +223,34 @@ public class CodeGeneratorUtils {
                 String valueClassName = getPropertyType(md.getValueType(), md.getValueClassName(), false, gen, packageName);
                 gen.printLine("private final Map<%s,%s> %s = new HashMap<>();".formatted(keyClassName, valueClassName, md.getId()));
             }
+            for (StandardPropertyDescription pd : ed.getProperties().values()) {
+                gen.blankLine();
+                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen, packageName);
+                gen.wrapWithBlock("public %s get%s()".formatted(className, BuildTextUtils.capitalize(pd.getId())), () ->{
+                    gen.printLine("return %s;".formatted(pd.getId()));
+                });
+                gen.blankLine();
+                gen.wrapWithBlock("public void set%s(%s value)".formatted(BuildTextUtils.capitalize(pd.getId()),className), () ->{
+                    gen.printLine("this.%s = value;".formatted(pd.getId()));
+                });
+            }
+            for (StandardCollectionDescription cd : ed.getCollections().values()) {
+                gen.blankLine();
+                gen.addImport("java.util.*");
+                String className = getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen, packageName);
+                gen.wrapWithBlock("public %s<%s> get%s()".formatted(cd.isUnique()? "Set" : "List", className, BuildTextUtils.capitalize(cd.getId())), () ->{
+                    gen.printLine("return %s;".formatted(cd.getId()));
+                });
+            }
+            for (StandardMapDescription md : ed.getMaps().values()) {
+                gen.blankLine();
+                gen.addImport("java.util.*");
+                String keyClassName = getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen, packageName);
+                String valueClassName = getPropertyType(md.getValueType(), md.getValueClassName(), false, gen, packageName);
+                gen.wrapWithBlock("public Map<%s,%s> get%s()".formatted(keyClassName, valueClassName, BuildTextUtils.capitalize(md.getId())), () ->{
+                    gen.printLine("return %s;".formatted(md.getId()));
+                });
+            }
             if (!ed.getProperties().isEmpty()) {
                 gen.blankLine();
                 gen.printLine("@Override");
@@ -290,7 +320,7 @@ public class CodeGeneratorUtils {
         generatedFiles.add(file);
     }
 
-    private static String getPropertyType(StandardValueType type, String className, boolean nullable, JavaCodeGenerator gen, String packageName) {
+    public static String getPropertyType(StandardValueType type, String className, boolean nullable, JavaCodeGenerator gen, String packageName) {
         return switch (type) {
             case STRING, CLASS -> "String";
             case LOCAL_DATE -> {
@@ -316,8 +346,8 @@ public class CodeGeneratorUtils {
                 if (!packageName.equals(pk)) {
                     gen.addImport(className);
                 }
-                gen.addImport("com.gridnine.elsa.common.core.model.domain.ObjectReference");
-                yield "ObjectReference<%s>".formatted(CodeGeneratorUtils.getSimpleName(className));
+                gen.addImport("com.gridnine.elsa.common.core.model.domain.EntityReference");
+                yield "EntityReference<%s>".formatted(CodeGeneratorUtils.getSimpleName(className));
             }
             case LONG -> nullable ? "Long" : "long";
             case INT -> nullable ? "Integer" : "int";

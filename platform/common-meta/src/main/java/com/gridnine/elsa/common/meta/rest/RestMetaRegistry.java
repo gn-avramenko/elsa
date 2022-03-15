@@ -22,8 +22,8 @@ public class RestMetaRegistry {
     private final Map<String, RestGroupDescription> groups = new LinkedHashMap<>();
     private final Map<String, RestOperationDescription> operations = new LinkedHashMap<>();
 
-    @Autowired
-    public RestMetaRegistry(List<RestMetaRegistryConfigurator> configurators) {
+    @Autowired(required = false)
+    public void setConfigurators(List<RestMetaRegistryConfigurator> configurators){
         configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 

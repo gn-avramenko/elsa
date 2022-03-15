@@ -23,11 +23,11 @@ apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
 configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
     codegen {
-        domain("src/test/codegen/elsa-core-test-domain.xml",
-            "src/test/java-gen",
+        domain("src/testFixtures/codegen/elsa-core-test-domain.xml",
+            "src/testFixtures/java-gen",
             "com.gridnine.elsa.common.core.test.ElsaCommonCoreTestDomainMetaRegistryConfigurator")
-        rest("src/test/codegen/elsa-core-test-rest.xml",
-            "src/test/java-gen",
+        rest("src/testFixtures/codegen/elsa-core-test-rest.xml",
+            "src/testFixtures/java-gen",
             "com.gridnine.elsa.common.core.test.ElsaCommonCoreTestRestMetaRegistryConfigurator")
         custom("src/main/codegen/elsa-core-custom.xml",
             "src/main/java-gen",
@@ -37,9 +37,11 @@ configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
 
 dependencies{
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.10.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation(project(":platform:common-meta"))
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
+    testFixturesImplementation(project(":platform:common-meta"))
 }
 //val jar: Jar by tasks
 //val bootJar: org.springframework.boot.gradle.tasks.bundling.BootJar by tasks
@@ -53,8 +55,9 @@ dependencies{
 sourceSets.main{
     java.srcDirs("src/main/java","src/main/java-gen")
 }
-sourceSets.test{
-    java.srcDirs("src/test/java","src/test/java-gen")
+
+sourceSets.testFixtures{
+    java.srcDirs("src/testFixtures/java-gen")
 }
 
 tasks.test {

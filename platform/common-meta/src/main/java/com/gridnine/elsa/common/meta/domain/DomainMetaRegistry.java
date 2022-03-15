@@ -22,8 +22,8 @@ public class DomainMetaRegistry {
     private final Map<String,SearchableProjectionDescription> searchableProjections = new LinkedHashMap<>();
     private final Map<String,AssetDescription> assets = new LinkedHashMap<>();
 
-    @Autowired
-    public DomainMetaRegistry(List<DomainMetaRegistryConfigurator> configurators) {
+    @Autowired(required = false)
+    public void setConfigurators(List<DomainMetaRegistryConfigurator> configurators){
         configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 

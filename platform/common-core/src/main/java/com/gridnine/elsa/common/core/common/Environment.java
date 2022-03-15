@@ -5,11 +5,13 @@
 
 package com.gridnine.elsa.common.core.common;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 
 @Component
+@Configuration(value = "elsaEnvironment")
 public class Environment {
 
     private boolean test;

@@ -14,8 +14,8 @@ import java.util.Map;
 public class L10nMetaRegistry {
     private final Map<String, L10nMessagesBundleDescription> bundles= new LinkedHashMap<>();
 
-    @Autowired
-    public L10nMetaRegistry(List<L10nMetaRegistryConfigurator> configurators) {
+    @Autowired(required = false)
+    public void setConfigurators(List<L10nMetaRegistryConfigurator> configurators){
         configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 

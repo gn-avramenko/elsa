@@ -18,12 +18,12 @@ import java.util.*;
 
 public class JavaCustomCodeGenerator implements CodeGenerator<JavaCustomCodeGenRecord> {
     @Override
-    public void generate(List<JavaCustomCodeGenRecord> records, File destDir, Set<File> generatedFiles) throws Exception{
+    public void generate(List<JavaCustomCodeGenRecord> records, File destDir, Set<File> generatedFiles, Map<Object,Object> context) throws Exception{
         var configurators = new LinkedHashMap<String, List<File>>();
         records.forEach(it -> configurators.computeIfAbsent(it.getRegistryConfigurator(), (key) -> new ArrayList<>()).add(it.getSource()));
         var parser = new CustomMetaRegistryParser();
         configurators.forEach((configurator, files) -> {
-            var metaRegistry = new CustomMetaRegistry(Collections.emptyList());
+            var metaRegistry = new CustomMetaRegistry();
             parser.updateMetaRegistry(metaRegistry, files);
             BuildExceptionUtils.wrapException(() -> JavaCustomConfiguratorCodeGenerator.generate(metaRegistry, configurator, destDir, generatedFiles));
         });

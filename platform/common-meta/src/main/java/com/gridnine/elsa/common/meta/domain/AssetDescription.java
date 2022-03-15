@@ -15,11 +15,31 @@ public class AssetDescription extends BaseSearchableDescription {
 
     private String localizableCaptionExpression;
 
+    private boolean isAbstract;
+
+    private String extendsId;
+
     public AssetDescription() {
     }
 
     public AssetDescription(String id) {
         super(id);
+    }
+
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
+    public void setAbstract(boolean anAbstract) {
+        isAbstract = anAbstract;
+    }
+
+    public String getExtendsId() {
+        return extendsId;
+    }
+
+    public void setExtendsId(String extendsId) {
+        this.extendsId = extendsId;
     }
 
     public boolean isCacheResolve() {

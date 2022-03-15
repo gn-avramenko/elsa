@@ -9,7 +9,7 @@ import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 
 public abstract class BaseSearchableProjection<D extends BaseDocument> extends BaseIntrospectableObject {
     private int navigationKey;
-    private ObjectReference<D> document;
+    private EntityReference<D> document;
 
     public static class Fields {
         public static final String navigationKey = "navigationKey";
@@ -24,11 +24,11 @@ public abstract class BaseSearchableProjection<D extends BaseDocument> extends B
         this.navigationKey = navigationKey;
     }
 
-    public ObjectReference<D> getDocument() {
+    public EntityReference<D> getDocument() {
         return document;
     }
 
-    public void setDocument(ObjectReference<D> document) {
+    public void setDocument(EntityReference<D> document) {
         this.document = document;
     }
 
@@ -51,7 +51,7 @@ public abstract class BaseSearchableProjection<D extends BaseDocument> extends B
             return;
         }
         if(Fields.document.equals(propertyName)){
-            document = (ObjectReference<D>) value;
+            document = (EntityReference<D>) value;
             return;
         }
         super.setValue(propertyName, value);

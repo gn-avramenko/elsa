@@ -19,8 +19,8 @@ public class DataTransferMetaRegistry {
     private final Map<String, EnumDescription> enums = new LinkedHashMap<>();
     private final Map<String, EntityDescription> entities = new LinkedHashMap<>();
 
-    @Autowired
-    public DataTransferMetaRegistry(List<DataTransferMetaRegistryConfigurator> configurators) {
+    @Autowired(required = false)
+    public void setConfigurators(List<DataTransferMetaRegistryConfigurator> configurators) {
         configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 

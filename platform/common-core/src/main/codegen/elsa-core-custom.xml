@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <custom xmlns="http://gridnine.com/elsa/meta-custom" >
-    <entity id="com.gridnine.elsa.common.core.model.domain.ObjectReference" extends="com.gridnine.elsa.common.core.model.common.BaseIdentity">
-        <property id="type" type="CLASS"/>
-        <property id="caption" type="STRING"/>
-    </entity>
     <entity id="com.gridnine.elsa.common.core.model.common.BaseIdentity" abstract="true">
         <property id="id" type="LONG"/>
     </entity>

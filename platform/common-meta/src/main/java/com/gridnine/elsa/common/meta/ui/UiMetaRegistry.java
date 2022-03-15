@@ -6,6 +6,7 @@
 package com.gridnine.elsa.common.meta.ui;
 
 import com.gridnine.elsa.common.meta.common.EnumDescription;
+import com.gridnine.elsa.common.meta.rest.RestMetaRegistryConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashMap;
@@ -20,8 +21,8 @@ public class UiMetaRegistry {
     private final Map<String, VVEntityDescription> viewValidations = new LinkedHashMap<>();
     private final Map<String, CustomWidgetDescription> customWidgets = new LinkedHashMap<>();
 
-    @Autowired
-    public UiMetaRegistry(List<UiMetaRegistryConfigurator> configurators) {
+    @Autowired(required = false)
+    public void setConfigurators(List<UiMetaRegistryConfigurator> configurators){
         configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 

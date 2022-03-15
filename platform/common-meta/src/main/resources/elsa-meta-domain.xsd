@@ -88,6 +88,9 @@
                                                default="false"/>
                                     <attribute name="cache-caption" type="boolean"
                                                default="false"/>
+                                    <attribute name="extends" type="string"/>
+                                    <attribute name="abstract" type="boolean"
+                                               default="false"/>
                                 </extension>
                             </complexContent>
                         </complexType>

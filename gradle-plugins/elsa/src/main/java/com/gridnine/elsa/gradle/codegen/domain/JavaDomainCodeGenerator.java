@@ -17,15 +17,16 @@ import java.util.*;
 
 public class JavaDomainCodeGenerator implements CodeGenerator<JavaDomainCodeGenRecord> {
     @Override
-    public void generate(List<JavaDomainCodeGenRecord> records, File destDir, Set<File> generatedFiles) throws Exception{
+    public void generate(List<JavaDomainCodeGenRecord> records, File destDir, Set<File> generatedFiles, Map<Object,Object> context) throws Exception{
         var configurators = new LinkedHashMap<String, List<File>>();
         records.forEach(it -> configurators.computeIfAbsent(it.getRegistryConfigurator(), (key) -> new ArrayList<>()).add(it.getSource()));
         var parser = new DomainMetaRegistryParser();
         configurators.forEach((configurator, files) -> {
-            var metaRegistry = new DomainMetaRegistry(Collections.emptyList());
+            var metaRegistry = new DomainMetaRegistry();
             parser.updateMetaRegistry(metaRegistry, files);
             BuildExceptionUtils.wrapException(() ->JavaDomainConfiguratorCodeGenerator.generate(metaRegistry, configurator, destDir, generatedFiles));
             BuildExceptionUtils.wrapException(() ->JavaDomainEntitiesCodeGenerator.generate(metaRegistry, destDir, generatedFiles));
+            BuildExceptionUtils.wrapException(() ->JavaDomainCachedObjectsCodeGenerator.generate(metaRegistry, (DomainMetaRegistry) context.get("domain-meta-registry"), destDir, generatedFiles));
         });
     }
 }

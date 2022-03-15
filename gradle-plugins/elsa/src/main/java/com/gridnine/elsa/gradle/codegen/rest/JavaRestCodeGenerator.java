@@ -15,12 +15,12 @@ import java.util.*;
 
 public class JavaRestCodeGenerator implements CodeGenerator<JavaRestCodeGenRecord> {
     @Override
-    public void generate(List<JavaRestCodeGenRecord> records, File destDir, Set<File> generatedFiles) throws Exception{
+    public void generate(List<JavaRestCodeGenRecord> records, File destDir, Set<File> generatedFiles, Map<Object,Object> context) throws Exception{
         var configurators = new LinkedHashMap<String, List<File>>();
         records.forEach(it -> configurators.computeIfAbsent(it.getRegistryConfigurator(), (key) -> new ArrayList<>()).add(it.getSource()));
         var parser = new RestMetaRegistryParser();
         configurators.forEach((configurator, files) -> {
-            var metaRegistry = new RestMetaRegistry(Collections.emptyList());
+            var metaRegistry = new RestMetaRegistry();
             parser.updateMetaRegistry(metaRegistry, files);
             BuildExceptionUtils.wrapException(() -> JavaRestConfiguratorCodeGenerator.generate(metaRegistry, configurator, destDir, generatedFiles));
             BuildExceptionUtils.wrapException(() -> JavaRestEntitiesCodeGenerator.generate(metaRegistry,  destDir, generatedFiles));

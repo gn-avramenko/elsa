@@ -49,6 +49,8 @@ public class DomainMetaRegistryParser {
                         AssetDescription::new);
                 proj.setCacheCaption("true".equals(child.getAttribute("cache-caption")));
                 proj.setCacheResolve("true".equals(child.getAttribute("cache-resolve")));
+                proj.setAbstract("true".equals(child.getAttribute("abstract")));
+                proj.setExtendsId(child.getAttribute("extends"));
                 var ce = child.getChildren("caption-expression");
                 proj.setCaptionExpression(ce.isEmpty() ? null : ce.get(0).getValue());
                 var lce = child.getChildren("localizable-caption-expression");

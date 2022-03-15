@@ -19,6 +19,10 @@ public class Xeption extends Error{
         this.endUserMessage = endUserMessage;
     }
 
+    public static Xeption forDeveloper(String message){
+        return forDeveloper(message, null);
+    }
+
     public static Xeption forDeveloper(String message, Exception cause){
         return new Xeption(message, cause, XeptionType.FOR_DEVELOPER, message, null, null);
     }

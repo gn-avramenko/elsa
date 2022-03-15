@@ -6,6 +6,7 @@
 package com.gridnine.elsa.gradle.utils;
 
 import java.util.List;
+import java.util.Locale;
 
 public class BuildTextUtils {
 
@@ -22,5 +23,9 @@ public class BuildTextUtils {
             buf.append(it);
         });
         return buf.toString();
+    }
+
+    public static String capitalize(String value){
+        return value.substring(0, 1).toUpperCase(Locale.ROOT)+value.substring(1);
     }
 }

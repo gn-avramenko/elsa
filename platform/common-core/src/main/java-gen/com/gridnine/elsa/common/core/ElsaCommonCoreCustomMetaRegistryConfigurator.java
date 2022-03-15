@@ -18,21 +18,6 @@ public class ElsaCommonCoreCustomMetaRegistryConfigurator implements CustomMetaR
 	@Override
 	public void updateMetaRegistry(CustomMetaRegistry registry){
 		{
-			var entityDescription = new EntityDescription("com.gridnine.elsa.common.core.model.domain.ObjectReference");
-			registry.getEntities().put(entityDescription.getId(), entityDescription);
-			entityDescription.setExtendsId("com.gridnine.elsa.common.core.model.common.BaseIdentity");
-			{
-				var propertyDescription = new StandardPropertyDescription("type");
-				propertyDescription.setType(StandardValueType.CLASS);
-				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
-			}
-			{
-				var propertyDescription = new StandardPropertyDescription("caption");
-				propertyDescription.setType(StandardValueType.STRING);
-				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
-			}
-		}
-		{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.core.model.common.BaseIdentity");
 			registry.getEntities().put(entityDescription.getId(), entityDescription);
 			entityDescription.setAbstract(true);

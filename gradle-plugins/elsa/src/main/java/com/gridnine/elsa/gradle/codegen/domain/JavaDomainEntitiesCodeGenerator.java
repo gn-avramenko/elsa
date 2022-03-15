@@ -41,7 +41,8 @@ public class JavaDomainEntitiesCodeGenerator {
         }
         for(AssetDescription ad: registry.getAssets().values()){
             var ed = createSearchableDescription(ad);
-            ed.setExtendsId("com.gridnine.elsa.common.core.model.domain.BaseAsset");
+            ed.setExtendsId(ad.getExtendsId() != null? ad.getExtendsId(): "com.gridnine.elsa.common.core.model.domain.BaseAsset");
+            ed.setAbstract(ad.isAbstract());
             ed.setToStringExpression(ad.getCaptionExpression());
             ed.setToLocalizableStringExpression(ad.getLocalizableCaptionExpression());
             CodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
@@ -54,32 +55,15 @@ public class JavaDomainEntitiesCodeGenerator {
         for(DatabasePropertyDescription prop: spd.getProperties().values()){
             var sp = new StandardPropertyDescription();
             sp.setId(prop.getId());
-            sp.setType(switch (prop.getType()){
-                case STRING,TEXT -> StandardValueType.STRING;
-                case LOCAL_DATE -> StandardValueType.LOCAL_DATE;
-                case LOCAL_DATE_TIME -> StandardValueType.LOCAL_DATE_TIME;
-                case ENUM -> StandardValueType.ENUM;
-                case BOOLEAN -> StandardValueType.BOOLEAN;
-                case ENTITY_REFERENCE -> StandardValueType.ENTITY_REFERENCE;
-                case LONG -> StandardValueType.LONG;
-                case INT -> StandardValueType.INT;
-                case BIG_DECIMAL -> StandardValueType.BIG_DECIMAL;
-            });
-            sp.setNullable(switch (prop.getType()){
-                case BOOLEAN, LONG, INT -> true;
-                default -> false;
-            });
+            sp.setType(getStandardValueType(prop.getType()));
+            sp.setNullable(isNullable(prop.getType()));
             sp.setClassName(prop.getClassName());
             ed.getProperties().put(prop.getId(), sp);
         }
         for(DatabaseCollectionDescription coll: spd.getCollections().values()){
             var sc = new StandardCollectionDescription();
             sc.setId(coll.getId());
-            sc.setElementType(switch (coll.getElementType()){
-                case STRING -> StandardValueType.STRING;
-                case ENUM -> StandardValueType.ENUM;
-                case ENTITY_REFERENCE -> StandardValueType.ENTITY_REFERENCE;
-            });
+            sc.setElementType(getStandardValueType(coll.getElementType()));
             sc.setUnique(coll.isUnique());
             sc.setElementClassName(coll.getElementClassName());
             ed.getCollections().put(coll.getId(), sc);
@@ -87,4 +71,32 @@ public class JavaDomainEntitiesCodeGenerator {
         return ed;
     }
 
+    static boolean isNullable(DatabasePropertyType type){
+        return switch (type){
+            case BOOLEAN, LONG, INT -> true;
+            default -> false;
+        };
+    }
+
+    static StandardValueType getStandardValueType(DatabasePropertyType type){
+        return switch (type){
+            case STRING,TEXT -> StandardValueType.STRING;
+            case LOCAL_DATE -> StandardValueType.LOCAL_DATE;
+            case LOCAL_DATE_TIME -> StandardValueType.LOCAL_DATE_TIME;
+            case ENUM -> StandardValueType.ENUM;
+            case BOOLEAN -> StandardValueType.BOOLEAN;
+            case ENTITY_REFERENCE -> StandardValueType.ENTITY_REFERENCE;
+            case LONG -> StandardValueType.LONG;
+            case INT -> StandardValueType.INT;
+            case BIG_DECIMAL -> StandardValueType.BIG_DECIMAL;
+        };
+    }
+
+    static  StandardValueType getStandardValueType(DatabaseCollectionType type){
+        return switch (type){
+            case STRING -> StandardValueType.STRING;
+            case ENUM -> StandardValueType.ENUM;
+            case ENTITY_REFERENCE -> StandardValueType.ENTITY_REFERENCE;
+        };
+    }
 }
