@@ -27,6 +27,7 @@ public class JavaDomainCodeGenerator implements CodeGenerator<JavaDomainCodeGenR
             BuildExceptionUtils.wrapException(() ->JavaDomainConfiguratorCodeGenerator.generate(metaRegistry, configurator, destDir, generatedFiles));
             BuildExceptionUtils.wrapException(() ->JavaDomainEntitiesCodeGenerator.generate(metaRegistry, destDir, generatedFiles));
             BuildExceptionUtils.wrapException(() ->JavaDomainCachedObjectsCodeGenerator.generate(metaRegistry, (DomainMetaRegistry) context.get("domain-meta-registry"), destDir, generatedFiles));
+            BuildExceptionUtils.wrapException(() ->JavaDomainFieldsClassCodeGenerator.generate(metaRegistry, destDir, generatedFiles));
         });
     }
 }

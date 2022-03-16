@@ -36,6 +36,7 @@ configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
 }
 
 dependencies{
+    implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("com.fasterxml.jackson.core:jackson-core:2.10.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
