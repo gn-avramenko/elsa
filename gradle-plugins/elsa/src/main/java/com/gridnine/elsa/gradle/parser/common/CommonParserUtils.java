@@ -13,6 +13,8 @@ import com.gridnine.elsa.gradle.utils.BuildXmlUtils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -54,7 +56,7 @@ public final class CommonParserUtils {
         var locale = new Locale(localeStr);
         var content = Files.readAllBytes(file.toPath());
         var props = new Properties();
-        props.load(new ByteArrayInputStream(content));
+        props.load(new InputStreamReader(new ByteArrayInputStream(content), StandardCharsets.UTF_8));
         props.forEach((key, value) -> localizations.computeIfAbsent((String) key,
                 k  -> new LinkedHashMap<>()).put(locale, (String) value));
     }
@@ -64,13 +66,15 @@ public final class CommonParserUtils {
         updateLocalizations(description, localizations, id);
     }
 
-
-    private static<T extends BaseModelElementDescription> void  updateLocalizations(T description , Map<String, Map<Locale, String>>  localizations, String id) {
+    public static<T extends BaseModelElementDescription> void  updateLocalizations(Map<Locale,String> displayNames , Map<String, Map<Locale, String>>  localizations, String id) {
         var locs = localizations.get(id);
         if(locs == null){
             return;
         }
-        locs.forEach((locale, displayName) -> description.getDisplayNames().put(locale, displayName));
+        displayNames.putAll(locs);
+    }
+    private static<T extends BaseModelElementDescription> void  updateLocalizations(T description , Map<String, Map<Locale, String>>  localizations, String id) {
+        updateLocalizations(description.getDisplayNames(), localizations, id);
     }
 
     public static void fillEntityDescription(BuildXmlNode elm, EntityDescription description) {

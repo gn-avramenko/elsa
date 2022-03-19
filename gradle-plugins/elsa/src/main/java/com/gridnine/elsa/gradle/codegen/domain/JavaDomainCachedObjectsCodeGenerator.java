@@ -92,15 +92,15 @@ public class JavaDomainCachedObjectsCodeGenerator {
             gen.printLine("private boolean allowChanges = false;");
             for (StandardCollectionDescription cd : allCollections) {
                 gen.blankLine();
-                String className = CodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen, packageName);
+                String className = CodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen);
                 gen.addImport(cd.isUnique() ? "com.gridnine.elsa.common.core.model.common.ReadOnlyHashSet" : "com.gridnine.elsa.common.core.model.common.ReadOnlyArrayList");
                 gen.printLine("private final %s<%s> %s = new %s<>();".formatted(cd.isUnique() ? "Set" : "List", className, cd.getId(), cd.isUnique() ? "ReadOnlyHashSet" : "ReadOnlyArrayList"));
             }
             for (StandardMapDescription md : allMaps) {
                 gen.blankLine();
                 gen.addImport("com.gridnine.elsa.common.core.model.common.ReadOnlyHashMap");
-                String keyClassName = CodeGeneratorUtils.getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen, packageName);
-                String valueClassName = CodeGeneratorUtils.getPropertyType(md.getValueType(), md.getValueClassName(), false, gen, packageName);
+                String keyClassName = CodeGeneratorUtils.getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen);
+                String valueClassName = CodeGeneratorUtils.getPropertyType(md.getValueType(), md.getValueClassName(), false, gen);
                 gen.printLine("private final Map<%s,%s> %s = new ReadOnlyHashMap<>();".formatted(keyClassName, valueClassName, md.getId()));
             }
             gen.blankLine();
@@ -110,7 +110,7 @@ public class JavaDomainCachedObjectsCodeGenerator {
             });
             for (StandardPropertyDescription pd : allProperties) {
                 gen.blankLine();
-                String className = CodeGeneratorUtils.getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen, packageName);
+                String className = CodeGeneratorUtils.getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen);
                 gen.printLine("@Override");
                 gen.wrapWithBlock("public void set%s(%s value)".formatted(BuildTextUtils.capitalize(pd.getId()), className), () -> {
                     gen.wrapWithBlock("if(!allowChanges)", () -> {
@@ -122,7 +122,7 @@ public class JavaDomainCachedObjectsCodeGenerator {
             for (StandardCollectionDescription cd : allCollections) {
                 gen.blankLine();
                 gen.addImport("java.util.*");
-                String className = CodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen, packageName);
+                String className = CodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen);
                 gen.printLine("@Override");
                 gen.wrapWithBlock("public %s<%s> get%s()".formatted(cd.isUnique() ? "Set" : "List", className, BuildTextUtils.capitalize(cd.getId())), () -> {
                     gen.printLine("return %s;".formatted(cd.getId()));
@@ -131,8 +131,8 @@ public class JavaDomainCachedObjectsCodeGenerator {
             for (StandardMapDescription md : allMaps) {
                 gen.blankLine();
                 gen.addImport("java.util.*");
-                String keyClassName = CodeGeneratorUtils.getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen, packageName);
-                String valueClassName = CodeGeneratorUtils.getPropertyType(md.getValueType(), md.getValueClassName(), false, gen, packageName);
+                String keyClassName = CodeGeneratorUtils.getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen);
+                String valueClassName = CodeGeneratorUtils.getPropertyType(md.getValueType(), md.getValueClassName(), false, gen);
                 gen.wrapWithBlock("public Map<%s,%s> get%s()".formatted(keyClassName, valueClassName, BuildTextUtils.capitalize(md.getId())), () -> {
                     gen.printLine("return %s;".formatted(md.getId()));
                 });
@@ -210,7 +210,7 @@ public class JavaDomainCachedObjectsCodeGenerator {
             gen.printLine("private boolean allowChanges = false;");
             for (DatabaseCollectionDescription cd : allCollections) {
                 gen.blankLine();
-                String className = CodeGeneratorUtils.getPropertyType(JavaDomainEntitiesCodeGenerator.getStandardValueType(cd.getElementType()), cd.getElementClassName(), false, gen, packageName);
+                String className = CodeGeneratorUtils.getPropertyType(JavaDomainEntitiesCodeGenerator.getStandardValueType(cd.getElementType()), cd.getElementClassName(), false, gen);
                 gen.addImport(cd.isUnique() ? "com.gridnine.elsa.common.core.model.common.ReadOnlyHashSet" : "com.gridnine.elsa.common.core.model.common.ReadOnlyArrayList");
                 gen.printLine("private final %s<%s> %s = new %s<>();".formatted(cd.isUnique() ? "Set" : "List", className, cd.getId(), cd.isUnique() ? "ReadOnlyHashSet" : "ReadOnlyArrayList"));
             }
@@ -228,7 +228,7 @@ public class JavaDomainCachedObjectsCodeGenerator {
             for (DatabasePropertyDescription pd : allProperties) {
                 gen.blankLine();
                 String className = CodeGeneratorUtils.getPropertyType(JavaDomainEntitiesCodeGenerator.getStandardValueType(pd.getType()),
-                        pd.getClassName(), !"id".equals(pd.getId()) && JavaDomainEntitiesCodeGenerator.isNullable(pd.getType()), gen, packageName);
+                        pd.getClassName(), !"id".equals(pd.getId()) && JavaDomainEntitiesCodeGenerator.isNullable(pd.getType()), gen);
                 gen.printLine("@Override");
                 gen.wrapWithBlock("public void set%s(%s value)".formatted(BuildTextUtils.capitalize(pd.getId()), className), () -> {
                     gen.wrapWithBlock("if(!allowChanges)", () -> {
@@ -241,7 +241,7 @@ public class JavaDomainCachedObjectsCodeGenerator {
                 gen.blankLine();
                 gen.addImport("java.util.*");
                 String className = CodeGeneratorUtils.getPropertyType(JavaDomainEntitiesCodeGenerator.getStandardValueType(cd.getElementType()),
-                        cd.getElementClassName(), false, gen, packageName);
+                        cd.getElementClassName(), false, gen);
                 gen.printLine("@Override");
                 gen.wrapWithBlock("public %s<%s> get%s()".formatted(cd.isUnique() ? "Set" : "List", className, BuildTextUtils.capitalize(cd.getId())), () -> {
                     gen.printLine("return %s;".formatted(cd.getId()));

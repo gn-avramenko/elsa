@@ -8,6 +8,7 @@ package com.gridnine.elsa.gradle.plugin;
 import com.gridnine.elsa.gradle.codegen.common.BaseCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.custom.JavaCustomCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGenRecord;
+import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.rest.JavaRestCodeGenRecord;
 
 import java.io.File;
@@ -57,4 +58,14 @@ public class ElsaJavaCodeGenExtension {
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }
+
+    public void l10n(String sourceFileName, String destDir, String configurator, String factory){
+        var record = new JavaL10nCodeGenRecord();
+        record.setRegistryConfigurator(configurator);
+        record.setSource(new File(projectDir, sourceFileName));
+        record.setFactory(factory);
+        record.setDestinationDir(new File(projectDir, destDir));
+        codegenRecords.add(record);
+    }
+
 }

@@ -207,25 +207,25 @@ public class CodeGeneratorUtils {
         gen.wrapWithBlock(cnsb.toString(), () -> {
             for (StandardPropertyDescription pd : ed.getProperties().values()) {
                 gen.blankLine();
-                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen, packageName);
+                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen);
                 gen.printLine("private %s %s;".formatted(className, pd.getId()));
             }
             for (StandardCollectionDescription cd : ed.getCollections().values()) {
                 gen.blankLine();
-                String className = getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen, packageName);
+                String className = getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen);
                 gen.addImport("java.util.*");
                 gen.printLine("private final %s<%s> %s = new %s<>();".formatted(cd.isUnique() ? "Set" : "List", className, cd.getId(), cd.isUnique() ? "HashSet" : "ArrayList"));
             }
             for (StandardMapDescription md : ed.getMaps().values()) {
                 gen.blankLine();
                 gen.addImport("java.util.*");
-                String keyClassName = getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen, packageName);
-                String valueClassName = getPropertyType(md.getValueType(), md.getValueClassName(), false, gen, packageName);
+                String keyClassName = getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen);
+                String valueClassName = getPropertyType(md.getValueType(), md.getValueClassName(), false, gen);
                 gen.printLine("private final Map<%s,%s> %s = new HashMap<>();".formatted(keyClassName, valueClassName, md.getId()));
             }
             for (StandardPropertyDescription pd : ed.getProperties().values()) {
                 gen.blankLine();
-                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen, packageName);
+                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen);
                 gen.wrapWithBlock("public %s get%s()".formatted(className, BuildTextUtils.capitalize(pd.getId())), () ->{
                     gen.printLine("return %s;".formatted(pd.getId()));
                 });
@@ -237,7 +237,7 @@ public class CodeGeneratorUtils {
             for (StandardCollectionDescription cd : ed.getCollections().values()) {
                 gen.blankLine();
                 gen.addImport("java.util.*");
-                String className = getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen, packageName);
+                String className = getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen);
                 gen.wrapWithBlock("public %s<%s> get%s()".formatted(cd.isUnique()? "Set" : "List", className, BuildTextUtils.capitalize(cd.getId())), () ->{
                     gen.printLine("return %s;".formatted(cd.getId()));
                 });
@@ -245,8 +245,8 @@ public class CodeGeneratorUtils {
             for (StandardMapDescription md : ed.getMaps().values()) {
                 gen.blankLine();
                 gen.addImport("java.util.*");
-                String keyClassName = getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen, packageName);
-                String valueClassName = getPropertyType(md.getValueType(), md.getValueClassName(), false, gen, packageName);
+                String keyClassName = getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen);
+                String valueClassName = getPropertyType(md.getValueType(), md.getValueClassName(), false, gen);
                 gen.wrapWithBlock("public Map<%s,%s> get%s()".formatted(keyClassName, valueClassName, BuildTextUtils.capitalize(md.getId())), () ->{
                     gen.printLine("return %s;".formatted(md.getId()));
                 });
@@ -271,7 +271,7 @@ public class CodeGeneratorUtils {
                             if(pd.getType() == StandardValueType.ENTITY_REFERENCE){
                                 gen.printLine("//noinspection unchecked");
                             }
-                            gen.printLine("this.%s = (%s) value;".formatted(pd.getId(), getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen, packageName)));
+                            gen.printLine("this.%s = (%s) value;".formatted(pd.getId(), getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen)));
                             gen.printLine("return;");
                         });
                     }
@@ -320,7 +320,7 @@ public class CodeGeneratorUtils {
         generatedFiles.add(file);
     }
 
-    public static String getPropertyType(StandardValueType type, String className, boolean nullable, JavaCodeGenerator gen, String packageName) {
+    public static String getPropertyType(StandardValueType type, String className, boolean nullable, JavaCodeGenerator gen) {
         return switch (type) {
             case STRING, CLASS -> "String";
             case LOCAL_DATE -> {
@@ -335,7 +335,7 @@ public class CodeGeneratorUtils {
             case BYTE_ARRAY -> "byte[]";
             case ENUM, ENTITY -> {
                 var pk = getPackage(className);
-                if (!packageName.equals(pk)) {
+                if (!gen.getPackageName().equals(pk)) {
                     gen.addImport(className);
                 }
                 yield getSimpleName(className);
@@ -343,7 +343,7 @@ public class CodeGeneratorUtils {
 
             case ENTITY_REFERENCE -> {
                 var pk = getPackage(className);
-                if (!packageName.equals(pk)) {
+                if (!gen.getPackageName().equals(pk)) {
                     gen.addImport(className);
                 }
                 gen.addImport("com.gridnine.elsa.common.core.model.domain.EntityReference");

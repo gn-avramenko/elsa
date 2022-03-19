@@ -6,6 +6,7 @@
 package com.gridnine.elsa.common.core.common;
 
 import com.gridnine.elsa.common.core.ElsaCommonCoreCustomMetaRegistryConfigurator;
+import com.gridnine.elsa.common.core.l10n.Localizer;
 import com.gridnine.elsa.common.core.lock.LockManager;
 import com.gridnine.elsa.common.core.lock.LockTemplate;
 import com.gridnine.elsa.common.core.lock.standard.StandardLockManager;
@@ -157,4 +158,7 @@ public class ElsaCoreTestConfiguration {
     public CachedObjectConverter cachedObjectConverter(){
         return new CachedObjectConverter();
     }
+
+    @Bean
+    public Localizer localizer(){return new Localizer();}
 }

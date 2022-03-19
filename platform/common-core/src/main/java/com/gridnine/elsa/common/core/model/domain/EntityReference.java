@@ -74,4 +74,9 @@ public class EntityReference<T extends BaseIdentity>{
     public int hashCode() {
         return Objects.hash(id, type);
     }
+
+    @Override
+    public String toString() {
+        return "EntityReference{}";
+    }
 }

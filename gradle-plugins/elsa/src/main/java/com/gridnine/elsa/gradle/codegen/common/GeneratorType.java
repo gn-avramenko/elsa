@@ -8,5 +8,6 @@ package com.gridnine.elsa.gradle.codegen.common;
 public enum GeneratorType {
     JAVA_DOMAIN,
     JAVA_REST,
-    JAVA_CUSTOM
+    JAVA_CUSTOM,
+    JAVA_L10N,
 }

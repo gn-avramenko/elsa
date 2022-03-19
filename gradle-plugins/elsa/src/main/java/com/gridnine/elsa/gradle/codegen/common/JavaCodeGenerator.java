@@ -47,6 +47,10 @@ public class JavaCodeGenerator {
         this.packageName = packageName;
     }
 
+    public String getPackageName(){
+        return this.packageName;
+    }
+
     public void blankLine(){
         buf.append("\n");
     }

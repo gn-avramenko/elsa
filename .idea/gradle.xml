@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/platform" />
             <option value="$PROJECT_DIR$/platform/common-core" />
             <option value="$PROJECT_DIR$/platform/common-meta" />
+            <option value="$PROJECT_DIR$/platform/server-core" />
           </set>
         </option>
       </GradleProjectSettings>

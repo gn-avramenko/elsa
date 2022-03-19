@@ -11,6 +11,7 @@ import com.gridnine.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.elsa.gradle.codegen.common.GeneratorType;
 import com.gridnine.elsa.gradle.codegen.custom.JavaCustomCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.rest.JavaRestCodeGenerator;
 import com.gridnine.elsa.gradle.parser.domain.DomainMetaRegistryParser;
 import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
@@ -65,6 +66,7 @@ public class ElsaCodeGenTask extends DefaultTask {
                 case JAVA_DOMAIN -> new JavaDomainCodeGenerator();
                 case JAVA_REST -> new JavaRestCodeGenerator();
                 case JAVA_CUSTOM -> new JavaCustomCodeGenerator();
+                case JAVA_L10N -> new JavaL10nCodeGenerator();
             };
             value.forEach((key1, value1) -> BuildExceptionUtils.wrapException(() -> codeGen.generate(value1, key1, generatedFiles, context)));
         });
