@@ -1,4 +1,5 @@
 /.gradle/
 /build/
 /temp/
+/.idea/workspace.xml
 /config/config.properties
