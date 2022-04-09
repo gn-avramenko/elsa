@@ -3,11 +3,8 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.elsa.common.core.common;
+package com.gridnine.elsa.common.core.utils;
 
-public interface RegistryItem<T> {
-
-    RegistryItemType<T> getType();
-
-    String getId();
+public interface RunnableWithExceptionAndArgument<A> {
+    void run(A arg) throws Exception;
 }

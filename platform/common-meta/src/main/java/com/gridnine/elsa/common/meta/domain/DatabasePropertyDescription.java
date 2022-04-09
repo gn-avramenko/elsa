@@ -14,6 +14,8 @@ public class DatabasePropertyDescription extends BaseModelElementDescription {
 
     private String className;
 
+    private boolean useInTextSearch;
+
     public DatabasePropertyDescription() {
     }
 
@@ -43,5 +45,13 @@ public class DatabasePropertyDescription extends BaseModelElementDescription {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public boolean isUseInTextSearch() {
+        return useInTextSearch;
+    }
+
+    public void setUseInTextSearch(boolean useInTextSearch) {
+        this.useInTextSearch = useInTextSearch;
     }
 }

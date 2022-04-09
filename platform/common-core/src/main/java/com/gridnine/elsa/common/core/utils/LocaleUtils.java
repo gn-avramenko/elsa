@@ -36,8 +36,8 @@ public class LocaleUtils {
         currentLocale.set(null);
     }
 
-    public static String getLocalizedName(Map<Locale, String> localizations, String defaultValue){
-        var result = localizations.get(getCurrentLocale());
+    public static String getLocalizedName(Map<Locale, String> localizations, Locale loc, String defaultValue){
+        var result = localizations.get(loc == null? getCurrentLocale(): loc);
         if(result == null){
             result = localizations.get(ruLocale);
         }

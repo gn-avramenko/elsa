@@ -118,9 +118,9 @@ public class JavaL10nCodeGenerator  implements CodeGenerator<JavaL10nCodeGenReco
                 }
                 gen.wrapWithBlock("public String %s(%s)".formatted(message.getId(), parameters), () ->{
                     if(arguments.length() > 0) {
-                        gen.printLine("return localizer.toString(\"%s\", \"%s\", %s);".formatted(bundle.getId(), message.getId(), arguments));
+                        gen.printLine("return localizer.toString(\"%s\", \"%s\", null, %s);".formatted(bundle.getId(), message.getId(), arguments));
                     } else {
-                        gen.printLine("return localizer.toString(\"%s\", \"%s\");".formatted(bundle.getId(), message.getId()));
+                        gen.printLine("return localizer.toString(\"%s\", \"%s\", null);".formatted(bundle.getId(), message.getId()));
                     }
                 });
                 gen.blankLine();

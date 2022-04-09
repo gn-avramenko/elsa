@@ -79,8 +79,13 @@ public class ElsaCommonCoreCustomMetaRegistryConfigurator implements CustomMetaR
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.core.model.domain.VersionInfo");
 			registry.getEntities().put(entityDescription.getId(), entityDescription);
 			{
+				var propertyDescription = new StandardPropertyDescription("versionNumber");
+				propertyDescription.setType(StandardValueType.INT);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
 				var propertyDescription = new StandardPropertyDescription("revision");
-				propertyDescription.setType(StandardValueType.LONG);
+				propertyDescription.setType(StandardValueType.INT);
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{

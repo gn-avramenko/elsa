@@ -92,6 +92,9 @@ public class JavaDomainConfiguratorCodeGenerator {
                 if(pd.isCacheFind()){
                     gen.printLine("propertyDescription.setCacheFind(true);");
                 }
+                if(pd.isUseInTextSearch()){
+                    gen.printLine("propertyDescription.setUseInTextSearch(true);");
+                }
                 for(Map.Entry<Locale, String> entry: pd.getDisplayNames().entrySet()){
                     gen.addImport("com.gridnine.elsa.common.core.utils.LocaleUtils");
                     gen.printLine("propertyDescription.getDisplayNames().put(LocaleUtils.getLocale(\"%s\",\"%s\"), \"%s\");".formatted(entry.getKey().getLanguage(), entry.getKey().getCountry(), entry.getValue()));
@@ -110,6 +113,9 @@ public class JavaDomainConfiguratorCodeGenerator {
                 }
                 if(cd.isUnique()){
                     gen.printLine("collectionDescription.setUnique(true);");
+                }
+                if(cd.isUseInTextSearch()){
+                    gen.printLine("collectionDescription.setUseInTextSearch(true);");
                 }
                 for(Map.Entry<Locale, String> entry: cd.getDisplayNames().entrySet()){
                     gen.addImport("com.gridnine.elsa.common.core.utils.LocaleUtils");

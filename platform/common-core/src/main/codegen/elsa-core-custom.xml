@@ -16,7 +16,8 @@
         <collection id="parameters" element-type="ENTITY" element-class-name="Object"/>
     </entity>
     <entity id="com.gridnine.elsa.common.core.model.domain.VersionInfo">
-        <property id="revision" type="LONG"/>
+        <property id="versionNumber" type="INT"/>
+        <property id="revision" type="INT"/>
         <property id="modifiedBy" type="STRING"/>
         <property id="modified" type="LOCAL_DATE_TIME"/>
         <property id="comment" type="STRING"/>

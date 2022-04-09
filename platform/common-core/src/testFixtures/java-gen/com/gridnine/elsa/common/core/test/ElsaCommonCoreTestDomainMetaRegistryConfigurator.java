@@ -156,6 +156,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				var propertyDescription = new DatabasePropertyDescription("stringProperty");
 				propertyDescription.setType(DatabasePropertyType.STRING);
 				propertyDescription.setCacheFind(true);
+				propertyDescription.setUseInTextSearch(true);
 				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "String  property");
 				projectionDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
@@ -163,6 +164,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				var propertyDescription = new DatabasePropertyDescription("enumProperty");
 				propertyDescription.setType(DatabasePropertyType.ENUM);
 				propertyDescription.setClassName("com.gridnine.elsa.common.core.test.model.domain.TestEnum");
+				propertyDescription.setUseInTextSearch(true);
 				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "Enum  property");
 				projectionDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
@@ -170,12 +172,14 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				var propertyDescription = new DatabasePropertyDescription("entityReference");
 				propertyDescription.setType(DatabasePropertyType.ENTITY_REFERENCE);
 				propertyDescription.setClassName("com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument");
+				propertyDescription.setUseInTextSearch(true);
 				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "Entity Reference");
 				projectionDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{
 				var collectionDescription = new DatabaseCollectionDescription("stringCollection");
 				collectionDescription.setElementType(DatabaseCollectionType.STRING);
+				collectionDescription.setUseInTextSearch(true);
 				collectionDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "String  collection");
 				projectionDescription.getCollections().put(collectionDescription.getId(), collectionDescription);
 			}
@@ -183,6 +187,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				var collectionDescription = new DatabaseCollectionDescription("enumCollection");
 				collectionDescription.setElementType(DatabaseCollectionType.ENUM);
 				collectionDescription.setElementClassName("com.gridnine.elsa.common.core.test.model.domain.TestEnum");
+				collectionDescription.setUseInTextSearch(true);
 				collectionDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "Enum collection");
 				projectionDescription.getCollections().put(collectionDescription.getId(), collectionDescription);
 			}
@@ -190,6 +195,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				var collectionDescription = new DatabaseCollectionDescription("entityRefCollection");
 				collectionDescription.setElementType(DatabaseCollectionType.ENTITY_REFERENCE);
 				collectionDescription.setElementClassName("com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument");
+				collectionDescription.setUseInTextSearch(true);
 				collectionDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "Entity ref collection");
 				projectionDescription.getCollections().put(collectionDescription.getId(), collectionDescription);
 			}
@@ -202,6 +208,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				var propertyDescription = new DatabasePropertyDescription("stringProperty");
 				propertyDescription.setType(DatabasePropertyType.STRING);
 				propertyDescription.setCacheFind(true);
+				propertyDescription.setUseInTextSearch(true);
 				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "String property");
 				assetDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}

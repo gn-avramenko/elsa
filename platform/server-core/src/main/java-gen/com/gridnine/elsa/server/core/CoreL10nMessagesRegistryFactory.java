@@ -16,7 +16,7 @@ public class CoreL10nMessagesRegistryFactory{
 	private Localizer localizer;
 
 	public String Found_several_records(String objectType, String propertyName, String propertyValue){
-		return localizer.toString("core", "Found_several_records", objectType, propertyName, propertyValue);
+		return localizer.toString("core", "Found_several_records", null, objectType, propertyName, propertyValue);
 	}
 
 	public L10nMessage Found_several_recordsMessage(String objectType, String propertyName, String propertyValue){
@@ -24,7 +24,7 @@ public class CoreL10nMessagesRegistryFactory{
 	}
 
 	public String Yes(){
-		return localizer.toString("core", "Yes");
+		return localizer.toString("core", "Yes", null);
 	}
 
 	public L10nMessage YesMessage(){
@@ -32,7 +32,7 @@ public class CoreL10nMessagesRegistryFactory{
 	}
 
 	public String No(){
-		return localizer.toString("core", "No");
+		return localizer.toString("core", "No", null);
 	}
 
 	public L10nMessage NoMessage(){
@@ -40,7 +40,7 @@ public class CoreL10nMessagesRegistryFactory{
 	}
 
 	public String Choose_variant(){
-		return localizer.toString("core", "Choose_variant");
+		return localizer.toString("core", "Choose_variant", null);
 	}
 
 	public L10nMessage Choose_variantMessage(){
@@ -48,7 +48,7 @@ public class CoreL10nMessagesRegistryFactory{
 	}
 
 	public String Question(){
-		return localizer.toString("core", "Question");
+		return localizer.toString("core", "Question", null);
 	}
 
 	public L10nMessage QuestionMessage(){
@@ -56,7 +56,7 @@ public class CoreL10nMessagesRegistryFactory{
 	}
 
 	public String Object_not_found(String objectId, String objectUid){
-		return localizer.toString("core", "Object_not_found", objectId, objectUid);
+		return localizer.toString("core", "Object_not_found", null, objectId, objectUid);
 	}
 
 	public L10nMessage Object_not_foundMessage(String objectId, String objectUid){

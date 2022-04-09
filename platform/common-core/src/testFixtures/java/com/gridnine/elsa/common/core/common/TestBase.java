@@ -13,13 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { ElsaCoreTestConfiguration.class })
+@ContextConfiguration(classes = { ElsaCommonCoreTestConfiguration.class })
+@TestPropertySource(properties = "")
 public abstract class TestBase {
 
     protected Logger log = LoggerFactory.getLogger(getClass());

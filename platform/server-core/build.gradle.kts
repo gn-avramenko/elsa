@@ -32,15 +32,28 @@ configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
 
 dependencies{
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("com.mchange:c3p0:0.9.5.5")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.10.3")
     implementation(project(":platform:common-meta"))
     implementation(project(":platform:common-core"))
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
+    testFixturesImplementation(testFixtures(project(":platform:common-core")))
+    testFixturesImplementation("org.hsqldb:hsqldb:2.6.1")
+    testFixturesImplementation("com.mchange:c3p0:0.9.5.5")
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-jdbc")
 }
 
 
 sourceSets.main{
     java.srcDirs("src/main/java","src/main/java-gen")
 }
+
+//sourceSets.testFixtures{
+//    java.srcDirs("src/testFixtures/java-gen")
+//}
 
 tasks.test {
     useJUnitPlatform()

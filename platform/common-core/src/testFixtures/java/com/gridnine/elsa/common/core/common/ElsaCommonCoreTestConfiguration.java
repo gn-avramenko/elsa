@@ -7,8 +7,8 @@ package com.gridnine.elsa.common.core.common;
 
 import com.gridnine.elsa.common.core.ElsaCommonCoreCustomMetaRegistryConfigurator;
 import com.gridnine.elsa.common.core.l10n.Localizer;
+import com.gridnine.elsa.common.core.l10n.SupportedLocalesProvider;
 import com.gridnine.elsa.common.core.lock.LockManager;
-import com.gridnine.elsa.common.core.lock.LockTemplate;
 import com.gridnine.elsa.common.core.lock.standard.StandardLockManager;
 import com.gridnine.elsa.common.core.model.common.ClassMapper;
 import com.gridnine.elsa.common.core.model.common.EnumMapper;
@@ -27,14 +27,16 @@ import com.gridnine.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.common.meta.dataTransfer.DataTransferMetaRegistry;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistryConfigurator;
+import com.gridnine.elsa.common.meta.l10n.L10nMetaRegistry;
 import com.gridnine.elsa.common.meta.rest.RestMetaRegistry;
 import com.gridnine.elsa.common.meta.rest.RestMetaRegistryConfigurator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.StandardEnvironment;
 
 @TestConfiguration
-public class ElsaCoreTestConfiguration {
+public class ElsaCommonCoreTestConfiguration {
 
     @Bean
     public ReflectionFactory reflectionFactory() {
@@ -49,11 +51,6 @@ public class ElsaCoreTestConfiguration {
     @Bean
     public LockManager lockManager() {
         return new StandardLockManager();
-    }
-
-    @Bean
-    public LockTemplate lockTemplate() {
-        return new LockTemplate();
     }
 
     @Bean
@@ -161,4 +158,13 @@ public class ElsaCoreTestConfiguration {
 
     @Bean
     public Localizer localizer(){return new Localizer();}
+
+    @Bean
+    public SupportedLocalesProvider supportedLocalesProvider(){return new SupportedLocalesProvider();}
+
+    @Bean
+    public L10nMetaRegistry l10nMetaRegistry(){return new L10nMetaRegistry();}
+
+    @Bean
+    org.springframework.core.env.Environment springEnvironment(){return new StandardEnvironment();}
 }

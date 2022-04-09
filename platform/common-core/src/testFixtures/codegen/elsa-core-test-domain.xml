@@ -31,15 +31,15 @@
 		<property type="STRING" id="name"/>
 	</entity>
 	<searchable-projection document="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument" id="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocumentProjection">
-		<property type="STRING" id="stringProperty" cache-find="true" />
-		<collection element-type="STRING" id="stringCollection"/>
-		<property type="ENUM" id="enumProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum"/>
-		<property id="entityReference" type="ENTITY_REFERENCE" class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument"/>
-		<collection element-type="ENUM" id="enumCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum"/>
-		<collection element-type="ENTITY_REFERENCE" id="entityRefCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument"/>
+		<property type="STRING" id="stringProperty" cache-find="true" use-in-text-search="true"/>
+		<collection element-type="STRING" id="stringCollection" use-in-text-search="true"/>
+		<property type="ENUM" id="enumProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum" use-in-text-search="true"/>
+		<property id="entityReference" type="ENTITY_REFERENCE" class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument" use-in-text-search="true"/>
+		<collection element-type="ENUM" id="enumCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum" use-in-text-search="true"/>
+		<collection element-type="ENTITY_REFERENCE" id="entityRefCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument" use-in-text-search="true"/>
 	</searchable-projection>
 	<asset id="com.gridnine.elsa.common.core.test.model.domain.TestDomainAsset" cache-resolve="true">
-		<property type="STRING" id="stringProperty" cache-find="true"/>
+		<property type="STRING" id="stringProperty" cache-find="true" use-in-text-search="true"/>
 		<property id="dateProperty" type="LOCAL_DATE_TIME"/>
 		<caption-expression>return stringProperty;</caption-expression>
 	</asset>

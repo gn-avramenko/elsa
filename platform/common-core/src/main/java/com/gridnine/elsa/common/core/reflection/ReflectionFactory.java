@@ -36,14 +36,17 @@ public class ReflectionFactory {
         return (Class<T>) cache.computeIfAbsent(cleanClassName, (key) -> ExceptionUtils.wrapException(() -> Class.forName(key)));
     }
 
-    public Enum<?> safeGetEnum(String className, String item){
-        var cls = getClass(className);
+    public Enum<?> safeGetEnum(Class<Enum<?>> cls, String item){
         for(Object constant : cls.getEnumConstants()){
             if(((Enum<?>) constant).name().equals(item)){
                 return (Enum<?>) constant;
             }
         }
         return null;
+    }
+
+    public Enum<?> safeGetEnum(String className, String item){
+        return safeGetEnum(getClass(className), item);
     }
 
     @PreDestroy

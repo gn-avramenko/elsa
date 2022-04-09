@@ -17,7 +17,7 @@ public abstract class BaseIdentity extends BaseIntrospectableObject{
         this.id = id;
     }
 
-    private long id;
+    private long id = -1;
 
     public long getId() {
         return id;

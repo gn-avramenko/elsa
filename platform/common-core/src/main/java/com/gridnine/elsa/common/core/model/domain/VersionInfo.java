@@ -15,8 +15,9 @@ public class VersionInfo extends BaseIntrospectableObject {
         public static final String modifiedBy="modifiedBy";
         public static final String modified="modified";
         public static final String comment="comment";
+        public static final String versionNumber ="versionNumber";
     }
-    private long revision;
+    private int revision;
 
     private String modifiedBy;
 
@@ -24,7 +25,9 @@ public class VersionInfo extends BaseIntrospectableObject {
 
     private String comment;
 
-    public long getRevision() {
+    private int versionNumber;
+
+    public int getRevision() {
         return revision;
     }
 
@@ -44,6 +47,14 @@ public class VersionInfo extends BaseIntrospectableObject {
         this.comment = comment;
     }
 
+    public int getVersionNumber() {
+        return versionNumber;
+    }
+
+    public void setVersionNumber(int versionNumber) {
+        this.versionNumber = versionNumber;
+    }
+
     public Object getValue(String propertyName) {
         if(Properties.comment.equals(propertyName)){
             return comment;
@@ -57,7 +68,18 @@ public class VersionInfo extends BaseIntrospectableObject {
         if(Properties.revision.equals(propertyName)){
             return revision;
         }
+        if(Properties.versionNumber.equals(propertyName)){
+            return versionNumber;
+        }
         return super.getValue(propertyName);
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public void setModified(LocalDateTime modified) {
+        this.modified = modified;
     }
 
     @Override
@@ -75,7 +97,11 @@ public class VersionInfo extends BaseIntrospectableObject {
             return;
         }
         if(Properties.revision.equals(propertyName)){
-            revision = (long) value;
+            revision = (int) value;
+            return;
+        }
+        if(Properties.versionNumber.equals(propertyName)){
+            versionNumber = (int) value;
             return;
         }
         super.setValue(propertyName, value);

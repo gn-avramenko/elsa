@@ -67,6 +67,7 @@ public class DomainMetaRegistryParser {
             var pd = description.getProperties().computeIfAbsent(CommonParserUtils.getIdAttribute(child), DatabasePropertyDescription::new);
             CommonParserUtils.updateParameters(child, pd);
             CommonParserUtils.updateLocalizationsOfChild(pd, localizations, description.getId());
+            pd.setUseInTextSearch("true".equals(child.getAttribute("use-in-text-search")));
             pd.setCacheFind("true".equals(child.getAttribute("cache-find")));
             pd.setClassName(child.getAttribute("class-name"));
             pd.setType(DatabasePropertyType.valueOf(child.getAttribute("type")));
@@ -75,6 +76,7 @@ public class DomainMetaRegistryParser {
             var cd = description.getCollections().computeIfAbsent(CommonParserUtils.getIdAttribute(child), DatabaseCollectionDescription::new);
             CommonParserUtils.updateParameters(child, cd);
             CommonParserUtils.updateLocalizationsOfChild(cd, localizations, description.getId());
+            cd.setUseInTextSearch("true".equals(child.getAttribute("use-in-text-search")));
             cd.setUnique("true".equals(child.getAttribute("unique")));
             cd.setElementClassName(child.getAttribute("element-class-name"));
             cd.setElementType(DatabaseCollectionType.valueOf(child.getAttribute("element-type")));

@@ -14,13 +14,13 @@ import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.common.meta.l10n.L10nMetaRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class Localizer {
@@ -33,11 +33,12 @@ public class Localizer {
     @Autowired
     public DomainMetaRegistry domainMetaRegistry;
 
+
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss");
 
-    public String toString(String bundleId, String key, Object... params){
+    public String toString(String bundleId, String key, Locale locale, Object... params){
         var result = key;
         if(result == null){
             return null;
@@ -45,7 +46,7 @@ public class Localizer {
         var bundle = l10nRegistry.getBundles().get(bundleId);
         var messageDescription = bundle == null? null : bundle.getMessages().get(result);
         if(messageDescription != null){
-            result = LocaleUtils.getLocalizedName(messageDescription.getDisplayNames(), result);
+            result = LocaleUtils.getLocalizedName(messageDescription.getDisplayNames(), locale, result);
         }
         var size = params.length;
         for(int n = 0; n < size;n++){
@@ -55,15 +56,20 @@ public class Localizer {
     }
 
     public String toString(L10nMessage message){
-        return toString(message.getBundle(), message.getKey(), message.getParameters().toArray());
+        return toString(message.getBundle(), message.getKey(), null, message.getParameters().toArray());
     }
-    private String toString(Object value) {
+
+    public String toString(Object value) {
+        return toString(value, null);
+    }
+
+    public String toString(Object value, Locale locale) {
         if(value instanceof Collection<?> c){
-            return StringUtils.join(c.stream().map(this::toStringInternal).toList(), ",");
+            return StringUtils.join(c.stream().map(it -> toStringInternal(it, locale)).toList(), ",");
         }
-        return toStringInternal(value);
+        return toStringInternal(value, locale);
     }
-    private String toStringInternal(Object value) {
+    private String toStringInternal(Object value, Locale loc) {
         if(value == null){
             return "???";
         }
@@ -71,7 +77,7 @@ public class Localizer {
             return captionProvider.getCaption(er);
         }
         if(value instanceof Enum<?> en){
-            var res = getLocalizedName(domainMetaRegistry.getEnums(), en);
+            var res = getLocalizedName(domainMetaRegistry.getEnums(), en, loc);
             return res == null? en.name(): res;
         }
         if(value instanceof LocalDate ld){
@@ -83,7 +89,7 @@ public class Localizer {
         return value.toString();
     }
 
-    private String getLocalizedName(Map<String, EnumDescription> descriptions, Enum<?> value) {
+    private String getLocalizedName(Map<String, EnumDescription> descriptions, Enum<?> value, Locale loc) {
         var ed = descriptions.get(value.getClass().getName()) ;
         if(ed == null){
             return null;
@@ -92,6 +98,7 @@ public class Localizer {
         if(eid == null){
             return value.name();
         }
-        return LocaleUtils.getLocalizedName(eid.getDisplayNames(), value.name());
+        return LocaleUtils.getLocalizedName(eid.getDisplayNames(), loc, value.name());
     }
+
 }

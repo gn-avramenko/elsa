@@ -5,13 +5,10 @@
 
 package com.gridnine.elsa.common.core.search;
 
-import com.gridnine.elsa.common.core.common.RegistryItem;
-import com.gridnine.elsa.common.core.common.RegistryItemType;
 
 import java.util.Collection;
 
-public abstract class DynamicCriterionHandler<T> implements RegistryItem<DynamicCriterionHandler<?>> {
-    public static RegistryItemType<DynamicCriterionHandler<?>> TYPE = new RegistryItemType<>("dynamic-criterion-handler");
+public abstract class DynamicCriterionHandler<T> {
 
     public abstract boolean isApplicable(String listId, String propertyId);
 
@@ -23,8 +20,4 @@ public abstract class DynamicCriterionHandler<T> implements RegistryItem<Dynamic
 
     public abstract String getValueType();
 
-    @Override
-    public RegistryItemType<DynamicCriterionHandler<?>> getType(){
-        return  TYPE;
-    }
 }

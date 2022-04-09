@@ -14,6 +14,8 @@ public class DatabaseCollectionDescription extends BaseModelElementDescription {
 
     private String elementClassName;
 
+    private boolean useInTextSearch;
+
     public DatabaseCollectionDescription() {
     }
 
@@ -43,5 +45,13 @@ public class DatabaseCollectionDescription extends BaseModelElementDescription {
 
     public void setElementClassName(String elementClassName) {
         this.elementClassName = elementClassName;
+    }
+
+    public boolean isUseInTextSearch() {
+        return useInTextSearch;
+    }
+
+    public void setUseInTextSearch(boolean useInTextSearch) {
+        this.useInTextSearch = useInTextSearch;
     }
 }
