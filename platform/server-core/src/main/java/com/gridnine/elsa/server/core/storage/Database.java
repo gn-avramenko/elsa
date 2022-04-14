@@ -6,9 +6,13 @@
 package com.gridnine.elsa.server.core.storage;
 
 import com.gridnine.elsa.common.core.model.domain.BaseAsset;
+import com.gridnine.elsa.common.core.model.domain.BaseDocument;
+import com.gridnine.elsa.common.core.model.domain.BaseSearchableProjection;
 import com.gridnine.elsa.common.core.model.domain.VersionInfo;
+import com.gridnine.elsa.common.core.search.AggregationQuery;
 import com.gridnine.elsa.common.core.search.SearchQuery;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,11 +26,11 @@ public interface Database {
 
     <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery updateQuery) throws Exception;
 
-    List<VersionMetadata> getVersionsMetadata(Class<?> cls, long id) throws Exception;
+    List<VersionInfo> getVersionsMetadata(Class<?> cls, long id) throws Exception;
 
     <A extends BaseAsset> void deleteAsset(Class<A> aClass, long id) throws Exception;
 
-    VersionData loadVersion(Class<?> cls, long id, int number) throws Exception;
+    ObjectData loadVersion(Class<?> cls, long id, int number) throws Exception;
 
     void deleteVersion(Class<?> cls, long id, int number) throws Exception;
 
@@ -37,4 +41,20 @@ public interface Database {
     void updateCaptions(Class<?> aClass, long id, String name, boolean insert) throws Exception;
 
     void deleteCaptions(Class<?> aClass, long id) throws Exception;
+
+    <D extends BaseDocument> ObjectData loadDocumentData(Class<D> cls, long id) throws  Exception;
+
+    <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<I> searchDocuments(Class<I> projClass, SearchQuery query) throws Exception;
+
+    <A extends BaseAsset> List<List<Object>> searchAssets(Class<A> cls, AggregationQuery updateQuery) throws  Exception;
+
+    <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<List<Object>> searchDocuments(Class<I> cls, AggregationQuery updateQuery) throws Exception;
+
+    void updateProjections(Class<BaseSearchableProjection<BaseDocument>> projectionClass, long id, ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>> wrappers, boolean update) throws Exception;
+
+    <D extends BaseDocument> void saveDocument(long id, Class<D> aClass, ObjectData obj, ObjectData oldDocument) throws Exception;
+
+    <D extends BaseDocument> void saveDocumentVersion(Class<D> aClass, long id, ObjectData version, Long oldVersionDataId) throws Exception;
+
+    <D extends BaseDocument> void deleteDocument(Class<D> aClass, long id, Long oid) throws Exception;
 }

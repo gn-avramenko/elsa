@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
@@ -140,7 +141,7 @@ public class HsqldbDialect implements JdbcDialect {
     }
 
     @Override
-    public void deleteBlob(Long id) {
+    public void deleteBlob(Connection conn, Long id) {
         //noops
     }
 

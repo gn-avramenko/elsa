@@ -8,7 +8,7 @@ package com.gridnine.elsa.common.core.model.domain;
 import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 
 public abstract class BaseSearchableProjection<D extends BaseDocument> extends BaseIntrospectableObject {
-    private int navigationKey;
+    private Integer navigationKey;
     private EntityReference<D> document;
 
     public static class Fields {
@@ -16,11 +16,11 @@ public abstract class BaseSearchableProjection<D extends BaseDocument> extends B
         public static final String document = "document";
     }
 
-    public int getNavigationKey() {
+    public Integer getNavigationKey() {
         return navigationKey;
     }
 
-    public void setNavigationKey(int navigationKey) {
+    public void setNavigationKey(Integer navigationKey) {
         this.navigationKey = navigationKey;
     }
 

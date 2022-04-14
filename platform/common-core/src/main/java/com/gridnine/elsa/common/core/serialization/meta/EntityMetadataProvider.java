@@ -91,7 +91,7 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
             case LOCAL_DATE -> SerializablePropertyType.LOCAL_DATE;
             case INT -> SerializablePropertyType.INT;
             case ENUM -> SerializablePropertyType.ENUM;
-            case ENTITY_REFERENCE -> SerializablePropertyType.ENTITY;
+            case ENTITY_REFERENCE -> SerializablePropertyType.ENTITY_REFERENCE;
             case BOOLEAN -> SerializablePropertyType.BOOLEAN;
             case BIG_DECIMAL -> SerializablePropertyType.BIG_DECIMAL;
             case BYTE_ARRAY -> SerializablePropertyType.BYTE_ARRAY;
@@ -102,9 +102,6 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
     }
 
     private String toClassName(StandardValueType type, String className) {
-        if (type == StandardValueType.ENTITY_REFERENCE) {
-            return EntityReference.class.getName();
-        }
         return className;
     }
 

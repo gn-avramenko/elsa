@@ -43,7 +43,7 @@ public interface JdbcDialect {
 
     String getCardinalitySql(String property);
 
-    void deleteBlob(Long id);
+    void deleteBlob(Connection cnn, Long id);
 
     String getIlikeFunctionName();
 }

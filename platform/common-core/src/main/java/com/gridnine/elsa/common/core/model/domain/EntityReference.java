@@ -77,6 +77,6 @@ public class EntityReference<T extends BaseIdentity>{
 
     @Override
     public String toString() {
-        return "EntityReference{}";
+        return caption == null? "%s(%s)".formatted(type.getName(), id): caption;
     }
 }

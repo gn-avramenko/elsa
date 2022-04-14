@@ -80,17 +80,17 @@ public class EntityReferenceDatabaseFieldHandler  implements DatabaseFieldHandle
 
     @Override
     public Map<String, Pair<Object, SqlType>> getSqlValues(Object value, EnumMapper enumMapper, ClassMapper classMapper, ReflectionFactory factory) {
-        var result = new LinkedHashMap<String, Pair<SqlType, Object>>();
+        var result = new LinkedHashMap<String, Pair<Object, SqlType>>();
         var ref = (EntityReference<?>) value;
-        result.put(fieldName, Pair.of(SqlType.LONG, ref == null ? null : ref.getId()));
+        result.put(fieldName, Pair.of(ref == null ? null : ref.getId(),SqlType.LONG));
         if(isAbstract){
-            result.put(typeFieldName, Pair.of(SqlType.INT, ref == null ? null : classMapper.getId(ref.getType().getName())));
+            result.put(typeFieldName, Pair.of(ref == null ? null : classMapper.getId(ref.getType().getName()),SqlType.INT));
         }
         if(storeCaptions){
-            result.put(captionFieldName, Pair.of(SqlType.STRING, ref == null ? null : ref.getCaption()));
+            result.put(captionFieldName, Pair.of(ref == null ? null : ref.getCaption(),SqlType.STRING));
         }
 
-        return null;
+        return result;
     }
 
     @Override

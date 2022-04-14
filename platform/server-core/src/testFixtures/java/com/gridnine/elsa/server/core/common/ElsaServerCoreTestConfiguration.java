@@ -11,7 +11,6 @@ import com.gridnine.elsa.common.core.model.common.IdGenerator;
 import com.gridnine.elsa.server.core.encrypt.DesCodec;
 import com.gridnine.elsa.server.core.storage.Database;
 import com.gridnine.elsa.server.core.storage.Storage;
-import com.gridnine.elsa.server.core.storage.StorageAdvice;
 import com.gridnine.elsa.server.core.storage.StorageInterceptor;
 import com.gridnine.elsa.server.core.storage.jdbc.*;
 import com.gridnine.elsa.server.core.storage.jdbc.model.DatabaseMetadataProvider;
@@ -20,8 +19,6 @@ import com.gridnine.elsa.server.core.storage.standard.IdUpdaterInterceptor;
 import com.gridnine.elsa.server.core.storage.transaction.TransactionManager;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 
 @TestConfiguration
 public class ElsaServerCoreTestConfiguration {
@@ -79,5 +76,10 @@ public class ElsaServerCoreTestConfiguration {
     @Bean
     public IdGenerator idGenerator(){
         return new JdbcIdGeneratorImpl();
+    }
+
+    @Bean
+    public TestDomainDocumentProjectionHandler testDomainDocumentProjectionHandler(){
+        return new TestDomainDocumentProjectionHandler();
     }
 }

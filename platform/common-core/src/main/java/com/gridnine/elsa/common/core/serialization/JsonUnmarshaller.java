@@ -106,11 +106,13 @@ public class JsonUnmarshaller {
                     var value = switch (collectionDescription.elementType()){
                         case STRING -> parser.getText();
                         case ENUM -> switch (params.getEnumSerializationStrategy()){
-                            case ID -> enumMapper.getName(parser.getIntValue(), reflectionFactory.getClass(collectionDescription.elementClassName()));
+                            case ID -> reflectionFactory.safeGetEnum(collectionDescription.elementClassName(),
+                                    enumMapper.getName(parser.getIntValue(),
+                                    reflectionFactory.getClass(collectionDescription.elementClassName())));
                             case NAME -> reflectionFactory.safeGetEnum(collectionDescription.elementClassName(), parser.getText());
                         };
                         case CLASS -> switch (params.getClassSerializationStrategy()){
-                            case ID -> classMapper.getName(parser.getIntValue());
+                            case ID -> reflectionFactory.getClass(classMapper.getName(parser.getIntValue()));
                             case NAME -> reflectionFactory.getClass(parser.getText());
                         };
                         case ENTITY -> unmarshal(parser, collectionDescription.elementClassName(), params);
@@ -160,7 +162,7 @@ public class JsonUnmarshaller {
             case CLASS -> {
                 parser.nextToken();
                 yield  switch (params.getClassSerializationStrategy()){
-                    case ID -> classMapper.getName(parser.getIntValue());
+                    case ID -> reflectionFactory.getClass(classMapper.getName(parser.getIntValue()));
                     case NAME -> reflectionFactory.getClass(parser.getText());
                 };
             }
@@ -219,8 +221,12 @@ public class JsonUnmarshaller {
                 case EntityReference.Fields.caption -> result.setCaption(parser.getText());
             }
         }
-        if(result.getType() == null && metadataProvidersFactory.getProvider(className).isAbstract()){
-            throw Xeption.forDeveloper("no classname is provided for abstract type %s".formatted(className));
+        if(result.getType() == null){
+            if(metadataProvidersFactory.getProvider(className).isAbstract()) {
+                throw Xeption.forDeveloper("no classname is provided for abstract type %s".formatted(className));
+            } else {
+                result.setType(reflectionFactory.getClass(className));
+            }
         }
         var dd = domainMetaRegistry.getDocuments().get(result.getType().getName());
         var ad = domainMetaRegistry.getAssets().get(result.getType().getName());

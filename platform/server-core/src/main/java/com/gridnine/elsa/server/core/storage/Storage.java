@@ -10,32 +10,34 @@ import com.gridnine.elsa.common.core.lock.LockManager;
 import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.common.core.model.common.Localizable;
 import com.gridnine.elsa.common.core.model.common.Xeption;
-import com.gridnine.elsa.common.core.model.domain.BaseAsset;
-import com.gridnine.elsa.common.core.model.domain.VersionInfo;
-import com.gridnine.elsa.common.core.search.DynamicCriterionHandler;
-import com.gridnine.elsa.common.core.search.SearchQuery;
+import com.gridnine.elsa.common.core.model.domain.*;
+import com.gridnine.elsa.common.core.search.*;
+import com.gridnine.elsa.common.core.serialization.CachedObjectConverter;
 import com.gridnine.elsa.common.core.serialization.JsonMarshaller;
 import com.gridnine.elsa.common.core.serialization.JsonUnmarshaller;
 import com.gridnine.elsa.common.core.serialization.SerializationParameters;
 import com.gridnine.elsa.common.core.utils.ExceptionUtils;
+import com.gridnine.elsa.common.core.utils.IoUtils;
+import com.gridnine.elsa.common.core.utils.ObjectFactoryWithException;
 import com.gridnine.elsa.common.core.utils.RunnableWithException;
 import com.gridnine.elsa.common.meta.domain.BaseSearchableDescription;
 import com.gridnine.elsa.common.meta.domain.DatabaseCollectionDescription;
 import com.gridnine.elsa.common.meta.domain.DatabasePropertyDescription;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
+import com.gridnine.elsa.server.core.CoreL10nMessagesRegistryFactory;
 import com.gridnine.elsa.server.core.auth.AuthUtils;
 import com.gridnine.elsa.server.core.storage.transaction.TransactionContext;
 import com.gridnine.elsa.server.core.storage.transaction.TransactionManager;
+import com.nothome.delta.Delta;
+import com.nothome.delta.GDiffPatcher;
+import com.nothome.delta.GDiffWriter;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -75,19 +77,27 @@ public class Storage {
     @Autowired
     private SupportedLocalesProvider localesProvider;
 
+    @Autowired
+    private CachedObjectConverter cachedObjectConverter;
+
+    private GDiffPatcher patcher = new GDiffPatcher();
+    private Delta delta = new Delta();
+
     private DynamicCriterionsUpdater criterionsUpdater;
-    public void init() {
-        if (advices == null) {
-            advices = factory.getBeansOfType(StorageAdvice.class).values().stream().sorted(Comparator.comparing(StorageAdvice::getPriority)).toList();
-            interceptors = factory.getBeansOfType(StorageInterceptor.class).values().stream().sorted(Comparator.comparing(StorageInterceptor::getPriority)).toList();
-            serializationParameters = new SerializationParameters();
-            serializationParameters.setPrettyPrint(false);
-            serializationParameters.setEntityReferenceCaptionSerializationStrategy(SerializationParameters.EntityReferenceCaptionSerializationStrategy.ONLY_NOT_CACHED);
-            serializationParameters.setEnumSerializationStrategy(SerializationParameters.EnumSerializationStrategy.ID);
-            serializationParameters.setEntityReferenceTypeSerializationStrategy(SerializationParameters.EntityReferenceTypeSerializationStrategy.ABSTRACT_CLASS_ID);
-            serializationParameters.setClassSerializationStrategy(SerializationParameters.ClassSerializationStrategy.ID);
-            criterionsUpdater = new DynamicCriterionsUpdater((List) factory.getBeansOfType(DynamicCriterionHandler.class).values().stream().toList());
+
+    private Map<String, List<SearchableProjectionHandler<BaseDocument, BaseSearchableProjection<BaseDocument>>>> projectionHandlers;
+
+    public <D extends BaseDocument> D loadDocument(EntityReference<D> ref, boolean forModification) {
+        init();
+        if (ref == null) {
+            return null;
         }
+        return loadDocument(ref.getType(), ref.getId(), forModification);
+    }
+
+    public <D extends BaseDocument> D loadDocument(Class<D> cls, long id, boolean forModification) {
+        init();
+        return ExceptionUtils.wrapException(() -> loadDocument(cls, id, forModification, advices, 0));
     }
 
     public <A extends BaseAsset> void saveAsset(A asset, boolean createNewVersion, String comment) {
@@ -98,88 +108,426 @@ public class Storage {
 
     public <A extends BaseAsset> void deleteAsset(A asset) {
         init();
-        lockManager.withLock(asset,() -> transactionManager.withTransaction((tc) -> withGlobalContext(() ->
-                        deleteAsset(asset, advices, tc, 0))));
+        lockManager.withLock(asset, () -> transactionManager.withTransaction((tc) -> withGlobalContext(() ->
+                deleteAsset(asset, advices, tc, 0))));
     }
 
-    public List<VersionMetadata> getVersionsMetadata(Class<?> cls, long id) {
+    public List<VersionInfo> getVersionsMetadata(Class<?> cls, long id) {
         init();
-        return ExceptionUtils.wrapException(() ->getVersionsMetadata(cls, id, advices, 0));
+        return ExceptionUtils.wrapException(() -> getVersionsMetadata(cls, id, advices, 0));
     }
 
     public <A extends BaseAsset> void saveAsset(A asset, String comment) {
+        init();
         saveAsset(asset, false, comment);
     }
 
-    public <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query, boolean ignoreCache) {
-        return ExceptionUtils.wrapException(() ->searchAssets(cls, query, ignoreCache, advices, 0));
+    public <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query, boolean forModification) {
+        init();
+        return ExceptionUtils.wrapException(() -> searchAssets(cls, query, forModification, advices, 0));
     }
 
     public <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query) {
+        init();
         return searchAssets(cls, query, false);
     }
 
     public <A extends BaseAsset> A loadAssetVersion(Class<A> cls, long id, int version) {
-        return  ExceptionUtils.wrapException(() ->loadAssetVersion(cls, id, version, advices, 0));
+        init();
+        return ExceptionUtils.wrapException(() -> loadAssetVersion(cls, id, version, advices, 0));
     }
 
-    <A extends BaseAsset> A loadAsset(Class<A> cls, long id, boolean ignoreCache) {
-        return ExceptionUtils.wrapException(() -> loadAsset(cls, id, ignoreCache, advices,  0));
+    public <A extends BaseAsset> A loadAsset(Class<A> cls, long id, boolean forModification) {
+        init();
+        return ExceptionUtils.wrapException(() -> loadAsset(cls, id, forModification, advices, 0));
     }
 
-    private <A extends BaseAsset> A loadAsset(Class<A> cls, long id, boolean ignoreCache, List<StorageAdvice> advices, int idx) throws Exception {
+    public <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, long id, int version) {
+        init();
+        return ExceptionUtils.wrapException(() -> loadDocumentVersion(cls, id, version, advices, 0));
+    }
+
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
+    EntityReference<D> findUniqueDocumentReference(Class<I> projClass, E property, Object propertyValue) {
+        init();
+        return ExceptionUtils.wrapException(() -> findUniqueDocumentReference(projClass, property, propertyValue, advices, 0));
+    }
+
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
+    D findUniqueDocument(Class<I> projClass, E property, Object propertyValue, boolean forModification) {
+        init();
+        return loadDocument(findUniqueDocumentReference(projClass, property, propertyValue), forModification);
+    }
+
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
+    List<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, Object propertyValue) {
+        init();
+        return ExceptionUtils.wrapException(() -> getAllDocumentReferences(projClass, property, propertyValue, advices, 0));
+    }
+
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
+    List<D> getAllDocuments(Class<I> projClass, E property, Object propertyValue, boolean forModification) {
+        init();
+        return getAllDocumentReferences(projClass, property, propertyValue).stream().map((it) -> loadDocument(it, forModification)).toList();
+    }
+
+    public <A extends BaseAsset> List<List<Object>> searchAssets(Class<A> cls, AggregationQuery query) {
+        init();
+        return ExceptionUtils.wrapException(() -> searchAssets(cls, query, advices, 0));
+    }
+
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<I> searchDocuments(Class<I> cls, SearchQuery query) {
+        init();
+        return ExceptionUtils.wrapException(() -> searchDocuments(cls, query, advices, 0));
+    }
+
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<List<Object>> searchDocuments(Class<I> cls, AggregationQuery query) {
+        init();
+        return ExceptionUtils.wrapException(() -> searchDocuments(cls, query, advices, 0));
+    }
+
+    public <D extends BaseDocument> void updateProjections(D doc, Class<?>... projectionClasses) {
+        init();
+        transactionManager.withTransaction((tc) -> {
+            updateProjectionsInternal(doc, true, projectionClasses);
+        });
+    }
+
+    public <D extends BaseDocument> void saveDocument(D doc) {
+        saveDocument(doc, false, null, new SaveDocumentParameters());
+    }
+
+
+    public <D extends BaseDocument> void saveDocument(D doc, String comment) {
+        saveDocument(doc, false, comment, new SaveDocumentParameters());
+    }
+
+
+    public <D extends BaseDocument> void saveDocument(D doc, boolean createNewVersion, String comment) {
+        saveDocument(doc, createNewVersion, comment, new SaveDocumentParameters());
+    }
+
+
+    public <D extends BaseDocument> void saveDocument(D doc, boolean createNewVersion, String comment, SaveDocumentParameters params) {
+        init();
+        lockManager.withLock(doc, () -> transactionManager.withTransaction((tx) ->
+                withGlobalContext(() -> saveDocument(doc, createNewVersion, comment, params, advices, tx, 0))));
+    }
+
+    public <D extends BaseDocument> void deleteDocument(D doc) {
+        deleteDocument(doc, new DeleteDocumentParameters());
+    }
+
+    public <D extends BaseDocument> void deleteDocument(D doc, DeleteDocumentParameters params) {
+        init();
+        lockManager.withLock(doc, () -> transactionManager.withTransaction((tx) ->
+                withGlobalContext(() -> deleteDocument(doc, params, advices, tx, 0))));
+    }
+
+    private <D extends BaseDocument> void deleteDocument(D document, DeleteDocumentParameters params, List<StorageAdvice> storageAdvices, TransactionContext ctx, int idx) throws Exception {
+        if (idx == storageAdvices.size()) {
+            var udc = getUpdateDocumentContext(document, ctx);
+            if (udc.oldDocument == null) {
+                throw Xeption.forDeveloper("document %s id = %s is absent in db".formatted(udc.oldDocument.getClass().getName(), document.getId()));
+            }
+            if (document.getVersionInfo().getRevision() != udc.oldDocument.getRevision()) {
+                throw new IllegalArgumentException("revision conflict: expected = %s, actual: %s".formatted(
+                        udc.oldDocument.getRevision(), document.getVersionInfo().getRevision()
+                ));
+            }
+            if(!params.isSkipInterceptors()) {
+                for (var interceptor : interceptors) {
+                    interceptor.onDelete(document, udc.operationContext);
+                }
+            }
+            database.deleteDocument(document.getClass(), document.getId(), udc.oldDocument.getData().id());
+            for (var metadata : database.getVersionsMetadata(document.getClass(), document.getId())) {
+                database.deleteVersion(document.getClass(), document.getId(), metadata.getVersionNumber());
+            }
+            database.deleteCaptions(document.getClass(), document.getId());
+            return;
+        }
+        advices.get(idx).onDeleteDocument(document, params, (document2, params2) -> deleteDocument(document2, params2, advices, ctx, idx + 1));
+    }
+
+    private <D extends BaseDocument> void saveDocument(D doc, boolean createNewVersion, String comment, SaveDocumentParameters params,
+                                                       List<StorageAdvice> advices, TransactionContext ctx, int idx) throws Exception {
+        if (idx == advices.size()) {
+            if (doc.getVersionInfo() == null) {
+                doc.setVersionInfo(new VersionInfo());
+            }
+            var context = getUpdateDocumentContext(doc, ctx);
+            var updatePreviousVersion = !createNewVersion && (context.oldDocument != null && context.oldDocument.getVersionNumber() > 0);
+            byte[] previousVersionContent = null;
+            if (updatePreviousVersion) {
+                var os = new ByteArrayOutputStream();
+                try (var is = new ByteArrayInputStream(IoUtils.gunzip(context.previousVersionFactory.createObject()
+                        .getData().content()))) {
+                    patcher.patch(IoUtils.gunzip(context.oldDocument.getData().content()), is, os);
+                }
+                previousVersionContent = IoUtils.gzip(os.toByteArray());
+            }
+            if (!params.isSkipInterceptors()) {
+                for (var interceptor : interceptors) {
+                    interceptor.onSave(doc, context.operationContext);
+                }
+            }
+            var now = LocalDateTime.now();
+            doc.getVersionInfo().setValue(VersionInfo.Properties.revision, context.oldDocument == null ?
+                    0 : context.oldDocument.getRevision() + 1);
+            doc.getVersionInfo().setComment(comment);
+            doc.getVersionInfo().setModified(now);
+            doc.getVersionInfo().setModifiedBy(AuthUtils.getCurrentUser());
+            doc.getVersionInfo().setValue(VersionInfo.Properties.revision, doc.getVersionInfo().getRevision());
+            doc.getVersionInfo().setVersionNumber(
+                    context.oldDocument == null ? 0 : (createNewVersion ? context.oldDocument.getVersionNumber() + 1 : context.oldDocument.getVersionNumber())
+            );
+
+            var baos = new ByteArrayOutputStream();
+            marshaller.marshal(doc, baos, false, serializationParameters);
+            var data = baos.toByteArray();
+            var baos3 = new ByteArrayOutputStream();
+            try (var os = new GZIPOutputStream(baos3)) {
+                IoUtils.copy(new ByteArrayInputStream(data), os);
+            }
+            var obj = new ObjectData();
+            obj.setData(new BlobWrapper(null, baos3.toByteArray()));
+            obj.setComment(doc.getVersionInfo().getComment());
+            obj.setModified(doc.getVersionInfo().getModified());
+            obj.setModifiedBy(doc.getVersionInfo().getModifiedBy());
+            obj.setRevision(doc.getVersionInfo().getRevision());
+            obj.setVersionNumber(doc.getVersionInfo().getVersionNumber());
+            database.saveDocument(doc.getId(), doc.getClass(), obj, context.oldDocument);
+            if ((createNewVersion && context.oldDocument != null) || (context.oldDocument != null && updatePreviousVersion)) {
+                var baos2 = new ByteArrayOutputStream();
+                try(var writer = new GDiffWriter(baos2) ){
+                    delta.compute(data, new GZIPInputStream(new ByteArrayInputStream(updatePreviousVersion? previousVersionContent
+                                    : context.oldDocument.getData().content())), writer);
+                    writer.flush();
+                }
+                var version = new ObjectData();
+                version.setVersionNumber(updatePreviousVersion? context.oldDocument.getVersionNumber()-1: context.oldDocument.getVersionNumber());
+                version.setRevision(context.oldDocument.getRevision());
+                version.setModifiedBy(context.oldDocument.getModifiedBy());
+                version.setModified(context.oldDocument.getModified());
+                version.setComment(context.oldDocument.getComment());
+                version.setData(new BlobWrapper(null, IoUtils.gzip(baos2.toByteArray())));
+                database.saveDocumentVersion((Class<D>) doc.getClass(), doc.getId(), version,
+                        updatePreviousVersion? context.oldDocument.getData().id() : null );
+            }
+            updateProjectionsInternal(doc, context.oldDocument != null);
+            return;
+        }
+        advices.get(idx).onSaveDocument(doc, createNewVersion, comment, params,  (doc2, createNewVersion2, comment2, params2 ) ->{
+            saveDocument(doc2, createNewVersion2, comment2, params2, advices, ctx, idx + 1);
+        });
+    }
+
+    private <D extends BaseDocument> UpdateDocumentContext<D> getUpdateDocumentContext(D doc, TransactionContext tc) throws Exception {
+        var oldDocument = database.loadDocumentData((Class<D>) doc.getClass(), doc.getId());
+        var docRevision = doc.getVersionInfo() == null ? -1 : doc.getVersionInfo().getRevision();
+        if (docRevision == -1) {
+            docRevision = oldDocument == null ? 0 : oldDocument.getRevision();
+        }
+        if (oldDocument != null && docRevision != oldDocument.getRevision()) {
+            throw Xeption.forDeveloper("revision conflict with document %s %s, ".formatted(doc.getClass().getName(), doc.getId()) +
+                    "db revision = %s, operation revision %s".formatted(oldDocument.getRevision(), doc.getVersionInfo().getRevision()));
+        }
+        D oldObject = null;
+        if (oldDocument != null) {
+            try (var is = new GZIPInputStream(new ByteArrayInputStream(oldDocument.getData().content()))) {
+                oldObject = unmarshaller.unmarshal((Class<D>) doc.getClass(), is, serializationParameters);
+            }
+        }
+        var previousVersionContentFactory = new ObjectFactoryWithException<ObjectData>() {
+
+            ObjectData result;
+
+            @Override
+            public ObjectData createObject() throws Exception {
+                if (oldDocument == null || oldDocument.getVersionNumber() == 0) {
+                    return null;
+                }
+                if (result == null) {
+                    result = database.loadVersion(doc.getClass(), doc.getId(),
+                            oldDocument.getVersionNumber() - 1);
+                }
+                return result;
+            }
+        };
+        var globalContext = contexts.get();
+        if (globalContext == null) {
+            globalContext = new GlobalOperationContext(doc, oldObject, tc);
+            contexts.set(globalContext);
+        }
+        var localContext = new LocalOperationContext<>(oldObject);
+        var operationContext = new OperationContext<>(globalContext, localContext);
+        return new UpdateDocumentContext<>(oldDocument, previousVersionContentFactory, operationContext);
+    }
+
+    private <D extends BaseDocument> void updateProjectionsInternal(D doc, boolean update, Class<?>... indexClasses) throws Exception {
+        var standardObject = doc;
+        if (doc instanceof CachedObject co) {
+            standardObject = (D) cachedObjectConverter.toStandardObject(co);
+        }
+        var handlers = projectionHandlers.get(standardObject.getClass().getName());
+        if (handlers == null) {
+            return;
+        }
+        for (var projectionHandler : handlers) {
+            if (indexClasses.length == 0 || Arrays.stream(indexClasses).anyMatch(it -> it == projectionHandler.getProjectionClass())) {
+                var description = metaRegistry.getSearchableProjections().get(projectionHandler.getProjectionClass().getName());
+                var projections = projectionHandler.createProjections(doc);
+                var wrappers = new ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>>();
+                for (var proj : projections) {
+                    proj.setDocument(new EntityReference<>(doc));
+                    AggregatedData data = buildAggreagatedData(proj, description);
+                    wrappers.add(new DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>(
+                            proj, metaRegistry, data.getAggregatedData()));
+                }
+                database.updateProjections(projectionHandler.getProjectionClass(), doc.getId(), wrappers, update);
+            }
+        }
+
+    }
+
+    private <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<I> searchDocuments(Class<I> cls, SearchQuery query, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            return database.searchDocuments(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+        }
+        return advices.get(idx).onSearchDocuments(cls, query, (cls2, query2) ->
+                searchDocuments(cls2, query2, advices, idx + 1));
+    }
+
+    private <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<List<Object>> searchDocuments(Class<I> cls, AggregationQuery query, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            return database.searchDocuments(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+        }
+        return advices.get(idx).onSearchDocuments(cls, query, (cls2, query2) ->
+                searchDocuments(cls2, query2, advices, idx + 1));
+    }
+
+    private <A extends BaseAsset> List<List<Object>> searchAssets(Class<A> cls, AggregationQuery query, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            return database.searchAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+        }
+        return advices.get(idx).onSearchAssets(cls, query, (cls2, query2) ->
+                searchAssets(cls2, query2, advices, idx + 1));
+    }
+
+    private <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
+    List<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, Object propertyValue, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            var query = new SearchQuery();
+            query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
+            if (propertyValue == null) {
+                query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
+            } else {
+                query.getCriterions().add(SearchCriterion.isNull(property));
+            }
+            return database.searchDocuments(projClass, query).stream().map(BaseSearchableProjection::getDocument).toList();
+        }
+        return advices.get(idx).onGetAllDocumentReferences(projClass, property, propertyValue, (projClass2, property2, propertyValue2) ->
+                getAllDocumentReferences(projClass2, property2, propertyValue2, advices, idx + 1)
+        );
+    }
+
+    private <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
+    EntityReference<D> findUniqueDocumentReference(Class<I> projClass, E property, Object propertyValue, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            var query = new SearchQuery();
+            query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
+            if (propertyValue == null) {
+                query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
+            } else {
+                query.getCriterions().add(SearchCriterion.isNull(property));
+            }
+            var lst = database.searchDocuments(projClass, query);
+            var size = lst.size();
+            if (size == 0) {
+                return null;
+            } else if (size == 1) {
+                return lst.get(0).getDocument();
+            } else {
+                throw Xeption.forAdmin(CoreL10nMessagesRegistryFactory
+                        .Found_several_recordsMessage(projClass.getName(), property.name, propertyValue == null ? null : propertyValue.toString()));
+            }
+        }
+        return advices.get(0).onFindUniqueDocumentReference(projClass, property, propertyValue, (projClass2, property2, propertyValue2) ->
+                findUniqueDocumentReference(projClass2, property2, propertyValue2, advices, idx + 1));
+    }
+
+    private <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, long objectId, int versionNumber,
+                                                           List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            var lastVersion = database.loadDocumentData(cls, objectId);
+            if (lastVersion == null) {
+                throw new IllegalArgumentException("document of type %s with id %s is not found".formatted(cls.getName(), objectId));
+            }
+            var data = IoUtils.gunzip(lastVersion.getData().content());
+            for (int n = lastVersion.getVersionNumber() - 1; n >= versionNumber; n--) {
+                var versionData = database.loadVersion(cls, objectId, n);
+                data = patcher.patch(data, IoUtils.gunzip(versionData.getData().content()));
+            }
+            return unmarshaller.unmarshal(cls, new ByteArrayInputStream(data), serializationParameters);
+        }
+        return advices.get(idx).onLoadDocumentVersion(cls, objectId, versionNumber, (cls2, id2, versionNumber2) ->
+                loadDocumentVersion(cls2, id2, versionNumber2, advices, idx + 1));
+    }
+
+    private <A extends BaseAsset> A loadAsset(Class<A> cls, long id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return database.loadAsset(cls, id);
         }
-        return advices.get(0).onLoadAsset(cls, id, ignoreCache ,  ( cls2, id2, ignoreCache2) ->
-                loadAsset(cls2, id2, ignoreCache2, advices, idx + 1)
+        return advices.get(0).onLoadAsset(cls, id, forModification, (cls2, id2, forModification2) ->
+                loadAsset(cls2, id2, forModification2, advices, idx + 1)
         );
     }
 
     private <A extends BaseAsset> A loadAssetVersion(Class<A> cls, long id, int version, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var data = database.loadVersion(cls, id ,version);
+            var data = database.loadVersion(cls, id, version);
             var is = new GZIPInputStream(new ByteArrayInputStream(data.getData().content()));
             return unmarshaller.unmarshal(cls, is, serializationParameters);
         }
-        return advices.get(idx).onLoadAssetVersion(cls, id, version , (cls2, uid2, version2) ->
-                loadAssetVersion(cls2, uid2,  version2, advices, idx + 1)
+        return advices.get(idx).onLoadAssetVersion(cls, id, version, (cls2, uid2, version2) ->
+                loadAssetVersion(cls2, uid2, version2, advices, idx + 1)
         );
     }
 
-    private<A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query, boolean ignoreCache, List<StorageAdvice> advices, int idx) throws Exception {
+    private <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return database.searchAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
         }
-        return advices.get(idx).onSearchAssets(cls, query, ignoreCache, (cls2, query2, ignoreCache2)
-                -> searchAssets(cls2, query2, ignoreCache2, advices, idx + 1));
+        return advices.get(idx).onSearchAssets(cls, query, forModification, (cls2, query2, forModification2)
+                -> searchAssets(cls2, query2, forModification2, advices, idx + 1));
     }
 
-    private List<VersionMetadata> getVersionsMetadata(Class<?> cls, long id, List<StorageAdvice> storageAdvices, int idx) throws Exception {
+    private List<VersionInfo> getVersionsMetadata(Class<?> cls, long id, List<StorageAdvice> storageAdvices, int idx) throws Exception {
         init();
         if (idx == storageAdvices.size()) {
-            return database.getVersionsMetadata(cls, id).stream().sorted(Comparator.comparing(VersionMetadata::getVersionNumber)).toList();
+            return database.getVersionsMetadata(cls, id).stream().sorted(Comparator.comparing(VersionInfo::getVersionNumber)).toList();
         }
-        return advices.get(idx).onGetVersionsMetadata(cls, () -> getVersionsMetadata(cls,id,advices, idx + 1));
+        return advices.get(idx).onGetVersionsMetadata(cls, () -> getVersionsMetadata(cls, id, advices, idx + 1));
     }
 
     private <A extends BaseAsset> void deleteAsset(A asset, List<StorageAdvice> storageAdvices, TransactionContext ctx, int idx) throws Exception {
         init();
         if (idx == storageAdvices.size()) {
-            var uac  = getUpdateAssetContext(asset, ctx);
-            if(uac.oldAsset == null){
-                throw  Xeption.forDeveloper("asset %s id = %s is absent in db".formatted(asset.getClass().getName(), asset.getId()));
+            var uac = getUpdateAssetContext(asset, ctx);
+            if (uac.oldAsset == null) {
+                throw Xeption.forDeveloper("asset %s id = %s is absent in db".formatted(asset.getClass().getName(), asset.getId()));
             }
-            if(asset.getVersionInfo().getRevision() != uac.oldAsset.getAsset().getVersionInfo().getRevision()){
+            if (asset.getVersionInfo().getRevision() != uac.oldAsset.getAsset().getVersionInfo().getRevision()) {
                 throw new IllegalArgumentException("revision conflict: expected = %s, actual: %s".formatted(
-                        uac.oldAsset.getAsset().getVersionInfo().getRevision(),   asset.getVersionInfo().getRevision()
+                        uac.oldAsset.getAsset().getVersionInfo().getRevision(), asset.getVersionInfo().getRevision()
                 ));
             }
             for (var interceptor : interceptors) {
                 interceptor.onDelete(uac.oldAsset.getAsset(), uac.operationContext);
             }
             database.deleteAsset(asset.getClass(), asset.getId());
-            for(var metadata: database.getVersionsMetadata(asset.getClass(), asset.getId())){
+            for (var metadata : database.getVersionsMetadata(asset.getClass(), asset.getId())) {
                 database.deleteVersion(asset.getClass(), asset.getId(), metadata.getVersionNumber());
             }
             database.deleteCaptions(asset.getClass(), asset.getId());
@@ -202,9 +550,9 @@ public class Storage {
             if (oldAsset == null) {
                 asset.getVersionInfo().setValue(VersionInfo.Properties.revision, 0);
             } else {
-                if(asset.getVersionInfo().getRevision() != oldAsset.getAsset().getVersionInfo().getRevision()){
+                if (asset.getVersionInfo().getRevision() != oldAsset.getAsset().getVersionInfo().getRevision()) {
                     throw new IllegalArgumentException("revision conflict: expected = %s, actual: %s".formatted(
-                            oldAsset.getAsset().getVersionInfo().getRevision(),   asset.getVersionInfo().getRevision()
+                            oldAsset.getAsset().getVersionInfo().getRevision(), asset.getVersionInfo().getRevision()
                     ));
                 }
                 asset.getVersionInfo().setValue(VersionInfo.Properties.revision, oldAsset.getAsset().getVersionInfo().getRevision() + 1);
@@ -234,9 +582,9 @@ public class Storage {
                 }
                 database.saveAssetVersion((Class<A>) asset.getClass(), asset.getId(), new BlobWrapper(null, baos.toByteArray()), vi);
             }
-            if(asset instanceof Localizable lz){
+            if (asset instanceof Localizable lz) {
                 var names = new LinkedHashMap<Locale, String>();
-                for(var locale : localesProvider.getSupportedLocales()){
+                for (var locale : localesProvider.getSupportedLocales()) {
                     names.put(locale, lz.toString(locale));
                 }
                 database.updateCaptions(asset.getClass(), asset.getId(), names, oldAsset == null);
@@ -250,30 +598,30 @@ public class Storage {
 
 
     private <A extends BaseIntrospectableObject> AggregatedData buildAggreagatedData(A object, BaseSearchableDescription description) {
-        var result = new AggregatedData();
-        for(DatabasePropertyDescription prop: description.getProperties().values()){
-            if(prop.isUseInTextSearch()){
+        var result = new AggregatedData(metaRegistry);
+        for (DatabasePropertyDescription prop : description.getProperties().values()) {
+            if (prop.isUseInTextSearch()) {
                 result.aggregate(object.getValue(prop.getId()));
             }
         }
-        for(DatabaseCollectionDescription coll: description.getCollections().values()){
-            if(coll.isUseInTextSearch()){
-                result.aggregate(object.getValue(coll.getId()));
+        for (DatabaseCollectionDescription coll : description.getCollections().values()) {
+            if (coll.isUseInTextSearch()) {
+                result.aggregate(object.getCollection(coll.getId()));
             }
         }
         return result;
     }
 
     private <A extends BaseAsset> UpdateAssetContext<A> getUpdateAssetContext(A asset, TransactionContext ctx) throws Exception {
-        if(asset.getVersionInfo() == null){
+        if (asset.getVersionInfo() == null) {
             asset.setVersionInfo(new VersionInfo());
         }
         var oldAssetWrapperData = database.loadAssetWrapper((Class<A>) asset.getClass(), asset.getId());
         var revision = asset.getVersionInfo().getRevision();
         if (revision == -1) {
-            revision =  oldAssetWrapperData == null? 0: oldAssetWrapperData.getAsset().getVersionInfo().getRevision()+1;
+            revision = oldAssetWrapperData == null ? 0 : oldAssetWrapperData.getAsset().getVersionInfo().getRevision() + 1;
         }
-        var oldAsset = oldAssetWrapperData == null? null: oldAssetWrapperData.getAsset();
+        var oldAsset = oldAssetWrapperData == null ? null : oldAssetWrapperData.getAsset();
         if (oldAsset != null && revision != oldAsset.getVersionInfo().getRevision()) {
             throw Xeption.forDeveloper("revision conflict with asset %s %s, db revision = %s, operation revision %s"
                     .formatted(asset.getClass().getName(), asset.getId(),
@@ -311,8 +659,50 @@ public class Storage {
     }
 
 
+    private void init() {
+        if (advices == null) {
+            advices = factory.getBeansOfType(StorageAdvice.class).values().stream().sorted(Comparator.comparing(StorageAdvice::getPriority)).toList();
+            interceptors = factory.getBeansOfType(StorageInterceptor.class).values().stream().sorted(Comparator.comparing(StorageInterceptor::getPriority)).toList();
+            serializationParameters = new SerializationParameters();
+            serializationParameters.setPrettyPrint(false);
+            serializationParameters.setEntityReferenceCaptionSerializationStrategy(SerializationParameters.EntityReferenceCaptionSerializationStrategy.ONLY_NOT_CACHED);
+            serializationParameters.setEnumSerializationStrategy(SerializationParameters.EnumSerializationStrategy.ID);
+            serializationParameters.setEntityReferenceTypeSerializationStrategy(SerializationParameters.EntityReferenceTypeSerializationStrategy.ABSTRACT_CLASS_ID);
+            serializationParameters.setClassSerializationStrategy(SerializationParameters.ClassSerializationStrategy.ID);
+            criterionsUpdater = new DynamicCriterionsUpdater((List) factory.getBeansOfType(DynamicCriterionHandler.class).values().stream().toList());
+            projectionHandlers = new HashMap<>();
+            factory.getBeansOfType(SearchableProjectionHandler.class).values().forEach(h -> {
+                var lst = projectionHandlers.get(h.getDocumentClass().getName());
+                if (lst == null) {
+                    lst = new ArrayList<>();
+                    projectionHandlers.put(h.getDocumentClass().getName(), lst);
+                }
+                lst.add(h);
+            });
+        }
+    }
+
+    private <D extends BaseDocument> D loadDocument(Class<D> cls, long id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            var documentData = database.loadDocumentData(cls, id);
+            if (documentData == null) {
+                return null;
+            }
+            try (var is = new GZIPInputStream(new ByteArrayInputStream(documentData.getData().content()))) {
+                return unmarshaller.unmarshal(cls, is, serializationParameters);
+            }
+        }
+        return advices.get(idx).onLoadDocument(cls, id, forModification, (cls2, id2, forModificationInt2) ->
+                loadDocument(cls2, id2, forModificationInt2, advices, idx + 1));
+    }
+
     private record UpdateAssetContext<A extends BaseAsset>(DatabaseAssetWrapper<A> oldAsset,
                                                            OperationContext<A> operationContext) {
+    }
+
+    private record UpdateDocumentContext<D extends BaseDocument>(ObjectData oldDocument,
+                                                                 ObjectFactoryWithException<ObjectData> previousVersionFactory,
+                                                                 OperationContext<D> operationContext) {
     }
 
 }

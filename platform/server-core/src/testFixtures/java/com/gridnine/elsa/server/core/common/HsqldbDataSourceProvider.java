@@ -21,6 +21,7 @@ public class HsqldbDataSourceProvider implements DataSourceProvider {
         ds = new ComboPooledDataSource();
         ds.setDriverClass(JDBCDriver.class.getName());
         ds.setJdbcUrl("jdbc:hsqldb:mem:elsa;shutdown=true");
+//        ds.setJdbcUrl("jdbc:hsqldb:file:/home/avramenko/IdeaProjects/own/elsa/temp/db/elsa;shutdown=true");
         ds.setInitialPoolSize(1);
         ds.setAcquireIncrement(5);
         ds.setMinPoolSize(1);

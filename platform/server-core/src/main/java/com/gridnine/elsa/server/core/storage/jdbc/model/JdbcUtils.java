@@ -5,6 +5,7 @@
 
 package com.gridnine.elsa.server.core.storage.jdbc.model;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -29,20 +30,21 @@ public class JdbcUtils {
     public static boolean isNull(ResultSet rs, String propertyName) throws SQLException {
         return rs.getObject(propertyName) == null;
     }
-    public static boolean isEquals(Object obj1, Object obj2){
+    public static boolean isEquals(Object obj1, Object obj2) throws SQLException {
         if(obj1 == null){
             return obj2 == null;
         }
-        if(obj1 instanceof List<?> lst1){
-            if(!(obj2 instanceof List<?>)){
+        if(obj1 instanceof Array){
+            if(!(obj2 instanceof Array)){
                 return false;
             }
-            var lst2 = (List<?>) obj2;
-            if(lst1.size() != lst2.size()){
+            var arr1 = (Object[]) ((Array) obj1).getArray();
+            var arr2 = (Object[]) ((Array) obj2).getArray();
+            if(arr1.length != arr2.length){
                 return false;
             }
-            for(int n =0; n < lst1.size(); n++){
-                if(!Objects.equals(lst1.get(n), lst2.get(n))){
+            for(int n =0; n < arr1.length; n++){
+                if(!Objects.equals(arr1[n], arr2[n])){
                     return false;
                 }
             }

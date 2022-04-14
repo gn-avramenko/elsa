@@ -44,7 +44,7 @@ public class StringCollectionDatabaseFieldHandler implements DatabaseFieldHandle
         if(jdbcValue == null){
             return Collections.emptyList();
         }
-        return Arrays.asList((String[]) jdbcValue.getArray());
+        return Arrays.stream((Object[]) jdbcValue.getArray()).map(it -> (String) it).toList();
     }
 
     @Override

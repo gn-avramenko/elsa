@@ -124,7 +124,7 @@ public class JavaL10nCodeGenerator  implements CodeGenerator<JavaL10nCodeGenReco
                     }
                 });
                 gen.blankLine();
-                gen.wrapWithBlock("public L10nMessage %sMessage(%s)".formatted(message.getId(), parameters), () ->{
+                gen.wrapWithBlock("public static L10nMessage %sMessage(%s)".formatted(message.getId(), parameters), () ->{
                     if(arguments.length() > 0) {
                         gen.printLine("return new L10nMessage(\"%s\", \"%s\", %s);".formatted(bundle.getId(), message.getId(), arguments));
                     } else {

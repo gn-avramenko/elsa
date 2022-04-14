@@ -48,7 +48,7 @@ public class EnumCollectionDatabaseFieldHandler implements DatabaseFieldHandler{
         if(jdbcValue == null){
             return Collections.emptyList();
         }
-        return Arrays.stream((Integer[]) jdbcValue.getArray()).map(it -> factory.safeGetEnum(enumClass, enumMapper.getName(it, enumClass))).toList();
+        return Arrays.stream((Object[]) jdbcValue.getArray()).map(it -> (Integer) it).map(it -> factory.safeGetEnum(enumClass, enumMapper.getName(it, enumClass))).toList();
     }
 
     @Override

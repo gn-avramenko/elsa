@@ -23,6 +23,14 @@ public class Xeption extends Error{
         return forDeveloper(message, null);
     }
 
+    public static Xeption forAdmin(L10nMessage adminMessage, Throwable e){
+        return new Xeption(adminMessage.toString(), e, XeptionType.FOR_ADMIN, null, adminMessage, null);
+    }
+
+    public static Xeption forAdmin(L10nMessage adminMessage){
+        return forAdmin(adminMessage, null);
+    }
+
     public static Xeption forDeveloper(String message, Exception cause){
         return new Xeption(message, cause, XeptionType.FOR_DEVELOPER, message, null, null);
     }

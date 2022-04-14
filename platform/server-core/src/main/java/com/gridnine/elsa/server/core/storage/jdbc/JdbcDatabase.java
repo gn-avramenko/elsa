@@ -10,12 +10,16 @@ import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.common.core.model.common.ClassMapper;
 import com.gridnine.elsa.common.core.model.common.EnumMapper;
 import com.gridnine.elsa.common.core.model.domain.BaseAsset;
+import com.gridnine.elsa.common.core.model.domain.BaseDocument;
+import com.gridnine.elsa.common.core.model.domain.BaseSearchableProjection;
 import com.gridnine.elsa.common.core.model.domain.VersionInfo;
 import com.gridnine.elsa.common.core.reflection.ReflectionFactory;
 import com.gridnine.elsa.common.core.search.*;
 import com.gridnine.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.elsa.common.core.utils.LocaleUtils;
+import com.gridnine.elsa.common.core.utils.RunnableWithExceptionAndArgument;
 import com.gridnine.elsa.common.core.utils.TextUtils;
+import com.gridnine.elsa.common.meta.domain.AssetDescription;
 import com.gridnine.elsa.common.meta.domain.BaseSearchableDescription;
 import com.gridnine.elsa.common.meta.domain.DatabasePropertyType;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
@@ -31,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -72,12 +77,12 @@ public class JdbcDatabase implements Database {
         var columnNames = getColumnNames(description, Collections.emptySet(), Collections.emptySet());
         var sql = "select %s from %s where %s = ?".formatted(StringUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.id);
         var result = template.query(sql, ps -> ps.setLong(1, id), rs -> {
-            if(!rs.next()){
+            if (!rs.next()) {
                 return null;
             }
             return ExceptionUtils.wrapException(() -> {
                 var asset = aClass.getDeclaredConstructor().newInstance();
-                var handler = new AssetWrapperReflectionHandler<>(asset);
+                var handler = new AssetWrapperReflectionHandler<>(asset, domainMetaRegistry);
                 fillObject(rs, handler, description, Collections.emptySet(), Collections.emptySet());
                 return handler;
             });
@@ -90,17 +95,29 @@ public class JdbcDatabase implements Database {
     public <A extends BaseAsset> void saveAsset(DatabaseAssetWrapper<A> assetWrapper, DatabaseAssetWrapper<A> oldAsset) throws Exception {
         if (oldAsset != null) {
             Set<String> changedProperties = new LinkedHashSet<>();
-            var handler = new AssetWrapperReflectionHandler<>(assetWrapper);
-            var oldHandler = new AssetWrapperReflectionHandler<>(oldAsset);
+            var handler = new AssetWrapperReflectionHandler<>(assetWrapper, domainMetaRegistry);
+            var oldHandler = new AssetWrapperReflectionHandler<>(oldAsset, domainMetaRegistry);
             var description = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(assetWrapper.getAsset().getClass().getName()));
-            description.getFields().keySet().forEach(it -> {
-                if (!JdbcUtils.isEquals(handler.getValue(it), oldHandler.getValue(it))) {
-                    changedProperties.add(it);
+            entry:
+            for (var entry : description.getFields().entrySet()) {
+                var newValues = entry.getValue().getSqlValues(handler.getValue(entry.getKey()), enumMapper, classMapper, reflectionFactory);
+                var oldValues = entry.getValue().getSqlValues(oldHandler.getValue(entry.getKey()), enumMapper, classMapper, reflectionFactory);
+                if (newValues.size() != oldValues.size()) {
+                    changedProperties.add(entry.getKey());
+                    continue;
                 }
-            });
+                for (var entry2 : oldValues.entrySet()) {
+                    var newValue = newValues.get(entry2.getKey());
+                    if (newValue == null ||
+                            !JdbcUtils.isEquals(entry2.getValue().getKey(), newValue.getKey())) {
+                        changedProperties.add(entry.getKey());
+                        continue entry;
+                    }
+                }
+            }
             if (!changedProperties.isEmpty()) {
                 var columnsValues = new LinkedHashMap<String, Pair<Object, SqlType>>();
-                for(var it: changedProperties){
+                for (var it : changedProperties) {
                     var fh = description.getFields().get(it);
                     columnsValues.putAll(fh.getSqlValues(handler.getValue(it), enumMapper, classMapper, reflectionFactory));
                 }
@@ -108,7 +125,7 @@ public class JdbcDatabase implements Database {
                         StringUtils.join(columnsValues.keySet().stream().map("%s = ?"::formatted).toList(), ", "));
                 template.update(query, (ps) -> {
                     int idx = 1;
-                    for (Map.Entry<String, Pair<Object,SqlType>> entry : columnsValues.entrySet()) {
+                    for (Map.Entry<String, Pair<Object, SqlType>> entry : columnsValues.entrySet()) {
                         var value = entry.getValue().getKey();
                         if (value == null) {
                             ps.setNull(idx, getSqlType(entry.getValue().getValue()));
@@ -122,7 +139,7 @@ public class JdbcDatabase implements Database {
             }
             return;
         }
-        insert(new AssetWrapperReflectionHandler<>(assetWrapper),
+        insert(new AssetWrapperReflectionHandler<>(assetWrapper, domainMetaRegistry),
                 JdbcUtils.getTableName(assetWrapper.getAsset().getClass().getName()));
     }
 
@@ -136,25 +153,27 @@ public class JdbcDatabase implements Database {
     @Override
     public <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery updateQuery) throws Exception {
         Set<String> properties = new LinkedHashSet<>();
-        properties.add(BaseIdentity.Fields.id);
-        properties.add(VersionInfo.Properties.revision);
-        properties.add(VersionInfo.Properties.comment);
-        properties.add(VersionInfo.Properties.modified);
-        properties.add(VersionInfo.Properties.modifiedBy);
-        properties.add(VersionInfo.Properties.versionNumber);
-        properties.addAll(updateQuery.getPreferredFields());
-        return searchObjects(cls, () -> new AssetWrapperReflectionHandler<>(cls.getDeclaredConstructor().newInstance()),
-                updateQuery, properties).stream().map(it -> it.wrapper.getAsset()).toList();
+        if (!updateQuery.getPreferredFields().isEmpty()) {
+            properties.add(BaseIdentity.Fields.id);
+            properties.add(VersionInfo.Properties.revision);
+            properties.add(VersionInfo.Properties.comment);
+            properties.add(VersionInfo.Properties.modified);
+            properties.add(VersionInfo.Properties.modifiedBy);
+            properties.add(VersionInfo.Properties.versionNumber);
+            properties.addAll(updateQuery.getPreferredFields());
+        }
+        return searchObjects(cls, () -> new AssetWrapperReflectionHandler<>(cls.getDeclaredConstructor().newInstance(), domainMetaRegistry),
+                updateQuery, properties, Collections.singleton(DatabaseMetadataProvider.AGGREGATED_DATA_COLUMN)).stream().map(it -> it.wrapper.getAsset()).toList();
     }
 
     @Override
-    public List<VersionMetadata> getVersionsMetadata(Class<?> cls, long id) {
+    public List<VersionInfo> getVersionsMetadata(Class<?> cls, long id) {
         var fields = new LinkedHashSet<String>();
         fields.add(VersionInfo.Properties.versionNumber.toLowerCase());
         fields.add(VersionInfo.Properties.comment.toLowerCase());
         fields.add(VersionInfo.Properties.modified.toLowerCase());
         fields.add(VersionInfo.Properties.modifiedBy.toLowerCase());
-        var result = new ArrayList<VersionMetadata>();
+        var result = new ArrayList<VersionInfo>();
         {
             var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getVersionTableName(cls.getName()));
             var selectSql = "select %s from %s where %s = ?".formatted(StringUtils.join(fields, ","),
@@ -162,9 +181,9 @@ public class JdbcDatabase implements Database {
             result.addAll(template.query(selectSql, (ps) -> {
                 ps.setLong(1, id);
             }, (rs, idx) -> ExceptionUtils.wrapException(() -> {
-                var object = new VersionMetadataReflectionHandler();
+                var object = new VersionInfo();
                 fillObject(rs, object, descr, fields, Collections.emptySet());
-                return object.metadata;
+                return object;
             })));
         }
         {
@@ -174,12 +193,11 @@ public class JdbcDatabase implements Database {
             result.addAll(template.query(selectSql, (ps) -> {
                 ps.setLong(1, id);
             }, (rs, idx) -> ExceptionUtils.wrapException(() -> {
-                var object = new VersionMetadataReflectionHandler();
+                var object = new VersionInfo();
                 fillObject(rs, object, descr, fields, Collections.emptySet());
-                return object.metadata;
+                return object;
             })));
         }
-        result.sort(Comparator.comparing(VersionMetadata::getVersionNumber));
         return result;
     }
 
@@ -191,13 +209,13 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public VersionData loadVersion(Class<?> cls, long id, int number) throws Exception {
+    public ObjectData loadVersion(Class<?> cls, long id, int number) throws Exception {
         var fields = new LinkedHashSet<String>();
         fields.add(VersionInfo.Properties.versionNumber.toLowerCase());
         fields.add(VersionInfo.Properties.comment.toLowerCase());
         fields.add(VersionInfo.Properties.modified.toLowerCase());
         fields.add(VersionInfo.Properties.modifiedBy.toLowerCase());
-        fields.add(VersionData.Fields.data.toLowerCase());
+        fields.add(ObjectData.Fields.data.toLowerCase());
         var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getVersionTableName(cls.getName()));
         var selectSql = "select %s from %s where %s = ? and %s = ?".formatted(StringUtils.join(fields, ","),
                 JdbcUtils.getVersionTableName(cls.getName()), DatabaseMetadataProvider.OBJECT_ID_COLUMN,
@@ -206,9 +224,9 @@ public class JdbcDatabase implements Database {
             ps.setLong(1, id);
             ps.setInt(2, number);
         }, (rs, idx) -> ExceptionUtils.wrapException(() -> {
-            var object = new VersionDataReflectionHandler();
+            var object = new ObjectData();
             fillObject(rs, object, descr, fields, Collections.emptySet());
-            return object.data;
+            return object;
         }));
         return res.get(0);
     }
@@ -220,7 +238,9 @@ public class JdbcDatabase implements Database {
             ps.setLong(1, id);
             ps.setInt(2, number);
         });
-        dialect.deleteBlob(version.getData().id());
+        withConnection((cnn) -> {
+            dialect.deleteBlob(cnn, version.getData().id());
+        });
     }
 
     @Override
@@ -230,12 +250,12 @@ public class JdbcDatabase implements Database {
         var columnNames = getColumnNames(description, Collections.emptySet(), Collections.singleton(DatabaseMetadataProvider.AGGREGATED_DATA_COLUMN));
         var sql = "select %s from %s where %s = ?".formatted(StringUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.id);
         var result = template.query(sql, ps -> ps.setLong(1, id), rs -> {
-            if(!rs.next()){
+            if (!rs.next()) {
                 return null;
             }
             return ExceptionUtils.wrapException(() -> {
                 var asset = cls.getDeclaredConstructor().newInstance();
-                var handler = new AssetWrapperReflectionHandler<>(asset);
+                var handler = new AssetWrapperReflectionHandler<>(asset, domainMetaRegistry);
                 fillObject(rs, handler, description, Collections.emptySet(), Collections.singleton(DatabaseMetadataProvider.AGGREGATED_DATA_COLUMN));
                 return handler;
             });
@@ -243,19 +263,254 @@ public class JdbcDatabase implements Database {
         return result == null ? null : result.getWrapper().getAsset();
     }
 
+    @Override
+    public <D extends BaseDocument> ObjectData loadDocumentData(Class<D> cls, long id) {
+        var fields = new LinkedHashSet<String>();
+        fields.add(VersionInfo.Properties.versionNumber);
+        fields.add(VersionInfo.Properties.comment);
+        fields.add(VersionInfo.Properties.modified);
+        fields.add(VersionInfo.Properties.modifiedBy);
+        fields.add(ObjectData.Fields.data);
+        var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
+        var selectSql = "select %s from %s where %s = ?".formatted(StringUtils.join(fields, ","),
+                JdbcUtils.getTableName(cls.getName()), BaseIdentity.Fields.id);
+        var res = template.query(selectSql, (ps) -> {
+            ps.setLong(1, id);
+        }, (rs, idx) -> ExceptionUtils.wrapException(() -> {
+            var object = new ObjectData();
+            fillObject(rs, object, descr, fields, Collections.emptySet());
+            return object;
+        }));
+        return res.isEmpty() ? null : res.get(0);
+    }
+
+    @Override
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<I> searchDocuments(Class<I> projClass, SearchQuery query) throws Exception {
+        Set<String> properties = new LinkedHashSet<>();
+        if (!query.getPreferredFields().isEmpty()) {
+            properties.add(BaseIdentity.Fields.id);
+            properties.add(BaseSearchableProjection.Fields.document);
+            properties.add(BaseSearchableProjection.Fields.navigationKey);
+            properties.addAll(query.getPreferredFields());
+        }
+
+        return searchObjects(projClass, () ->
+                        new DatabaseSearchableProjectionWrapper<D, I>(reflectionFactory.newInstance(projClass), domainMetaRegistry, null),
+                query, properties, Collections.singleton(DatabaseMetadataProvider.AGGREGATED_DATA_COLUMN)).stream().map(
+                DatabaseSearchableProjectionWrapper::getProjection
+        ).toList();
+    }
+
+    @Override
+    public <A extends BaseAsset> List<List<Object>> searchAssets(Class<A> cls, AggregationQuery updateQuery) throws Exception {
+        return aggregationSearchObjects(cls, updateQuery);
+    }
+
+    @Override
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<List<Object>> searchDocuments(Class<I> cls, AggregationQuery updateQuery) throws Exception {
+        return aggregationSearchObjects(cls, updateQuery);
+    }
+
+    @Override
+    public void updateProjections(Class<BaseSearchableProjection<BaseDocument>> projectionClass, long id, ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>> wrappers, boolean update) throws Exception {
+        var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(projectionClass.getName()));
+        if (!update) {
+            for (var proj : wrappers) {
+                insert(proj,
+                        JdbcUtils.getTableName(projectionClass.getName()));
+            }
+            return;
+        }
+        var selectSql = "select %s from %s where document = ?".formatted(
+                StringUtils.join(getColumnNames(descr, Collections.emptySet(), Collections.emptySet()), ", "),
+                descr.getName());
+        var existingProjections = template.query(selectSql, (ps) -> {
+            ps.setLong(1, id);
+        }, (rs, idx) -> ExceptionUtils.wrapException(() -> {
+            var res = new DatabaseSearchableProjectionWrapper<>(reflectionFactory.newInstance(projectionClass), domainMetaRegistry, null);
+            fillObject(rs, res, descr, Collections.emptySet(), Collections.emptySet());
+            return res;
+        }));
+        if (!existingProjections.isEmpty()) {
+            var navKeys = new HashSet<Integer>();
+            var hasAmbiquity = new AtomicReference<>(false);
+            existingProjections.forEach(it -> {
+                var navKey = it.getProjection().getNavigationKey();
+                if (navKeys.contains(navKey)) {
+                    hasAmbiquity.set(true);
+                }
+                navKeys.add(navKey);
+            });
+            if (hasAmbiquity.get()) {
+                template.update("delete from %s where document = ?".formatted(descr.getName()), (ps) -> {
+                    ps.setLong(1, id);
+                });
+                existingProjections.clear();
+            }
+        }
+        var toDeleteNavigationKeys = new ArrayList<>(existingProjections.stream().map(it -> it.getProjection().getNavigationKey()).toList());
+        for (var wrapper : wrappers) {
+            var existing = existingProjections.stream()
+                    .filter(it -> Objects.equals(it.getProjection().getNavigationKey(), wrapper.getProjection().getNavigationKey())).findFirst().orElse(null);
+            if (existing == null) {
+                insert(wrapper,
+                        JdbcUtils.getTableName(projectionClass.getName()));
+                continue;
+            }
+            toDeleteNavigationKeys.remove(existing.getProjection().getNavigationKey());
+            Set<String> changedProperties = new LinkedHashSet<>();
+            entry:
+            for (var entry : descr.getFields().entrySet()) {
+                var newValues = entry.getValue().getSqlValues(wrapper.getValue(entry.getKey()), enumMapper, classMapper, reflectionFactory);
+                var oldValues = entry.getValue().getSqlValues(existing.getValue(entry.getKey()), enumMapper, classMapper, reflectionFactory);
+                if (newValues.size() != oldValues.size()) {
+                    changedProperties.add(entry.getKey());
+                    continue;
+                }
+                for (var entry2 : oldValues.entrySet()) {
+                    var newValue = newValues.get(entry2.getKey());
+                    if (newValue == null ||
+                            !JdbcUtils.isEquals(entry2.getValue().getKey(), newValue.getKey())) {
+                        changedProperties.add(entry.getKey());
+                        continue entry;
+                    }
+                }
+            }
+            if (!changedProperties.isEmpty()) {
+                var columnsValues = new LinkedHashMap<String, Pair<Object, SqlType>>();
+                for (var it : changedProperties) {
+                    var fh = descr.getFields().get(it);
+                    columnsValues.putAll(fh.getSqlValues(wrapper.getValue(it), enumMapper, classMapper, reflectionFactory));
+                }
+                var query = "update %s set %s where %s = ? and %s".formatted(descr.getName(),
+                        StringUtils.join(columnsValues.keySet().stream().map("%s = ?"::formatted).toList(), ", "),
+                        BaseSearchableProjection.Fields.document, existing.getProjection().getNavigationKey() == null ?
+                                "%s is null".formatted(BaseSearchableProjection.Fields.navigationKey) :
+                                "%s = ?".formatted(BaseSearchableProjection.Fields.navigationKey));
+                template.update(query, (ps) -> {
+                    int idx = 1;
+                    for (Map.Entry<String, Pair<Object, SqlType>> entry : columnsValues.entrySet()) {
+                        var value = entry.getValue().getKey();
+                        if (value == null) {
+                            ps.setNull(idx, getSqlType(entry.getValue().getValue()));
+                        } else {
+                            setValue(ps, idx, entry.getValue().getValue(), entry.getValue().getKey());
+                        }
+                        idx++;
+                    }
+                    ps.setLong(columnsValues.size() + 1, id);
+                    if (existing.getProjection().getNavigationKey() != null) {
+                        ps.setLong(columnsValues.size() + 2, existing.getProjection().getNavigationKey());
+                    }
+                });
+            }
+        }
+        for (var navKey : toDeleteNavigationKeys) {
+            template.update("delete from %s where %s = ? and %s %s".formatted(
+                            descr.getName(), BaseSearchableProjection.Fields.navigationKey, BaseSearchableProjection.Fields.navigationKey,
+                            navKey == null ? "is null" : "= ?"), ps -> {
+                        ps.setLong(1, id);
+                        if (navKey != null) {
+                            ps.setInt(2, navKey);
+                        }
+                    }
+            );
+        }
+    }
+
+    @Override
+    public <D extends BaseDocument> void saveDocument(long id, Class<D> aClass, ObjectData obj, ObjectData oldDocument) throws Exception {
+        if (oldDocument != null) {
+            template.update("delete from %s where %s = ?".formatted(JdbcUtils.getTableName(aClass.getName()), BaseIdentity.Fields.id)
+                    , (ps -> ps.setLong(1, id)));
+            withConnection((cnn) -> dialect.deleteBlob(cnn, oldDocument.getData().id()));
+        }
+        var wrapper = new DocumentWrapperReflectionHandler(id);
+        wrapper.setData(obj.getData());
+        wrapper.setComment(obj.getComment());
+        wrapper.setRevision(obj.getRevision());
+        wrapper.setModified(obj.getModified());
+        wrapper.setModifiedBy(obj.getModifiedBy());
+        wrapper.setVersionNumber(obj.getVersionNumber());
+        insert(wrapper, JdbcUtils.getTableName(aClass.getName()));
+    }
+
+    @Override
+    public <D extends BaseDocument> void saveDocumentVersion(Class<D> aClass, long id, ObjectData version, Long oldVersionDataId) throws Exception {
+        if (oldVersionDataId != null) {
+            template.update("delete from %s where %s = ? and %s = ?"
+                            .formatted(JdbcUtils.getVersionTableName(aClass.getName()),
+                                    DatabaseMetadataProvider.OBJECT_ID_COLUMN, VersionInfo.Properties.versionNumber)
+                    , ps -> {
+                        ps.setLong(1, id);
+                        ps.setInt(2, version.getVersionNumber());
+                    });
+            withConnection((cnn) -> dialect.deleteBlob(cnn, oldVersionDataId));
+        }
+        var handler = new VersionWrapperReflectionHandler(version, version.getData(), id);
+        insert(handler, JdbcUtils.getVersionTableName(aClass.getName()));
+    }
+
+    @Override
+    public <D extends BaseDocument> void deleteDocument(Class<D> aClass, long id, Long oid) throws Exception {
+        template.update("delete from %s where %s = ?"
+                        .formatted(JdbcUtils.getVersionTableName(aClass.getName()),
+                                BaseIdentity.Fields.id, VersionInfo.Properties.versionNumber)
+                , ps -> {
+                    ps.setLong(1, id);
+                });
+        withConnection((cnn) -> dialect.deleteBlob(cnn, oid));
+    }
+
+    private <E extends BaseIntrospectableObject> List<List<Object>> aggregationSearchObjects(
+            Class<E> cls, AggregationQuery query) throws Exception {
+        var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
+        var wherePart = prepareWherePart(query.getCriterions(), query.getFreeText(), descr);
+        var selectPart = prepareProjectionSelectPart(query);
+        var groupByPart = prepareProjectionGroupByPart(query);
+        var selectSql = "select %s from %s %s%s".formatted(selectPart, descr.getName(), wherePart.sql, groupByPart);
+        var searchStatement = createPreparedStatementSetter(wherePart);
+        return template.query(selectSql, searchStatement, (rs, idx) -> {
+            var result = new ArrayList<>();
+            for (int n = 0; n < query.getAggregations().size(); n++) {
+                result.add(rs.getObject(n + 1));
+            }
+            return result;
+        });
+    }
+
+    private String prepareProjectionGroupByPart(AggregationQuery query) {
+        return StringUtils.join(query.getGroupBy().stream().map("group by %s"::formatted).toList(), ", ");
+    }
+
+    private String prepareProjectionSelectPart(AggregationQuery query) {
+        var selectProperties = new ArrayList<String>();
+        for (var proj : query.getAggregations()) {
+            switch (proj.operation()) {
+                case MAX -> selectProperties.add("max(%s)".formatted(proj.property()));
+                case MIN -> selectProperties.add("min(%s)".formatted(proj.property()));
+                case AVG -> selectProperties.add("avg(%s)".formatted(proj.property()));
+                case SUM -> selectProperties.add("sum(%s)".formatted(proj.property()));
+                case COUNT -> selectProperties.add("count(%s)".formatted(proj.property()));
+                case PROPERTY -> selectProperties.add(proj.property());
+            }
+        }
+        return StringUtils.join(selectProperties, ", ");
+    }
+
     private void insert(BaseIntrospectableObject obj, String tableName) throws Exception {
         var description = dbMetadataProvider.getDescriptions().get(tableName);
         var properties = description.getFields().keySet();
-        var columnsValues = new LinkedHashMap<String, Pair<Object,SqlType>>();
-        for(var entry: description.getFields().entrySet()){
-            columnsValues.putAll(entry.getValue().getSqlValues(obj.getValue(entry.getKey()), enumMapper, classMapper,reflectionFactory));
+        var columnsValues = new LinkedHashMap<String, Pair<Object, SqlType>>();
+        for (var entry : description.getFields().entrySet()) {
+            columnsValues.putAll(entry.getValue().getSqlValues(obj.getValue(entry.getKey()), enumMapper, classMapper, reflectionFactory));
         }
         var query = "insert into %s (%s) values (%s)".formatted(description.getName(),
                 StringUtils.join(columnsValues.keySet(), ", "),
                 StringUtils.join(columnsValues.keySet().stream().map(it -> "?").toList(), ", "));
         template.update(query, (ps) -> {
             int idx = 1;
-            for (Map.Entry<String, Pair<Object,SqlType>> entry : columnsValues.entrySet()) {
+            for (Map.Entry<String, Pair<Object, SqlType>> entry : columnsValues.entrySet()) {
                 var value = entry.getValue().getKey();
                 if (value == null) {
                     ps.setNull(idx, getSqlType(entry.getValue().getValue()));
@@ -294,13 +549,13 @@ public class JdbcDatabase implements Database {
     public void updateCaptions(Class<?> aClass, long id, LinkedHashMap<Locale, String> captions, boolean insert) throws Exception {
         if (insert) {
             template.update("insert into %s(id, %s) values (?, %s)".formatted(JdbcUtils.getCaptionTableName(aClass.getName()),
-               StringUtils.join(captions.keySet().stream().map(it -> "%sname".formatted(it.getLanguage())), ", "),
+                    StringUtils.join(captions.keySet().stream().map(it -> "%sname".formatted(it.getLanguage())), ", "),
                     StringUtils.join(captions.keySet().stream().map(it -> "?"), ", ")
             ), (ps) -> {
                 ps.setLong(1, id);
                 var cpts = captions.values().stream().toList();
-                for(int n = 0; n < captions.size(); n++){
-                    ps.setString(2+n, cpts.get(n));
+                for (int n = 0; n < captions.size(); n++) {
+                    ps.setString(2 + n, cpts.get(n));
                 }
             });
             return;
@@ -310,8 +565,8 @@ public class JdbcDatabase implements Database {
                 StringUtils.join(captions.keySet().stream().map(it -> "%sname = ?".formatted(it.getLanguage())), ", ")
         ), (ps) -> {
             var cpts = captions.values().stream().toList();
-            for(int n = 0; n < captions.size(); n++){
-                ps.setString(1+n, cpts.get(n));
+            for (int n = 0; n < captions.size(); n++) {
+                ps.setString(1 + n, cpts.get(n));
             }
             ps.setLong(cpts.size(), id);
         });
@@ -321,11 +576,14 @@ public class JdbcDatabase implements Database {
         ExceptionUtils.wrapException(() -> {
             switch (key) {
                 case LONG_ID, LONG -> ps.setLong(idx, (long) value);
-                case LONG_ARRAY -> ps.getConnection().createArrayOf("bigint", ((Collection<Object>) value).toArray());
+                case LONG_ARRAY -> {
+                    var array = ps.getConnection().createArrayOf("bigint", ((Collection<Object>) value).toArray());
+                    ps.setArray(idx, array);
+                }
                 case INT_ID, INT -> ps.setInt(idx, (int) value);
-                case INT_ARRAY -> ps.getConnection().createArrayOf("integer", ((Collection<Object>) value).toArray());
+                case INT_ARRAY -> ps.setArray(idx, ps.getConnection().createArrayOf("integer", ((Collection<Object>) value).toArray()));
                 case STRING, TEXT -> ps.setString(idx, (String) value);
-                case STRING_ARRAY -> ps.getConnection().createArrayOf("varchar", ((Collection<Object>) value).toArray());
+                case STRING_ARRAY -> ps.setArray(idx, ps.getConnection().createArrayOf("varchar", ((Collection<Object>) value).toArray()));
                 case BOOLEAN -> ps.setBoolean(idx, (boolean) value);
                 case DATE -> ps.setDate(idx, (Date) value);
                 case DATE_TIME -> ps.setTimestamp(idx, (Timestamp) value);
@@ -379,13 +637,13 @@ public class JdbcDatabase implements Database {
     }
 
     private <A extends BaseIntrospectableObject> List<A> searchObjects(Class<?> cls, Callable<A> factory, SearchQuery query,
-                                                                       Set<String> properties) throws Exception {
+                                                                       Set<String> properties, Set<String> excludedProperties) throws Exception {
         var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
         var wherePart = prepareWherePart(query.getCriterions(), query.getFreeText(), descr);
         var joinPart = prepareJoinPart(query.getOrders(), cls);
         var orderPart = prepareOrderPart(query.getOrders(), cls);
         var limitPart = prepareLimitPart(query);
-        var selectSql = "select %s from %s ".formatted(StringUtils.join(getColumnNames(descr, properties, Collections.emptySet()), ", ")
+        var selectSql = "select %s from %s ".formatted(StringUtils.join(getColumnNames(descr, properties, excludedProperties), ", ")
                 , JdbcUtils.getTableName(cls.getName())) +
                 joinPart +
                 wherePart.sql +
@@ -393,7 +651,7 @@ public class JdbcDatabase implements Database {
                 limitPart;
         return template.query(selectSql, createPreparedStatementSetter(wherePart), (rs, idx) -> ExceptionUtils.wrapException(() -> {
             var object = factory.call();
-            fillObject(rs, object, descr, properties, Collections.emptySet());
+            fillObject(rs, object, descr, properties, excludedProperties);
             return object;
         }));
     }
@@ -625,7 +883,7 @@ public class JdbcDatabase implements Database {
     }
 
     private void addSimpleCriterion(StringBuilder sql,
-                                    List<Pair<Object,SqlType>> values,
+                                    List<Pair<Object, SqlType>> values,
                                     String property,
                                     String operation,
                                     Object value,
@@ -639,69 +897,32 @@ public class JdbcDatabase implements Database {
     }
 
     private Pair<Object, SqlType> getSqlQueryValue(Object value, DatabaseTableDescription descr, String propertyName) throws Exception {
-        return descr.getFields().get(propertyName).getSqlQueryValue(value, enumMapper, classMapper,reflectionFactory);
+        return descr.getFields().get(propertyName).getSqlQueryValue(value, enumMapper, classMapper, reflectionFactory);
     }
 
-    static class VersionDataReflectionHandler extends BaseIntrospectableObject {
-        final VersionData data = new VersionData();
-
-        @Override
-        public void setValue(String propertyName, Object value) {
-            if (VersionInfo.Properties.comment.equals(propertyName)) {
-                data.setComment((String) value);
-                return;
-            }
-            if (VersionInfo.Properties.modified.equals(propertyName)) {
-                data.setModified((LocalDateTime) value);
-                return;
-            }
-            if (VersionInfo.Properties.modifiedBy.equals(propertyName)) {
-                data.setModifiedBy((String) value);
-                return;
-            }
-            if (VersionInfo.Properties.versionNumber.equals(propertyName)) {
-                data.setVersionNumber((int) value);
-                return;
-            }
-            if (VersionData.Fields.data.equals(propertyName)) {
-                data.setData((BlobWrapper) value);
-                return;
-            }
-            super.setValue(propertyName, value);
-        }
-
-        @Override
-        public Object getValue(String propertyName) {
-            if (VersionInfo.Properties.comment.equals(propertyName)) {
-                return data.getComment();
-            }
-            if (VersionInfo.Properties.modified.equals(propertyName)) {
-                return data.getModified();
-            }
-            if (VersionInfo.Properties.modifiedBy.equals(propertyName)) {
-                return data.getModifiedBy();
-            }
-            if (VersionInfo.Properties.versionNumber.equals(propertyName)) {
-                return data.getVersionNumber();
-            }
-            if (VersionData.Fields.data.equals(propertyName)) {
-                return data.getData();
-            }
-            throw new IllegalArgumentException("unsuppoorted propertyName " + propertyName);
+    private void withConnection(RunnableWithExceptionAndArgument<Connection> callback) throws Exception {
+        Connection con = DataSourceUtils.getConnection(template.getDataSource());
+        try {
+            callback.run(con);
+        } finally {
+            DataSourceUtils.releaseConnection(con, template.getDataSource());
         }
     }
-
 
     static class AssetWrapperReflectionHandler<A extends BaseAsset> extends BaseIntrospectableObject {
         private final DatabaseAssetWrapper<A> wrapper;
 
-        AssetWrapperReflectionHandler(DatabaseAssetWrapper<A> wrapper) {
+        private final AssetDescription assetDescr;
+
+        AssetWrapperReflectionHandler(DatabaseAssetWrapper<A> wrapper, DomainMetaRegistry registry) {
             this.wrapper = wrapper;
+            this.assetDescr = registry.getAssets().get(wrapper.getAsset().getClass().getName());
         }
 
-        AssetWrapperReflectionHandler(A asset) {
+        AssetWrapperReflectionHandler(A asset, DomainMetaRegistry registry) {
             this.wrapper = new DatabaseAssetWrapper<>();
             wrapper.setAsset(asset);
+            this.assetDescr = registry.getAssets().get(wrapper.getAsset().getClass().getName());
             wrapper.getAsset().setVersionInfo(new VersionInfo());
         }
 
@@ -735,7 +956,14 @@ public class JdbcDatabase implements Database {
                 wrapper.setAggregatedData((String) value);
                 return;
             }
-            wrapper.getAsset().setValue(propertyName, value);
+            if (assetDescr.getProperties().containsKey(propertyName)) {
+                wrapper.getAsset().setValue(propertyName, value);
+                return;
+            }
+            var coll = (Collection<Object>) wrapper.getAsset().getCollection(propertyName);
+            coll.clear();
+            coll.addAll((Collection<Object>) value);
+
         }
 
         @Override
@@ -762,25 +990,18 @@ public class JdbcDatabase implements Database {
         }
     }
 
-    static class VersionMetadataReflectionHandler extends BaseIntrospectableObject {
-        final VersionMetadata metadata = new VersionMetadata();
+
+    static class DocumentWrapperReflectionHandler extends ObjectData {
+        private long id;
+
+        DocumentWrapperReflectionHandler(long id) {
+            this.id = id;
+        }
 
         @Override
         public void setValue(String propertyName, Object value) {
-            if (VersionInfo.Properties.comment.equals(propertyName)) {
-                metadata.setComment((String) value);
-                return;
-            }
-            if (VersionInfo.Properties.modified.equals(propertyName)) {
-                metadata.setModified((LocalDateTime) value);
-                return;
-            }
-            if (VersionInfo.Properties.modifiedBy.equals(propertyName)) {
-                metadata.setModifiedBy((String) value);
-                return;
-            }
-            if (VersionInfo.Properties.versionNumber.equals(propertyName)) {
-                metadata.setVersionNumber((int) value);
+            if (BaseIdentity.Fields.id.equals(propertyName)) {
+                id = (long) value;
                 return;
             }
             super.setValue(propertyName, value);
@@ -788,19 +1009,10 @@ public class JdbcDatabase implements Database {
 
         @Override
         public Object getValue(String propertyName) {
-            if (VersionInfo.Properties.comment.equals(propertyName)) {
-                return metadata.getComment();
+            if (BaseIdentity.Fields.id.equals(propertyName)) {
+                return id;
             }
-            if (VersionInfo.Properties.modified.equals(propertyName)) {
-                return metadata.getModified();
-            }
-            if (VersionInfo.Properties.modifiedBy.equals(propertyName)) {
-                return metadata.getModifiedBy();
-            }
-            if (VersionInfo.Properties.versionNumber.equals(propertyName)) {
-                return metadata.getVersionNumber();
-            }
-            throw new IllegalArgumentException("unsuppoorted propertyName " + propertyName);
+            return super.getValue(propertyName);
         }
     }
 

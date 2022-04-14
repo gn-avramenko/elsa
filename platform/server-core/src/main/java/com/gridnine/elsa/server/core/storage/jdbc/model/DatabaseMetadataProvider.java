@@ -221,8 +221,8 @@ public class DatabaseMetadataProvider {
             var collId = coll.getId();
             var handler = switch (coll.getElementType()){
                 case STRING -> new StringCollectionDatabaseFieldHandler(collId, true);
-                case ENUM -> new EnumDatabaseFieldHandler(collId, reflectionFactory.getClass(coll.getElementClassName()), true);
-                case ENTITY_REFERENCE ->  new EntityReferenceDatabaseFieldHandler(collId, true, reflectionFactory.getClass(coll.getElementClassName()),
+                case ENUM -> new EnumCollectionDatabaseFieldHandler(collId, reflectionFactory.getClass(coll.getElementClassName()), true);
+                case ENTITY_REFERENCE ->  new EntityReferenceCollectionDatabaseFieldHandler(collId, true, reflectionFactory.getClass(coll.getElementClassName()),
                         isAbstract(coll.getElementClassName()), isNotCachedCaption(coll.getElementClassName()));
             };
             table.getFields().put(collId, handler);

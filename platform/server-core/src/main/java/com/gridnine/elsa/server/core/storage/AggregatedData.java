@@ -18,6 +18,10 @@ public class AggregatedData {
 
     private DomainMetaRegistry registry;
 
+    public AggregatedData(DomainMetaRegistry registry){
+        this.registry = registry;
+    }
+
     public void aggregate(Object obj){
         if(obj == null){
             return;
@@ -33,7 +37,7 @@ public class AggregatedData {
                 data.add(en.name().toLowerCase());
                 return;
             }
-            data.addAll(descr.getDisplayNames().values());
+            data.addAll(descr.getDisplayNames().values().stream().map(String::toLowerCase).toList());
             return;
         }
         if(obj instanceof Collection<?> coll){
