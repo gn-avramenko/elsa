@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class JavaDomainFieldsClassCodeGenerator {
-    public static void generate(DomainMetaRegistry registry,  File destDir, Set<File> generatedFiles) throws Exception {
+    public static void generate(DomainMetaRegistry registry, File destDir, Set<File> generatedFiles) throws Exception {
         registry.getSearchableProjections().values().forEach(it -> BuildExceptionUtils.wrapException(() -> generateFieldsClass(it, destDir, generatedFiles)));
         registry.getAssets().values().forEach(it -> BuildExceptionUtils.wrapException(() -> generateFieldsClass(it, destDir, generatedFiles)));
     }
@@ -41,8 +41,8 @@ public class JavaDomainFieldsClassCodeGenerator {
                 gen.blankLine();
                 gen.addImport("com.gridnine.elsa.common.core.search.FieldNameSupport");
                 var sb = new StringBuilder("private static class _%sField extends FieldNameSupport".formatted(pd.getId()));
-                switch (pd.getType()){
-                    case LONG ->{
+                switch (pd.getType()) {
+                    case LONG -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.EqualitySupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.ComparisonSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.NumberOperationsSupport");
@@ -50,7 +50,7 @@ public class JavaDomainFieldsClassCodeGenerator {
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         sb.append(" implements EqualitySupport, ComparisonSupport, NumberOperationsSupport, SortSupport, ArgumentType<Long>");
                     }
-                    case  INT ->{
+                    case INT -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.EqualitySupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.ComparisonSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.NumberOperationsSupport");
@@ -58,14 +58,14 @@ public class JavaDomainFieldsClassCodeGenerator {
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         sb.append(" implements EqualitySupport, ComparisonSupport, NumberOperationsSupport, SortSupport, ArgumentType<Integer>");
                     }
-                    case LOCAL_DATE_TIME ->{
+                    case LOCAL_DATE_TIME -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.ComparisonSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.SortSupport");
                         gen.addImport("java.time.LocalDateTime");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         sb.append(" implements ComparisonSupport, SortSupport, ArgumentType<LocalDateTime>");
                     }
-                    case LOCAL_DATE ->{
+                    case LOCAL_DATE -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.ComparisonSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.SortSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.EqualitySupport");
@@ -73,7 +73,7 @@ public class JavaDomainFieldsClassCodeGenerator {
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         sb.append(" implements ComparisonSupport, SortSupport, EqualitySupport,  ArgumentType<LocalDate>");
                     }
-                    case ENTITY_REFERENCE ->{
+                    case ENTITY_REFERENCE -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.SortSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.EqualitySupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
@@ -81,7 +81,7 @@ public class JavaDomainFieldsClassCodeGenerator {
                         gen.addImport(pd.getClassName());
                         sb.append(" implements SortSupport, EqualitySupport, ArgumentType<EntityReference<%s>>".formatted(CodeGeneratorUtils.getSimpleName(pd.getClassName())));
                     }
-                    case BIG_DECIMAL ->{
+                    case BIG_DECIMAL -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.ComparisonSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.NumberOperationsSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.SortSupport");
@@ -89,19 +89,19 @@ public class JavaDomainFieldsClassCodeGenerator {
                         gen.addImport("java.math.BigDecimal");
                         sb.append(" implements ComparisonSupport, NumberOperationsSupport, SortSupport, ArgumentType<BigDecimal>");
                     }
-                    case BOOLEAN ->{
+                    case BOOLEAN -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.EqualitySupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         sb.append(" implements EqualitySupport, ArgumentType<Boolean>");
                     }
-                    case STRING ->{
+                    case STRING -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.EqualitySupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.StringOperationsSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.SortSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         sb.append(" implements EqualitySupport, StringOperationsSupport, SortSupport, ArgumentType<String>");
                     }
-                    case ENUM ->{
+                    case ENUM -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.EqualitySupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.SortSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
@@ -116,22 +116,22 @@ public class JavaDomainFieldsClassCodeGenerator {
                 gen.blankLine();
                 gen.addImport("com.gridnine.elsa.common.core.search.FieldNameSupport");
                 var sb = new StringBuilder("private static class _%sField extends FieldNameSupport".formatted(cd.getId()));
-                switch (cd.getElementType()){
-                    case ENTITY_REFERENCE ->{
+                switch (cd.getElementType()) {
+                    case ENTITY_REFERENCE -> {
                         gen.addImport("com.gridnine.elsa.common.core.model.domain.EntityReference");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         gen.addImport("com.gridnine.elsa.common.core.search.CollectionSupport");
                         gen.addImport(cd.getElementClassName());
                         sb.append(" implements CollectionSupport, ArgumentType<EntityReference<%s>>".formatted(CodeGeneratorUtils.getSimpleName(cd.getElementClassName())));
                     }
-                    case ENUM ->{
+                    case ENUM -> {
                         gen.addImport("com.gridnine.elsa.common.core.model.domain.EntityReference");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         gen.addImport("com.gridnine.elsa.common.core.search.CollectionSupport");
                         gen.addImport(cd.getElementClassName());
                         sb.append(" implements CollectionSupport, ArgumentType<%s>".formatted(CodeGeneratorUtils.getSimpleName(cd.getElementClassName())));
                     }
-                    case STRING ->{
+                    case STRING -> {
                         gen.addImport("com.gridnine.elsa.common.core.search.CollectionSupport");
                         gen.addImport("com.gridnine.elsa.common.core.search.ArgumentType");
                         sb.append(" implements CollectionSupport, ArgumentType<String>");
