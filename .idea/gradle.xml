@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/gradle-plugins" />
             <option value="$PROJECT_DIR$/gradle-plugins/internal" />
             <option value="$PROJECT_DIR$/platform" />
+            <option value="$PROJECT_DIR$/platform/common-core" />
             <option value="$PROJECT_DIR$/platform/common-meta" />
           </set>
         </option>
