@@ -3,10 +3,7 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.elsa.common.core.model.domain;
+package com.gridnine.elsa.common.core.search;
 
-public interface CachedCaptionProvider {
-
-    String getCaption(EntityReference<?> ref);
-
+public interface SortSupport {
 }

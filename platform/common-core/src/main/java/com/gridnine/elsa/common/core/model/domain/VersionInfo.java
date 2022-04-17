@@ -10,7 +10,7 @@ import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 import java.time.LocalDateTime;
 
 public class VersionInfo extends BaseIntrospectableObject {
-    public static class Properties{
+    public static class Fields {
         public static final String revision ="revision";
         public static final String modifiedBy="modifiedBy";
         public static final String modified="modified";
@@ -56,19 +56,19 @@ public class VersionInfo extends BaseIntrospectableObject {
     }
 
     public Object getValue(String propertyName) {
-        if(Properties.comment.equals(propertyName)){
+        if(Fields.comment.equals(propertyName)){
             return comment;
         }
-        if(Properties.modified.equals(propertyName)){
+        if(Fields.modified.equals(propertyName)){
             return modified;
         }
-        if(Properties.modifiedBy.equals(propertyName)){
+        if(Fields.modifiedBy.equals(propertyName)){
             return modifiedBy;
         }
-        if(Properties.revision.equals(propertyName)){
+        if(Fields.revision.equals(propertyName)){
             return revision;
         }
-        if(Properties.versionNumber.equals(propertyName)){
+        if(Fields.versionNumber.equals(propertyName)){
             return versionNumber;
         }
         return super.getValue(propertyName);
@@ -84,23 +84,23 @@ public class VersionInfo extends BaseIntrospectableObject {
 
     @Override
     public void setValue(String propertyName, Object value) {
-        if(Properties.comment.equals(propertyName)){
+        if(Fields.comment.equals(propertyName)){
             comment = (String) value;
             return;
         }
-        if(Properties.modified.equals(propertyName)){
+        if(Fields.modified.equals(propertyName)){
             modified = (LocalDateTime) value;
             return;
         }
-        if(Properties.modifiedBy.equals(propertyName)){
+        if(Fields.modifiedBy.equals(propertyName)){
             modifiedBy = (String) value;
             return;
         }
-        if(Properties.revision.equals(propertyName)){
+        if(Fields.revision.equals(propertyName)){
             revision = (int) value;
             return;
         }
-        if(Properties.versionNumber.equals(propertyName)){
+        if(Fields.versionNumber.equals(propertyName)){
             versionNumber = (int) value;
             return;
         }

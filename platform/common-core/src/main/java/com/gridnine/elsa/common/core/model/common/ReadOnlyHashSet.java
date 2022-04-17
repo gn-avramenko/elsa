@@ -5,7 +5,6 @@
 
 package com.gridnine.elsa.common.core.model.common;
 
-import org.springframework.lang.NonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,20 +32,21 @@ public class ReadOnlyHashSet<T> extends HashSet<T> {
         super.clear();
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
-    public boolean addAll(@NonNull Collection<? extends T> c) {
+    public boolean addAll(Collection<? extends T> coll) {
         if(!allowChanges){
             throw Xeption.forDeveloper("changes are not allowed");
         }
-        return super.addAll(c);
+        return super.addAll(coll);
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(Collection<?> coll) {
         if(!allowChanges){
             throw Xeption.forDeveloper("changes are not allowed");
         }
-        return super.removeAll(c);
+        return super.removeAll(coll);
     }
 
     @Override
