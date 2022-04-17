@@ -53,7 +53,9 @@ public class TransactionManager {
                 }
             } finally {
                 if (owner) {
+                    var callbacks = contexts.get().getPostCommitCallbacks();
                     contexts.remove();
+                    callbacks.forEach(it -> ExceptionUtils.wrapException(it::run));
                 }
             }
         });

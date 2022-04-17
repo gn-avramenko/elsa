@@ -69,6 +69,7 @@ public class DomainMetaRegistryParser {
             CommonParserUtils.updateLocalizationsOfChild(pd, localizations, description.getId());
             pd.setUseInTextSearch("true".equals(child.getAttribute("use-in-text-search")));
             pd.setCacheFind("true".equals(child.getAttribute("cache-find")));
+            pd.setCacheGetAll("true".equals(child.getAttribute("cache-get-all")));
             pd.setClassName(child.getAttribute("class-name"));
             pd.setType(DatabasePropertyType.valueOf(child.getAttribute("type")));
         });

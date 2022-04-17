@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class TestDomainDocumentProjectionHandler implements SearchableProjectionHandler<TestDomainDocument, TestDomainDocumentProjection> {
@@ -26,9 +27,10 @@ public class TestDomainDocumentProjectionHandler implements SearchableProjection
     }
 
     @Override
-    public List<TestDomainDocumentProjection> createProjections(TestDomainDocument doc) throws Exception {
+    public List<TestDomainDocumentProjection> createProjections(TestDomainDocument doc, Set<String> props) throws Exception {
         var proj = new TestDomainDocumentProjection();
         proj.setEnumProperty(doc.getEnumProperty());
+        proj.setGetAllProperty(doc.getGetAllProperty());
         proj.setEntityReference(doc.getEntityReference());
         proj.setStringProperty(doc.getStringProperty());
         proj.getEntityRefCollection().addAll(doc.getEntityRefCollection());

@@ -38,6 +38,7 @@ dependencies{
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("com.fasterxml.jackson.core:jackson-core:2.10.3")
     implementation("com.nothome:javaxdelta:2.0.1")
+    implementation("org.ehcache:ehcache:3.8.1")
     implementation(project(":platform:common-meta"))
     implementation(project(":platform:common-core"))
     testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")

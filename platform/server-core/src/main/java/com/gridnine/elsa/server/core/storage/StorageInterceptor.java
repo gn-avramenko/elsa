@@ -17,5 +17,7 @@ public interface StorageInterceptor extends HasPriority {
 
    default <D extends BaseDocument> void onSave(D doc, OperationContext<D> context) throws Exception{};
 
-   default  <D extends BaseDocument> void onDelete(D document, OperationContext<D> operationContext){};
+   default  <D extends BaseDocument> void onDelete(D document, OperationContext<D> operationContext) throws Exception {};
+
+
 }

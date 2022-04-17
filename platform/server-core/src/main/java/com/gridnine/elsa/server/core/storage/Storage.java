@@ -7,6 +7,7 @@ package com.gridnine.elsa.server.core.storage;
 
 import com.gridnine.elsa.common.core.l10n.SupportedLocalesProvider;
 import com.gridnine.elsa.common.core.lock.LockManager;
+import com.gridnine.elsa.common.core.model.common.BaseIdentity;
 import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.common.core.model.common.Localizable;
 import com.gridnine.elsa.common.core.model.common.Xeption;
@@ -16,10 +17,7 @@ import com.gridnine.elsa.common.core.serialization.CachedObjectConverter;
 import com.gridnine.elsa.common.core.serialization.JsonMarshaller;
 import com.gridnine.elsa.common.core.serialization.JsonUnmarshaller;
 import com.gridnine.elsa.common.core.serialization.SerializationParameters;
-import com.gridnine.elsa.common.core.utils.ExceptionUtils;
-import com.gridnine.elsa.common.core.utils.IoUtils;
-import com.gridnine.elsa.common.core.utils.ObjectFactoryWithException;
-import com.gridnine.elsa.common.core.utils.RunnableWithException;
+import com.gridnine.elsa.common.core.utils.*;
 import com.gridnine.elsa.common.meta.domain.BaseSearchableDescription;
 import com.gridnine.elsa.common.meta.domain.DatabaseCollectionDescription;
 import com.gridnine.elsa.common.meta.domain.DatabasePropertyDescription;
@@ -39,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -160,15 +159,15 @@ public class Storage {
     }
 
     public <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
-    List<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, Object propertyValue) {
+    Set<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, Object propertyValue) {
         init();
         return ExceptionUtils.wrapException(() -> getAllDocumentReferences(projClass, property, propertyValue, advices, 0));
     }
 
     public <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
-    List<D> getAllDocuments(Class<I> projClass, E property, Object propertyValue, boolean forModification) {
+    Set<D> getAllDocuments(Class<I> projClass, E property, Object propertyValue, boolean forModification) {
         init();
-        return getAllDocumentReferences(projClass, property, propertyValue).stream().map((it) -> loadDocument(it, forModification)).toList();
+        return getAllDocumentReferences(projClass, property, propertyValue).stream().map((it) -> loadDocument(it, forModification)).collect(Collectors.toSet());
     }
 
     public <A extends BaseAsset> List<List<Object>> searchAssets(Class<A> cls, AggregationQuery query) {
@@ -223,6 +222,84 @@ public class Storage {
         lockManager.withLock(doc, () -> transactionManager.withTransaction((tx) ->
                 withGlobalContext(() -> deleteDocument(doc, params, advices, tx, 0))));
     }
+    public<D extends BaseIdentity> void updateCaptions(D entity){
+
+        updateCaptions(entity, new UpdateCaptionsParameters());
+    }
+    public<D extends BaseIdentity> void updateCaptions(D entity,UpdateCaptionsParameters params){
+        init();
+        lockManager.withLock(entity, () -> transactionManager.withTransaction((tx) ->
+                withGlobalContext(() -> updateCaptions(entity, params, advices, tx, 0))));
+    }
+
+    public <D extends BaseIdentity> List<EntityReference<D>> searchCaptions(Class<D> cls, String pattern, int limit){
+        init();
+        return ExceptionUtils.wrapException( () -> database.searchCaptions(cls, pattern, limit, LocaleUtils.getCurrentLocale()));
+    }
+
+    public <A extends BaseAsset, E extends FieldNameSupport & EqualitySupport> A findUniqueAsset(Class<A> cls, E property,
+                                                                                                 Object propertyValue,
+                                                                                                 boolean forModification) {
+        return ExceptionUtils.wrapException(() -> findUniqueAsset(cls, property, propertyValue, forModification, advices, 0));
+    }
+
+    public <A extends BaseAsset, E extends FieldNameSupport & EqualitySupport> Set<A> getAllAssets(Class<A> cls, E property, Object propertyValue, boolean forModification){
+        return ExceptionUtils.wrapException(() ->getAllAssets(cls, property, propertyValue, forModification, advices, 0));
+    }
+
+    private <A extends BaseAsset, E extends FieldNameSupport & EqualitySupport> Set<A> getAllAssets(Class<A> cls, E property, Object propertyValue, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            var query = new SearchQuery();
+            query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
+            if (propertyValue == null) {
+                query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
+            } else {
+                query.getCriterions().add(SearchCriterion.isNull(property));
+            }
+            return new HashSet<>(database.searchAssets(cls, query));
+        }
+        return advices.get(idx).onGetAllAssets(cls, property, propertyValue, forModification, (asset2, property2, propertyValue2, forModification2) ->
+                getAllAssets(asset2, property2, propertyValue2, forModification2, advices, idx + 1));
+    }
+
+    private <A extends BaseAsset, E extends FieldNameSupport & EqualitySupport> A findUniqueAsset(Class<A> cls, E property,
+                                                                                                  Object propertyValue,
+                                                                                                  boolean forModification, List<StorageAdvice> advices,int idx) throws Exception {
+        if (idx == advices.size()) {
+            var query = new SearchQueryBuilder().preferredFields(property).where(propertyValue == null?
+                    SearchCriterion.isNull(property):
+                    SearchCriterion.eq(property, propertyValue)).build();
+            var lst = database.searchAssets(cls, query);
+            var size = lst.size();
+            if (size == 0) {
+                return null;
+            } else if (size == 1) {
+                return lst.get(0);
+            } else {
+                throw Xeption.forAdmin(CoreL10nMessagesRegistryFactory
+                        .Found_several_recordsMessage(cls.getName(), property.name, propertyValue == null ? null : propertyValue.toString()));
+            }
+        }
+        return advices.get(idx).onFindUniqueAsset(cls, property, propertyValue, forModification, (cls2, property2, propertyValue2, forModification2) ->
+                findUniqueAsset(cls2, property2, propertyValue2, forModification2, advices, idx + 1)
+        );
+    }
+
+    private <D extends BaseIdentity> void updateCaptions(D entity, UpdateCaptionsParameters params, List<StorageAdvice> advices, TransactionContext tx, int idx) throws Exception {
+        if (idx == advices.size()) {
+            if (entity instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(entity.getClass(), entity.getId(), names, false);
+            } else {
+                database.updateCaptions(entity.getClass(), entity.getId(), entity.toString(), false);
+            }
+            return;
+        }
+        advices.get(idx).onUpdateCaptions(entity, params, (entity2, params2) -> updateCaptions(entity2, params2, advices, tx, idx + 1));
+    }
 
     private <D extends BaseDocument> void deleteDocument(D document, DeleteDocumentParameters params, List<StorageAdvice> storageAdvices, TransactionContext ctx, int idx) throws Exception {
         if (idx == storageAdvices.size()) {
@@ -245,6 +322,12 @@ public class Storage {
                 database.deleteVersion(document.getClass(), document.getId(), metadata.getVersionNumber());
             }
             database.deleteCaptions(document.getClass(), document.getId());
+            var handlers = projectionHandlers.get(document.getClass().getName());
+            if (handlers != null) {
+                for (var projectionHandler : handlers) {
+                    database.deleteProjections(projectionHandler.getProjectionClass(), document.getId());
+                }
+            }
             return;
         }
         advices.get(idx).onDeleteDocument(document, params, (document2, params2) -> deleteDocument(document2, params2, advices, ctx, idx + 1));
@@ -315,6 +398,15 @@ public class Storage {
                 database.saveDocumentVersion((Class<D>) doc.getClass(), doc.getId(), version,
                         updatePreviousVersion? context.oldDocument.getData().id() : null );
             }
+            if (doc instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(doc.getClass(), doc.getId(), names, context.oldDocument == null);
+            } else {
+                database.updateCaptions(doc.getClass(), doc.getId(), doc.toString(), context.oldDocument == null);
+            }
             updateProjectionsInternal(doc, context.oldDocument != null);
             return;
         }
@@ -377,7 +469,7 @@ public class Storage {
         for (var projectionHandler : handlers) {
             if (indexClasses.length == 0 || Arrays.stream(indexClasses).anyMatch(it -> it == projectionHandler.getProjectionClass())) {
                 var description = metaRegistry.getSearchableProjections().get(projectionHandler.getProjectionClass().getName());
-                var projections = projectionHandler.createProjections(doc);
+                var projections = projectionHandler.createProjections(doc, Collections.emptySet());
                 var wrappers = new ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>>();
                 for (var proj : projections) {
                     proj.setDocument(new EntityReference<>(doc));
@@ -416,16 +508,16 @@ public class Storage {
     }
 
     private <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport>
-    List<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, Object propertyValue, List<StorageAdvice> advices, int idx) throws Exception {
+    Set<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, Object propertyValue, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             var query = new SearchQuery();
             query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
-            if (propertyValue == null) {
+            if (propertyValue != null) {
                 query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
             } else {
                 query.getCriterions().add(SearchCriterion.isNull(property));
             }
-            return database.searchDocuments(projClass, query).stream().map(BaseSearchableProjection::getDocument).toList();
+            return database.searchDocuments(projClass, query).stream().map(BaseSearchableProjection::getDocument).collect(Collectors.toSet());
         }
         return advices.get(idx).onGetAllDocumentReferences(projClass, property, propertyValue, (projClass2, property2, propertyValue2) ->
                 getAllDocumentReferences(projClass2, property2, propertyValue2, advices, idx + 1)
@@ -437,7 +529,7 @@ public class Storage {
         if (idx == advices.size()) {
             var query = new SearchQuery();
             query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
-            if (propertyValue == null) {
+            if (propertyValue != null) {
                 query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
             } else {
                 query.getCriterions().add(SearchCriterion.isNull(property));
@@ -453,7 +545,7 @@ public class Storage {
                         .Found_several_recordsMessage(projClass.getName(), property.name, propertyValue == null ? null : propertyValue.toString()));
             }
         }
-        return advices.get(0).onFindUniqueDocumentReference(projClass, property, propertyValue, (projClass2, property2, propertyValue2) ->
+        return advices.get(idx).onFindUniqueDocumentReference(projClass, property, propertyValue, (projClass2, property2, propertyValue2) ->
                 findUniqueDocumentReference(projClass2, property2, propertyValue2, advices, idx + 1));
     }
 

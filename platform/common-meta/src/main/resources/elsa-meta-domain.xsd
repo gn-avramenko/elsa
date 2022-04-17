@@ -110,6 +110,7 @@
                                 <complexContent>
                                     <extension base="common:MetaElementType">
                                         <attribute name="cache-find" type="boolean"/>
+                                        <attribute name="cache-get-all" type="boolean"/>
                                         <attribute name="type" type="tns:DatabasePropertyType" use="required"/>
                                         <attribute name="class-name" type="string"/>
                                         <attribute name="use-in-text-search" type="boolean"/>

@@ -5,10 +5,8 @@
 
 package com.gridnine.elsa.server.core.storage;
 
-import com.gridnine.elsa.common.core.model.domain.BaseAsset;
-import com.gridnine.elsa.common.core.model.domain.BaseDocument;
-import com.gridnine.elsa.common.core.model.domain.BaseSearchableProjection;
-import com.gridnine.elsa.common.core.model.domain.VersionInfo;
+import com.gridnine.elsa.common.core.model.common.BaseIdentity;
+import com.gridnine.elsa.common.core.model.domain.*;
 import com.gridnine.elsa.common.core.search.AggregationQuery;
 import com.gridnine.elsa.common.core.search.SearchQuery;
 
@@ -57,4 +55,8 @@ public interface Database {
     <D extends BaseDocument> void saveDocumentVersion(Class<D> aClass, long id, ObjectData version, Long oldVersionDataId) throws Exception;
 
     <D extends BaseDocument> void deleteDocument(Class<D> aClass, long id, Long oid) throws Exception;
+
+    <D extends BaseIdentity> List<EntityReference<D>> searchCaptions(Class<D> cls, String pattern, int limit, Locale locale) throws Exception;
+
+    <D extends BaseDocument, I extends BaseSearchableProjection<D>> void deleteProjections(Class<I> projectionClass, long id) throws Exception;
 }

@@ -12,6 +12,8 @@ public class TestDomainDocumentProjection extends BaseSearchableProjection<TestD
 
 	private String stringProperty;
 
+	private String getAllProperty;
+
 	private TestEnum enumProperty;
 
 	private EntityReference<TestDomainDocument> entityReference;
@@ -28,6 +30,14 @@ public class TestDomainDocumentProjection extends BaseSearchableProjection<TestD
 
 	public void setStringProperty(String value){
 		this.stringProperty = value;
+	}
+
+	public String getGetAllProperty(){
+		return getAllProperty;
+	}
+
+	public void setGetAllProperty(String value){
+		this.getAllProperty = value;
 	}
 
 	public TestEnum getEnumProperty(){
@@ -65,6 +75,10 @@ public class TestDomainDocumentProjection extends BaseSearchableProjection<TestD
 			return stringProperty;
 		}
 
+		if("getAllProperty".equals(propertyName)){
+			return getAllProperty;
+		}
+
 		if("enumProperty".equals(propertyName)){
 			return enumProperty;
 		}
@@ -81,6 +95,11 @@ public class TestDomainDocumentProjection extends BaseSearchableProjection<TestD
 
 		if("stringProperty".equals(propertyName)){
 			this.stringProperty = (String) value;
+			return;
+		}
+
+		if("getAllProperty".equals(propertyName)){
+			this.getAllProperty = (String) value;
 			return;
 		}
 

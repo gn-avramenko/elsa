@@ -14,6 +14,8 @@ public class TestDomainDocumentProjectionFields{
 
 	public final static _stringPropertyField stringProperty = new _stringPropertyField("stringProperty");
 
+	public final static _getAllPropertyField getAllProperty = new _getAllPropertyField("getAllProperty");
+
 	public final static _enumPropertyField enumProperty = new _enumPropertyField("enumProperty");
 
 	public final static _entityReferenceField entityReference = new _entityReferenceField("entityReference");
@@ -26,6 +28,12 @@ public class TestDomainDocumentProjectionFields{
 
 	private static class _stringPropertyField extends FieldNameSupport implements EqualitySupport, StringOperationsSupport, SortSupport{
 		_stringPropertyField(String name){
+			super(name);
+		}
+	}
+
+	private static class _getAllPropertyField extends FieldNameSupport implements EqualitySupport, StringOperationsSupport, SortSupport{
+		_getAllPropertyField(String name){
 			super(name);
 		}
 	}

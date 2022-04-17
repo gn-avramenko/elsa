@@ -77,7 +77,8 @@ public class StorageTest extends ServerCoreTestBase {
         ).build();
         var count = (long) storage.searchDocuments(TestDomainDocumentProjection.class, aggregationQuery).get(0).get(0);
         Assertions.assertEquals(1, count);
-
+        var refs = storage.searchCaptions(TestDomainDocument.class, "test", 10);
+        Assertions.assertEquals(1, refs.size());
     }
 
     @Test

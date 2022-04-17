@@ -55,6 +55,14 @@ public class _CachedTestDomainDocument extends TestDomainDocument implements Cac
 	}
 
 	@Override
+	public void setGetAllProperty(String value){
+		if(!allowChanges){
+			throw Xeption.forDeveloper("changes are not allowed");
+		}
+		super.setGetAllProperty(value);
+	}
+
+	@Override
 	public void setEntityProperty(BaseTestDomainNestedDocument value){
 		if(!allowChanges){
 			throw Xeption.forDeveloper("changes are not allowed");

@@ -7,6 +7,7 @@
 	</enum>
 	<document id="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument" cache-resolve="true">
 			<property type="STRING" id="stringProperty"/>
+			<property type="STRING" id="getAllProperty"/>
 			<collection element-type="STRING" id="stringCollection"/>
 			<property type="ENTITY" id="entityProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.BaseTestDomainNestedDocument"/>
 			<property type="ENUM" id="enumProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum"/>
@@ -32,6 +33,7 @@
 	</entity>
 	<searchable-projection document="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument" id="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocumentProjection">
 		<property type="STRING" id="stringProperty" cache-find="true" use-in-text-search="true"/>
+		<property type="STRING" id="getAllProperty" cache-get-all="true"/>
 		<collection element-type="STRING" id="stringCollection" use-in-text-search="true"/>
 		<property type="ENUM" id="enumProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum" use-in-text-search="true"/>
 		<property id="entityReference" type="ENTITY_REFERENCE" class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument" use-in-text-search="true"/>

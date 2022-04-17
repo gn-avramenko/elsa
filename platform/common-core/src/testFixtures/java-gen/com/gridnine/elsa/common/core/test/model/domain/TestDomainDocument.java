@@ -12,6 +12,8 @@ public class TestDomainDocument extends BaseDocument{
 
 	private String stringProperty;
 
+	private String getAllProperty;
+
 	private BaseTestDomainNestedDocument entityProperty;
 
 	private TestEnum enumProperty;
@@ -34,6 +36,14 @@ public class TestDomainDocument extends BaseDocument{
 
 	public void setStringProperty(String value){
 		this.stringProperty = value;
+	}
+
+	public String getGetAllProperty(){
+		return getAllProperty;
+	}
+
+	public void setGetAllProperty(String value){
+		this.getAllProperty = value;
 	}
 
 	public BaseTestDomainNestedDocument getEntityProperty(){
@@ -87,6 +97,10 @@ public class TestDomainDocument extends BaseDocument{
 			return stringProperty;
 		}
 
+		if("getAllProperty".equals(propertyName)){
+			return getAllProperty;
+		}
+
 		if("entityProperty".equals(propertyName)){
 			return entityProperty;
 		}
@@ -107,6 +121,11 @@ public class TestDomainDocument extends BaseDocument{
 
 		if("stringProperty".equals(propertyName)){
 			this.stringProperty = (String) value;
+			return;
+		}
+
+		if("getAllProperty".equals(propertyName)){
+			this.getAllProperty = (String) value;
 			return;
 		}
 

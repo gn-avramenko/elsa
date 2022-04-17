@@ -12,6 +12,8 @@ public class DatabasePropertyDescription extends BaseModelElementDescription {
 
     private boolean cacheFind;
 
+    private boolean cacheGetAll;
+
     private String className;
 
     private boolean useInTextSearch;
@@ -53,5 +55,13 @@ public class DatabasePropertyDescription extends BaseModelElementDescription {
 
     public void setUseInTextSearch(boolean useInTextSearch) {
         this.useInTextSearch = useInTextSearch;
+    }
+
+    public boolean isCacheGetAll() {
+        return cacheGetAll;
+    }
+
+    public void setCacheGetAll(boolean cacheGetAll) {
+        this.cacheGetAll = cacheGetAll;
     }
 }

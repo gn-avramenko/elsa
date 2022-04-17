@@ -9,10 +9,7 @@ import com.gridnine.elsa.common.core.model.common.BaseIdentity;
 import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.common.core.model.common.ClassMapper;
 import com.gridnine.elsa.common.core.model.common.EnumMapper;
-import com.gridnine.elsa.common.core.model.domain.BaseAsset;
-import com.gridnine.elsa.common.core.model.domain.BaseDocument;
-import com.gridnine.elsa.common.core.model.domain.BaseSearchableProjection;
-import com.gridnine.elsa.common.core.model.domain.VersionInfo;
+import com.gridnine.elsa.common.core.model.domain.*;
 import com.gridnine.elsa.common.core.reflection.ReflectionFactory;
 import com.gridnine.elsa.common.core.search.*;
 import com.gridnine.elsa.common.core.utils.ExceptionUtils;
@@ -270,6 +267,7 @@ public class JdbcDatabase implements Database {
         fields.add(VersionInfo.Properties.comment);
         fields.add(VersionInfo.Properties.modified);
         fields.add(VersionInfo.Properties.modifiedBy);
+        fields.add(VersionInfo.Properties.revision);
         fields.add(ObjectData.Fields.data);
         var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
         var selectSql = "select %s from %s where %s = ?".formatted(StringUtils.join(fields, ","),
@@ -454,12 +452,41 @@ public class JdbcDatabase implements Database {
     @Override
     public <D extends BaseDocument> void deleteDocument(Class<D> aClass, long id, Long oid) throws Exception {
         template.update("delete from %s where %s = ?"
-                        .formatted(JdbcUtils.getVersionTableName(aClass.getName()),
-                                BaseIdentity.Fields.id, VersionInfo.Properties.versionNumber)
-                , ps -> {
-                    ps.setLong(1, id);
-                });
+                        .formatted(JdbcUtils.getTableName(aClass.getName()),
+                                BaseIdentity.Fields.id)
+                , ps -> ps.setLong(1, id));
         withConnection((cnn) -> dialect.deleteBlob(cnn, oid));
+    }
+
+    @Override
+    public <D extends BaseIdentity> List<EntityReference<D>> searchCaptions(Class<D> cls, String pattern, int limit, Locale locale) {
+        var localizable = false;
+        var descr = domainMetaRegistry.getDocuments().get(cls.getName());
+        if (descr != null) {
+            localizable = descr.getLocalizableCaptionExpression() != null;
+        } else {
+            localizable = domainMetaRegistry.getAssets().get(cls.getName()).getLocalizableCaptionExpression() != null;
+        }
+        var column = "caption";
+        if (localizable) {
+            column = "%sCaption".formatted(locale.getLanguage());
+        }
+        return template.query("select %s, %s from %s %s order by %s asc limit %s".formatted(BaseIdentity.Fields.id, column,
+                JdbcUtils.getCaptionTableName(cls.getName()), TextUtils.isBlank(pattern) ? "" :
+                        "where %s %s '%s%%'".formatted(column, dialect.getIlikeFunctionName(), pattern.toLowerCase().trim()), column, limit), (rs,idx) -> (EntityReference<D>) ExceptionUtils.wrapException(() -> {
+                            var ref = new EntityReference<>();
+                            ref.setId(rs.getLong(1));
+                            ref.setType((Class<BaseIdentity>) cls);
+                            ref.setCaption(rs.getString(2));
+                            return ref;
+                        }));
+    }
+
+    @Override
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>> void deleteProjections(Class<I> projectionClass, long id) throws Exception {
+        template.update("delete from %s where %s = ?".formatted(JdbcUtils.getTableName(projectionClass.getName()), BaseSearchableProjection.Fields.document), (ps) -> {
+            ps.setLong(1, id);
+        });
     }
 
     private <E extends BaseIntrospectableObject> List<List<Object>> aggregationSearchObjects(
@@ -956,10 +983,15 @@ public class JdbcDatabase implements Database {
                 wrapper.setAggregatedData((String) value);
                 return;
             }
+            if (BaseIdentity.Fields.id.equals(propertyName)) {
+                wrapper.getAsset().setId((Long) value);
+                return;
+            }
             if (assetDescr.getProperties().containsKey(propertyName)) {
                 wrapper.getAsset().setValue(propertyName, value);
                 return;
             }
+
             var coll = (Collection<Object>) wrapper.getAsset().getCollection(propertyName);
             coll.clear();
             coll.addAll((Collection<Object>) value);
@@ -982,6 +1014,9 @@ public class JdbcDatabase implements Database {
             }
             if (VersionInfo.Properties.versionNumber.equals(propertyName)) {
                 return wrapper.getAsset().getVersionInfo().getVersionNumber();
+            }
+            if (BaseIdentity.Fields.id.equals(propertyName)) {
+               return wrapper.getAsset().getId();
             }
             if (DatabaseMetadataProvider.AGGREGATED_DATA_COLUMN.equals(propertyName)) {
                 return wrapper.getAggregatedData();

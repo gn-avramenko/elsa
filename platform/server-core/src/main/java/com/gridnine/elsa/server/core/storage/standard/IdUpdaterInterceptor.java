@@ -7,6 +7,7 @@ package com.gridnine.elsa.server.core.storage.standard;
 
 import com.gridnine.elsa.common.core.model.common.IdGenerator;
 import com.gridnine.elsa.common.core.model.domain.BaseAsset;
+import com.gridnine.elsa.common.core.model.domain.BaseDocument;
 import com.gridnine.elsa.server.core.storage.OperationContext;
 import com.gridnine.elsa.server.core.storage.StorageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,4 +32,12 @@ public class IdUpdaterInterceptor implements StorageInterceptor {
         }
     }
 
+    @Override
+    public <D extends BaseDocument> void onSave(D doc, OperationContext<D> context) {
+        if(doc.getId() == -1){
+            doc.setId(idGenerator.nextId());
+        } else {
+            idGenerator.ensureIdRegistered(doc.getId());
+        }
+    }
 }

@@ -5,6 +5,7 @@
 
 package com.gridnine.elsa.server.core.storage;
 
+import com.gridnine.elsa.common.core.model.common.BaseIdentity;
 import com.gridnine.elsa.common.core.model.domain.*;
 import com.gridnine.elsa.common.core.search.AggregationQuery;
 import com.gridnine.elsa.common.core.search.EqualitySupport;
@@ -13,6 +14,7 @@ import com.gridnine.elsa.common.core.search.SearchQuery;
 import com.gridnine.elsa.common.core.utils.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 public interface StorageAdvice extends HasPriority {
@@ -54,8 +56,8 @@ public interface StorageAdvice extends HasPriority {
         return callback.call(projClass, property, propertyValue);
     }
 
-    default <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport> List<EntityReference<D>>
-    onGetAllDocumentReferences(Class<I> projClass, E property, Object propertyValue, CallableWithExceptionAnd3Arguments<List<EntityReference<D>>,
+    default <D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport> Set<EntityReference<D>>
+    onGetAllDocumentReferences(Class<I> projClass, E property, Object propertyValue, CallableWithExceptionAnd3Arguments<Set<EntityReference<D>>,
             Class<I>, E, Object> callback) throws Exception {
         return callback.call(projClass, property, propertyValue);
     }
@@ -82,5 +84,20 @@ public interface StorageAdvice extends HasPriority {
     default <D extends BaseDocument> void onDeleteDocument(D document, DeleteDocumentParameters params,
                                                            RunnableWithExceptionAnd2Arguments<D,DeleteDocumentParameters> callback) throws Exception {
         callback.run(document, params);
+    }
+
+    default<D extends BaseIdentity> void onUpdateCaptions(D entity, UpdateCaptionsParameters params, RunnableWithExceptionAnd2Arguments<D,UpdateCaptionsParameters> callback) throws Exception {
+        callback.run(entity, params);
+    }
+
+    default <A extends BaseAsset, E extends FieldNameSupport & EqualitySupport> A onFindUniqueAsset(Class<A> cls, E property, Object propertyValue, boolean forModification,
+                                                                                                    CallableWithExceptionAnd4Arguments<A,
+                                                                                                            Class<A>, E, Object, Boolean> callbackObject) throws Exception {
+        return callbackObject.call(cls, property, propertyValue, forModification);
+    }
+
+    default <A extends BaseAsset, E extends FieldNameSupport & EqualitySupport> Set<A> onGetAllAssets(Class<A> cls, E property, Object propertyValue, boolean forModification,  CallableWithExceptionAnd4Arguments<Set<A>,
+            Class<A>, E, Object, Boolean> callbackObject) throws Exception {
+        return callbackObject.call(cls, property, propertyValue, forModification);
     }
 }

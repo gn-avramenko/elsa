@@ -100,6 +100,11 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				documentDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{
+				var propertyDescription = new StandardPropertyDescription("getAllProperty");
+				propertyDescription.setType(StandardValueType.STRING);
+				documentDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
 				var propertyDescription = new StandardPropertyDescription("entityProperty");
 				propertyDescription.setType(StandardValueType.ENTITY);
 				propertyDescription.setClassName("com.gridnine.elsa.common.core.test.model.domain.BaseTestDomainNestedDocument");
@@ -158,6 +163,12 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator implements DomainM
 				propertyDescription.setCacheFind(true);
 				propertyDescription.setUseInTextSearch(true);
 				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru",""), "String  property");
+				projectionDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new DatabasePropertyDescription("getAllProperty");
+				propertyDescription.setType(DatabasePropertyType.STRING);
+				propertyDescription.setCacheGetAll(true);
 				projectionDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{

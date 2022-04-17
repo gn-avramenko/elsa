@@ -92,6 +92,9 @@ public class JavaDomainConfiguratorCodeGenerator {
                 if(pd.isCacheFind()){
                     gen.printLine("propertyDescription.setCacheFind(true);");
                 }
+                if(pd.isCacheGetAll()){
+                    gen.printLine("propertyDescription.setCacheGetAll(true);");
+                }
                 if(pd.isUseInTextSearch()){
                     gen.printLine("propertyDescription.setUseInTextSearch(true);");
                 }
