@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
+
 public class CustomMetaRegistry {
     private final Map<String, EnumDescription> enums = new LinkedHashMap<>();
     private final Map<String, EntityDescription> entities = new LinkedHashMap<>();

@@ -16,5 +16,5 @@ apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaDecorationPlugin>()
 
 
 dependencies{
-    implementation("org.springframework:spring-context:5.3.0")
+    implementation("org.springframework:spring-context:5+")
 }

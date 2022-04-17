@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
+
 public class DomainMetaRegistry {
     private final Map<String, EnumDescription> enums = new LinkedHashMap<>();
     private final Map<String,DocumentDescription> documents = new LinkedHashMap<>();

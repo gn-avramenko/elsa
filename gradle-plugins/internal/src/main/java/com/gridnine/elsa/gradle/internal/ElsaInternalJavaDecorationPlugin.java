@@ -29,7 +29,15 @@ public class ElsaInternalJavaDecorationPlugin implements Plugin<Project> {
         var configDir = findConfigDir(target.getProjectDir());
         var file = new File(configDir, "config.properties");
         if(!file.exists()){
-            throw new IllegalStateException("file config/config.properties must exist");
+            var file2  = new File(configDir, "config.properties.template");
+            if(!file2.exists()) {
+                throw new IllegalStateException("file config/config.properties or config/config.properties.template must exist");
+            }
+            try {
+                Files.copy(file2.toPath(), file.toPath());
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
         }
         var props = new Properties();
         try {
