@@ -32,7 +32,7 @@ public class IoUtils {
     public static long copy(final InputStream input, final OutputStream output) throws IOException {
         return copy(input, output, COPY_BUF_SIZE);
     }
-    private static long copy(final InputStream input, final OutputStream output, final int buffersize) throws IOException {
+    public static long copy(final InputStream input, final OutputStream output, final int buffersize) throws IOException {
         if (buffersize < 1) {
             throw new IllegalArgumentException("buffersize must be bigger than 0");
         }

@@ -7,9 +7,7 @@ package com.gridnine.elsa.common.meta.custom;
 
 import com.gridnine.elsa.common.meta.common.EntityDescription;
 import com.gridnine.elsa.common.meta.common.EnumDescription;
-import com.gridnine.elsa.common.meta.domain.DomainMetaRegistryConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.List;

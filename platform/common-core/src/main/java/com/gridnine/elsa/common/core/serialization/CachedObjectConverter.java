@@ -13,7 +13,6 @@ import com.gridnine.elsa.common.core.reflection.ReflectionFactory;
 import com.gridnine.elsa.common.core.serialization.meta.BaseObjectMetadataProvider;
 import com.gridnine.elsa.common.core.serialization.meta.ObjectMetadataProvidersFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.HashMap;

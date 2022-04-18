@@ -14,19 +14,19 @@ import java.time.LocalDateTime;
 
 public class TestDomainAssetFields{
 
-	public final static _stringPropertyField stringProperty = new _stringPropertyField("stringProperty");
+	public final static _stringPropertyField stringProperty = new _stringPropertyField();
 
-	public final static _datePropertyField dateProperty = new _datePropertyField("dateProperty");
+	public final static _datePropertyField dateProperty = new _datePropertyField();
 
 	private static class _stringPropertyField extends FieldNameSupport implements EqualitySupport, StringOperationsSupport, SortSupport, ArgumentType<String>{
-		_stringPropertyField(String name){
-			super(name);
+		_stringPropertyField(){
+			super("stringProperty");
 		}
 	}
 
 	private static class _datePropertyField extends FieldNameSupport implements ComparisonSupport, SortSupport, ArgumentType<LocalDateTime>{
-		_datePropertyField(String name){
-			super(name);
+		_datePropertyField(){
+			super("dateProperty");
 		}
 	}
 }

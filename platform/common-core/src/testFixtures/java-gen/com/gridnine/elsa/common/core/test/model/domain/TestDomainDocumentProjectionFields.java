@@ -16,59 +16,59 @@ import com.gridnine.elsa.common.core.test.model.domain.TestEnum;
 
 public class TestDomainDocumentProjectionFields{
 
-	public final static _stringPropertyField stringProperty = new _stringPropertyField("stringProperty");
+	public final static _stringPropertyField stringProperty = new _stringPropertyField();
 
-	public final static _getAllPropertyField getAllProperty = new _getAllPropertyField("getAllProperty");
+	public final static _getAllPropertyField getAllProperty = new _getAllPropertyField();
 
-	public final static _enumPropertyField enumProperty = new _enumPropertyField("enumProperty");
+	public final static _enumPropertyField enumProperty = new _enumPropertyField();
 
-	public final static _entityReferenceField entityReference = new _entityReferenceField("entityReference");
+	public final static _entityReferenceField entityReference = new _entityReferenceField();
 
-	public final static _stringCollectionField stringCollection = new _stringCollectionField("stringCollection");
+	public final static _stringCollectionField stringCollection = new _stringCollectionField();
 
-	public final static _enumCollectionField enumCollection = new _enumCollectionField("enumCollection");
+	public final static _enumCollectionField enumCollection = new _enumCollectionField();
 
-	public final static _entityRefCollectionField entityRefCollection = new _entityRefCollectionField("entityRefCollection");
+	public final static _entityRefCollectionField entityRefCollection = new _entityRefCollectionField();
 
 	private static class _stringPropertyField extends FieldNameSupport implements EqualitySupport, StringOperationsSupport, SortSupport, ArgumentType<String>{
-		_stringPropertyField(String name){
-			super(name);
+		_stringPropertyField(){
+			super("stringProperty");
 		}
 	}
 
 	private static class _getAllPropertyField extends FieldNameSupport implements EqualitySupport, StringOperationsSupport, SortSupport, ArgumentType<String>{
-		_getAllPropertyField(String name){
-			super(name);
+		_getAllPropertyField(){
+			super("getAllProperty");
 		}
 	}
 
 	private static class _enumPropertyField extends FieldNameSupport implements EqualitySupport, SortSupport, ArgumentType<TestEnum>{
-		_enumPropertyField(String name){
-			super(name);
+		_enumPropertyField(){
+			super("enumProperty");
 		}
 	}
 
 	private static class _entityReferenceField extends FieldNameSupport implements SortSupport, EqualitySupport, ArgumentType<EntityReference<TestDomainDocument>>{
-		_entityReferenceField(String name){
-			super(name);
+		_entityReferenceField(){
+			super("entityReference");
 		}
 	}
 
 	private static class _stringCollectionField extends FieldNameSupport implements CollectionSupport, ArgumentType<String>{
-		_stringCollectionField(String name){
-			super(name);
+		_stringCollectionField(){
+			super("stringCollection");
 		}
 	}
 
 	private static class _enumCollectionField extends FieldNameSupport implements CollectionSupport, ArgumentType<TestEnum>{
-		_enumCollectionField(String name){
-			super(name);
+		_enumCollectionField(){
+			super("enumCollection");
 		}
 	}
 
 	private static class _entityRefCollectionField extends FieldNameSupport implements CollectionSupport, ArgumentType<EntityReference<TestDomainDocument>>{
-		_entityRefCollectionField(String name){
-			super(name);
+		_entityRefCollectionField(){
+			super("entityRefCollection");
 		}
 	}
 }

@@ -8,7 +8,6 @@ package com.gridnine.elsa.common.core.l10n;
 import com.gridnine.elsa.common.core.utils.LocaleUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;

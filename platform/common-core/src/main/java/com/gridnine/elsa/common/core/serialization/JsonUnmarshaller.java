@@ -21,7 +21,6 @@ import com.gridnine.elsa.common.core.serialization.meta.SerializablePropertyType
 import com.gridnine.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;

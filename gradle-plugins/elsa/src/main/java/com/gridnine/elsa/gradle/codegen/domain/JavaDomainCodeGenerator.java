@@ -11,8 +11,6 @@ import com.gridnine.elsa.gradle.parser.domain.DomainMetaRegistryParser;
 import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 
 public class JavaDomainCodeGenerator implements CodeGenerator<JavaDomainCodeGenRecord> {

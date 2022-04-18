@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public final class SearchUtils {
-    private static DateTimeFormatter  dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS");
-    private static DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter  dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS");
+    private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static String valueToString(Object value){
         if(value == null){

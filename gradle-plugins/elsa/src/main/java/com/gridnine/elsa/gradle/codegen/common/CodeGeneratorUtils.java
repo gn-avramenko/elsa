@@ -48,6 +48,14 @@ public class CodeGeneratorUtils {
             }
         }
         assert currentFile.getParentFile().mkdirs();
+        while (!currentFile.getParentFile().exists()){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //noops
+            }
+            assert currentFile.getParentFile().mkdirs();
+        }
         Files.writeString(currentFile.toPath(), content);
         return currentFile;
     }

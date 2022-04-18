@@ -23,15 +23,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @TestPropertySource(properties = "")
 public abstract class TestBase {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @BeforeEach
     protected void setUp(){
-
+        //noops
     }
 
     @AfterEach
     protected void dispose(){
+        //noops
     }
 
 

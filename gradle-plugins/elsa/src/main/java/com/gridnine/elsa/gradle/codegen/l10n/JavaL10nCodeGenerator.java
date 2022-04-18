@@ -5,7 +5,6 @@
 
 package com.gridnine.elsa.gradle.codegen.l10n;
 
-import com.gridnine.elsa.common.meta.common.BaseElementWitId;
 import com.gridnine.elsa.common.meta.l10n.L10nMessageDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMessageParameterDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMessagesBundleDescription;

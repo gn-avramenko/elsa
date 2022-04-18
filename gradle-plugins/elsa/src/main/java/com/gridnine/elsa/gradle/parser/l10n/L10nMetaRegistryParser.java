@@ -12,11 +12,9 @@ import com.gridnine.elsa.common.meta.l10n.L10nMessagesBundleDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMetaRegistry;
 import com.gridnine.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.elsa.gradle.parser.common.MetaDataParsingResult;
-import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
 import com.gridnine.elsa.gradle.utils.BuildXmlNode;
 
 import java.io.File;
-import java.util.List;
 
 public class L10nMetaRegistryParser {
 

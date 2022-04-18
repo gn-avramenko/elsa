@@ -5,16 +5,15 @@
 
 package com.gridnine.elsa.gradle.codegen.domain;
 
-import com.gridnine.elsa.common.meta.common.*;
-import com.gridnine.elsa.common.meta.domain.*;
+import com.gridnine.elsa.common.meta.domain.BaseSearchableDescription;
+import com.gridnine.elsa.common.meta.domain.DatabaseCollectionDescription;
+import com.gridnine.elsa.common.meta.domain.DatabasePropertyDescription;
+import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.gradle.codegen.common.CodeGeneratorUtils;
 import com.gridnine.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
-import com.gridnine.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 public class JavaDomainFieldsClassCodeGenerator {
@@ -31,11 +30,11 @@ public class JavaDomainFieldsClassCodeGenerator {
         gen.wrapWithBlock("public class %sFields".formatted(CodeGeneratorUtils.getSimpleName(sd.getId())), () -> {
             for (DatabasePropertyDescription pd : sd.getProperties().values()) {
                 gen.blankLine();
-                gen.printLine("public final static _%1$sField %1$s = new _%1$sField(\"%1$s\");".formatted(pd.getId()));
+                gen.printLine("public final static _%1$sField %1$s = new _%1$sField();".formatted(pd.getId()));
             }
             for (DatabaseCollectionDescription cd : sd.getCollections().values()) {
                 gen.blankLine();
-                gen.printLine("public final static _%1$sField %1$s = new _%1$sField(\"%1$s\");".formatted(cd.getId()));
+                gen.printLine("public final static _%1$sField %1$s = new _%1$sField();".formatted(cd.getId()));
             }
             for (DatabasePropertyDescription pd : sd.getProperties().values()) {
                 gen.blankLine();
@@ -109,7 +108,7 @@ public class JavaDomainFieldsClassCodeGenerator {
                         sb.append(" implements EqualitySupport, SortSupport, ArgumentType<%s>".formatted(CodeGeneratorUtils.getSimpleName(pd.getClassName())));
                     }
                 }
-                gen.wrapWithBlock(sb.toString(), () -> gen.wrapWithBlock("_%sField(String name)".formatted(pd.getId()), () -> gen.printLine("super(name);")));
+                gen.wrapWithBlock(sb.toString(), () -> gen.wrapWithBlock("_%sField()".formatted(pd.getId()), () -> gen.printLine("super(\"%s\");".formatted(pd.getId()))));
             }
 
             for (DatabaseCollectionDescription cd : sd.getCollections().values()) {
@@ -137,7 +136,7 @@ public class JavaDomainFieldsClassCodeGenerator {
                         sb.append(" implements CollectionSupport, ArgumentType<String>");
                     }
                 }
-                gen.wrapWithBlock(sb.toString(), () -> gen.wrapWithBlock("_%sField(String name)".formatted(cd.getId()), () -> gen.printLine("super(name);")));
+                gen.wrapWithBlock(sb.toString(), () -> gen.wrapWithBlock("_%sField()".formatted(cd.getId()), () -> gen.printLine("super(\"%s\");".formatted(cd.getId()))));
             }
         });
 
