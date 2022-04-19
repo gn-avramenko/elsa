@@ -24,7 +24,6 @@ import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.server.core.CoreL10nMessagesRegistryFactory;
 import com.gridnine.elsa.server.core.auth.AuthContext;
 import com.gridnine.elsa.server.core.storage.database.*;
-import com.gridnine.elsa.server.core.storage.database.DatabaseBinaryData;
 import com.gridnine.elsa.server.core.storage.transaction.ElsaTransactionContext;
 import com.gridnine.elsa.server.core.storage.transaction.ElsaTransactionManager;
 import com.nothome.delta.Delta;
@@ -85,6 +84,9 @@ public class Storage {
 
     @Autowired
     private DatabaseFactory databaseFactory;
+
+    @Autowired
+    private DomainMetaRegistry domainMetaRegistry;
 
     private Map<String, List<SearchableProjectionHandler<BaseDocument, BaseSearchableProjection<BaseDocument>>>> projectionHandlers;
 
@@ -781,6 +783,26 @@ public class Storage {
                 loadDocument(cls2, id2, forModificationInt2, advices, idx + 1));
     }
 
+    public <I extends BaseIdentity> String getCaption(Class<I> type, long id, Locale currentLocale) {
+        return ExceptionUtils.wrapException(() ->{
+            if(isLocalizable(type)){
+                return database.getCaption(type, id, currentLocale);
+            }
+            return database.getCaption(type, id);
+        });
+    }
+
+    private boolean isLocalizable(Class<?> type){
+        var docDescr = domainMetaRegistry.getDocuments().get(type.getName());
+        if(docDescr != null) {
+            return docDescr.getLocalizableCaptionExpression() != null;
+        }
+        var assetDescr = domainMetaRegistry.getAssets().get(type.getName());
+        if(assetDescr != null) {
+            return assetDescr.getLocalizableCaptionExpression() != null;
+        }
+        return false;
+    }
     private record UpdateAssetContext<A extends BaseAsset>(DatabaseAssetWrapper<A> oldAsset,
                                                            OperationContext<A> operationContext) {
     }

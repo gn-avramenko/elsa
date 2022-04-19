@@ -18,9 +18,9 @@ import com.gridnine.elsa.server.core.storage.database.DatabaseFactory;
 import com.gridnine.elsa.server.core.storage.database.jdbc.adapter.JdbcDataSourceProvider;
 import com.gridnine.elsa.server.core.storage.database.jdbc.adapter.JdbcDialect;
 import com.gridnine.elsa.server.core.storage.database.jdbc.model.JdbcDatabaseMetadataProvider;
+import com.gridnine.elsa.server.core.storage.database.jdbc.structureUpdater.JdbcStructureUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -29,7 +29,6 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.List;
 
-@ConditionalOnMissingBean
 public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
 
     private Database database;
@@ -70,8 +69,9 @@ public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
             throw Xeption.forDeveloper("unsupported adapter id: %s".formatted(adapterId));
         }
         DataSource ds = adapter.createDataSource();
-        JdbcDialect dialect = adapter.createDialect();
+        JdbcDialect dialect = adapter.createDialect(ds);
         var template = new JdbcTemplate(ds);
+        JdbcStructureUpdater.updateStructure(template, dialect, jdbcDatabaseMetadataProvider);
         classMapper = new JdbcClassMapperImpl(domainMetaRegistry, customMetaRegistry, template ,dialect);
         enumMapper = new JdbcEnumMapperImpl(domainMetaRegistry, template ,supportedLocalesProvider, dialect);
         database = new JdbcDatabase(template, jdbcDatabaseMetadataProvider, enumMapper, classMapper,
@@ -104,4 +104,5 @@ public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
     public PlatformTransactionManager getTransactionManager() {
         return transactionManager;
     }
+
 }

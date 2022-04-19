@@ -59,4 +59,8 @@ public interface Database {
     <D extends BaseIdentity> List<EntityReference<D>> searchCaptions(Class<D> cls, String pattern, int limit, Locale locale) throws Exception;
 
     <D extends BaseDocument, I extends BaseSearchableProjection<D>> void deleteProjections(Class<I> projectionClass, long id) throws Exception;
+
+    <I extends BaseIdentity> String getCaption(Class<I> type, long id, Locale locale) throws Exception;
+
+    <I extends BaseIdentity> String getCaption(Class<I> type, long id) throws Exception;
 }

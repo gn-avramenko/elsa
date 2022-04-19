@@ -473,6 +473,20 @@ public class JdbcDatabase implements Database {
         template.update("delete from %s where %s = ?".formatted(JdbcUtils.getTableName(projectionClass.getName()), BaseSearchableProjection.Fields.document), (ps) -> ps.setLong(1, id));
     }
 
+    @Override
+    public <I extends BaseIdentity> String getCaption(Class<I> type, long id, Locale locale) throws Exception {
+        var result = template.query("select %sCaption from %s where %s = ?".formatted(locale.getLanguage(),
+                JdbcUtils.getCaptionTableName(type.getName()), BaseIdentity.Fields.id),  (ps) -> ps.setLong(1, id), (rs, idx) -> rs.getString(1));
+        return result.isEmpty()? null: result.get(0);
+    }
+
+    @Override
+    public <I extends BaseIdentity> String getCaption(Class<I> type, long id) throws Exception {
+        var result = template.query("select caption from %s where %s = ?".formatted(JdbcUtils.getCaptionTableName(type.getName()),
+                BaseIdentity.Fields.id),  (ps) -> ps.setLong(1, id), (rs, idx) -> rs.getString(1));
+        return result.isEmpty()? null: result.get(0);
+    }
+
     private <E extends BaseIntrospectableObject> List<List<Object>> aggregationSearchObjects(
             Class<E> cls, AggregationQuery query) throws Exception {
         var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));

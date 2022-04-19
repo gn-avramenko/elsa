@@ -10,6 +10,6 @@ import javax.sql.DataSource;
 
 public interface JdbcDataSourceProvider {
     DataSource createDataSource() throws Exception;
-    JdbcDialect createDialect();
+    JdbcDialect createDialect(DataSource ds);
     String getId();
 }

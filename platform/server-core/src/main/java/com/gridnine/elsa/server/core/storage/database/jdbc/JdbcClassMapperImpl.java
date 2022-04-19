@@ -13,7 +13,6 @@ import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.server.core.storage.database.jdbc.adapter.JdbcDialect;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

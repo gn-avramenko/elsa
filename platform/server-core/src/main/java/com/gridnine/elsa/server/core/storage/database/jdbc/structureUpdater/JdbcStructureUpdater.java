@@ -10,45 +10,19 @@ import com.gridnine.elsa.server.core.storage.database.jdbc.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
-public class JdbcStructureUpdater {
+public final class JdbcStructureUpdater {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(JdbcStructureUpdater.class);
 
-    private JdbcTemplate template;
 
-    private JdbcDialect dialect;
-
-    private JdbcDatabaseMetadataProvider metadataProvider;
-
-    @Autowired
-    public void setDataSource(DataSource dataSource){
-        this.template = new JdbcTemplate(dataSource);
-    }
-
-    @Autowired
-    public void setDialect(JdbcDialect dialect){
-        this.dialect = dialect;
-    }
-
-    @Autowired
-    public void setMetadataProvider(JdbcDatabaseMetadataProvider metadataProvider){
-        this.metadataProvider = metadataProvider;
-    }
-
-    @PostConstruct
-    public void init(){
+    public static void updateStructure(JdbcTemplate template, JdbcDialect dialect, JdbcDatabaseMetadataProvider metadataProvider) {
         long start = System.currentTimeMillis();
-        final JdbcDatabaseStructureAnalysisResult analysisResult = analyze();
+        final JdbcDatabaseStructureAnalysisResult analysisResult = analyze(metadataProvider, dialect);
         log.debug("Database analysis was completed in %s ms. Result:\n%s".formatted(System.currentTimeMillis()-start, analysisResult) );
         if(analysisResult.tablesToCreate().isEmpty() && analysisResult.tablesToUpdate().isEmpty() && analysisResult.tablesToDelete().isEmpty()){
             return;
@@ -60,10 +34,10 @@ public class JdbcStructureUpdater {
         }
         for(var tableData: analysisResult.tablesToCreate()){
             template.execute("create table %s(\n%s\n)".formatted(tableData.tableName(),
-                    StringUtils.join(tableData.columns().entrySet().stream().map(it -> "%s %s".formatted(it.getKey(), 
+                    StringUtils.join(tableData.columns().entrySet().stream().map(it -> "%s %s".formatted(it.getKey(),
                             dialect.getSqlType(it.getValue()))).toList(), ",\n")));
             log.debug("table %s was created".formatted(tableData.tableName()));
-            createIndexes(tableData.tableName(), tableData.indexes());
+            createIndexes(tableData.tableName(), tableData.indexes(), template, dialect);
         }
         for(var tableData: analysisResult.tablesToUpdate()){
             for(var index: tableData.indexesToDelete()){
@@ -78,7 +52,7 @@ public class JdbcStructureUpdater {
                 template.execute("ALTER TABLE %s ADD %s %s".formatted(tableData.tableName(), column.getKey(), dialect.getSqlType(column.getValue())));
                 log.info("column %s of type %s in table %s was created".formatted(column.getKey(), column.getValue(), tableData.tableName()));
             }
-            createIndexes(tableData.tableName(), tableData.indexesToCreate());
+            createIndexes(tableData.tableName(), tableData.indexesToCreate(), template, dialect);
         }
         for(var sequence: analysisResult.sequencesToDelete()){
             template.execute(dialect.getDeleteSequenceSql(sequence));
@@ -91,14 +65,15 @@ public class JdbcStructureUpdater {
         log.debug("Database structure was updated in %s ms".formatted(System.currentTimeMillis()-start) );
     }
 
-    private void createIndexes(String tableName, Map<String, JdbcIndexDescription> indexes) {
+
+    private static void createIndexes(String tableName, Map<String, JdbcIndexDescription> indexes, JdbcTemplate template, JdbcDialect dialect) {
         indexes.forEach((key, value) ->{
             template.execute(dialect.getCreateIndexSql(tableName, key, value));
             log.info("index %s on field %s of table %s was created".formatted(key, value.field(), tableName));
         });
     }
 
-    private JdbcDatabaseStructureAnalysisResult analyze() {
+    private static JdbcDatabaseStructureAnalysisResult analyze(JdbcDatabaseMetadataProvider metadataProvider, JdbcDialect dialect) {
         var tablesToCreate = new LinkedHashSet<JdbcCreateTableData>();
         var descriptions = metadataProvider.getDescriptions();
         var newTableNames = descriptions.keySet();
@@ -146,11 +121,11 @@ public class JdbcStructureUpdater {
         return new JdbcDatabaseStructureAnalysisResult(tablesToDelete, tablesToCreate, tablesToUpdate, sequencesToDelete, sequencesToCreate);
     }
 
-    private void removeIgnoreCase(Map<String, ?> existingColumns, String key1) {
+    private static void removeIgnoreCase(Map<String, ?> existingColumns, String key1) {
         existingColumns.keySet().stream().filter(it -> it.equalsIgnoreCase(key1)).findFirst().ifPresent(existingColumns::remove);
     }
 
-    private<T> T getIgnoreCase(Map<String, T> existingColumns, String key1) {
+    private static <T> T getIgnoreCase(Map<String, T> existingColumns, String key1) {
         for(var entry: existingColumns.entrySet()){
             if(entry.getKey().equalsIgnoreCase(key1)){
                 return entry.getValue();
@@ -159,7 +134,7 @@ public class JdbcStructureUpdater {
         return  null;
     }
 
-    private JdbcCreateTableData toTableData(JdbcTableDescription databaseTableDescription) {
+    private static JdbcCreateTableData toTableData(JdbcTableDescription databaseTableDescription) {
         var columns = new LinkedHashMap<String, JdbcFieldType>();
         var indexes = new LinkedHashMap<String, JdbcIndexDescription>();
         databaseTableDescription.getFields().forEach((key, value) -> {
@@ -169,7 +144,7 @@ public class JdbcStructureUpdater {
         return new JdbcCreateTableData(databaseTableDescription.getName(), columns, indexes);
     }
 
-    private Set<String> exclusion(Collection<String> all, Collection<String> toRemove) {
+    private static Set<String> exclusion(Collection<String> all, Collection<String> toRemove) {
         var result= new LinkedHashSet<>(all);
         result.removeIf(it -> toRemove.stream().anyMatch(r -> r.equalsIgnoreCase(it)));
         return result;
