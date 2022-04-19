@@ -153,13 +153,13 @@ public class CacheMetadataProvider {
         }
         var docDescr = domainMetaRegistry.getDocuments().get(className);
         if(docDescr != null){
-            res = docDescr.isCacheCaption() && docDescr.getLocalizableCaptionExpression() == null;
+            res = (docDescr.isCacheCaption() || docDescr.isCacheResolve()) && docDescr.getLocalizableCaptionExpression() == null;
             cacheCaption.put(className, res);
             return res;
         }
         var assetDescr = domainMetaRegistry.getAssets().get(className);
         if(assetDescr != null){
-            res = assetDescr.isCacheCaption() && assetDescr.getLocalizableCaptionExpression() == null;
+            res = (assetDescr.isCacheCaption() || assetDescr.isCacheResolve()) && assetDescr.getLocalizableCaptionExpression() == null;
             cacheCaption.put(className, res);
             return res;
         }
@@ -175,13 +175,13 @@ public class CacheMetadataProvider {
         }
         var docDescr = domainMetaRegistry.getDocuments().get(className);
         if(docDescr != null){
-            res = docDescr.isCacheCaption() && docDescr.getLocalizableCaptionExpression() != null;
+            res = (docDescr.isCacheCaption() || docDescr.isCacheResolve()) && docDescr.getLocalizableCaptionExpression() != null;
             cacheLocalizedCaption.put(className, res);
             return res;
         }
         var assetDescr = domainMetaRegistry.getAssets().get(className);
         if(assetDescr != null){
-            res = assetDescr.isCacheCaption() && assetDescr.getLocalizableCaptionExpression() != null;
+            res = (assetDescr.isCacheCaption() ||assetDescr.isCacheResolve()) && assetDescr.getLocalizableCaptionExpression() != null;
             cacheLocalizedCaption.put(className, res);
             return res;
         }

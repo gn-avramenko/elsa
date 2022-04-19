@@ -6,7 +6,12 @@ package com.gridnine.elsa.server.core;
 
 import com.gridnine.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.elsa.common.meta.common.StandardValueType;
-import com.gridnine.elsa.common.meta.l10n.*;
+import com.gridnine.elsa.common.meta.l10n.L10nMessageDescription;
+import com.gridnine.elsa.common.meta.l10n.L10nMessageParameterDescription;
+import com.gridnine.elsa.common.meta.l10n.L10nMessagesBundleDescription;
+import com.gridnine.elsa.common.meta.l10n.L10nMetaRegistry;
+import com.gridnine.elsa.common.meta.l10n.L10nMetaRegistryConfigurator;
+import org.springframework.stereotype.Component;
 
 public class CoreL10nMessagesRegistryConfigurator implements L10nMetaRegistryConfigurator{
 

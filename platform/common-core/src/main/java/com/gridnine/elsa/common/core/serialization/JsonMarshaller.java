@@ -215,10 +215,10 @@ public class JsonMarshaller {
     private boolean isCachedCaption(EntityReference<?> er) {
 
         DocumentDescription dd = domainMetaRegistry.getDocuments().get(er.getType().getName());
-        if(dd != null && dd.isCacheCaption()){
+        if(dd != null && (dd.isCacheCaption()|| dd.isCacheResolve())){
             return true;
         }
         AssetDescription ad = domainMetaRegistry.getAssets().get(er.getType().getName());
-        return ad != null && ad.isCacheCaption();
+        return ad != null && (ad.isCacheCaption() || ad.isCacheResolve());
     }
 }

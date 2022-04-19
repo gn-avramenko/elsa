@@ -232,7 +232,7 @@ public class JsonUnmarshaller {
         }
         var dd = domainMetaRegistry.getDocuments().get(result.getType().getName());
         var ad = domainMetaRegistry.getAssets().get(result.getType().getName());
-        if((dd != null && dd.isCacheCaption())||(ad != null && ad.isCacheCaption())){
+        if((dd != null && (dd.isCacheCaption() || dd.isCacheResolve()))||(ad != null && (ad.isCacheCaption()|| ad.isCacheResolve()))){
             result.setCaption(captionProvider.getCaption(result));
         }
         return result;
