@@ -7,6 +7,7 @@ package com.gridnine.elsa.demo.config;
 
 import com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator;
 import com.gridnine.elsa.demo.activator.ElsaDemoActivator;
+import com.gridnine.elsa.demo.userAccount.DemoUserAccountProjectionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,4 +22,10 @@ public class ElsaDemoServerConfiguration {
     public DemoElsaDomainMetaRegistryConfigurator demoElsaDomainMetaRegistryConfigurator(){
         return new DemoElsaDomainMetaRegistryConfigurator();
     }
+
+    @Bean
+    public DemoUserAccountProjectionHandler demoUserAccountProjectionHandler(){
+        return new DemoUserAccountProjectionHandler();
+    }
+
 }

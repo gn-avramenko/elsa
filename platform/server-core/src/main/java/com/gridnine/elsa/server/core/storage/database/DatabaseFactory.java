@@ -10,6 +10,8 @@ import com.gridnine.elsa.common.core.model.common.EnumMapper;
 import com.gridnine.elsa.common.core.model.common.IdGenerator;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.sql.DataSource;
+
 public interface DatabaseFactory {
 
     Database getPrimaryDatabase();
@@ -21,5 +23,7 @@ public interface DatabaseFactory {
     IdGenerator getIdGenerator();
 
     PlatformTransactionManager getTransactionManager();
+
+    DataSource getFakeDataSource();
 
 }

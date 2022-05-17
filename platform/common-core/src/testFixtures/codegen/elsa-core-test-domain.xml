@@ -6,17 +6,17 @@
 		<enum-item id="ITEM3"/>
 	</enum>
 	<document id="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument" cache-resolve="true">
-			<property type="STRING" id="stringProperty"/>
-			<property type="STRING" id="getAllProperty"/>
-			<collection element-type="STRING" id="stringCollection"/>
-			<property type="ENTITY" id="entityProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.BaseTestDomainNestedDocument"/>
-			<property type="ENUM" id="enumProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum"/>
-			<property id="entityReference" type="ENTITY_REFERENCE" class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument"/>
-			<collection element-type="ENTITY" id="entityCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.BaseTestDomainNestedDocument"/>
-			<collection element-type="ENTITY" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestGroup" id="groups"/>
-			<collection element-type="ENUM" id="enumCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum"/>
-			<collection element-type="ENTITY_REFERENCE" id="entityRefCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument"/>
-			<caption-expression>return stringProperty;</caption-expression>
+		<property type="STRING" id="stringProperty"/>
+		<property type="STRING" id="getAllProperty"/>
+		<collection element-type="STRING" id="stringCollection"/>
+		<property type="ENTITY" id="entityProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.BaseTestDomainNestedDocument"/>
+		<property type="ENUM" id="enumProperty" class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum"/>
+		<property id="entityReference" type="ENTITY_REFERENCE" class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument"/>
+		<collection element-type="ENTITY" id="entityCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.BaseTestDomainNestedDocument"/>
+		<collection element-type="ENTITY" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestGroup" id="groups"/>
+		<collection element-type="ENUM" id="enumCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestEnum"/>
+		<collection element-type="ENTITY_REFERENCE" id="entityRefCollection" element-class-name="com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument"/>
+		<caption-expression>stringProperty</caption-expression>
 	</document>
 	<entity id="com.gridnine.elsa.common.core.test.model.domain.BaseTestDomainNestedDocument" abstract="true">
 		<property type="STRING" id="name"/>
@@ -43,6 +43,6 @@
 	<asset id="com.gridnine.elsa.common.core.test.model.domain.TestDomainAsset" cache-resolve="true">
 		<property type="STRING" id="stringProperty" cache-find="true" use-in-text-search="true"/>
 		<property id="dateProperty" type="LOCAL_DATE_TIME"/>
-		<caption-expression>return stringProperty;</caption-expression>
+		<caption-expression>stringProperty</caption-expression>
 	</asset>
 </domain>

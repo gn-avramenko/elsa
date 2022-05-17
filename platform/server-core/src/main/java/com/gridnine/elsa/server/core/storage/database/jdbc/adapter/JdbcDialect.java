@@ -8,11 +8,13 @@ package com.gridnine.elsa.server.core.storage.database.jdbc.adapter;
 import com.gridnine.elsa.server.core.storage.database.DatabaseBinaryData;
 import com.gridnine.elsa.server.core.storage.database.jdbc.model.JdbcFieldType;
 import com.gridnine.elsa.server.core.storage.database.jdbc.model.JdbcIndexDescription;
+import com.gridnine.elsa.server.core.storage.database.jdbc.model.JdbcIndexType;
 import com.gridnine.elsa.server.core.storage.database.jdbc.model.JdbcSequenceDescription;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +44,9 @@ public interface JdbcDialect {
 
     String getCardinalitySql(String property);
 
-    void deleteBlob(Connection cnn, Long id);
+    void deleteBlob(Connection cnn, Long id) throws SQLException;
 
     String getIlikeFunctionName();
+
+    String createIndexExtensionsSql(JdbcIndexType type);
 }

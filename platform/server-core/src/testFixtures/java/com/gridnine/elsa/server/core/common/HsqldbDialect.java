@@ -43,7 +43,7 @@ public class HsqldbDialect implements JdbcDialect {
                     var dataType = ((String) map.get("DATA_TYPE"));
                     var maxLength = ((Number) map.get("CHARACTER_MAXIMUM_LENGTH"));
                     var sqlType = switch (dataType){
-                       case "CHARACTER VARYING" -> maxLength.intValue() > 256? JdbcFieldType.TEXT: JdbcFieldType.STRING;
+                        case "CHARACTER VARYING" -> maxLength.intValue() > 256? JdbcFieldType.TEXT: JdbcFieldType.STRING;
                         default -> throw new UnsupportedOperationException("type %s %s is not supported".formatted(dataType, maxLength));
                     };
                     result.put(((String) map.get("COLUMN_NAME")).toLowerCase(), sqlType);
@@ -147,5 +147,10 @@ public class HsqldbDialect implements JdbcDialect {
     @Override
     public String getIlikeFunctionName() {
         return "like";
+    }
+
+    @Override
+    public String createIndexExtensionsSql(JdbcIndexType type) {
+        return "select 1";
     }
 }

@@ -175,7 +175,7 @@ public class JdbcDatabaseMetadataProvider {
 
     private JdbcTableDescription createCaptionTable(String docId, boolean localizable) {
         var captionTable = new JdbcTableDescription(JdbcUtils.getCaptionTableName(docId));
-        captionTable.getFields().put(BaseIdentity.Fields.id, new JdbcLongFieldHandler(BaseIdentity.Fields.id, true));
+        captionTable.getFields().put(BaseIdentity.Fields.id, new JdbcIdFieldHandler(true));
         if(localizable){
             supportedLocalesProvider.getSupportedLocales().forEach(loc ->{
                 var id = "%sCaption".formatted(loc.getCountry());

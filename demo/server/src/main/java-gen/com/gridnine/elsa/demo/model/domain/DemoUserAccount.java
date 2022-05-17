@@ -57,4 +57,9 @@ public class DemoUserAccount extends BaseDocument{
 
 		super.setValue(propertyName, value);
 	}
+
+	@Override
+	public String toString(){
+		return name;
+	}
 }

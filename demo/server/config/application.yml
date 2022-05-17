@@ -1,0 +1,9 @@
+server:
+  port: 8086
+elsa:
+  storage:
+    adapter: postgres
+    url: jdbc:postgresql://localhost:15436/elsa-demo?loginTimeout=10
+    poolSize: 20
+    login: elsa-user
+    password: 123

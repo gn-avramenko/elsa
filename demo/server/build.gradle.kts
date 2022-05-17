@@ -28,6 +28,8 @@ dependencies{
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation(project(":platform:common-meta"))
     implementation(project(":platform:common-core"))
+    implementation(project(":platform:server-core"))
+    implementation(project(":platform:server-postgres"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

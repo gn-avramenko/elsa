@@ -68,7 +68,12 @@ public final class JdbcStructureUpdater {
 
     private static void createIndexes(String tableName, Map<String, JdbcIndexDescription> indexes, JdbcTemplate template, JdbcDialect dialect) {
         indexes.forEach((key, value) ->{
-            template.execute(dialect.getCreateIndexSql(tableName, key, value));
+            try {
+                template.execute(dialect.getCreateIndexSql(tableName, key, value));
+            } catch (Exception e){
+                template.execute(dialect.createIndexExtensionsSql(value.type()));
+                template.execute(dialect.getCreateIndexSql(tableName, key, value));
+            }
             log.info("index %s on field %s of table %s was created".formatted(key, value.field(), tableName));
         });
     }

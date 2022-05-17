@@ -30,9 +30,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 public class ElsaServerCoreConfiguration {
 
-    @Autowired
-    private DatabaseFactory factory;
-
     @Bean
     public DesCodec desCodec(){
         return new DesCodec();
@@ -41,36 +38,6 @@ public class ElsaServerCoreConfiguration {
     @Bean
     public Storage storage(){
         return new Storage();
-    }
-
-    @Bean
-    public  Database primaryDatabase(){
-        return factory.getPrimaryDatabase();
-    }
-
-    @Bean
-    public  ClassMapper classMapper(){
-        return factory.getClassMapper();
-    }
-
-    @Bean
-    public  EnumMapper enumMapper(){
-        return factory.getEnumMapper();
-    }
-
-    @Bean
-    public  IdGenerator idGenerator(){
-        return factory.getIdGenerator();
-    }
-
-    @Bean
-    public  PlatformTransactionManager transactionManager(){
-        return factory.getTransactionManager();
-    }
-
-    @Bean
-    public ElsaTransactionManager elsaTransactionManager(){
-        return new ElsaTransactionManager();
     }
 
     @Bean

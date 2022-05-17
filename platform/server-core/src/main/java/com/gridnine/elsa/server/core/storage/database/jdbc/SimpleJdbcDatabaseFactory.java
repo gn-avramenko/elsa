@@ -21,13 +21,20 @@ import com.gridnine.elsa.server.core.storage.database.jdbc.model.JdbcDatabaseMet
 import com.gridnine.elsa.server.core.storage.database.jdbc.structureUpdater.JdbcStructureUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
 
@@ -35,6 +42,21 @@ public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
 
     @Value("${elsa.storage.adapter:hsqldb}")
     private String adapterId;
+
+    @Value("${elsa.storage.url}")
+    private String url;
+
+    @Value("${elsa.storage.poolSize:5}")
+    private int poolSize;
+
+    @Value("${elsa.storage.login}")
+    private String login;
+
+    @Value("${elsa.storage.password}")
+    private String password;
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private List<JdbcDataSourceProvider> providers;
@@ -62,21 +84,78 @@ public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
 
     private PlatformTransactionManager transactionManager;
 
+    private DataSource ds;
+
     @PostConstruct
     public void init() throws Exception {
         var adapter = providers.stream().filter(it -> it.getId().equals(adapterId)).findFirst().orElse(null);
         if(adapter == null){
             throw Xeption.forDeveloper("unsupported adapter id: %s".formatted(adapterId));
         }
-        DataSource ds = adapter.createDataSource();
+        var props = new HashMap<String,Object>();
+        props.put("login", login);
+        props.put("password", password);
+        props.put("poolSize", poolSize);
+        props.put("url", url);
+        ds = adapter.createDataSource(props);
         JdbcDialect dialect = adapter.createDialect(ds);
-        var template = new JdbcTemplate(ds);
-        JdbcStructureUpdater.updateStructure(template, dialect, jdbcDatabaseMetadataProvider);
-        classMapper = new JdbcClassMapperImpl(domainMetaRegistry, customMetaRegistry, template ,dialect);
-        enumMapper = new JdbcEnumMapperImpl(domainMetaRegistry, template ,supportedLocalesProvider, dialect);
-        database = new JdbcDatabase(template, jdbcDatabaseMetadataProvider, enumMapper, classMapper,
+        var autoCommitTemplate = new JdbcTemplate(ds);
+        var storageTemplate = new JdbcTemplate(new DataSource() {
+            @Override
+            public <T> T unwrap(Class<T> iface) throws SQLException {
+                return ds.unwrap(iface);
+            }
+
+            @Override
+            public boolean isWrapperFor(Class<?> iface) throws SQLException {
+                return ds.isWrapperFor(iface);
+            }
+
+            @Override
+            public Connection getConnection() throws SQLException {
+                var conn = ds.getConnection();
+                conn.setAutoCommit(false);
+                return conn;
+            }
+
+            @Override
+            public Connection getConnection(String username, String password) throws SQLException {
+                var conn = ds.getConnection(username, password);
+                conn.setAutoCommit(false);
+                return conn;
+            }
+
+            @Override
+            public PrintWriter getLogWriter() throws SQLException {
+                return ds.getLogWriter();
+            }
+
+            @Override
+            public void setLogWriter(PrintWriter out) throws SQLException {
+                ds.setLogWriter(out);
+            }
+
+            @Override
+            public void setLoginTimeout(int seconds) throws SQLException {
+                ds.setLoginTimeout(seconds);
+            }
+
+            @Override
+            public int getLoginTimeout() throws SQLException {
+                return ds.getLoginTimeout();
+            }
+
+            @Override
+            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+                return ds.getParentLogger();
+            }
+        });
+        JdbcStructureUpdater.updateStructure(autoCommitTemplate, dialect, jdbcDatabaseMetadataProvider);
+        classMapper = new JdbcClassMapperImpl(domainMetaRegistry, customMetaRegistry, autoCommitTemplate ,dialect);
+        enumMapper = new JdbcEnumMapperImpl(domainMetaRegistry, autoCommitTemplate ,supportedLocalesProvider, dialect);
+        database = new JdbcDatabase(storageTemplate, jdbcDatabaseMetadataProvider, enumMapper, classMapper,
                 dialect, domainMetaRegistry, reflectionFactory);
-        idGenerator = new JdbcIdGeneratorImpl(template, dialect);
+        idGenerator = new JdbcIdGeneratorImpl(autoCommitTemplate, dialect);
         transactionManager = new JdbcTransactionManager(ds);
     }
 
@@ -105,4 +184,9 @@ public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
         return transactionManager;
     }
 
+    @Override
+    public DataSource getFakeDataSource() {
+        return ds;
+    }
 }
+

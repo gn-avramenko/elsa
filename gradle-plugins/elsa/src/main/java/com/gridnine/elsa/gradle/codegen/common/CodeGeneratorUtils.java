@@ -307,12 +307,12 @@ public class CodeGeneratorUtils {
                 gen.blankLine();
                 gen.printLine("@Override");
                 gen.addImport("java.util.*");
-                gen.wrapWithBlock("public String toString(Locale locale)", () -> gen.printLine(ed.getToLocalizableStringExpression()));
+                gen.wrapWithBlock("public String toString(Locale locale)", () -> gen.printLine("return %s;".formatted(ed.getToLocalizableStringExpression())));
             }
             if (ed.getToStringExpression() != null) {
                 gen.blankLine();
                 gen.printLine("@Override");
-                gen.wrapWithBlock("public String toString()", () -> gen.printLine(ed.getToStringExpression()));
+                gen.wrapWithBlock("public String toString()", () -> gen.printLine("return %s;".formatted(ed.getToStringExpression())));
             }
         });
 

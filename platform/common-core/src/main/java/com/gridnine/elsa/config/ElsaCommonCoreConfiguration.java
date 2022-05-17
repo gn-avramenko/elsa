@@ -81,14 +81,14 @@ public class ElsaCommonCoreConfiguration {
             public int getId(String name) {
                 var res = name2IdMap.get(name);
                 if(res == null){
-                   synchronized (this){
-                       res = name2IdMap.get(name);
-                       if(res == null){
+                    synchronized (this){
+                        res = name2IdMap.get(name);
+                        if(res == null){
                             res = ref.incrementAndGet();
                             name2IdMap.put(name, res);
                             id2NameMap.put(res, name);
-                       }
-                   }
+                        }
+                    }
                 }
                 return name2IdMap.get(name);
             }
@@ -128,5 +128,10 @@ public class ElsaCommonCoreConfiguration {
     @Bean
     public ObjectMetadataProvidersFactory objectMetadataProvidersFactory(){
         return new ObjectMetadataProvidersFactory();
+    }
+
+    @Bean
+    public ElsaCommonCoreCustomMetaRegistryConfigurator elsaCommonCoreCustomMetaRegistryConfigurator(){
+        return new ElsaCommonCoreCustomMetaRegistryConfigurator();
     }
 }

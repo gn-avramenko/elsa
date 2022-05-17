@@ -20,6 +20,7 @@
             <option value="$PROJECT_DIR$/platform/common-core" />
             <option value="$PROJECT_DIR$/platform/common-meta" />
             <option value="$PROJECT_DIR$/platform/server-core" />
+            <option value="$PROJECT_DIR$/platform/server-postgres" />
           </set>
         </option>
       </GradleProjectSettings>

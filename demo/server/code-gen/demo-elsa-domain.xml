@@ -3,6 +3,7 @@
     <document id="com.gridnine.elsa.demo.model.domain.DemoUserAccount" cache-resolve="true">
         <property id="name" type="STRING"/>
         <property id="login" type="STRING"/>
+        <caption-expression>name</caption-expression>
     </document>
     <searchable-projection id="com.gridnine.elsa.demo.model.domain.DemoUserAccountProjection" document="com.gridnine.elsa.demo.model.domain.DemoUserAccount">
         <property id="name" type="STRING"/>

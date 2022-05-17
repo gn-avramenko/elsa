@@ -58,10 +58,9 @@ public class Storage {
 
     private Database database;
 
-    @Autowired
+
     private JsonUnmarshaller unmarshaller;
 
-    @Autowired
     private JsonMarshaller marshaller;
 
     private SerializationParameters serializationParameters;
@@ -240,8 +239,8 @@ public class Storage {
     }
 
     public <T, A extends BaseAsset, E extends FieldNameSupport & EqualitySupport&ArgumentType<T>> A findUniqueAsset(Class<A> cls, E property,
-                                                                                                 T propertyValue,
-                                                                                                 boolean forModification) {
+                                                                                                                    T propertyValue,
+                                                                                                                    boolean forModification) {
         return ExceptionUtils.wrapException(() -> findUniqueAsset(cls, property, propertyValue, forModification, advices, 0));
     }
 
@@ -265,8 +264,8 @@ public class Storage {
     }
 
     private <T, A extends BaseAsset, E extends FieldNameSupport & EqualitySupport&ArgumentType<T>> A findUniqueAsset(Class<A> cls, E property,
-                                                                                                  T propertyValue,
-                                                                                                  boolean forModification, List<StorageAdvice> advices,int idx) throws Exception {
+                                                                                                                     T propertyValue,
+                                                                                                                     boolean forModification, List<StorageAdvice> advices,int idx) throws Exception {
         if (idx == advices.size()) {
             var query = new SearchQueryBuilder().preferredFields(property).where(propertyValue == null?
                     SearchCriterion.isNull(property):
@@ -387,7 +386,7 @@ public class Storage {
                 var baos2 = new ByteArrayOutputStream();
                 try(var writer = new GDiffWriter(baos2) ){
                     delta.compute(data, new GZIPInputStream(new ByteArrayInputStream(updatePreviousVersion? previousVersionContent
-                                    : context.oldDocument.getData().content())), writer);
+                            : context.oldDocument.getData().content())), writer);
                     writer.flush();
                 }
                 var version = new DatabaseObjectData();
@@ -760,6 +759,8 @@ public class Storage {
                     //noinspection rawtypes
                     criterionsUpdater = new DynamicCriterionsUpdater((List) factory.getBeansOfType(DynamicCriterionHandler.class).values().stream().toList());
                     projectionHandlers = new HashMap<>();
+                    marshaller = factory.getBean(JsonMarshaller.class);
+                    unmarshaller = factory.getBean(JsonUnmarshaller.class);
                     factory.getBeansOfType(SearchableProjectionHandler.class).values().forEach(h -> {
                         var lst = projectionHandlers.computeIfAbsent(h.getDocumentClass().getName(), k -> new ArrayList<>());
                         lst.add(h);
