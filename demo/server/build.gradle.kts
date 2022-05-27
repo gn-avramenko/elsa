@@ -26,6 +26,10 @@ configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
 
 dependencies{
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework:spring-websocket")
+    implementation("org.springframework:spring-messaging")
+    implementation("com.fasterxml.jackson.core:jackson-core:2+")
+
     implementation(project(":platform:common-meta"))
     implementation(project(":platform:common-core"))
     implementation(project(":platform:server-core"))
