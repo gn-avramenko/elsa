@@ -1,39 +1,42 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-var path = require('path');
+const path = require('path');
 
 module.exports = {
   mode: 'development',
   entry: './src/index.ts',
-  target: "web",
+  target: 'web',
   devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: '[name].js',
-    chunkFilename: '[id].[chunkhash].js'
+    filename: '[name]-module.js',
   },
   resolve: {
-    extensions: ['.ts', '.js'] //resolve all the modules other than index.ts
+    extensions: ['.ts', '.js'], // resolve all the modules other than index.ts
   },
   module: {
     rules: [
       {
         use: 'ts-loader',
-        test: /\.ts?$/
-      }
-    ]
+        test: /\.ts?$/,
+      },
+    ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './public/index.html'),
-      filename: 'index.html',
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: './public' },
+      ],
     }),
   ],
   devServer: {
     static: {
       directory: path.join(__dirname, 'build'),
     },
+    proxy: {
+      '/restws': 'http://localhost:8086/restws',
+    },
     compress: true,
     port: 3000,
   },
-}
+};
