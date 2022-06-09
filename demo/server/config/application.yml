@@ -7,3 +7,6 @@ elsa:
     poolSize: 20
     login: elsa-user
     password: 123
+logging:
+  level:
+    root: INFO

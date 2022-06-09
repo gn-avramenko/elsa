@@ -34,7 +34,9 @@ module.exports = {
       directory: path.join(__dirname, 'build'),
     },
     proxy: {
-      '/restws': 'http://localhost:8086/restws',
+      '/login': 'http://localhost:8086',
+      '/logout': 'http://localhost:8086',
+      '/auth': 'http://localhost:8086',
     },
     compress: true,
     port: 3000,

@@ -7,6 +7,7 @@ package com.gridnine.elsa.demo.config;
 
 import com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator;
 import com.gridnine.elsa.demo.activator.ElsaDemoActivator;
+import com.gridnine.elsa.demo.remoting.restws.AuthController;
 import com.gridnine.elsa.demo.remoting.restws.RestWsController;
 import com.gridnine.elsa.demo.userAccount.DemoUserAccountProjectionHandler;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,11 @@ public class ElsaDemoServerConfiguration {
     @Bean
     public RestWsController restWsController(){
         return new RestWsController();
+    }
+
+    @Bean
+    public AuthController authController(){
+        return new AuthController();
     }
 
 }

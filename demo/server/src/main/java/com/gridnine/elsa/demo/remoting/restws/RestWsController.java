@@ -8,19 +8,13 @@ package com.gridnine.elsa.demo.remoting.restws;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.util.Random;
-import java.util.UUID;
 
 @Controller
 public class RestWsController {
@@ -29,6 +23,17 @@ public class RestWsController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     private static final Logger log = LoggerFactory.getLogger(RestWsController.class);
+
+   @MessageMapping("/request")
+   public void sendSpecific(@Payload String msg, Principal principal){
+       System.out.println("request from %s".formatted(principal));
+       new Thread("simp"){
+           @Override
+           public void run() {
+               simpMessagingTemplate.convertAndSendToUser("123", "/response", "hello specific");
+           }
+       }.start();
+   }
 
 
 //    @MessageMapping("/restws")
@@ -57,13 +62,13 @@ public class RestWsController {
 ////        simpMessagingTemplate.convertAndSendToUser("123", "/ws/user/queue/specific-user", "hello world");
 //    }
 
-    @MessageMapping("/test")
-    @SendToUser("/queue/specific-user")
-    public String sendSpecific(
-            @Payload String msg,
-            Principal user) throws Exception {
-        System.out.println(msg);
-        return "hello specific";
-//        simpMessagingTemplate.convertAndSendToUser(user.getName(), "/user/queue/specific-user", "hello specific");
-    }
+//    @MessageMapping("/test")
+//    @SendToUser("/queue/specific-user")
+//    public String sendSpecific(
+//            @Payload String msg,
+//            Principal user) throws Exception {
+//        System.out.println(msg);
+//        return "hello specific";
+////        simpMessagingTemplate.convertAndSendToUser(user.getName(), "/user/queue/specific-user", "hello specific");
+//    }
 }

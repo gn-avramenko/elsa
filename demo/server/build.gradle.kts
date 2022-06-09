@@ -28,6 +28,8 @@ dependencies{
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework:spring-websocket")
     implementation("org.springframework:spring-messaging")
+    implementation("org.springframework.security:spring-security-messaging")
+    implementation("org.springframework.boot:spring-boot-starter-security");
     implementation("com.fasterxml.jackson.core:jackson-core:2+")
 
     implementation(project(":platform:common-meta"))

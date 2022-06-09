@@ -21,6 +21,7 @@ public class CustomHandshakeHandler extends DefaultHandshakeHandler {
             WebSocketHandler wsHandler,
             Map<String, Object> attributes
     ) {
+//        return new StompPrincipal(request.getHeaders().getFirst("clientId"));
         return new StompPrincipal("123");
     }
 }
