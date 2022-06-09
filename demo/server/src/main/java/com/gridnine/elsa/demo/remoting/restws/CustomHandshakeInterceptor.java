@@ -21,7 +21,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         var uri = request.getURI().toString();
         var m = pattern.matcher(uri);
-        var result = m.find();
+        m.find();
         attributes.put("clientId", m.group(1));
         return true;
     }
