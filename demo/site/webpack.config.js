@@ -37,8 +37,9 @@ module.exports = {
       '/login': 'http://localhost:8086',
       '/logout': 'http://localhost:8086',
       '/auth': 'http://localhost:8086',
+      '/remoting': 'http://localhost:8086',
     },
-    compress: true,
+    compress: false,
     port: 3000,
   },
 };

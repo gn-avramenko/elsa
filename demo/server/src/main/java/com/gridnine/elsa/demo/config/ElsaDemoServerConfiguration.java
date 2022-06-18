@@ -9,6 +9,9 @@ import com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator;
 import com.gridnine.elsa.demo.activator.ElsaDemoActivator;
 import com.gridnine.elsa.demo.remoting.restws.AuthController;
 import com.gridnine.elsa.demo.remoting.restws.RestWsController;
+import com.gridnine.elsa.demo.remoting.sse.PrivateRestFluxService;
+import com.gridnine.elsa.demo.remoting.sse.PublicRestFluxService;
+import com.gridnine.elsa.demo.remoting.sse.PublicRestService;
 import com.gridnine.elsa.demo.userAccount.DemoUserAccountProjectionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,4 +43,17 @@ public class ElsaDemoServerConfiguration {
         return new AuthController();
     }
 
+    @Bean
+    public PublicRestService publicRestService(){
+        return new PublicRestService();
+    }
+    @Bean
+    public PublicRestFluxService public2RestService(){
+        return new PublicRestFluxService();
+    }
+
+    @Bean
+    public PrivateRestFluxService privateRestFluxService(){
+        return new PrivateRestFluxService();
+    }
 }

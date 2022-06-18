@@ -1,4 +1,17 @@
 // eslint-disable-next-line import/prefer-default-export
+export class ServerError {
+  status: number;
+
+  message?: string;
+
+  details?: string;
+
+  constructor(status: number, message?: string, details?: string) {
+    this.status = status;
+    this.message = message;
+    this.details = details;
+  }
+}
 export const generateUUID = () => {
   const s:string[] = [];
   const hexDigits = '0123456789abcdef';

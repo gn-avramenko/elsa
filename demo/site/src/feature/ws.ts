@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
+// noinspection JSUnusedLocalSymbols
+
 import { Client, StompSubscription } from '@stomp/stompjs';
-import { Error } from 'memfs/lib/internal/errors';
 import { generateUUID } from './common';
 
 type RemotingConfiguration = {
@@ -84,8 +86,8 @@ const awaitRestInitialization = async (restId:string) => {
       // },
       onConnect: () => {
         channelInt!.replySubscription = client.subscribe(`/user/${remotingConfiguration.clientId}/${restId}/reply`, (msg) => {
-          const { requestId } = msg.headers;
-          const payload = msg.body
+          // const { requestId } = msg.headers;
+          // const payload = msg.body
 
         });
         resolve();
@@ -103,15 +105,16 @@ const awaitRestInitialization = async (restId:string) => {
   });
 };
 
-const callRaw = async (restId:string, methodId: string, payload:string) => {
-  if (channels.get(restId)?.status !== 'ACTIVE') {
-    await awaitRestInitialization(restId);
-  }
-};
+// const callRaw = async (restId:string, methodId: string, payload:string) => {
+//   if (channels.get(restId)?.status !== 'ACTIVE') {
+//     await awaitRestInitialization(restId);
+//   }
+// };
 
 // eslint-disable-next-line no-unused-vars
 let resolve:((b: boolean) => void)| null = null;
 let subscription: StompSubscription | null = null;
+const clientId = generateUUID();
 const restWsClient = new Client({
   brokerURL: `ws://localhost:8086/restws?clientId=${clientId}`,
   debug(str) {

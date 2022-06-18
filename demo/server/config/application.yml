@@ -9,4 +9,4 @@ elsa:
     password: 123
 logging:
   level:
-    root: INFO
+    root: DEBUG
