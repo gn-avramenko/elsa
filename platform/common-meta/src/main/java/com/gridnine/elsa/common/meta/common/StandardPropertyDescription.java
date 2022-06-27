@@ -18,7 +18,7 @@ public class StandardPropertyDescription extends BaseModelElementDescription{
 
     private String className;
 
-    private boolean nullable;
+    private boolean nonNullable;
 
     public StandardValueType getType() {
         return type;
@@ -36,11 +36,11 @@ public class StandardPropertyDescription extends BaseModelElementDescription{
         this.className = className;
     }
 
-    public boolean isNullable() {
-        return nullable;
+    public boolean isNonNullable() {
+        return nonNullable;
     }
 
-    public void setNullable(boolean nullable) {
-        this.nullable = nullable;
+    public void setNonNullable(boolean nonNullable) {
+        this.nonNullable = nonNullable;
     }
 }

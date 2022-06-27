@@ -1,3 +1,7 @@
+/* ****************************************************************
+ * This is generated code, don't modify it manually
+ **************************************************************** */
+
 let logged = false;
 export const isLogged = () => logged;
 

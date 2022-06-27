@@ -23,9 +23,9 @@ apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
 configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
   codegen {
-    l10n("src/main/codegen/core-server-l10n-messages.xml","src/main/java-gen",
+    l10n("src/main/java-gen",
     "com.gridnine.elsa.server.core.CoreL10nMessagesRegistryConfigurator",
-        "com.gridnine.elsa.server.core.CoreL10nMessagesRegistryFactory"
+        "com.gridnine.elsa.server.core.CoreL10nMessagesRegistryFactory", arrayListOf("src/main/codegen/core-server-l10n-messages.xml")
     )
   }
 }

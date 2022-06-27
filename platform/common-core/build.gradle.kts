@@ -23,15 +23,14 @@ apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
 configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
     codegen {
-        domain("src/testFixtures/codegen/elsa-core-test-domain.xml",
-            "src/testFixtures/java-gen",
-            "com.gridnine.elsa.common.core.test.ElsaCommonCoreTestDomainMetaRegistryConfigurator")
+        domain("src/testFixtures/java-gen",
+            "com.gridnine.elsa.common.core.test.ElsaCommonCoreTestDomainMetaRegistryConfigurator", arrayListOf("src/testFixtures/codegen/elsa-core-test-domain.xml"))
 //        rest("src/testFixtures/codegen/elsa-core-test-rest.xml",
 //            "src/testFixtures/java-gen",
 //            "com.gridnine.elsa.common.core.test.ElsaCommonCoreTestRestMetaRegistryConfigurator")
-        custom("src/main/codegen/elsa-core-custom.xml",
+        custom(
             "src/main/java-gen",
-            "com.gridnine.elsa.config.ElsaCommonCoreCustomMetaRegistryConfigurator")
+            "com.gridnine.elsa.config.ElsaCommonCoreCustomMetaRegistryConfigurator", arrayListOf("src/main/codegen/elsa-core-custom.xml"))
     }
 }
 

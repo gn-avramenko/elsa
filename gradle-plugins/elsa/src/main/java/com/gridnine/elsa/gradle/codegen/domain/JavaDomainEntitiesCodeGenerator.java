@@ -7,7 +7,7 @@ package com.gridnine.elsa.gradle.codegen.domain;
 
 import com.gridnine.elsa.common.meta.common.*;
 import com.gridnine.elsa.common.meta.domain.*;
-import com.gridnine.elsa.gradle.codegen.common.CodeGeneratorUtils;
+import com.gridnine.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.elsa.gradle.codegen.common.GenEntityDescription;
 
 import java.io.File;
@@ -16,10 +16,10 @@ import java.util.Set;
 public class JavaDomainEntitiesCodeGenerator {
     public static void generate(DomainMetaRegistry registry, File destDir, Set<File> generatedFiles) throws Exception {
         for(EnumDescription ed : registry.getEnums().values()){
-            CodeGeneratorUtils.generateJavaEnumCode(ed, destDir, generatedFiles);
+            JavaCodeGeneratorUtils.generateJavaEnumCode(ed, destDir, generatedFiles);
         }
         for(EntityDescription ed: registry.getEntities().values()){
-            CodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
+            JavaCodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
         }
         for(DocumentDescription dd: registry.getDocuments().values()){
             var ed = new GenEntityDescription();
@@ -31,13 +31,13 @@ public class JavaDomainEntitiesCodeGenerator {
             ed.getCollections().putAll(dd.getCollections());
             ed.setToLocalizableStringExpression(dd.getLocalizableCaptionExpression());
             ed.setToStringExpression(dd.getCaptionExpression());
-            CodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
+            JavaCodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
         }
 
         for(SearchableProjectionDescription spd: registry.getSearchableProjections().values()){
             var ed = createSearchableDescription(spd);
             ed.setExtendsId("com.gridnine.elsa.common.core.model.domain.BaseSearchableProjection<%s>".formatted(spd.getDocument()));
-            CodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
+            JavaCodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
         }
         for(AssetDescription ad: registry.getAssets().values()){
             var ed = createSearchableDescription(ad);
@@ -45,7 +45,7 @@ public class JavaDomainEntitiesCodeGenerator {
             ed.setAbstract(ad.isAbstract());
             ed.setToStringExpression(ad.getCaptionExpression());
             ed.setToLocalizableStringExpression(ad.getLocalizableCaptionExpression());
-            CodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
+            JavaCodeGeneratorUtils.generateJavaEntityCode(ed, destDir, generatedFiles);
         }
     }
 
@@ -56,7 +56,7 @@ public class JavaDomainEntitiesCodeGenerator {
             var sp = new StandardPropertyDescription();
             sp.setId(prop.getId());
             sp.setType(getStandardValueType(prop.getType()));
-            sp.setNullable(isNullable(prop.getType()));
+            sp.setNonNullable(isNonNullable(prop.getType()));
             sp.setClassName(prop.getClassName());
             ed.getProperties().put(prop.getId(), sp);
         }
@@ -71,10 +71,10 @@ public class JavaDomainEntitiesCodeGenerator {
         return ed;
     }
 
-    static boolean isNullable(DatabasePropertyType type){
+    static boolean isNonNullable(DatabasePropertyType type){
         return switch (type){
-            case BOOLEAN, LONG, INT -> true;
-            default -> false;
+            case BOOLEAN, LONG, INT -> false;
+            default -> true;
         };
     }
 

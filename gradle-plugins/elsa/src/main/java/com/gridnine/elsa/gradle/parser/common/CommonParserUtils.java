@@ -83,7 +83,7 @@ public final class CommonParserUtils {
         elm.getChildren("property").forEach(prop ->{
             var pd = description.getProperties().computeIfAbsent(getIdAttribute(prop), StandardPropertyDescription::new);
             pd.setClassName(prop.getAttribute("class-name"));
-            pd.setNullable("true".equals(prop.getAttribute("nullable")));
+            pd.setNonNullable("true".equals(prop.getAttribute("non-nullable")));
             pd.setType(StandardValueType.valueOf(prop.getAttribute("type")));
         });
         elm.getChildren("collection").forEach(coll ->{
@@ -117,6 +117,15 @@ public final class CommonParserUtils {
             if(localizations != null){
                 updateLocalizationsOfChild(ei, localizations, ed.getId());
             }
+        });
+    }
+
+    public static void updateImports(List<ModuleImportDescription> imports, BuildXmlNode node){
+        node.getChildren("module-import").forEach(it ->{
+            var imp = new ModuleImportDescription();
+            imp.setModule(it.getAttribute("module"));
+            imp.setObjectId(it.getAttribute("objectId"));
+            imports.add(imp);
         });
     }
 

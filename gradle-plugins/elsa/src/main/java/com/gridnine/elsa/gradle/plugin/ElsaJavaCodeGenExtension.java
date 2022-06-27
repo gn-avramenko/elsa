@@ -9,6 +9,7 @@ import com.gridnine.elsa.gradle.codegen.common.BaseCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.custom.JavaCustomCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nCodeGenRecord;
+import com.gridnine.elsa.gradle.codegen.remoting.JavaRemotingCodeGenRecord;
 
 import java.io.File;
 import java.util.List;
@@ -34,26 +35,34 @@ public class ElsaJavaCodeGenExtension {
         this.projectDir = projectDir;
     }
 
-    public void domain(String sourceFileName, String destDir, String configurator){
+    public void domain(String destDir, String configurator, List<String> sourcesFileNames){
         var record = new JavaDomainCodeGenRecord();
         record.setRegistryConfigurator(configurator);
-        record.setSource(new File(projectDir, sourceFileName));
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }
 
-    public void custom(String sourceFileName, String destDir, String configurator){
+    public void custom(String destDir, String configurator, List<String> sourcesFileNames){
         var record = new JavaCustomCodeGenRecord();
         record.setRegistryConfigurator(configurator);
-        record.setSource(new File(projectDir, sourceFileName));
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }
 
-    public void l10n(String sourceFileName, String destDir, String configurator, String factory){
+    public void remoting(String destDir, String configurator, List<String> sourcesFileNames){
+        var record = new JavaRemotingCodeGenRecord();
+        record.setRegistryConfigurator(configurator);
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.setDestinationDir(new File(projectDir, destDir));
+        codegenRecords.add(record);
+    }
+
+    public void l10n( String destDir, String configurator, String factory, List<String> sourcesFileNames){
         var record = new JavaL10nCodeGenRecord();
         record.setRegistryConfigurator(configurator);
-        record.setSource(new File(projectDir, sourceFileName));
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setFactory(factory);
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);

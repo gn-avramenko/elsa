@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<remoting xmlns="http://gridnine.com/elsa/meta-remoting" id="demo">
+    <enum id="com.gridnine.elsa.demo.model.remoting.DemoTestEnum">
+        <enum-item id="ITEM1"/>
+        <enum-item id="ITEM2"/>
+    </enum>
+   <group id="test">
+       <server-call id="server-call">
+           <request id="com.gridnine.elsa.demo.model.remoting.DemoTestServerCallRequest">
+               <property id="param" type="STRING"/>
+           </request>
+           <response id="com.gridnine.elsa.demo.model.remoting.DemoTestServerCallResponse">
+               <property id="stringProperty" type="STRING"/>
+           </response>
+       </server-call>
+       <client-call id="client-call">
+           <request id="com.gridnine.elsa.demo.model.remoting.DemoTestClientCallRequest">
+               <property id="param" type="STRING"/>
+           </request>
+           <response id="com.gridnine.elsa.demo.model.remoting.DemoTestClientCallResponse">
+               <property id="stringProperty" type="STRING"/>
+           </response>
+       </client-call>
+       <subscription id="subscription">
+           <parameter id="com.gridnine.elsa.demo.model.remoting.DemoTestSubscriptionParameters">
+               <property id="param" type="STRING"/>
+           </parameter>
+           <event id="com.gridnine.elsa.demo.model.remoting.DemoTestSubscriptionEvent">
+               <property id="stringProperty" type="STRING"/>
+           </event>
+       </subscription>
+   </group>
+</remoting>

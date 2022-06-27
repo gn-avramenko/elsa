@@ -8,7 +8,7 @@ package com.gridnine.elsa.gradle.codegen.domain;
 import com.gridnine.elsa.common.meta.common.EntityDescription;
 import com.gridnine.elsa.common.meta.common.EnumDescription;
 import com.gridnine.elsa.common.meta.domain.*;
-import com.gridnine.elsa.gradle.codegen.common.CodeGeneratorUtils;
+import com.gridnine.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.elsa.gradle.codegen.common.JavaCodeGenerator;
 
 import java.io.File;
@@ -19,18 +19,18 @@ import java.util.Set;
 public class JavaDomainConfiguratorCodeGenerator {
     public static void generate(DomainMetaRegistry registry, String configurator, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
-        gen.setPackageName(CodeGeneratorUtils.getPackage(configurator));
+        gen.setPackageName(JavaCodeGeneratorUtils.getPackage(configurator));
         gen.addImport("com.gridnine.elsa.common.meta.domain.DomainMetaRegistryConfigurator");
         gen.addImport("com.gridnine.elsa.common.meta.domain.DomainMetaRegistry");
-        gen.wrapWithBlock("public class %s implements DomainMetaRegistryConfigurator".formatted(CodeGeneratorUtils.getSimpleName(configurator)), () -> {
+        gen.wrapWithBlock("public class %s implements DomainMetaRegistryConfigurator".formatted(JavaCodeGeneratorUtils.getSimpleName(configurator)), () -> {
             gen.blankLine();
             gen.printLine("@Override");
             gen.wrapWithBlock("public void updateMetaRegistry(DomainMetaRegistry registry)", () ->{
                 for(EnumDescription ed : registry.getEnums().values()){
-                    CodeGeneratorUtils.generateJavaEnumConfiguratorCode(ed, gen);
+                    JavaCodeGeneratorUtils.generateJavaEnumConfiguratorCode(ed, gen);
                 }
                 for(EntityDescription ed : registry.getEntities().values()){
-                    CodeGeneratorUtils.generateJavaEntityConfiguratorCode(ed, gen);
+                    JavaCodeGeneratorUtils.generateJavaEntityConfiguratorCode(ed, gen);
                 }
                 for(DocumentDescription dd : registry.getDocuments().values()){
                     gen.addImport("com.gridnine.elsa.common.meta.domain.DocumentDescription");
@@ -43,7 +43,7 @@ public class JavaDomainConfiguratorCodeGenerator {
                         if(dd.isCacheResolve()){
                             gen.printLine("documentDescription.setCacheResolve(true);");
                         }
-                        CodeGeneratorUtils.generateJavaEntityConfiguratorCode("documentDescription", dd, gen);
+                        JavaCodeGeneratorUtils.generateJavaEntityConfiguratorCode("documentDescription", dd, gen);
                     });
                 }
                 for(SearchableProjectionDescription pd: registry.getSearchableProjections().values()){
@@ -66,7 +66,7 @@ public class JavaDomainConfiguratorCodeGenerator {
             });
 
         });
-        var file = CodeGeneratorUtils.saveIfDiffers(gen.toString(), configurator+".java", destDir);
+        var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), configurator+".java", destDir);
         generatedFiles.add(file);
     }
 

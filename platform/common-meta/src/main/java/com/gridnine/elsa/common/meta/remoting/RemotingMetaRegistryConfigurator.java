@@ -3,12 +3,8 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.elsa.gradle.codegen.common;
+package com.gridnine.elsa.common.meta.remoting;
 
-public enum GeneratorType {
-    JAVA_DOMAIN,
-    JAVA_CUSTOM,
-    JAVA_REMOTING,
-    JAVA_L10N,
-    WEB_REMOTING,
+public interface RemotingMetaRegistryConfigurator {
+    void updateMetaRegistry(RemotingMetaRegistry registry);
 }

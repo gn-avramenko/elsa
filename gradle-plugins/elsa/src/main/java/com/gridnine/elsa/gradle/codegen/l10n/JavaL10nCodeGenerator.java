@@ -10,9 +10,10 @@ import com.gridnine.elsa.common.meta.l10n.L10nMessageParameterDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMessagesBundleDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMetaRegistry;
 import com.gridnine.elsa.gradle.codegen.common.CodeGenerator;
-import com.gridnine.elsa.gradle.codegen.common.CodeGeneratorUtils;
+import com.gridnine.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.elsa.gradle.parser.l10n.L10nMetaRegistryParser;
+import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
 
 import java.io.File;
 import java.util.List;
@@ -26,7 +27,7 @@ public class JavaL10nCodeGenerator  implements CodeGenerator<JavaL10nCodeGenReco
         var parser = new L10nMetaRegistryParser();
         for(JavaL10nCodeGenRecord record: records){
             var reg = new L10nMetaRegistry();
-            parser.updateMetaRegistry(reg, record.getSource());
+            record.getSources().forEach(it -> BuildExceptionUtils.wrapException(() -> parser.updateMetaRegistry(reg, it)));
             if(!reg.getBundles().isEmpty()){
                 var bundle = reg.getBundles().values().iterator().next();
                 generateConfigurator(record.getRegistryConfigurator(), bundle, destDir, generatedFiles);
@@ -37,11 +38,11 @@ public class JavaL10nCodeGenerator  implements CodeGenerator<JavaL10nCodeGenReco
 
     private void generateConfigurator(String configurator, L10nMessagesBundleDescription bundle, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
-        gen.setPackageName(CodeGeneratorUtils.getPackage(configurator));
+        gen.setPackageName(JavaCodeGeneratorUtils.getPackage(configurator));
         gen.addImport("com.gridnine.elsa.common.meta.l10n.L10nMetaRegistryConfigurator");
         gen.addImport("org.springframework.stereotype.Component");
         gen.addImport("com.gridnine.elsa.common.meta.l10n.L10nMetaRegistry");
-        gen.wrapWithBlock("public class %s implements L10nMetaRegistryConfigurator".formatted(CodeGeneratorUtils.getSimpleName(configurator)), () -> {
+        gen.wrapWithBlock("public class %s implements L10nMetaRegistryConfigurator".formatted(JavaCodeGeneratorUtils.getSimpleName(configurator)), () -> {
             gen.blankLine();
             gen.printLine("@Override");
             gen.wrapWithBlock("public void updateMetaRegistry(L10nMetaRegistry registry)", () ->{
@@ -80,17 +81,17 @@ public class JavaL10nCodeGenerator  implements CodeGenerator<JavaL10nCodeGenReco
             });
 
         });
-        var file = CodeGeneratorUtils.saveIfDiffers(gen.toString(), configurator+".java", destDir);
+        var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), configurator+".java", destDir);
         generatedFiles.add(file);
     }
 
     private void generateFactory(String factory, L10nMessagesBundleDescription bundle, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
-        gen.setPackageName(CodeGeneratorUtils.getPackage(factory));
+        gen.setPackageName(JavaCodeGeneratorUtils.getPackage(factory));
         gen.addImport("com.gridnine.elsa.common.core.l10n.Localizer");
         gen.addImport("com.gridnine.elsa.common.core.model.common.L10nMessage");
         gen.addImport("org.springframework.beans.factory.annotation.Autowired");
-        gen.wrapWithBlock("public class %s".formatted(CodeGeneratorUtils.getSimpleName(factory)), () -> {
+        gen.wrapWithBlock("public class %s".formatted(JavaCodeGeneratorUtils.getSimpleName(factory)), () -> {
             gen.blankLine();
             gen.printLine("@Autowired");
             gen.printLine("private Localizer localizer;");
@@ -106,9 +107,9 @@ public class JavaL10nCodeGenerator  implements CodeGenerator<JavaL10nCodeGenReco
                     }
                     if(param.isCollection()){
                         gen.addImport("java.util.List");
-                        parameters.append("List<%s> %s".formatted(CodeGeneratorUtils.getPropertyType(param.getType(), param.getClassName(), true, gen), param.getId()));
+                        parameters.append("List<%s> %s".formatted(JavaCodeGeneratorUtils.getPropertyType(param.getType(), param.getClassName(), true, gen), param.getId()));
                     } else {
-                        parameters.append("%s %s".formatted(CodeGeneratorUtils.getPropertyType(param.getType(), param.getClassName(), true, gen), param.getId()));
+                        parameters.append("%s %s".formatted(JavaCodeGeneratorUtils.getPropertyType(param.getType(), param.getClassName(), true, gen), param.getId()));
                     }
                     arguments.append(param.getId());
                 }
@@ -129,7 +130,7 @@ public class JavaL10nCodeGenerator  implements CodeGenerator<JavaL10nCodeGenReco
                 });
             }
         });
-        var file = CodeGeneratorUtils.saveIfDiffers(gen.toString(), factory+".java", destDir);
+        var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), factory+".java", destDir);
         generatedFiles.add(file);
     }
 }

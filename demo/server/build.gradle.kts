@@ -15,9 +15,11 @@ repositories {
 }
 configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
     codegen {
-        domain("code-gen/demo-elsa-domain.xml",
+        domain(
             "src/main/java-gen",
-            "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator")
+            "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator", arrayListOf("code-gen/demo-elsa-domain.xml"))
+        remoting("src/main/java-gen", "com.gridnine.elsa.demo.DemoElsaRemotingMetaRegistryConfigurator",
+            arrayListOf("code-gen/demo-elsa-remoting.xml") )
     }
 }
 

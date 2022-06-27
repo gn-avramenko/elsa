@@ -20,7 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-public class CodeGeneratorUtils {
+public class JavaCodeGeneratorUtils {
 
     public static String getPackage(String className) {
         var idx = className.lastIndexOf(".");
@@ -38,7 +38,7 @@ public class CodeGeneratorUtils {
         var length = parts.length;
         for (int n = 0; n < length - 2; n++) {
             currentFile = new File(currentFile, parts[n] + "/");
-            assert currentFile.exists() || currentFile.mkdirs();
+            if(!currentFile.exists()) {currentFile.mkdirs();};
         }
         currentFile = new File(currentFile, parts[parts.length - 2] + "." + parts[parts.length - 1]);
         if (currentFile.exists()) {
@@ -47,14 +47,14 @@ public class CodeGeneratorUtils {
                 return currentFile;
             }
         }
-        assert currentFile.getParentFile().mkdirs();
+        currentFile.getParentFile().mkdirs();
         while (!currentFile.getParentFile().exists()){
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 //noops
             }
-            assert currentFile.getParentFile().mkdirs();
+            currentFile.getParentFile().mkdirs();
         }
         Files.writeString(currentFile.toPath(), content);
         return currentFile;
@@ -104,8 +104,8 @@ public class CodeGeneratorUtils {
                 if (pd.getClassName() != null) {
                     gen.printLine("propertyDescription.setClassName(\"%s\");".formatted(pd.getClassName()));
                 }
-                if (pd.isNullable()) {
-                    gen.printLine("propertyDescription.setNullable(true);");
+                if (pd.isNonNullable()) {
+                    gen.printLine("propertyDescription.setNonNullable(true);");
                 }
                 gen.printLine("%s.getProperties().put(propertyDescription.getId(), propertyDescription);".formatted(descriptionName));
             });
@@ -146,8 +146,8 @@ public class CodeGeneratorUtils {
 
     public static void generateJavaEnumCode(EnumDescription ed, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
-        gen.setPackageName(CodeGeneratorUtils.getPackage(ed.getId()));
-        gen.wrapWithBlock("public enum %s".formatted(CodeGeneratorUtils.getSimpleName(ed.getId())), () -> {
+        gen.setPackageName(JavaCodeGeneratorUtils.getPackage(ed.getId()));
+        gen.wrapWithBlock("public enum %s".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())), () -> {
             var items = new ArrayList<>(ed.getItems().values());
             int size = items.size();
             for (int n = 0; n < size; n++) {
@@ -156,7 +156,7 @@ public class CodeGeneratorUtils {
                 gen.printLine("%s%s".formatted(item.getId(), n == size - 1 ? "" : ","));
             }
         });
-        var file = CodeGeneratorUtils.saveIfDiffers(gen.toString(), ed.getId() + ".java", destDir);
+        var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), ed.getId() + ".java", destDir);
         generatedFiles.add(file);
     }
 
@@ -173,7 +173,7 @@ public class CodeGeneratorUtils {
 
     public static void generateJavaEntityCode(GenEntityDescription ed, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
-        var packageName = CodeGeneratorUtils.getPackage(ed.getId());
+        var packageName = JavaCodeGeneratorUtils.getPackage(ed.getId());
         gen.setPackageName(packageName);
         var extendsId = ed.getExtendsId();
         if (extendsId == null) {
@@ -205,17 +205,17 @@ public class CodeGeneratorUtils {
         if (ed.isAbstract()) {
             cnsb.append(" abstract");
         }
-        cnsb.append(" class %s extends %s".formatted(CodeGeneratorUtils.getSimpleName(ed.getId()),
-                !extId1.equals(extId2)? "%s<%s>".formatted(CodeGeneratorUtils.getSimpleName(extId1),
-                        CodeGeneratorUtils.getSimpleName(extId2))
-                        : CodeGeneratorUtils.getSimpleName(extendsId)));
+        cnsb.append(" class %s extends %s".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId()),
+                !extId1.equals(extId2)? "%s<%s>".formatted(JavaCodeGeneratorUtils.getSimpleName(extId1),
+                        JavaCodeGeneratorUtils.getSimpleName(extId2))
+                        : JavaCodeGeneratorUtils.getSimpleName(extendsId)));
         if (implementsId != null) {
-            cnsb.append(" implements %s".formatted(CodeGeneratorUtils.getSimpleName(implementsId)));
+            cnsb.append(" implements %s".formatted(JavaCodeGeneratorUtils.getSimpleName(implementsId)));
         }
         gen.wrapWithBlock(cnsb.toString(), () -> {
             for (StandardPropertyDescription pd : ed.getProperties().values()) {
                 gen.blankLine();
-                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen);
+                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNonNullable(), gen);
                 gen.printLine("private %s %s;".formatted(className, pd.getId()));
             }
             for (StandardCollectionDescription cd : ed.getCollections().values()) {
@@ -233,7 +233,7 @@ public class CodeGeneratorUtils {
             }
             for (StandardPropertyDescription pd : ed.getProperties().values()) {
                 gen.blankLine();
-                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen);
+                String className = getPropertyType(pd.getType(), pd.getClassName(), pd.isNonNullable(), gen);
                 gen.wrapWithBlock("public %s get%s()".formatted(className, BuildTextUtils.capitalize(pd.getId())), () -> gen.printLine("return %s;".formatted(pd.getId())));
                 gen.blankLine();
                 gen.wrapWithBlock("public void set%s(%s value)".formatted(BuildTextUtils.capitalize(pd.getId()),className), () -> gen.printLine("this.%s = value;".formatted(pd.getId())));
@@ -271,7 +271,7 @@ public class CodeGeneratorUtils {
                             if(pd.getType() == StandardValueType.ENTITY_REFERENCE){
                                 gen.printLine("//noinspection unchecked");
                             }
-                            gen.printLine("this.%s = (%s) value;".formatted(pd.getId(), getPropertyType(pd.getType(), pd.getClassName(), pd.isNullable(), gen)));
+                            gen.printLine("this.%s = (%s) value;".formatted(pd.getId(), getPropertyType(pd.getType(), pd.getClassName(), pd.isNonNullable(), gen)));
                             gen.printLine("return;");
                         });
                     }
@@ -316,11 +316,11 @@ public class CodeGeneratorUtils {
             }
         });
 
-        var file = CodeGeneratorUtils.saveIfDiffers(gen.toString(), ed.getId() + ".java", destDir);
+        var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), ed.getId() + ".java", destDir);
         generatedFiles.add(file);
     }
 
-    public static String getPropertyType(StandardValueType type, String className, boolean nullable, JavaCodeGenerator gen) {
+    public static String getPropertyType(StandardValueType type, String className, boolean noNullable, JavaCodeGenerator gen) {
         return switch (type) {
             case STRING, CLASS -> "String";
             case LOCAL_DATE -> {
@@ -331,7 +331,7 @@ public class CodeGeneratorUtils {
                 gen.addImport(LocalDateTime.class.getName());
                 yield LocalDateTime.class.getSimpleName();
             }
-            case BOOLEAN -> nullable ? "Boolean" : "boolean";
+            case BOOLEAN -> noNullable ?  "boolean" : "Boolean";
             case BYTE_ARRAY -> "byte[]";
             case ENUM, ENTITY -> {
                 var pk = getPackage(className);
@@ -347,10 +347,10 @@ public class CodeGeneratorUtils {
                     gen.addImport(className);
                 }
                 gen.addImport("com.gridnine.elsa.common.core.model.domain.EntityReference");
-                yield "EntityReference<%s>".formatted(CodeGeneratorUtils.getSimpleName(className));
+                yield "EntityReference<%s>".formatted(JavaCodeGeneratorUtils.getSimpleName(className));
             }
-            case LONG -> nullable ? "Long" : "long";
-            case INT -> nullable ? "Integer" : "int";
+            case LONG -> noNullable ? "long" : "Long";
+            case INT -> noNullable ? "int": "Integer";
             case BIG_DECIMAL -> {
                 gen.addImport(BigDecimal.class.getName());
                 yield BigDecimal.class.getSimpleName();
