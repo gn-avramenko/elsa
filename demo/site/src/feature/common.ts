@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/prefer-default-export
-export class ServerError {
+export class RemotingError {
   status: number;
 
   message?: string;
@@ -12,6 +12,12 @@ export class ServerError {
     this.details = details;
   }
 }
+
+export type ErrorHandler = {
+  // eslint-disable-next-line no-unused-vars
+  onError: (er:any) => void
+}
+
 export const generateUUID = () => {
   const s:string[] = [];
   const hexDigits = '0123456789abcdef';

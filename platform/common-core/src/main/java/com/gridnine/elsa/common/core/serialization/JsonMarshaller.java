@@ -125,6 +125,9 @@ public class JsonMarshaller {
                     }
                 }
                 generator.writeEndArray();
+            } else if(params.getEmptyListSerializationStrategy() == SerializationParameters.EmptyListSerializationStrategy.INCLUDE){
+                generator.writeStartArray();
+                generator.writeEndArray();
             }
         }
         for(SerializableMapDescription mapDescription: provider.getAllMaps()){

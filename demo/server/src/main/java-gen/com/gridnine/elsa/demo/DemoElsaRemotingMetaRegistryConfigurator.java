@@ -7,8 +7,11 @@ package com.gridnine.elsa.demo;
 import com.gridnine.elsa.common.meta.common.EntityDescription;
 import com.gridnine.elsa.common.meta.common.EnumDescription;
 import com.gridnine.elsa.common.meta.common.EnumItemDescription;
+import com.gridnine.elsa.common.meta.common.StandardCollectionDescription;
+import com.gridnine.elsa.common.meta.common.StandardMapDescription;
 import com.gridnine.elsa.common.meta.common.StandardPropertyDescription;
 import com.gridnine.elsa.common.meta.common.StandardValueType;
+import com.gridnine.elsa.common.meta.remoting.RemotingDescription;
 import com.gridnine.elsa.common.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.common.meta.remoting.RemotingMetaRegistryConfigurator;
@@ -32,6 +35,15 @@ public class DemoElsaRemotingMetaRegistryConfigurator implements RemotingMetaReg
 			}
 		}
 		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.demo.model.remoting.DemoTestEntity");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("stringProperty");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.demo.model.remoting.DemoTestServerCallRequest");
 			registry.getEntities().put(entityDescription.getId(), entityDescription);
 			{
@@ -47,6 +59,53 @@ public class DemoElsaRemotingMetaRegistryConfigurator implements RemotingMetaReg
 				var propertyDescription = new StandardPropertyDescription("stringProperty");
 				propertyDescription.setType(StandardValueType.STRING);
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("dateProperty");
+				propertyDescription.setType(StandardValueType.LOCAL_DATE);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("enumProperty");
+				propertyDescription.setType(StandardValueType.ENUM);
+				propertyDescription.setClassName("com.gridnine.elsa.demo.model.remoting.DemoTestEnum");
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var collectionDescription = new StandardCollectionDescription("stringCollection");
+				collectionDescription.setElementType(StandardValueType.STRING);
+				entityDescription.getCollections().put(collectionDescription.getId(), collectionDescription);
+			}
+			{
+				var collectionDescription = new StandardCollectionDescription("dateCollection");
+				collectionDescription.setElementType(StandardValueType.LOCAL_DATE);
+				entityDescription.getCollections().put(collectionDescription.getId(), collectionDescription);
+			}
+			{
+				var collectionDescription = new StandardCollectionDescription("entityCollection");
+				collectionDescription.setElementType(StandardValueType.ENTITY);
+				collectionDescription.setElementClassName("com.gridnine.elsa.demo.model.remoting.DemoTestEntity");
+				entityDescription.getCollections().put(collectionDescription.getId(), collectionDescription);
+			}
+			{
+				var mapDescription = new StandardMapDescription("stringMap");
+				mapDescription.setKeyType(StandardValueType.STRING);
+				mapDescription.setValueType(StandardValueType.STRING);
+				entityDescription.getMaps().put(mapDescription.getId(), mapDescription);
+			}
+			{
+				var mapDescription = new StandardMapDescription("dateMap");
+				mapDescription.setKeyType(StandardValueType.LOCAL_DATE);
+				mapDescription.setValueType(StandardValueType.LOCAL_DATE);
+				entityDescription.getMaps().put(mapDescription.getId(), mapDescription);
+			}
+			{
+				var mapDescription = new StandardMapDescription("eneityMap");
+				mapDescription.setKeyType(StandardValueType.ENTITY);
+				mapDescription.setValueType(StandardValueType.ENTITY);
+				mapDescription.setKeyClassName("com.gridnine.elsa.demo.model.remoting.DemoTestEntity");
+				mapDescription.setValueClassName("com.gridnine.elsa.demo.model.remoting.DemoTestEntity");
+				entityDescription.getMaps().put(mapDescription.getId(), mapDescription);
 			}
 		}
 		{
@@ -68,18 +127,24 @@ public class DemoElsaRemotingMetaRegistryConfigurator implements RemotingMetaReg
 			}
 		}
 		{
-			var groupDescription = new RemotingGroupDescription("test");
-			registry.getGroups().put(groupDescription.getId(), groupDescription);
+			var remotingDescription = new RemotingDescription("demo");
+			registry.getRemotings().put(remotingDescription.getId(), remotingDescription);
 			{
-				var serverCallDescription = new RemotingServerCallDescription("test");
-				serverCallDescription.setValidatable(false);
-				serverCallDescription.setRequestClassName("com.gridnine.elsa.demo.model.remoting.DemoTestServerCallRequest");
-				serverCallDescription.setResponseClassName("com.gridnine.elsa.demo.model.remoting.DemoTestServerCallResponse");
-			}
-			{
-				var subscriptionDescription = new RemotingSubscriptionDescription("test");
-				subscriptionDescription.setParameterClassName("com.gridnine.elsa.demo.model.remoting.DemoTestSubscriptionParameters");
-				subscriptionDescription.setEventClassName("com.gridnine.elsa.demo.model.remoting.DemoTestSubscriptionEvent");
+				var groupDescription = new RemotingGroupDescription("test");
+				remotingDescription.getGroups().put(groupDescription.getId(), groupDescription);
+				{
+					var serverCallDescription = new RemotingServerCallDescription("test");
+					serverCallDescription.setValidatable(false);
+					serverCallDescription.setRequestClassName("com.gridnine.elsa.demo.model.remoting.DemoTestServerCallRequest");
+					serverCallDescription.setResponseClassName("com.gridnine.elsa.demo.model.remoting.DemoTestServerCallResponse");
+					groupDescription.getServerCalls().put("server-call", serverCallDescription);
+				}
+				{
+					var subscriptionDescription = new RemotingSubscriptionDescription("subscription");
+					subscriptionDescription.setParameterClassName("com.gridnine.elsa.demo.model.remoting.DemoTestSubscriptionParameters");
+					subscriptionDescription.setEventClassName("com.gridnine.elsa.demo.model.remoting.DemoTestSubscriptionEvent");
+					groupDescription.getSubscriptions().put("subscription", subscriptionDescription);
+				}
 			}
 		}
 	}

@@ -21,9 +21,7 @@ public class RemotingMetaRegistry {
 
     private final Map<String, EnumDescription> enums = new LinkedHashMap<>();
 
-    private final Map<String, RemotingGroupDescription> groups = new LinkedHashMap<>();
-
-    private List<ModuleImportDescription> imports = new ArrayList<>();
+    private final Map<String, RemotingDescription> remotings = new LinkedHashMap<>();
 
     @Autowired(required = false)
     public void setConfigurators(List<RemotingMetaRegistryConfigurator> configurators){
@@ -39,11 +37,7 @@ public class RemotingMetaRegistry {
     }
 
 
-    public Map<String, RemotingGroupDescription> getGroups() {
-        return groups;
-    }
-
-    public List<ModuleImportDescription> getImports() {
-        return imports;
+    public Map<String, RemotingDescription> getRemotings() {
+        return remotings;
     }
 }

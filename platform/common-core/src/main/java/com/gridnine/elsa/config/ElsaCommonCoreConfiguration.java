@@ -134,4 +134,9 @@ public class ElsaCommonCoreConfiguration {
     public ElsaCommonCoreCustomMetaRegistryConfigurator elsaCommonCoreCustomMetaRegistryConfigurator(){
         return new ElsaCommonCoreCustomMetaRegistryConfigurator();
     }
+
+    @Bean
+    public ElsaCommonCoreRemotingMetaRegistryConfigurator elsaCommonCoreRemotingMetaRegistryConfigurator(){
+        return new ElsaCommonCoreRemotingMetaRegistryConfigurator();
+    }
 }

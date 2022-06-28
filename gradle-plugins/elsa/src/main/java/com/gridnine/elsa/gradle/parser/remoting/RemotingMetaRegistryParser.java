@@ -26,8 +26,10 @@ public class RemotingMetaRegistryParser {
                     CommonParserUtils.updateEnum(registry.getEnums(), child, pr.localizations()));
             node.getChildren("entity").forEach(child ->
                     CommonParserUtils.updateEntity(registry.getEntities(), child));
+            var id = CommonParserUtils.getIdAttribute(node);
+            var remotingDescription = registry.getRemotings().computeIfAbsent(CommonParserUtils.getIdAttribute(node), RemotingDescription::new);
             node.getChildren("group").forEach(groupChild ->{
-              var groupDescr = registry.getGroups().computeIfAbsent(CommonParserUtils.getIdAttribute(groupChild), RemotingGroupDescription::new);
+              var groupDescr = remotingDescription.getGroups().computeIfAbsent(CommonParserUtils.getIdAttribute(groupChild), RemotingGroupDescription::new);
               groupChild.getChildren("server-call").forEach(item -> {
                   var sc = groupDescr.getServerCalls().computeIfAbsent(CommonParserUtils.getIdAttribute(item),
                           RemotingServerCallDescription::new);
@@ -48,7 +50,6 @@ public class RemotingMetaRegistryParser {
                     sc.setEventClassName(parseEntity(registry, item.getChildren("event").get(0)));
                 });
             });
-            CommonParserUtils.updateImports(registry.getImports(), node);
         }));
     }
 

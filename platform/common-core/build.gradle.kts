@@ -31,6 +31,9 @@ configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
         custom(
             "src/main/java-gen",
             "com.gridnine.elsa.config.ElsaCommonCoreCustomMetaRegistryConfigurator", arrayListOf("src/main/codegen/elsa-core-custom.xml"))
+        remoting(
+            "src/main/java-gen",
+            "com.gridnine.elsa.config.ElsaCommonCoreRemotingMetaRegistryConfigurator", arrayListOf("src/main/codegen/elsa-core-remoting.xml"))
     }
 }
 

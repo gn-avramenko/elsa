@@ -11,10 +11,11 @@ import com.gridnine.elsa.common.core.model.domain.VersionInfo;
 import com.gridnine.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.common.meta.domain.DocumentDescription;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
+import com.gridnine.elsa.common.meta.remoting.RemotingMetaRegistry;
 
 public class DomainDocumentMetadataProvider extends EntityMetadataProvider{
-    DomainDocumentMetadataProvider(DocumentDescription documentDescription, DomainMetaRegistry dr, CustomMetaRegistry cr) {
-        super(documentDescription, dr,  cr,
+    DomainDocumentMetadataProvider(DocumentDescription documentDescription, DomainMetaRegistry dr, CustomMetaRegistry cr, RemotingMetaRegistry rr) {
+        super(documentDescription, dr,  cr, rr,
                 new SerializablePropertyDescription(BaseIdentity.Fields.id, SerializablePropertyType.LONG, null, false),
                 new SerializablePropertyDescription(BaseDocument.Fields.versionInfo, SerializablePropertyType.ENTITY, VersionInfo.class.getName(), false)
                 );

@@ -4,6 +4,9 @@
         <enum-item id="ITEM1"/>
         <enum-item id="ITEM2"/>
     </enum>
+    <entity id="com.gridnine.elsa.demo.model.remoting.DemoTestEntity">
+        <property id="stringProperty" type="STRING"/>
+    </entity>
    <group id="test">
        <server-call id="server-call">
            <request id="com.gridnine.elsa.demo.model.remoting.DemoTestServerCallRequest">
@@ -11,6 +14,14 @@
            </request>
            <response id="com.gridnine.elsa.demo.model.remoting.DemoTestServerCallResponse">
                <property id="stringProperty" type="STRING"/>
+               <property id="dateProperty" type="LOCAL_DATE"/>
+               <property id="enumProperty" type="ENUM" class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEnum"/>
+               <collection id="stringCollection" element-type="STRING" />
+               <collection id="dateCollection" element-type="LOCAL_DATE" />
+               <collection id="entityCollection" element-type="ENTITY"  element-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity" />
+               <map id="stringMap" key-type="STRING" value-type="STRING"/>
+               <map id="dateMap" key-type="LOCAL_DATE" value-type="LOCAL_DATE"/>
+               <map id="eneityMap" key-type="ENTITY" value-type="ENTITY" key-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity" value-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity"/>
            </response>
        </server-call>
        <client-call id="client-call">

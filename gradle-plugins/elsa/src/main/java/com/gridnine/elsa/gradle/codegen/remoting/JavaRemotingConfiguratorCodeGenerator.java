@@ -7,6 +7,7 @@ package com.gridnine.elsa.gradle.codegen.remoting;
 
 import com.gridnine.elsa.common.meta.common.EntityDescription;
 import com.gridnine.elsa.common.meta.common.EnumDescription;
+import com.gridnine.elsa.common.meta.remoting.RemotingDescription;
 import com.gridnine.elsa.common.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
@@ -32,46 +33,57 @@ public class JavaRemotingConfiguratorCodeGenerator {
                 for (EntityDescription ed : registry.getEntities().values()) {
                     JavaCodeGeneratorUtils.generateJavaEntityConfiguratorCode(ed, gen);
                 }
-                for (RemotingGroupDescription gd : registry.getGroups().values()) {
-                    gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingGroupDescription");
+                for(RemotingDescription rd: registry.getRemotings().values()){
+                    gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingDescription");
                     gen.wrapWithBlock(null, () -> {
-                        gen.printLine("var groupDescription = new RemotingGroupDescription(\"%s\");".formatted(gd.getId()));
-                        gen.printLine("registry.getGroups().put(groupDescription.getId(), groupDescription);");
-                        gd.getServerCalls().values().forEach(sc -> {
-                            gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingServerCallDescription");
-                            BuildExceptionUtils.wrapException(() -> {
-                                gen.wrapWithBlock(null, () -> {
-                                    gen.printLine("var serverCallDescription = new RemotingServerCallDescription(\"%s\");".formatted(gd.getId()));
-                                    gen.printLine("serverCallDescription.setValidatable(%s);".formatted(sc.isValidatable()));
-                                    gen.printLine("serverCallDescription.setRequestClassName(\"%s\");".formatted(sc.getRequestClassName()));
-                                    gen.printLine("serverCallDescription.setResponseClassName(\"%s\");".formatted(sc.getResponseClassName()));
-                                });
-                            });
+                        gen.printLine("var remotingDescription = new RemotingDescription(\"%s\");".formatted(rd.getId()));
+                        gen.printLine("registry.getRemotings().put(remotingDescription.getId(), remotingDescription);");
+                        for (RemotingGroupDescription gd : rd.getGroups().values()) {
+                            gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingGroupDescription");
+                            gen.wrapWithBlock(null, () -> {
+                                gen.printLine("var groupDescription = new RemotingGroupDescription(\"%s\");".formatted(gd.getId()));
+                                gen.printLine("remotingDescription.getGroups().put(groupDescription.getId(), groupDescription);");
+                                gd.getServerCalls().values().forEach(sc -> {
+                                    gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingServerCallDescription");
+                                    BuildExceptionUtils.wrapException(() -> {
+                                        gen.wrapWithBlock(null, () -> {
+                                            gen.printLine("var serverCallDescription = new RemotingServerCallDescription(\"%s\");".formatted(gd.getId()));
+                                            gen.printLine("serverCallDescription.setValidatable(%s);".formatted(sc.isValidatable()));
+                                            gen.printLine("serverCallDescription.setRequestClassName(\"%s\");".formatted(sc.getRequestClassName()));
+                                            gen.printLine("serverCallDescription.setResponseClassName(\"%s\");".formatted(sc.getResponseClassName()));
+                                            gen.printLine("groupDescription.getServerCalls().put(\"%s\", serverCallDescription);".formatted(sc.getId()));
+                                        });
+                                    });
 
-                        });
-                        gd.getClientCalls().values().forEach(cc -> {
-                            gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingClientCallDescription");
-                            BuildExceptionUtils.wrapException(() -> {
-                                gen.wrapWithBlock(null, () -> {
-                                    gen.printLine("var clientCallDescription = new RemotingclientCallDescription(\"%s\");".formatted(gd.getId()));
-                                    gen.printLine("clientCallDescription.setRequestClassName(\"%s\");".formatted(cc.getRequestClassName()));
-                                    gen.printLine("clientCallDescription.setResponseClassName(\"%s\");".formatted(cc.getResponseClassName()));
                                 });
-                            });
+                                gd.getClientCalls().values().forEach(cc -> {
+                                    gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingClientCallDescription");
+                                    BuildExceptionUtils.wrapException(() -> {
+                                        gen.wrapWithBlock(null, () -> {
+                                            gen.printLine("var clientCallDescription = new RemotingclientCallDescription(\"%s\");".formatted(cc.getId()));
+                                            gen.printLine("clientCallDescription.setRequestClassName(\"%s\");".formatted(cc.getRequestClassName()));
+                                            gen.printLine("clientCallDescription.setResponseClassName(\"%s\");".formatted(cc.getResponseClassName()));
+                                            gen.printLine("groupDescription.getClientCalls().put(\"%s\", clientCallDescription);".formatted(cc.getId()));
+                                        });
+                                    });
 
-                        });
-                        gd.getSubscriptions().values().forEach(sub -> {
-                            gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingSubscriptionDescription");
-                            BuildExceptionUtils.wrapException(() -> {
-                                gen.wrapWithBlock(null, () -> {
-                                    gen.printLine("var subscriptionDescription = new RemotingSubscriptionDescription(\"%s\");".formatted(gd.getId()));
-                                    gen.printLine("subscriptionDescription.setParameterClassName(\"%s\");".formatted(sub.getParameterClassName()));
-                                    gen.printLine("subscriptionDescription.setEventClassName(\"%s\");".formatted(sub.getEventClassName()));
+                                });
+                                gd.getSubscriptions().values().forEach(sub -> {
+                                    gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingSubscriptionDescription");
+                                    BuildExceptionUtils.wrapException(() -> {
+                                        gen.wrapWithBlock(null, () -> {
+                                            gen.printLine("var subscriptionDescription = new RemotingSubscriptionDescription(\"%s\");".formatted(sub.getId()));
+                                            gen.printLine("subscriptionDescription.setParameterClassName(\"%s\");".formatted(sub.getParameterClassName()));
+                                            gen.printLine("subscriptionDescription.setEventClassName(\"%s\");".formatted(sub.getEventClassName()));
+                                            gen.printLine("groupDescription.getSubscriptions().put(\"%s\", subscriptionDescription);".formatted(sub.getId()));
+                                        });
+                                    });
                                 });
                             });
-                        });
+                        }
                     });
                 }
+
 
             });
 

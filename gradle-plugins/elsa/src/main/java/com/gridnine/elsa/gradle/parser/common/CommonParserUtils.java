@@ -120,15 +120,6 @@ public final class CommonParserUtils {
         });
     }
 
-    public static void updateImports(List<ModuleImportDescription> imports, BuildXmlNode node){
-        node.getChildren("module-import").forEach(it ->{
-            var imp = new ModuleImportDescription();
-            imp.setModule(it.getAttribute("module"));
-            imp.setObjectId(it.getAttribute("objectId"));
-            imports.add(imp);
-        });
-    }
-
     public static void updateParameters(BuildXmlNode node, BaseModelElementDescription elm){
         node.getChildren("parameter").forEach(child -> elm.getParameters().put(child.getAttribute("name"), child.getAttribute("value")));
     }

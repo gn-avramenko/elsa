@@ -1,4 +1,4 @@
-import { generateUUID, ServerError } from './common';
+import { generateUUID, RemotingError } from './common';
 
 type RemotingConfiguration = {
   clientId: string,
@@ -28,15 +28,15 @@ async function createChannel(restId:string) {
         resolve();
         return;
       }
-      const er = result.status === 403 ? new ServerError(403, 'no access')
-        : new ServerError(result.status, 'unable to check');
+      const er = result.status === 403 ? new RemotingError(403, 'no access')
+        : new RemotingError(result.status, 'unable to check');
       channel.awaitingRequests.forEach((s) => {
         s.resolve();
       });
       channels.delete(restId);
       reject(er);
     }).catch((error) => {
-      const er = new ServerError(error.status, 'unable to check');
+      const er = new RemotingError(error.status, 'unable to check');
       channel.awaitingRequests.forEach((s) => {
         s.reject(er);
       });

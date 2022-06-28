@@ -21,6 +21,17 @@ public class SerializationParameters {
         return classSerializationStrategy;
     }
 
+    public EmptyListSerializationStrategy emptyListSerializationStrategy;
+
+    public EmptyListSerializationStrategy getEmptyListSerializationStrategy() {
+        return emptyListSerializationStrategy;
+    }
+
+    public SerializationParameters setEmptyListSerializationStrategy(EmptyListSerializationStrategy emptyListSerializationStrategy) {
+        this.emptyListSerializationStrategy = emptyListSerializationStrategy;
+        return this;
+    }
+
     public boolean isPrettyPrint() {
         return prettyPrint;
     }
@@ -77,5 +88,10 @@ public class SerializationParameters {
     public enum ClassSerializationStrategy{
         ID,
         NAME
+    }
+
+    public enum EmptyListSerializationStrategy{
+        SKIP,
+        INCLUDE
     }
 }

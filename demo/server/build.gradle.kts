@@ -32,7 +32,8 @@ dependencies{
     implementation("org.springframework:spring-messaging")
     implementation("org.springframework.security:spring-security-messaging")
     implementation("org.springframework.boot:spring-boot-starter-security");
-    implementation("org.springframework.boot:spring-boot-starter-webflux");
+    implementation("org.springframework:spring-webflux")
+
     implementation("com.fasterxml.jackson.core:jackson-core:2+")
 
     implementation(project(":platform:common-meta"))

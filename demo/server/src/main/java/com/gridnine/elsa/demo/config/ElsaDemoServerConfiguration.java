@@ -6,6 +6,7 @@
 package com.gridnine.elsa.demo.config;
 
 import com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator;
+import com.gridnine.elsa.demo.DemoElsaRemotingMetaRegistryConfigurator;
 import com.gridnine.elsa.demo.activator.ElsaDemoActivator;
 import com.gridnine.elsa.demo.remoting.restws.AuthController;
 import com.gridnine.elsa.demo.remoting.restws.RestWsController;
@@ -55,5 +56,9 @@ public class ElsaDemoServerConfiguration {
     @Bean
     public PrivateRestFluxService privateRestFluxService(){
         return new PrivateRestFluxService();
+    }
+    @Bean
+    DemoElsaRemotingMetaRegistryConfigurator demoElsaRemotingMetaRegistryConfigurator(){
+        return new DemoElsaRemotingMetaRegistryConfigurator();
     }
 }

@@ -11,6 +11,7 @@ import com.gridnine.elsa.common.meta.common.EntityDescription;
 import com.gridnine.elsa.common.meta.common.StandardValueType;
 import com.gridnine.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
+import com.gridnine.elsa.common.meta.remoting.RemotingMetaRegistry;
 
 import java.util.Collection;
 import java.util.Map;
@@ -19,7 +20,7 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
 
 
     EntityMetadataProvider(EntityDescription entityDescription,
-                           DomainMetaRegistry dr, CustomMetaRegistry cr,
+                           DomainMetaRegistry dr, CustomMetaRegistry cr, RemotingMetaRegistry rr,
                            SerializablePropertyDescription... additionalProperties) {
         for (SerializablePropertyDescription ap : additionalProperties) {
             addProperty(ap);
@@ -34,20 +35,23 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
                 parentDescr = cr.getEntities().get(extendsId);
             }
             if (parentDescr == null) {
+                parentDescr = rr.getEntities().get(extendsId);
+            }
+            if (parentDescr == null) {
                 throw Xeption.forDeveloper("no entity found for id %s".formatted(extendsId));
             }
-            fillProperties(parentDescr, dr,  cr);
-            fillCollections(parentDescr, dr,  cr);
-            fillMaps(parentDescr, dr,  cr);
+            fillProperties(parentDescr, dr,  cr, rr);
+            fillCollections(parentDescr, dr,  cr, rr);
+            fillMaps(parentDescr, dr,  cr, rr);
             extendsId = parentDescr.getExtendsId();
         }
-        fillProperties(entityDescription, dr,  cr);
-        fillCollections(entityDescription, dr,  cr);
-        fillMaps(entityDescription, dr,  cr);
+        fillProperties(entityDescription, dr,  cr, rr);
+        fillCollections(entityDescription, dr,  cr, rr);
+        fillMaps(entityDescription, dr,  cr, rr);
         setAbstract(entityDescription.isAbstract());
     }
 
-    private boolean isAbstractClass(String className, DomainMetaRegistry dr,  CustomMetaRegistry cr) {
+    private boolean isAbstractClass(String className, DomainMetaRegistry dr,  CustomMetaRegistry cr, RemotingMetaRegistry rr) {
         if (className == null) {
             return false;
         }
@@ -64,6 +68,11 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
         if (customEntity != null) {
             return customEntity.isAbstract();
         }
+        var remotingEntity = rr.getEntities().get(className);
+        if (remotingEntity != null) {
+            return remotingEntity.isAbstract();
+        }
+
         return false;
     }
 
@@ -88,25 +97,25 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
         return className;
     }
 
-    private void fillMaps(EntityDescription desc, DomainMetaRegistry dr,  CustomMetaRegistry cr) {
+    private void fillMaps(EntityDescription desc, DomainMetaRegistry dr,  CustomMetaRegistry cr, RemotingMetaRegistry rr) {
         desc.getMaps().values().forEach((map) -> addMap(new SerializableMapDescription(map.getId(), toSerializableType(map.getKeyType()),
                 toClassName(map.getKeyType(), map.getKeyClassName()),
                 toSerializableType(map.getValueType()), toClassName(map.getValueType(), map.getValueClassName()),
-                isAbstractClass(map.getKeyClassName(), dr,  cr), isAbstractClass(map.getValueClassName(), dr, cr))));
+                isAbstractClass(map.getKeyClassName(), dr,  cr, rr), isAbstractClass(map.getValueClassName(), dr, cr, rr))));
     }
 
-    private void fillCollections(EntityDescription desc, DomainMetaRegistry dr, CustomMetaRegistry cr) {
+    private void fillCollections(EntityDescription desc, DomainMetaRegistry dr, CustomMetaRegistry cr, RemotingMetaRegistry rr) {
         desc.getCollections().values().forEach((coll) -> addCollection(new SerializableCollectionDescription(coll.getId(), toSerializableType(coll.getElementType()),
                         toClassName(coll.getElementType(), coll.getElementClassName()), isAbstractClass(
-                        coll.getElementClassName(), dr,  cr)
+                        coll.getElementClassName(), dr,  cr,rr)
                 ))
         );
     }
 
-    private void fillProperties(EntityDescription desc, DomainMetaRegistry dr, CustomMetaRegistry cr) {
+    private void fillProperties(EntityDescription desc, DomainMetaRegistry dr, CustomMetaRegistry cr, RemotingMetaRegistry rr) {
         desc.getProperties().values().forEach((prop) -> addProperty(new SerializablePropertyDescription(prop.getId(), toSerializableType(prop.getType()),
                         toClassName(prop.getType(), prop.getClassName()), isAbstractClass(
-                        prop.getClassName(), dr,  cr)
+                        prop.getClassName(), dr,  cr,rr)
                 ))
         );
     }
