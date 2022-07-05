@@ -29,7 +29,7 @@ public class GetRemotingEntityDescriptionHandler implements RemotingServerCallHa
             pd.setId(prop.id());
             pd.setClassName(prop.className());
             pd.setType(toType(prop.type()));
-            pd.setIsAbsctract(prop.isAbstract());
+            pd.setIsAbstract(prop.isAbstract());
             ed.getProperties().add(pd);
         });
         provider.getAllCollections().forEach(coll -> {
@@ -37,7 +37,7 @@ public class GetRemotingEntityDescriptionHandler implements RemotingServerCallHa
             cd.setId(coll.id());
             cd.setElementClassName(coll.elementClassName());
             cd.setElementType(toType(coll.elementType()));
-            cd.setIsAbsctract(coll.isAbstract());
+            cd.setElementIsAbstract(coll.isAbstract());
             ed.getCollections().add(cd);
         });
         provider.getAllMaps().forEach(map -> {
@@ -45,7 +45,10 @@ public class GetRemotingEntityDescriptionHandler implements RemotingServerCallHa
             md.setId(map.id());
             md.setKeyClassName(map.keyClassName());
             md.setKeyType(toType(map.keyType()));
-            md.setKeyIsAbsctract(map.keyIsAbstract());
+            md.setKeyIsAbstract(map.keyIsAbstract());
+            md.setValueClassName(map.valueClassName());
+            md.setValueType(toType(map.valueType()));
+            md.setValueIsAbstract(map.valueIsAbstract());
             ed.getMaps().add(md);
         });
         var result = new GetRemotingEntityDescriptionResponse();

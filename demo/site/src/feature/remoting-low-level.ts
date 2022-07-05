@@ -1,5 +1,16 @@
 import { generateUUID, RemotingError } from './common';
 
+type RemotingMessageType = 'PING' | 'SUBSCRIPTION' | 'CLIENT_CALL';
+
+export type RemotingMessage = {
+  type: RemotingMessageType,
+  subscriptionId?: string,
+  callId?: string,
+  groupId?:string,
+  methodId?:string,
+  data: string
+}
+
 type ChannelData = {
   // eslint-disable-next-line no-unused-vars
   awaitingRequests: ({resolve: ()=>void, reject: (e:any) =>void})[],
@@ -13,39 +24,71 @@ export type PreloaderHandler = {
   delay: number
 }
 
+export type InternalRemotingConfiguration = {
+  // eslint-disable-next-line no-unused-vars
+  clientCallHandler: (remotingId: string, data:RemotingMessage) => void
+}
+
+export const internalRemotingConfiguration: InternalRemotingConfiguration = {
+  clientCallHandler: () => {},
+};
+
+type RemotingConfiguration = {
+  globalPreloaderHandler?: PreloaderHandler
+  clientId: string,
+}
+
+let elsaClientId = window.localStorage.getItem('elsa-client-id');
+if (!elsaClientId) {
+  elsaClientId = generateUUID();
+  window.localStorage.setItem('elsa-client-id', elsaClientId);
+}
+export const remotingConfiguration: RemotingConfiguration = { clientId: elsaClientId };
+
 const channels = new Map<string, ChannelData>();
 
-async function createChannel(remotingId:string) {
+const subscriptions = new Map<string, any>();
+
+export async function confirmSubscriptionEvent(
+  clientId:string,
+  remotingId:string,
+  subscriptionId:string,
+  received:boolean,
+) {
+  const result = await fetch(`/remoting/${remotingId}/confirmSubscriptionEvent?received=${received}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'plain/text',
+      subscriptionId,
+      clientId,
+    },
+  });
+  if (result.status === 200) {
+    return null;
+  }
+  throw new RemotingError(result.status, 'Error occurred', await result.text());
+}
+
+// eslint-disable-next-line no-unused-vars,max-len
+async function createChannel(clientId:string, remotingId:string) {
   const channel:ChannelData = { awaitingRequests: [] };
   channels.set(remotingId, channel);
-  const aPath = `/remoting/${remotingId}/check`;
-  await new Promise<void>((resolve, reject) => {
-    fetch(aPath, {
-      method: 'GET',
-    }).then((result) => {
-      if (result.status === 200) {
-        resolve();
-        return;
-      }
-      const er = result.status === 403 ? new RemotingError(403, 'no access')
-        : new RemotingError(result.status, 'unable to check');
-      channel.awaitingRequests.forEach((s) => {
-        s.reject(er);
-      });
-      channels.delete(remotingId);
-      reject(er);
-    }).catch((error) => {
-      const er = new RemotingError(error.status, 'unable to check');
-      channel.awaitingRequests.forEach((s) => {
-        s.reject(er);
-      });
-      channels.delete(remotingId);
-      reject(er);
-    });
+  const checkResult = await fetch(`/remoting/${remotingId}/check`, {
+    method: 'GET',
   });
+  if (checkResult.status !== 200) {
+    const er = checkResult.status === 403 ? new RemotingError(403, 'no access')
+      : new RemotingError(checkResult.status, 'unable to check');
+    channel.awaitingRequests.forEach((s) => {
+      s.reject(er);
+    });
+    channels.delete(remotingId);
+    throw er;
+  }
   return new Promise<void>((resolve, reject) => {
-    const source = new EventSource(`/remoting/${remotingId}/subscribe`);
+    const source = new EventSource(`/remoting/${remotingId}/createChannel?clientId=${clientId}`);
     channel.source = source;
+    // eslint-disable-next-line func-names
     source.onopen = function () {
       if (this.readyState === EventSource.OPEN) {
         resolve();
@@ -54,7 +97,9 @@ async function createChannel(remotingId:string) {
         });
       }
     };
+    // eslint-disable-next-line func-names
     source.onerror = function () {
+      console.log('on error');
       if (source.readyState === EventSource.CLOSED) {
         const error = new Error('unable to subscribe to server events');
         reject(error);
@@ -63,8 +108,30 @@ async function createChannel(remotingId:string) {
         });
       }
     };
-    source.onmessage = (ev) => {
-      console.log(ev.data);
+    source.onmessage = async (ev) => {
+      const message = JSON.parse(ev.data) as RemotingMessage;
+      // eslint-disable-next-line default-case
+      switch (message.type) {
+        case 'PING': {
+          console.debug(`successfully connected to ${remotingId}`);
+          break;
+        }
+        case 'SUBSCRIPTION': {
+          // eslint-disable-next-line no-unused-vars,max-len
+          const handler = subscriptions.get(message.subscriptionId!!) as ((data: string) => void) | null;
+          if (handler === null) {
+            // eslint-disable-next-line max-len
+            confirmSubscriptionEvent(remotingConfiguration.clientId, remotingId, message.subscriptionId!!, false);
+            return;
+          }
+          handler(message.data);
+          break;
+        }
+        case 'CLIENT_CALL': {
+          internalRemotingConfiguration.clientCallHandler(remotingId, message);
+          break;
+        }
+      }
     };
   });
 }
@@ -76,47 +143,14 @@ async function awaitInitialization(remotingId:string) {
   });
 }
 
-async function performServerCallInternal(
-  remotingId:string,
-  groupId:string,
-  methodName:string,
-  request:any|null,
-) {
+async function ensureChannel(clientId:string, remotingId:string) {
   const channelData = channels.get(remotingId);
   if (!channelData || channelData?.source?.readyState === EventSource.CLOSED) {
-    await createChannel(remotingId);
+    await createChannel(clientId, remotingId);
   } else if (!channelData.source
     || (channelData.source && channelData.source.readyState === EventSource.CONNECTING)) {
     await awaitInitialization(remotingId);
   }
-  return new Promise<any>((resolve, reject) => {
-    const aPath = `/remoting/${remotingId}/request`;
-    fetch(aPath, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        group: groupId,
-        method: methodName,
-      },
-      body: request && JSON.stringify(request),
-    }).then((result) => {
-      if (result.status === 204) {
-        resolve(null);
-        return;
-      }
-      result.json().then((payload) => {
-        if (result.status !== 200) {
-          reject(new RemotingError(result.status, payload.message, payload.details));
-        } else {
-          resolve(payload);
-        }
-      }).catch((error) => {
-        reject(error);
-      });
-    }).catch((error) => {
-      reject(error);
-    });
-  });
 }
 
 type AsyncCallState = {
@@ -128,14 +162,10 @@ type AsyncCallState = {
 
 const asyncCalls = new Map<string, AsyncCallState>();
 
-// eslint-disable-next-line import/prefer-default-export
-export async function performServerCall(
-  remotingId: string,
-  groupId: string,
-  methodId: string,
-  request: any|null,
+async function wrapWithLoader(
   preloaderHandler: PreloaderHandler|null,
   operationId: string | null,
+  func: () => Promise<any>,
 ) {
   const opId = operationId || 'general';
   let state = asyncCalls.get(opId);
@@ -161,7 +191,7 @@ export async function performServerCall(
     state.lastCallId = guid;
   }
   try {
-    return performServerCallInternal(remotingId, groupId, methodId, request);
+    return await func();
   } finally {
     const state2 = asyncCalls.get(opId);
     if (guid === state2?.lastCallId) {
@@ -171,4 +201,91 @@ export async function performServerCall(
       }
     }
   }
+}
+// eslint-disable-next-line import/prefer-default-export
+export async function performServerCall(
+  clientId: string,
+  remotingId: string,
+  groupId: string,
+  methodId: string,
+  request: any|null,
+  preloaderHandler: PreloaderHandler|null,
+  operationId: string | null,
+) {
+  return wrapWithLoader(preloaderHandler, operationId, async () => {
+    await ensureChannel(clientId, remotingId);
+    const result = await fetch(`/remoting/${remotingId}/request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        groupId,
+        methodId,
+        clientId: remotingConfiguration.clientId,
+      },
+      body: request && (typeof request === 'string' ? request : JSON.stringify(request)),
+    });
+    if (result.status === 204) {
+      return null;
+    }
+    const json = await result.json();
+    if (result.status !== 200) {
+      throw new RemotingError(result.status, json.message, json.details);
+    }
+    return json;
+  });
+}
+
+export async function performSubscription(
+  remotingId:string,
+  groupId:string,
+  subscriptionId:string,
+  request:string,
+  preloaderHandler: PreloaderHandler|null,
+  operationId: string | null,
+  // eslint-disable-next-line no-unused-vars
+  handler: (data: string) => void,
+) {
+  return wrapWithLoader(preloaderHandler, operationId, async () => {
+    await ensureChannel(remotingConfiguration.clientId, remotingId);
+    const result = await fetch(`/remoting/${remotingId}/subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        groupId,
+        subscriptionId,
+        clientId: remotingConfiguration.clientId,
+      },
+      body: request,
+    });
+    const subId = await result.text();
+    if (result.status !== 200) {
+      throw new RemotingError(result.status, 'Error occurred', subId);
+    }
+    subscriptions.set(subId, handler);
+    return subId;
+  });
+}
+
+export async function performUnsubscription(
+  remotingId:string,
+  subscriptionId:string,
+  preloaderHandler: PreloaderHandler|null,
+  operationId: string | null,
+) {
+  return wrapWithLoader(preloaderHandler, operationId, async () => {
+    subscriptions.delete(subscriptionId);
+    await ensureChannel(remotingConfiguration.clientId, remotingId);
+    const result = await fetch(`/remoting/${remotingId}/unsubscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'plain/text',
+        subscriptionId,
+        clientId: remotingConfiguration.clientId,
+      },
+    });
+    if (result.status === 200) {
+      return null;
+    }
+    throw new RemotingError(result.status, 'Error occurred', await result.text());
+  });
 }

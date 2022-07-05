@@ -14,7 +14,7 @@ public class RemotingEntityPropertyDescription extends BaseIntrospectableObject{
 
 	private String className;
 
-	private boolean isAbsctract;
+	private boolean isAbstract;
 
 	public RemotingEntityValueType getType(){
 		return type;
@@ -40,12 +40,12 @@ public class RemotingEntityPropertyDescription extends BaseIntrospectableObject{
 		this.className = value;
 	}
 
-	public boolean getIsAbsctract(){
-		return isAbsctract;
+	public boolean getIsAbstract(){
+		return isAbstract;
 	}
 
-	public void setIsAbsctract(boolean value){
-		this.isAbsctract = value;
+	public void setIsAbstract(boolean value){
+		this.isAbstract = value;
 	}
 
 	@Override
@@ -63,8 +63,8 @@ public class RemotingEntityPropertyDescription extends BaseIntrospectableObject{
 			return className;
 		}
 
-		if("isAbsctract".equals(propertyName)){
-			return isAbsctract;
+		if("isAbstract".equals(propertyName)){
+			return isAbstract;
 		}
 
 		return super.getValue(propertyName);
@@ -88,8 +88,8 @@ public class RemotingEntityPropertyDescription extends BaseIntrospectableObject{
 			return;
 		}
 
-		if("isAbsctract".equals(propertyName)){
-			this.isAbsctract = (boolean) value;
+		if("isAbstract".equals(propertyName)){
+			this.isAbstract = (boolean) value;
 			return;
 		}
 

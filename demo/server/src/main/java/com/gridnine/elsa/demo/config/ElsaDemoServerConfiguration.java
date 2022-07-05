@@ -8,6 +8,10 @@ package com.gridnine.elsa.demo.config;
 import com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator;
 import com.gridnine.elsa.demo.DemoElsaRemotingMetaRegistryConfigurator;
 import com.gridnine.elsa.demo.activator.ElsaDemoActivator;
+import com.gridnine.elsa.demo.remoting.draft.DemoRemotingController;
+import com.gridnine.elsa.demo.remoting.draft.DemoTestInitiateSubscriptionHandler;
+import com.gridnine.elsa.demo.remoting.draft.DemoTestServerCallRequestHandler;
+import com.gridnine.elsa.demo.remoting.draft.DemoTestSubscriptionHandler;
 import com.gridnine.elsa.demo.remoting.restws.AuthController;
 import com.gridnine.elsa.demo.remoting.restws.RestWsController;
 import com.gridnine.elsa.demo.remoting.sse.PrivateRestFluxService;
@@ -60,5 +64,24 @@ public class ElsaDemoServerConfiguration {
     @Bean
     DemoElsaRemotingMetaRegistryConfigurator demoElsaRemotingMetaRegistryConfigurator(){
         return new DemoElsaRemotingMetaRegistryConfigurator();
+    }
+
+    @Bean
+    DemoTestServerCallRequestHandler demoTestServerCallRequestHandler(){
+        return new DemoTestServerCallRequestHandler();
+    }
+
+    @Bean
+    DemoRemotingController demoRemotingController(){
+        return new DemoRemotingController();
+    }
+
+    @Bean
+    DemoTestSubscriptionHandler demoTestSubscriptionHandler(){
+        return new DemoTestSubscriptionHandler();
+    }
+    @Bean
+    DemoTestInitiateSubscriptionHandler demoTestInitiateSubscriptionHandler(){
+        return new DemoTestInitiateSubscriptionHandler();
     }
 }

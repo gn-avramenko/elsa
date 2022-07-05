@@ -17,13 +17,22 @@ export type DemoTestServerCallRequest={
 export type DemoTestServerCallResponse={
   stringProperty?: string,
   dateProperty?: Date,
+  dateTimeProperty?: Date,
   enumProperty?: DemoTestEnum,
   stringCollection: string[],
   dateCollection: Date[],
   entityCollection: DemoTestEntity[],
-  stringMap: Map<string,string>,
-  dateMap: Map<Date,Date>,
-  eneityMap: Map<DemoTestEntity,DemoTestEntity>,
+  stringMap: Map<string, string>,
+  dateMap: Map<Date, Date>,
+  entityMap: Map<DemoTestEntity, DemoTestEntity>,
+};
+
+export type DemoTestClientCallRequest={
+  param?: string,
+};
+
+export type DemoTestClientCallResponse={
+  stringProperty?: string,
 };
 
 export type DemoTestSubscriptionParameters={

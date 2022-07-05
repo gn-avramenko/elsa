@@ -15,14 +15,17 @@
            <response id="com.gridnine.elsa.demo.model.remoting.DemoTestServerCallResponse">
                <property id="stringProperty" type="STRING"/>
                <property id="dateProperty" type="LOCAL_DATE"/>
+               <property id="dateTimeProperty" type="LOCAL_DATE_TIME"/>
                <property id="enumProperty" type="ENUM" class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEnum"/>
                <collection id="stringCollection" element-type="STRING" />
                <collection id="dateCollection" element-type="LOCAL_DATE" />
                <collection id="entityCollection" element-type="ENTITY"  element-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity" />
                <map id="stringMap" key-type="STRING" value-type="STRING"/>
                <map id="dateMap" key-type="LOCAL_DATE" value-type="LOCAL_DATE"/>
-               <map id="eneityMap" key-type="ENTITY" value-type="ENTITY" key-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity" value-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity"/>
+               <map id="entityMap" key-type="ENTITY" value-type="ENTITY" key-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity" value-class-name="com.gridnine.elsa.demo.model.remoting.DemoTestEntity"/>
            </response>
+       </server-call>
+       <server-call id="initiate-subscription">
        </server-call>
        <client-call id="client-call">
            <request id="com.gridnine.elsa.demo.model.remoting.DemoTestClientCallRequest">

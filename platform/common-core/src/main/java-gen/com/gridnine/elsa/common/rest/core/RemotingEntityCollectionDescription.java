@@ -14,7 +14,7 @@ public class RemotingEntityCollectionDescription extends BaseIntrospectableObjec
 
 	private String elementClassName;
 
-	private boolean isAbsctract;
+	private boolean elementIsAbstract;
 
 	public RemotingEntityValueType getElementType(){
 		return elementType;
@@ -40,12 +40,12 @@ public class RemotingEntityCollectionDescription extends BaseIntrospectableObjec
 		this.elementClassName = value;
 	}
 
-	public boolean getIsAbsctract(){
-		return isAbsctract;
+	public boolean getElementIsAbstract(){
+		return elementIsAbstract;
 	}
 
-	public void setIsAbsctract(boolean value){
-		this.isAbsctract = value;
+	public void setElementIsAbstract(boolean value){
+		this.elementIsAbstract = value;
 	}
 
 	@Override
@@ -63,8 +63,8 @@ public class RemotingEntityCollectionDescription extends BaseIntrospectableObjec
 			return elementClassName;
 		}
 
-		if("isAbsctract".equals(propertyName)){
-			return isAbsctract;
+		if("elementIsAbstract".equals(propertyName)){
+			return elementIsAbstract;
 		}
 
 		return super.getValue(propertyName);
@@ -88,8 +88,8 @@ public class RemotingEntityCollectionDescription extends BaseIntrospectableObjec
 			return;
 		}
 
-		if("isAbsctract".equals(propertyName)){
-			this.isAbsctract = (boolean) value;
+		if("elementIsAbstract".equals(propertyName)){
+			this.elementIsAbstract = (boolean) value;
 			return;
 		}
 

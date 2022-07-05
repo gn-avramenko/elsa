@@ -6,6 +6,7 @@ package com.gridnine.elsa.demo.model.remoting;
 
 import com.gridnine.elsa.common.core.model.common.BaseIntrospectableObject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class DemoTestServerCallResponse extends BaseIntrospectableObject{
@@ -13,6 +14,8 @@ public class DemoTestServerCallResponse extends BaseIntrospectableObject{
 	private String stringProperty;
 
 	private LocalDate dateProperty;
+
+	private LocalDateTime dateTimeProperty;
 
 	private DemoTestEnum enumProperty;
 
@@ -26,7 +29,7 @@ public class DemoTestServerCallResponse extends BaseIntrospectableObject{
 
 	private final Map<LocalDate,LocalDate> dateMap = new HashMap<>();
 
-	private final Map<DemoTestEntity,DemoTestEntity> eneityMap = new HashMap<>();
+	private final Map<DemoTestEntity,DemoTestEntity> entityMap = new HashMap<>();
 
 	public String getStringProperty(){
 		return stringProperty;
@@ -42,6 +45,14 @@ public class DemoTestServerCallResponse extends BaseIntrospectableObject{
 
 	public void setDateProperty(LocalDate value){
 		this.dateProperty = value;
+	}
+
+	public LocalDateTime getDateTimeProperty(){
+		return dateTimeProperty;
+	}
+
+	public void setDateTimeProperty(LocalDateTime value){
+		this.dateTimeProperty = value;
 	}
 
 	public DemoTestEnum getEnumProperty(){
@@ -72,8 +83,8 @@ public class DemoTestServerCallResponse extends BaseIntrospectableObject{
 		return dateMap;
 	}
 
-	public Map<DemoTestEntity,DemoTestEntity> getEneityMap(){
-		return eneityMap;
+	public Map<DemoTestEntity,DemoTestEntity> getEntityMap(){
+		return entityMap;
 	}
 
 	@Override
@@ -85,6 +96,10 @@ public class DemoTestServerCallResponse extends BaseIntrospectableObject{
 
 		if("dateProperty".equals(propertyName)){
 			return dateProperty;
+		}
+
+		if("dateTimeProperty".equals(propertyName)){
+			return dateTimeProperty;
 		}
 
 		if("enumProperty".equals(propertyName)){
@@ -104,6 +119,11 @@ public class DemoTestServerCallResponse extends BaseIntrospectableObject{
 
 		if("dateProperty".equals(propertyName)){
 			this.dateProperty = (LocalDate) value;
+			return;
+		}
+
+		if("dateTimeProperty".equals(propertyName)){
+			this.dateTimeProperty = (LocalDateTime) value;
 			return;
 		}
 
@@ -144,8 +164,8 @@ public class DemoTestServerCallResponse extends BaseIntrospectableObject{
 			return dateMap;
 		}
 
-		if("eneityMap".equals(mapName)){
-			return eneityMap;
+		if("entityMap".equals(mapName)){
+			return entityMap;
 		}
 
 		return super.getMap(mapName);

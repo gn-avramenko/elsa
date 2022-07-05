@@ -5,10 +5,7 @@
 
 package com.gridnine.elsa.config;
 
-import com.gridnine.elsa.server.core.remoting.CoreRemotingController;
-import com.gridnine.elsa.server.core.remoting.GetRemotingEntityDescriptionHandler;
-import com.gridnine.elsa.server.core.remoting.GetServerCallDescriptionHandler;
-import com.gridnine.elsa.server.core.remoting.RemotingHandlersRegistry;
+import com.gridnine.elsa.server.core.remoting.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,8 +26,23 @@ public class ElsaServerCoreRemotingConfiguration {
     public GetServerCallDescriptionHandler getRestDescriptionHandler(){
         return new GetServerCallDescriptionHandler();
     }
+
+    @Bean
+    public GetSubscriptionDescriptionHandler getSubscriptionDescriptionHandler(){
+        return new GetSubscriptionDescriptionHandler();
+    }
     @Bean
     public GetRemotingEntityDescriptionHandler getRemotingEntityDescriptionHandler(){
         return new GetRemotingEntityDescriptionHandler();
+    }
+
+    @Bean
+    public GetClientCallDescriptionHandler getClientCallDescriptionHandler(){
+        return new GetClientCallDescriptionHandler();
+    }
+
+    @Bean
+    StalledChannelsCleaner stalledChannelsCleaner(){
+        return new StalledChannelsCleaner();
     }
 }

@@ -49,8 +49,12 @@ public class JavaRemotingConfiguratorCodeGenerator {
                                         gen.wrapWithBlock(null, () -> {
                                             gen.printLine("var serverCallDescription = new RemotingServerCallDescription(\"%s\");".formatted(gd.getId()));
                                             gen.printLine("serverCallDescription.setValidatable(%s);".formatted(sc.isValidatable()));
-                                            gen.printLine("serverCallDescription.setRequestClassName(\"%s\");".formatted(sc.getRequestClassName()));
-                                            gen.printLine("serverCallDescription.setResponseClassName(\"%s\");".formatted(sc.getResponseClassName()));
+                                            if(sc.getRequestClassName() != null) {
+                                                gen.printLine("serverCallDescription.setRequestClassName(\"%s\");".formatted(sc.getRequestClassName()));
+                                            }
+                                            if(sc.getResponseClassName() != null) {
+                                                gen.printLine("serverCallDescription.setResponseClassName(\"%s\");".formatted(sc.getResponseClassName()));
+                                            }
                                             gen.printLine("groupDescription.getServerCalls().put(\"%s\", serverCallDescription);".formatted(sc.getId()));
                                         });
                                     });
@@ -60,7 +64,7 @@ public class JavaRemotingConfiguratorCodeGenerator {
                                     gen.addImport("com.gridnine.elsa.common.meta.remoting.RemotingClientCallDescription");
                                     BuildExceptionUtils.wrapException(() -> {
                                         gen.wrapWithBlock(null, () -> {
-                                            gen.printLine("var clientCallDescription = new RemotingclientCallDescription(\"%s\");".formatted(cc.getId()));
+                                            gen.printLine("var clientCallDescription = new RemotingClientCallDescription(\"%s\");".formatted(cc.getId()));
                                             gen.printLine("clientCallDescription.setRequestClassName(\"%s\");".formatted(cc.getRequestClassName()));
                                             gen.printLine("clientCallDescription.setResponseClassName(\"%s\");".formatted(cc.getResponseClassName()));
                                             gen.printLine("groupDescription.getClientCalls().put(\"%s\", clientCallDescription);".formatted(cc.getId()));

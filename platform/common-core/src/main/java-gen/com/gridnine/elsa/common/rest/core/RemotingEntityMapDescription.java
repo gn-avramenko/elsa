@@ -12,7 +12,7 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 
 	private RemotingEntityValueType keyType;
 
-	private boolean keyIsAbsctract;
+	private boolean keyIsAbstract;
 
 	private String keyClassName;
 
@@ -20,7 +20,7 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 
 	private String valueClassName;
 
-	private boolean valueIsAbsctract;
+	private boolean valueIsAbstract;
 
 	public String getId(){
 		return id;
@@ -38,12 +38,12 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 		this.keyType = value;
 	}
 
-	public boolean getKeyIsAbsctract(){
-		return keyIsAbsctract;
+	public boolean getKeyIsAbstract(){
+		return keyIsAbstract;
 	}
 
-	public void setKeyIsAbsctract(boolean value){
-		this.keyIsAbsctract = value;
+	public void setKeyIsAbstract(boolean value){
+		this.keyIsAbstract = value;
 	}
 
 	public String getKeyClassName(){
@@ -70,12 +70,12 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 		this.valueClassName = value;
 	}
 
-	public boolean getValueIsAbsctract(){
-		return valueIsAbsctract;
+	public boolean getValueIsAbstract(){
+		return valueIsAbstract;
 	}
 
-	public void setValueIsAbsctract(boolean value){
-		this.valueIsAbsctract = value;
+	public void setValueIsAbstract(boolean value){
+		this.valueIsAbstract = value;
 	}
 
 	@Override
@@ -89,8 +89,8 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 			return keyType;
 		}
 
-		if("keyIsAbsctract".equals(propertyName)){
-			return keyIsAbsctract;
+		if("keyIsAbstract".equals(propertyName)){
+			return keyIsAbstract;
 		}
 
 		if("keyClassName".equals(propertyName)){
@@ -105,8 +105,8 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 			return valueClassName;
 		}
 
-		if("valueIsAbsctract".equals(propertyName)){
-			return valueIsAbsctract;
+		if("valueIsAbstract".equals(propertyName)){
+			return valueIsAbstract;
 		}
 
 		return super.getValue(propertyName);
@@ -125,8 +125,8 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 			return;
 		}
 
-		if("keyIsAbsctract".equals(propertyName)){
-			this.keyIsAbsctract = (boolean) value;
+		if("keyIsAbstract".equals(propertyName)){
+			this.keyIsAbstract = (boolean) value;
 			return;
 		}
 
@@ -145,8 +145,8 @@ public class RemotingEntityMapDescription extends BaseIntrospectableObject{
 			return;
 		}
 
-		if("valueIsAbsctract".equals(propertyName)){
-			this.valueIsAbsctract = (boolean) value;
+		if("valueIsAbstract".equals(propertyName)){
+			this.valueIsAbstract = (boolean) value;
 			return;
 		}
 

@@ -126,6 +126,7 @@ public class JsonMarshaller {
                 }
                 generator.writeEndArray();
             } else if(params.getEmptyListSerializationStrategy() == SerializationParameters.EmptyListSerializationStrategy.INCLUDE){
+                generator.writeFieldName(coll.id());
                 generator.writeStartArray();
                 generator.writeEndArray();
             }
@@ -145,6 +146,10 @@ public class JsonMarshaller {
                     }
                     generator.writeEndObject();
                 }
+                generator.writeEndArray();
+            } else if(params.getEmptyListSerializationStrategy() == SerializationParameters.EmptyListSerializationStrategy.INCLUDE){
+                generator.writeFieldName(mapDescription.id());
+                generator.writeStartArray();
                 generator.writeEndArray();
             }
         }

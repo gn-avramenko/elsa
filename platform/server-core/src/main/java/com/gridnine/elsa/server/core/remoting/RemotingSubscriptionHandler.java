@@ -5,15 +5,7 @@
 
 package com.gridnine.elsa.server.core.remoting;
 
-public class RemotingServerCallContext {
-
-    private String clientId;
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
+public interface RemotingSubscriptionHandler<P,E> {
+    String getId();
+    boolean isApplicable(E event, P parameters) throws Exception;
 }

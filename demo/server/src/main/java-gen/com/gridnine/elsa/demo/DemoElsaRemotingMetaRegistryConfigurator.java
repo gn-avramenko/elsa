@@ -11,6 +11,7 @@ import com.gridnine.elsa.common.meta.common.StandardCollectionDescription;
 import com.gridnine.elsa.common.meta.common.StandardMapDescription;
 import com.gridnine.elsa.common.meta.common.StandardPropertyDescription;
 import com.gridnine.elsa.common.meta.common.StandardValueType;
+import com.gridnine.elsa.common.meta.remoting.RemotingClientCallDescription;
 import com.gridnine.elsa.common.meta.remoting.RemotingDescription;
 import com.gridnine.elsa.common.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.common.meta.remoting.RemotingMetaRegistry;
@@ -66,6 +67,11 @@ public class DemoElsaRemotingMetaRegistryConfigurator implements RemotingMetaReg
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{
+				var propertyDescription = new StandardPropertyDescription("dateTimeProperty");
+				propertyDescription.setType(StandardValueType.LOCAL_DATE_TIME);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
 				var propertyDescription = new StandardPropertyDescription("enumProperty");
 				propertyDescription.setType(StandardValueType.ENUM);
 				propertyDescription.setClassName("com.gridnine.elsa.demo.model.remoting.DemoTestEnum");
@@ -100,12 +106,30 @@ public class DemoElsaRemotingMetaRegistryConfigurator implements RemotingMetaReg
 				entityDescription.getMaps().put(mapDescription.getId(), mapDescription);
 			}
 			{
-				var mapDescription = new StandardMapDescription("eneityMap");
+				var mapDescription = new StandardMapDescription("entityMap");
 				mapDescription.setKeyType(StandardValueType.ENTITY);
 				mapDescription.setValueType(StandardValueType.ENTITY);
 				mapDescription.setKeyClassName("com.gridnine.elsa.demo.model.remoting.DemoTestEntity");
 				mapDescription.setValueClassName("com.gridnine.elsa.demo.model.remoting.DemoTestEntity");
 				entityDescription.getMaps().put(mapDescription.getId(), mapDescription);
+			}
+		}
+		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.demo.model.remoting.DemoTestClientCallRequest");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("param");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.demo.model.remoting.DemoTestClientCallResponse");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("stringProperty");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 		}
 		{
@@ -138,6 +162,17 @@ public class DemoElsaRemotingMetaRegistryConfigurator implements RemotingMetaReg
 					serverCallDescription.setRequestClassName("com.gridnine.elsa.demo.model.remoting.DemoTestServerCallRequest");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.demo.model.remoting.DemoTestServerCallResponse");
 					groupDescription.getServerCalls().put("server-call", serverCallDescription);
+				}
+				{
+					var serverCallDescription = new RemotingServerCallDescription("test");
+					serverCallDescription.setValidatable(false);
+					groupDescription.getServerCalls().put("initiate-subscription", serverCallDescription);
+				}
+				{
+					var clientCallDescription = new RemotingClientCallDescription("client-call");
+					clientCallDescription.setRequestClassName("com.gridnine.elsa.demo.model.remoting.DemoTestClientCallRequest");
+					clientCallDescription.setResponseClassName("com.gridnine.elsa.demo.model.remoting.DemoTestClientCallResponse");
+					groupDescription.getClientCalls().put("client-call", clientCallDescription);
 				}
 				{
 					var subscriptionDescription = new RemotingSubscriptionDescription("subscription");

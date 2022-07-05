@@ -14,26 +14,44 @@
         <enum-item id="INT"/>
         <enum-item id="BIG_DECIMAL"/>
     </enum>
+    <enum id="com.gridnine.elsa.common.rest.core.RemotingMessageType">
+        <enum-item id="PING"/>
+        <enum-item id="SUBSCRIPTION"/>
+        <enum-item id="CLIENT_CALL"/>
+    </enum>
+    <entity id="com.gridnine.elsa.common.rest.core.ClientResponse">
+        <property id="errorMessage" type="STRING"/>
+        <property id="requestId" type="STRING"/>
+        <property id="responseStr" type="STRING"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.rest.core.RemotingMessage">
+        <property id="type" type="ENUM"  class-name="com.gridnine.elsa.common.rest.core.RemotingMessageType" non-nullable="true"/>
+        <property id="subscriptionId" type="STRING"/>
+        <property id="callId" type="STRING"/>
+        <property id="groupId" type="STRING"/>
+        <property id="methodId" type="STRING"/>
+        <property id="data" type="STRING" non-nullable="true"/>
+    </entity>
     <entity id="com.gridnine.elsa.common.rest.core.RemotingEntityPropertyDescription">
         <property id="type" type="ENUM"  class-name="com.gridnine.elsa.common.rest.core.RemotingEntityValueType" non-nullable="true"/>
         <property id="id" type="STRING" non-nullable="true"/>
         <property id="className" type="STRING"/>
-        <property id="isAbsctract" type="BOOLEAN" non-nullable="true"/>
+        <property id="isAbstract" type="BOOLEAN" non-nullable="true"/>
     </entity>
     <entity id="com.gridnine.elsa.common.rest.core.RemotingEntityCollectionDescription">
         <property id="elementType" type="ENUM"  class-name="com.gridnine.elsa.common.rest.core.RemotingEntityValueType" non-nullable="true"/>
         <property id="id" type="STRING" non-nullable="true"/>
         <property id="elementClassName" type="STRING"/>
-        <property id="isAbsctract" type="BOOLEAN" non-nullable="true"/>
+        <property id="elementIsAbstract" type="BOOLEAN" non-nullable="true"/>
     </entity>
     <entity id="com.gridnine.elsa.common.rest.core.RemotingEntityMapDescription">
         <property id="id" type="STRING" non-nullable="true"/>
         <property id="keyType" type="ENUM"  class-name="com.gridnine.elsa.common.rest.core.RemotingEntityValueType" non-nullable="true"/>
-        <property id="keyIsAbsctract" type="BOOLEAN" non-nullable="true"/>
+        <property id="keyIsAbstract" type="BOOLEAN" non-nullable="true"/>
         <property id="keyClassName" type="STRING"/>
         <property id="valueType" type="ENUM"  class-name="com.gridnine.elsa.common.rest.core.RemotingEntityValueType" non-nullable="true"/>
         <property id="valueClassName" type="STRING"/>
-        <property id="valueIsAbsctract" type="BOOLEAN" non-nullable="true"/>
+        <property id="valueIsAbstract" type="BOOLEAN" non-nullable="true"/>
     </entity>
     <entity id="com.gridnine.elsa.common.rest.core.RemotingEntityDescription">
         <collection id="properties" element-type="ENTITY" element-class-name="com.gridnine.elsa.common.rest.core.RemotingEntityPropertyDescription"/>
@@ -52,12 +70,34 @@
                 <property id="responseClassName" type="STRING"/>
             </response>
         </server-call>
+        <server-call id="get-subscription-description">
+            <request id="com.gridnine.elsa.common.rest.core.GetSubscriptionDescriptionRequest">
+                <property id="remotingId" type="STRING" non-nullable="true"/>
+                <property id="groupId" type="STRING" non-nullable="true"/>
+                <property id="subscriptionId" type="STRING" non-nullable="true"/>
+            </request>
+            <response id="com.gridnine.elsa.common.rest.core.GetSubscriptionDescriptionResponse">
+                <property id="parameterClassName" type="STRING"/>
+                <property id="eventClassName" type="STRING"/>
+            </response>
+        </server-call>
         <server-call id="get-entity-description">
             <request id="com.gridnine.elsa.common.rest.core.GetRemotingEntityDescriptionRequest">
                 <property id="entityId" type="STRING" non-nullable="true"/>
             </request>
             <response id="com.gridnine.elsa.common.rest.core.GetRemotingEntityDescriptionResponse">
                 <property id="description" type="ENTITY" non-nullable="true" class-name="com.gridnine.elsa.common.rest.core.RemotingEntityDescription"/>
+            </response>
+        </server-call>
+        <server-call id="get-client-call-description">
+            <request id="com.gridnine.elsa.common.rest.core.GetClientCallDescriptionRequest">
+                <property id="remotingId" type="STRING" non-nullable="true"/>
+                <property id="groupId" type="STRING" non-nullable="true"/>
+                <property id="methodId" type="STRING" non-nullable="true"/>
+            </request>
+            <response id="com.gridnine.elsa.common.rest.core.GetClientCallDescriptionResponse">
+                <property id="requestClassName" type="STRING"/>
+                <property id="responseClassName" type="STRING"/>
             </response>
         </server-call>
     </group>

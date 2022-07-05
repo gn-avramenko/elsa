@@ -36,7 +36,7 @@ public class WebCodeGeneratorUtils {
                 gen.printLine("%s: %s[],".formatted(cd.getId(),  getType(cd.getElementType(), cd.getElementClassName())));
             }
             for(var md: ed.getMaps().values()){
-                gen.printLine("%s: Map<%s,%s>,".formatted(md.getId(),  getType(md.getKeyType(), md.getKeyClassName()),
+                gen.printLine("%s: Map<%s, %s>,".formatted(md.getId(),  getType(md.getKeyType(), md.getKeyClassName()),
                         getType(md.getValueType(), md.getValueClassName())));
             }
         });

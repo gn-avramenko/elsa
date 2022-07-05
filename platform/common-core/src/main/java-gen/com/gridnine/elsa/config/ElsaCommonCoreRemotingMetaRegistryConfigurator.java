@@ -73,6 +73,78 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 			}
 		}
 		{
+			var enumDescription = new EnumDescription("com.gridnine.elsa.common.rest.core.RemotingMessageType");
+			registry.getEnums().put(enumDescription.getId(), enumDescription);
+			{
+				var enumItemDescription = new EnumItemDescription("PING");
+				enumDescription.getItems().put(enumItemDescription.getId(), enumItemDescription);
+			}
+			{
+				var enumItemDescription = new EnumItemDescription("SUBSCRIPTION");
+				enumDescription.getItems().put(enumItemDescription.getId(), enumItemDescription);
+			}
+			{
+				var enumItemDescription = new EnumItemDescription("CLIENT_CALL");
+				enumDescription.getItems().put(enumItemDescription.getId(), enumItemDescription);
+			}
+		}
+		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.ClientResponse");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("errorMessage");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("requestId");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("responseStr");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.RemotingMessage");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("type");
+				propertyDescription.setType(StandardValueType.ENUM);
+				propertyDescription.setClassName("com.gridnine.elsa.common.rest.core.RemotingMessageType");
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("subscriptionId");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("callId");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("groupId");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("methodId");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("data");
+				propertyDescription.setType(StandardValueType.STRING);
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.RemotingEntityPropertyDescription");
 			registry.getEntities().put(entityDescription.getId(), entityDescription);
 			{
@@ -94,7 +166,7 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{
-				var propertyDescription = new StandardPropertyDescription("isAbsctract");
+				var propertyDescription = new StandardPropertyDescription("isAbstract");
 				propertyDescription.setType(StandardValueType.BOOLEAN);
 				propertyDescription.setNonNullable(true);
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
@@ -122,7 +194,7 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{
-				var propertyDescription = new StandardPropertyDescription("isAbsctract");
+				var propertyDescription = new StandardPropertyDescription("elementIsAbstract");
 				propertyDescription.setType(StandardValueType.BOOLEAN);
 				propertyDescription.setNonNullable(true);
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
@@ -145,7 +217,7 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{
-				var propertyDescription = new StandardPropertyDescription("keyIsAbsctract");
+				var propertyDescription = new StandardPropertyDescription("keyIsAbstract");
 				propertyDescription.setType(StandardValueType.BOOLEAN);
 				propertyDescription.setNonNullable(true);
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
@@ -168,7 +240,7 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
 			}
 			{
-				var propertyDescription = new StandardPropertyDescription("valueIsAbsctract");
+				var propertyDescription = new StandardPropertyDescription("valueIsAbstract");
 				propertyDescription.setType(StandardValueType.BOOLEAN);
 				propertyDescription.setNonNullable(true);
 				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
@@ -233,6 +305,42 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 			}
 		}
 		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.GetSubscriptionDescriptionRequest");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("remotingId");
+				propertyDescription.setType(StandardValueType.STRING);
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("groupId");
+				propertyDescription.setType(StandardValueType.STRING);
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("subscriptionId");
+				propertyDescription.setType(StandardValueType.STRING);
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.GetSubscriptionDescriptionResponse");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("parameterClassName");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("eventClassName");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.GetRemotingEntityDescriptionRequest");
 			registry.getEntities().put(entityDescription.getId(), entityDescription);
 			{
@@ -254,6 +362,42 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 			}
 		}
 		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.GetClientCallDescriptionRequest");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("remotingId");
+				propertyDescription.setType(StandardValueType.STRING);
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("groupId");
+				propertyDescription.setType(StandardValueType.STRING);
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("methodId");
+				propertyDescription.setType(StandardValueType.STRING);
+				propertyDescription.setNonNullable(true);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.rest.core.GetClientCallDescriptionResponse");
+			registry.getEntities().put(entityDescription.getId(), entityDescription);
+			{
+				var propertyDescription = new StandardPropertyDescription("requestClassName");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+			{
+				var propertyDescription = new StandardPropertyDescription("responseClassName");
+				propertyDescription.setType(StandardValueType.STRING);
+				entityDescription.getProperties().put(propertyDescription.getId(), propertyDescription);
+			}
+		}
+		{
 			var remotingDescription = new RemotingDescription("core");
 			registry.getRemotings().put(remotingDescription.getId(), remotingDescription);
 			{
@@ -269,9 +413,23 @@ public class ElsaCommonCoreRemotingMetaRegistryConfigurator implements RemotingM
 				{
 					var serverCallDescription = new RemotingServerCallDescription("meta");
 					serverCallDescription.setValidatable(false);
+					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.rest.core.GetSubscriptionDescriptionRequest");
+					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.rest.core.GetSubscriptionDescriptionResponse");
+					groupDescription.getServerCalls().put("get-subscription-description", serverCallDescription);
+				}
+				{
+					var serverCallDescription = new RemotingServerCallDescription("meta");
+					serverCallDescription.setValidatable(false);
 					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.rest.core.GetRemotingEntityDescriptionRequest");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.rest.core.GetRemotingEntityDescriptionResponse");
 					groupDescription.getServerCalls().put("get-entity-description", serverCallDescription);
+				}
+				{
+					var serverCallDescription = new RemotingServerCallDescription("meta");
+					serverCallDescription.setValidatable(false);
+					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.rest.core.GetClientCallDescriptionRequest");
+					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.rest.core.GetClientCallDescriptionResponse");
+					groupDescription.getServerCalls().put("get-client-call-description", serverCallDescription);
 				}
 			}
 		}

@@ -34,10 +34,16 @@ public class RemotingMetaRegistryParser {
                   var sc = groupDescr.getServerCalls().computeIfAbsent(CommonParserUtils.getIdAttribute(item),
                           RemotingServerCallDescription::new);
                   sc.setValidatable("true".equals(item.getAttribute("validatable")));
-                  sc.setRequestClassName(parseEntity(registry, item.getChildren("request").get(0)));
-                  sc.setResponseClassName(parseEntity(registry, item.getChildren("response").get(0)));
+                  var requestChildren = item.getChildren("request");
+                  if(requestChildren.size() == 1) {
+                      sc.setRequestClassName(parseEntity(registry, requestChildren.get(0)));
+                  }
+                  var responseChildren = item.getChildren("response");
+                  if(responseChildren.size() == 1) {
+                      sc.setResponseClassName(parseEntity(registry, responseChildren.get(0)));
+                  }
               });
-                groupChild.getChildren("clientCall-call").forEach(item -> {
+                groupChild.getChildren("client-call").forEach(item -> {
                     var sc = groupDescr.getClientCalls().computeIfAbsent(CommonParserUtils.getIdAttribute(item),
                             RemotingClientCallDescription::new);
                     sc.setRequestClassName(parseEntity(registry, item.getChildren("request").get(0)));
