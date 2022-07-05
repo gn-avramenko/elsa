@@ -73,12 +73,6 @@
                                     </complexContent>
                                 </complexType>
                             </element>
-                            <element name="module-import">
-                                <complexType>
-                                    <attribute name="objectId" type="string"/>
-                                    <attribute name="module" type="string"/>
-                                </complexType>
-                            </element>
                         </choice>
                     </sequence>
                 </extension>

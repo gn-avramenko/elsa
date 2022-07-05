@@ -33,6 +33,7 @@
             <extension base="tns:MetaElementType">
                 <attribute name="type" type="tns:ValueType" use="required"/>
                 <attribute name="class-name" type="string"/>
+                <attribute name="ts-class-name" type="string"/>
                 <attribute name="non-nullable" type="boolean"/>
             </extension>
         </complexContent>
@@ -43,6 +44,8 @@
                 <attribute name="unique" type="boolean" default="false"/>
                 <attribute name="element-type" type="tns:ValueType" use="required"/>
                 <attribute name="element-class-name" type="string"/>
+                <attribute name="ts-element-class-name" type="string"/>
+                <attribute name="ts-id" type="string"/>
             </extension>
         </complexContent>
     </complexType>
@@ -53,6 +56,8 @@
                 <attribute name="value-type" type="tns:ValueType" use="required"/>
                 <attribute name="key-class-name" type="string"/>
                 <attribute name="value-class-name" type="string"/>
+                <attribute name="ts-key-class-name" type="string"/>
+                <attribute name="ts-value-class-name" type="string"/>
             </extension>
         </complexContent>
     </complexType>

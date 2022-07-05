@@ -5,7 +5,7 @@
 
 package com.gridnine.elsa.common.meta.common;
 
-public class StandardMapDescription extends BaseElementWitId{
+public class StandardMapDescription extends BaseModelElementDescription{
     private StandardValueType keyType;
 
     private StandardValueType valueType;

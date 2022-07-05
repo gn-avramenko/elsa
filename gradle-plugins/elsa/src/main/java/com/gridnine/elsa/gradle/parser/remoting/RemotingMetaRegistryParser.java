@@ -5,7 +5,6 @@
 
 package com.gridnine.elsa.gradle.parser.remoting;
 
-import com.gridnine.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.common.meta.remoting.*;
 import com.gridnine.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.elsa.gradle.parser.common.MetaDataParsingResult;
