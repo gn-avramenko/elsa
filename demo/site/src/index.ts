@@ -1,3 +1,4 @@
+import { generateUUID } from 'elsa-web-core';
 import {
   BaseClientCallHandler,
   serverCall, subscribe, unsubscribe,
@@ -45,4 +46,8 @@ w.processPublic2 = async () => {
     param: 'test',
   }, false, null);
   console.log(result);
+};
+
+w.processPublic3 = async () => {
+  console.log(generateUUID());
 };

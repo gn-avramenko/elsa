@@ -9,6 +9,7 @@ public enum GeneratorType {
     JAVA_DOMAIN,
     JAVA_CUSTOM,
     JAVA_REMOTING,
+    JAVA_UI_TEMPLATE,
     JAVA_L10N,
     WEB_REMOTING,
 }

@@ -5,13 +5,13 @@
 
 package com.gridnine.elsa.common.meta.l10n;
 
-import com.gridnine.elsa.common.meta.common.BaseElementWitId;
+import com.gridnine.elsa.common.meta.common.BaseElementWithId;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class L10nMessageDescription extends BaseElementWitId {
+public class L10nMessageDescription extends BaseElementWithId {
 
     private final Map<Locale, String> displayNames = new LinkedHashMap<>();
 

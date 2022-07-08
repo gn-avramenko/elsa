@@ -20,6 +20,8 @@ configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
             "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator", arrayListOf("code-gen/demo-elsa-domain.xml"))
         remoting("src/main/java-gen", "com.gridnine.elsa.demo.DemoElsaRemotingMetaRegistryConfigurator",
             arrayListOf("code-gen/demo-elsa-remoting.xml") )
+        uiTemplate("src/main/java-gen", "elsa-demo-ui.xsd", "http://gridnine.com/elsa/demo-ui-template",
+        arrayListOf("code-gen/demo-elsa-ui-template.xml"))
     }
 }
 

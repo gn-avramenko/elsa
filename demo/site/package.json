@@ -23,6 +23,7 @@
     "webpack-dev-server": "^4.9.0"
   },
   "dependencies": {
-    "@stomp/stompjs": "^6.1.2"
+    "@stomp/stompjs": "^6.1.2",
+    "elsa-web-core": "file:../../platform/web-core"
   }
 }

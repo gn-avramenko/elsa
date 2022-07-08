@@ -6,7 +6,7 @@
 package com.gridnine.elsa.server.core.cache;
 
 import com.gridnine.elsa.common.core.model.common.BaseIdentity;
-import com.gridnine.elsa.common.meta.common.BaseElementWitId;
+import com.gridnine.elsa.common.meta.common.BaseElementWithId;
 import com.gridnine.elsa.common.meta.domain.DatabasePropertyDescription;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,14 +111,14 @@ public class CacheMetadataProvider {
             var descr = domainMetaRegistry.getSearchableProjections().get(className);
             if (descr != null) {
                 res = descr.getProperties().values().stream().filter(DatabasePropertyDescription::isCacheFind)
-                        .map(BaseElementWitId::getId).collect(Collectors.toSet());
+                        .map(BaseElementWithId::getId).collect(Collectors.toSet());
                 findProperties.put(className, res);
                 return res;
             }
         }
         var descr = domainMetaRegistry.getAssets().get(className);
         res = descr.getProperties().values().stream().filter(DatabasePropertyDescription::isCacheFind)
-                .map(BaseElementWitId::getId).collect(Collectors.toSet());
+                .map(BaseElementWithId::getId).collect(Collectors.toSet());
         findProperties.put(className, res);
         return res;
     }
@@ -133,14 +133,14 @@ public class CacheMetadataProvider {
             var descr = domainMetaRegistry.getSearchableProjections().get(className);
             if (descr != null) {
                 res = descr.getProperties().values().stream().filter(DatabasePropertyDescription::isCacheGetAll)
-                        .map(BaseElementWitId::getId).collect(Collectors.toSet());
+                        .map(BaseElementWithId::getId).collect(Collectors.toSet());
                 getAllProperties.put(className, res);
                 return res;
             }
         }
         var descr = domainMetaRegistry.getAssets().get(className);
         res = descr.getProperties().values().stream().filter(DatabasePropertyDescription::isCacheGetAll)
-                .map(BaseElementWitId::getId).collect(Collectors.toSet());
+                .map(BaseElementWithId::getId).collect(Collectors.toSet());
         getAllProperties.put(className, res);
         return res;
     }

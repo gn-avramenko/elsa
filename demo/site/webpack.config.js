@@ -17,8 +17,9 @@ module.exports = {
   module: {
     rules: [
       {
-        use: 'ts-loader',
+        loader: 'ts-loader',
         test: /\.ts?$/,
+        options: { allowTsInNodeModules: true },
       },
     ],
   },

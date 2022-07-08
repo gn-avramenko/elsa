@@ -38,6 +38,10 @@ public class BuildXmlNode
         return children.stream().filter(it -> it.name.equals(name)).toList();
     }
 
+    public BuildXmlNode getFirstChild(String name) {
+        return children.stream().filter(it -> it.name.equals(name)).findFirst().orElse(null);
+    }
+
     public String getAttribute(String name){
         return attributes.get(name);
     }

@@ -5,12 +5,12 @@
 
 package com.gridnine.elsa.common.meta.l10n;
 
-import com.gridnine.elsa.common.meta.common.BaseElementWitId;
+import com.gridnine.elsa.common.meta.common.BaseElementWithId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class L10nMessagesBundleDescription extends BaseElementWitId {
+public class L10nMessagesBundleDescription extends BaseElementWithId {
     private final Map<String,L10nMessageDescription> messages = new LinkedHashMap<>();
 
     public L10nMessagesBundleDescription() {

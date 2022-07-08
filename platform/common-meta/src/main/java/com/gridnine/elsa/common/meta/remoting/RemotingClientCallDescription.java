@@ -5,10 +5,9 @@
 
 package com.gridnine.elsa.common.meta.remoting;
 
-import com.gridnine.elsa.common.meta.common.BaseElementWitId;
-import com.gridnine.elsa.common.meta.common.EntityDescription;
+import com.gridnine.elsa.common.meta.common.BaseElementWithId;
 
-public class RemotingClientCallDescription extends BaseElementWitId {
+public class RemotingClientCallDescription extends BaseElementWithId {
     private String requestClassName;
 
     private String responseClassName;

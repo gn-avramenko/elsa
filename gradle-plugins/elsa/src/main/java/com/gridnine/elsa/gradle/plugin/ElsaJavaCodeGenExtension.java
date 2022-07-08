@@ -10,6 +10,7 @@ import com.gridnine.elsa.gradle.codegen.custom.JavaCustomCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nCodeGenRecord;
 import com.gridnine.elsa.gradle.codegen.remoting.JavaRemotingCodeGenRecord;
+import com.gridnine.elsa.gradle.codegen.ui.template.JavaUiTemplateCodeGenRecord;
 
 import java.io.File;
 import java.util.List;
@@ -64,6 +65,16 @@ public class ElsaJavaCodeGenExtension {
         record.setRegistryConfigurator(configurator);
         sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setFactory(factory);
+        record.setDestinationDir(new File(projectDir, destDir));
+        codegenRecords.add(record);
+    }
+
+    public void uiTemplate( String destDir, String xsdFileName, String targetNameSpace, List<String> sourcesFileNames){
+        var record = new JavaUiTemplateCodeGenRecord();
+        record.setDestinationDir(new File(projectDir, destDir));
+        record.setTargetNameSpace(targetNameSpace);
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.setXsdFileName(xsdFileName);
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }

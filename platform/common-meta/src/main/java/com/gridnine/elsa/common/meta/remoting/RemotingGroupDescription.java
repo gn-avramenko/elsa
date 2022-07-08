@@ -5,13 +5,12 @@
 
 package com.gridnine.elsa.common.meta.remoting;
 
-import com.gridnine.elsa.common.meta.common.BaseElementWitId;
-import com.gridnine.elsa.common.meta.l10n.L10nMessageDescription;
+import com.gridnine.elsa.common.meta.common.BaseElementWithId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class RemotingGroupDescription extends BaseElementWitId {
+public class RemotingGroupDescription extends BaseElementWithId {
     private final Map<String, RemotingServerCallDescription> serverCalls = new LinkedHashMap<>();
 
     private final Map<String, RemotingClientCallDescription> clientCalls = new LinkedHashMap<>();

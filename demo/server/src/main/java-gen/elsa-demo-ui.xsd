@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<schema xmlns:common="http://gridnine.com/elsa/meta-common" xmlns:tns="http://gridnine.com/elsa/demo-ui-template" elementFormDefault="qualified" targetNamespace="http://gridnine.com/elsa/demo-ui-template" xmlns="http://www.w3.org/2001/XMLSchema">
+  <element name="ui">
+    <complexType>
+      <sequence>
+        <choice maxOccurs="unbounded" minOccurs="0">
+          <element name="enum" type="tns:EnumType"/>
+          <element name="grid-container" type="tns:grid-container"/>
+        </choice>
+      </sequence>
+    </complexType>
+  </element>
+  <complexType name="EnumType">
+    <complexContent>
+      <extension base="common:MetaElementType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="enum-item" type="common:EnumItemType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <simpleType name="GridColumnWidth">
+    <restriction base="string">
+      <enumeration value="STANDARD"/>
+      <enumeration value="REMAINING"/>
+      <enumeration value="CUSTOM"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="GridRowHeight">
+    <restriction base="string">
+      <enumeration value="STANDARD"/>
+      <enumeration value="REMAINING"/>
+      <enumeration value="CUSTOM"/>
+    </restriction>
+  </simpleType>
+  <complexType name="text-box-widget">
+    <attribute name="notEditable" type="boolean"/>
+  </complexType>
+  <complexType name="big-decimal-box-widget">
+    <attribute name="notEditable" type="boolean"/>
+    <attribute name="precision" type="integer"/>
+  </complexType>
+  <group name="simple-widget">
+    <choice>
+      <element name="text-box" type="tns:text-box-widget"/>
+      <element name="big-decimal-box" type="tns:big-decimal-box-widget"/>
+    </choice>
+  </group>
+  <complexType name="grid-container">
+    <sequence>
+      <element minOccurs="0" name="columns" maxOccurs="1">
+        <complexType>
+          <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" name="column">
+              <complexType>
+                <sequence/>
+                <attribute default="STANDARD" name="width" type="tns:GridColumnWidth"/>
+                <attribute name="custom-width" type="string"/>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element maxOccurs="unbounded" minOccurs="0" name="row">
+        <complexType>
+          <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" name="cell">
+              <complexType>
+                <sequence>
+                  <group ref="tns:simple-widget"/>
+                </sequence>
+                <attribute default="1" name="col-span" type="integer"/>
+                <attribute name="caption" type="string"/>
+                <attribute name="id" type="string" use="required"/>
+              </complexType>
+            </element>
+          </sequence>
+          <attribute default="STANDARD" name="height" type="tns:GridRowHeight"/>
+          <attribute name="custom-height" type="string"/>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
+    <attribute default="1" name="columns-count" type="integer"/>
+  </complexType>
+</schema>

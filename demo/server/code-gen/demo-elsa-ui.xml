@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui xmlns="http://gridnine.com/elsa/demo-ui-template">
+    <enum id="com.gridnine.elsa.demo.server.ui.TestUiEnum">
+        <enum-item id="ENUM1"/>
+        <enum-item id="ENUM2"/>
+    </enum>
+    <grid-container id="com.gridnine.elsa.demo.server.ui.TestGridEditor">
+        <columns>
+            <column width="STANDARD"/>
+            <column width="STANDARD"/>
+        </columns>
+        <row height="STANDARD">
+            <cell id="textField1">
+                <text-box notEditable="true"/>
+            </cell>
+            <cell id="textField2">
+                <text-box notEditable="true"/>
+            </cell>
+        </row>
+        <row height="REMAINING">
+            <cell id="numberField1">
+                <big-decimal-box precision="3"/>
+            </cell>
+            <cell id="textField3">
+                <text-box />
+            </cell>
+        </row>
+    </grid-container>
+</ui>

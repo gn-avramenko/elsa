@@ -7,7 +7,7 @@ package com.gridnine.elsa.server.core.storage.database.jdbc;
 
 import com.gridnine.elsa.common.core.model.common.ClassMapper;
 import com.gridnine.elsa.common.core.model.common.Xeption;
-import com.gridnine.elsa.common.meta.common.BaseElementWitId;
+import com.gridnine.elsa.common.meta.common.BaseElementWithId;
 import com.gridnine.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.server.core.storage.database.jdbc.adapter.JdbcDialect;
@@ -48,7 +48,7 @@ public class JdbcClassMapperImpl implements ClassMapper {
         });
         metaRegistry.getSearchableProjections().values().forEach(it -> check(template,dialect, it.getId()));
         var transientClasses = customMetaRegistry.getEntities().values().stream()
-                .filter(it -> !it.isAbstract()).map(BaseElementWitId::getId).collect(Collectors.toCollection(HashSet::new));
+                .filter(it -> !it.isAbstract()).map(BaseElementWithId::getId).collect(Collectors.toCollection(HashSet::new));
         transientClasses.addAll(customMetaRegistry.getEntities().keySet());
         var res = transientClasses.stream().sorted().toList();
         for(var n=0; n< res.size(); n++){

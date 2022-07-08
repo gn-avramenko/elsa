@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui-template xmlns="http://gridnine.com/elsa/meta-ui-template">
+    <widget id="text-box-widget" ts-class-name="TextBoxWidget">
+        <properties>
+            <attribute type="BOOLEAN" name="notEditable"/>
+        </properties>
+        <model type="STRING"/>
+        <configuration type="ENTITY" class-name="com.gridnine.elsa.demo.server.ui.template.TextBoxWidgetConfiguration">
+            <property type="BOOLEAN" id="notEditable"/>
+        </configuration>
+        <validation type="STRING"/>
+    </widget>
+    <widget id="big-decimal-box-widget" ts-class-name="BigDecimalBoxWidget">
+        <properties>
+            <attribute type="BOOLEAN" name="notEditable"/>
+            <attribute type="INT" name="precision"/>
+        </properties>
+        <model type="STRING"/>
+        <configuration type="ENTITY"
+                       class-name="com.gridnine.elsa.demo.server.ui.template.BigDecimalBoxWidgetConfiguration">
+            <property type="BOOLEAN" id="notEditable"/>
+        </configuration>
+        <validation type="STRING"/>
+    </widget>
+    <group id="simple-widget">
+        <widget-ref ref="text-box-widget" tag-name="text-box"/>
+        <widget-ref ref="big-decimal-box-widget" tag-name="big-decimal-box"/>
+    </group>
+    <enum id="com.gridnine.elsa.demo.server.ui.template.GridColumnWidth">
+        <enum-item id="STANDARD"/>
+        <enum-item id="REMAINING"/>
+        <enum-item id="CUSTOM"/>
+    </enum>
+    <enum id="com.gridnine.elsa.demo.server.ui.template.GridRowHeight">
+        <enum-item id="STANDARD"/>
+        <enum-item id="REMAINING"/>
+        <enum-item id="CUSTOM"/>
+    </enum>
+    <view-template id="grid-container" ts-class-name="GridContainer">
+        <properties>
+            <attribute name="columns-count" type="INT" default="1"/>
+        </properties>
+        <content>
+            <property tag-name="columns" type="ENTITY"
+                      class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerColumns">
+                <collection element-tag-name="column" element-type="ENTITY"
+                            element-class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerColumn">
+                    <attribute name="width" type="ENUM"
+                               class-name="com.gridnine.elsa.demo.server.ui.template.GridColumnWidth"
+                               default="STANDARD"/>
+                    <attribute name="custom-width" type="STRING"/>
+                </collection>
+            </property>
+            <collection element-tag-name="row" element-type="ENTITY"
+                        element-class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerRow">
+                <attribute name="height" type="ENUM"
+                           class-name="com.gridnine.elsa.demo.server.ui.template.GridRowHeight" default="STANDARD"/>
+                <attribute name="custom-height" type="STRING"/>
+                <collection element-tag-name="cell" element-type="ENTITY"
+                            element-class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerCell">
+                    <group-ref ref="simple-widget"/>
+                    <attribute name="col-span" type="INT" default="1"/>
+                    <attribute name="caption" type="STRING"/>
+                    <attribute name="id" type="STRING" non-nullable="true"/>
+                </collection>
+            </collection>
+        </content>
+    </view-template>
+</ui-template>

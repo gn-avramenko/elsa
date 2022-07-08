@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://gridnine.com/elsa/meta-ui-template"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:common="http://gridnine.com/elsa/meta-common"
+        xmlns:tns="http://gridnine.com/elsa/meta-ui-template">
+    <element name="ui-template">
+        <complexType>
+            <sequence>
+                <choice maxOccurs="unbounded" minOccurs="0">
+                    <element name="enum">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <element name="enum-item" maxOccurs="unbounded"
+                                                 minOccurs="0" type="common:MetaElementType"/>
+                                    </sequence>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                    <element name="widget">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <element name="properties">
+                                            <complexType>
+                                                <sequence>
+                                                    <choice minOccurs="0"
+                                                            maxOccurs="unbounded">
+                                                    <element name="attribute"
+                                                             type="tns:UiAttribute" />
+                                                    </choice>
+                                                </sequence>
+                                            </complexType>
+                                        </element>
+                                        <element name="model">
+                                            <complexType>
+                                                <sequence>
+                                                    <element name="property" type="tns:UiWidgetModelProperty"
+                                                             minOccurs="0" maxOccurs="unbounded"/>
+                                                </sequence>
+                                                <attribute name="type" type="tns:UiWidgetModelProperyType"/>
+                                                <attribute name="class-name" type="string"/>
+                                            </complexType>
+                                        </element>
+                                        <element name="configuration">
+                                            <complexType>
+                                                <sequence>
+                                                    <element name="property" type="tns:UiWidgetConfigurationProperty"
+                                                             minOccurs="0" maxOccurs="unbounded"/>
+                                                </sequence>
+                                                <attribute name="type" type="tns:UiWidgetConfigurationPropertyType"/>
+                                                <attribute name="class-name" type="string"/>
+                                            </complexType>
+                                        </element>
+                                        <element name="validation">
+                                            <complexType>
+                                                <sequence>
+                                                    <element name="property" type="tns:UiWidgetValidationProperty"
+                                                             minOccurs="0" maxOccurs="unbounded"/>
+                                                </sequence>
+                                                <attribute name="type" type="tns:UiWidgetValidationPropertyType"/>
+                                                <attribute name="class-name" type="string"/>
+                                            </complexType>
+                                        </element>
+                                    </sequence>
+                                    <attribute name="ts-class-name" type="string" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                    <element name="group">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <choice maxOccurs="unbounded" minOccurs="0">
+                                            <element name="widget-ref" type="tns:UiRefTag"/>
+                                            <element name="view-ref" type="tns:UiRefTag"/>
+                                        </choice>
+                                    </sequence>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                    <element name="view-template">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <element name="properties">
+                                            <complexType>
+                                                <sequence>
+                                                    <element name="attribute"
+                                                             type="tns:UiAttribute" minOccurs="0"
+                                                             maxOccurs="unbounded"/>
+                                                </sequence>
+                                            </complexType>
+                                        </element>
+                                        <element name="content">
+                                            <complexType>
+                                                <sequence>
+                                                    <element name="property"
+                                                             type="tns:UiViewTemplateProperty" minOccurs="0"
+                                                             maxOccurs="unbounded"/>
+                                                    <element name="collection"
+                                                             type="tns:UiViewTemplateCollection" minOccurs="0"
+                                                             maxOccurs="unbounded"/>
+                                                </sequence>
+                                            </complexType>
+                                        </element>
+                                    </sequence>
+                                    <attribute name="ts-class-name" type="string" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                </choice>
+            </sequence>
+        </complexType>
+    </element>
+    <simpleType name="UiWidgetConfigurationPropertyType">
+        <restriction base="string">
+            <enumeration value="ENTITY"/>
+            <enumeration value="BOOLEAN"/>
+            <enumeration value="INT"/>
+            <enumeration value="STRING"/>
+        </restriction>
+    </simpleType>
+    <complexType name="UiWidgetConfigurationProperty">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="type" type="tns:UiWidgetConfigurationPropertyType" use="required"/>
+                <attribute name="class-name" type="string"/>
+                <attribute name="non-nullable" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <simpleType name="UiWidgetValidationPropertyType">
+        <restriction base="string">
+            <enumeration value="STRING"/>
+            <enumeration value="ENTITY"/>
+        </restriction>
+    </simpleType>
+    <complexType name="UiWidgetValidationProperty">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="type" type="tns:UiWidgetValidationPropertyType" use="required"/>
+                <attribute name="class-name" type="string"/>
+                <attribute name="non-nullable" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <simpleType name="UiWidgetPropertiesPropertyType">
+        <restriction base="string">
+            <enumeration value="ENUM"/>
+            <enumeration value="BOOLEAN"/>
+            <enumeration value="INT"/>
+            <enumeration value="STRING"/>
+        </restriction>
+    </simpleType>
+    <complexType name="UiWidgetPropertiesProperty">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="type" type="tns:UiWidgetPropertiesPropertyType" use="required"/>
+                <attribute name="non-nullable" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <simpleType name="UiWidgetModelProperyType">
+        <restriction base="string">
+            <enumeration value="STRING"/>
+            <enumeration value="LOCAL_DATE"/>
+            <enumeration value="LOCAL_DATE_TIME"/>
+            <enumeration value="ENUM"/>
+            <enumeration value="BOOLEAN"/>
+            <enumeration value="BYTE_ARRAY"/>
+            <enumeration value="ENTITY"/>
+            <enumeration value="ENTITY_REFERENCE"/>
+            <enumeration value="LONG"/>
+            <enumeration value="INT"/>
+            <enumeration value="BIG_DECIMAL"/>
+        </restriction>
+    </simpleType>
+    <complexType name="UiWidgetModelProperty">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="type" type="tns:UiWidgetModelProperyType" use="required"/>
+                <attribute name="class-name" type="string"/>
+                <attribute name="non-nullable" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="UiRefTag">
+        <attribute name="ref" type="string" use="required"/>
+        <attribute name="tag-name" type="string" use="required"/>
+    </complexType>
+    <simpleType name="UiViewTemplatePropertyType">
+        <restriction base="string">
+            <enumeration value="ENUM"/>
+            <enumeration value="BOOLEAN"/>
+            <enumeration value="INT"/>
+            <enumeration value="STRING"/>
+            <enumeration value="ENTITY"/>
+        </restriction>
+    </simpleType>
+    <complexType name="UiViewTemplateProperty">
+        <sequence minOccurs="0" maxOccurs="unbounded">
+            <choice minOccurs="0" maxOccurs="unbounded">
+                <element name="attribute" type="tns:UiAttribute"/>
+                <element name="property" type="tns:UiViewTemplateProperty"/>
+                <element name="collection" type="tns:UiViewTemplateCollection"/>
+                <element name="group-ref" type="tns:UiRef"/>
+            </choice>
+        </sequence>
+        <attribute name="tag-name" type="string" use="required"/>
+        <attribute name="type" type="tns:UiViewTemplatePropertyType" use="required"/>
+        <attribute name="non-nullable" type="boolean"/>
+        <attribute name="class-name" type="string"/>
+    </complexType>
+    <simpleType name="UiAttributeType">
+        <restriction base="string">
+            <enumeration value="ENUM"/>
+            <enumeration value="BOOLEAN"/>
+            <enumeration value="INT"/>
+            <enumeration value="STRING"/>
+        </restriction>
+    </simpleType>
+    <complexType name="UiAttribute">
+        <attribute name="name" type="string" use="required"/>
+        <attribute name="type" type="tns:UiAttributeType" use="required"/>
+        <attribute name="non-nullable" type="boolean"/>
+        <attribute name="class-name" type="string"/>
+        <attribute name="default" type="string"/>
+    </complexType>
+
+    <complexType name="UiViewTemplateCollection">
+        <sequence minOccurs="0" maxOccurs="unbounded">
+            <choice minOccurs="0" maxOccurs="unbounded">
+                <element name="attribute" type="tns:UiAttribute"/>
+                <element name="property" type="tns:UiViewTemplateProperty"/>
+                <element name="collection" type="tns:UiViewTemplateCollection"/>
+                <element name="group-ref" type="tns:UiRef"/>
+            </choice>
+        </sequence>
+        <attribute name="element-tag-name" type="string" use="required"/>
+        <attribute name="element-type" type="tns:UiViewTemplatePropertyType" use="required"/>
+        <attribute name="wrapper-tag-name" type="string"/>
+        <attribute name="element-class-name" type="string"/>
+    </complexType>
+    <complexType name="Ui">
+        <attribute name="tag-name" type="string" use="required"/>
+        <attribute name="type" type="tns:UiViewTemplatePropertyType" use="required"/>
+        <attribute name="wrapper-tag-name" type="string"/>
+        <attribute name="non-nullable" type="boolean"/>
+        <attribute name="class-name" type="string"/>
+    </complexType>
+    <complexType name="UiRef">
+        <attribute name="ref" type="string" use="required"/>
+    </complexType>
+</schema>

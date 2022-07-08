@@ -5,13 +5,13 @@
 
 package com.gridnine.elsa.common.meta.common;
 
-public abstract class BaseElementWitId {
+public abstract class BaseElementWithId {
     private String id;
 
-    public BaseElementWitId() {
+    public BaseElementWithId() {
     }
 
-    public BaseElementWitId(String id) {
+    public BaseElementWithId(String id) {
         this.id = id;
     }
 
