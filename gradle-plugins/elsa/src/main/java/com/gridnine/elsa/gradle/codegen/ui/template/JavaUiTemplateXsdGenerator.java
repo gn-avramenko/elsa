@@ -55,7 +55,7 @@ public class JavaUiTemplateXsdGenerator {
                     , new attribute("minOccurs", "0")
                     , new attribute("type", "common:EnumItemType"));
         }
-        for (EnumDescription enumDescr : registry.getTemplateEnums().values()) {
+        for (EnumDescription enumDescr : registry.getEnums().values()) {
             var enumElm = addElement("simpleType", document.getDocumentElement(), new attribute("name", JavaCodeGeneratorUtils.getSimpleName(enumDescr.getId())));
             var restrElm = addElement("restriction", enumElm, new attribute("base", "string"));
             enumDescr.getItems().values().forEach(ei -> {
@@ -71,11 +71,8 @@ public class JavaUiTemplateXsdGenerator {
         for (UiTemplateGroupDescription groupDescr : registry.getGroups().values()) {
             var groupElm = addElement("group", document.getDocumentElement(), new attribute("name", groupDescr.getId()));
             var choiceElm = addElement("choice", groupElm);
-            for (UiRefTagDescription viewRef : groupDescr.getViews()) {
-                addElement("element", choiceElm, new attribute("name", viewRef.getTagName()), new attribute("type", "tns:%s".formatted(viewRef.getRef())));
-            }
-            for (UiRefTagDescription widgetRef : groupDescr.getWidgets()) {
-                addElement("element", choiceElm, new attribute("name", widgetRef.getTagName()), new attribute("type", "tns:%s".formatted(widgetRef.getRef())));
+            for (String viewRef : groupDescr.getElements()) {
+                addElement("element", choiceElm, new attribute("name", viewRef), new attribute("type", "tns:%s".formatted(viewRef)));
             }
         }
         for (UiViewTemplateDescription viewTemplateDescr : registry.getViewTemplates().values()) {
@@ -126,7 +123,7 @@ public class JavaUiTemplateXsdGenerator {
             for (UiViewTemplateCollectionDescription collectionDescr2 : collectionDescr.getCollections().values()) {
                 addCollection(seqElm2, collectionDescr2);
             }
-            for (UiRefDescription groupDescr : collectionDescr.getGroups()) {
+            for (UiGroupDescription groupDescr : collectionDescr.getGroups()) {
                 addGroup(seqElm2, groupDescr);
             }
             for (UiAttributeDescription attrDescr : collectionDescr.getAttributes().values()) {
@@ -154,7 +151,7 @@ public class JavaUiTemplateXsdGenerator {
             for (UiViewTemplateCollectionDescription collectionDescr2 : propertyDescr.getCollections().values()) {
                 addCollection(seqElm2, collectionDescr2);
             }
-            for (UiRefDescription groupDescr : propertyDescr.getGroups()) {
+            for (UiGroupDescription groupDescr : propertyDescr.getGroups()) {
                 addGroup(seqElm2, groupDescr);
             }
             for (UiAttributeDescription attrDescr : propertyDescr.getAttributes().values()) {
@@ -163,8 +160,13 @@ public class JavaUiTemplateXsdGenerator {
         }
     }
 
-    private static void addGroup(Element seqElm2, UiRefDescription groupDescr) {
-        addElement("group", seqElm2, new attribute("ref", "tns:%s".formatted(groupDescr.getRef())));
+    private static void addGroup(Element seqElm2, UiGroupDescription groupDescr) {
+        var attributes = new ArrayList<attribute>();
+        attributes.add(new attribute("ref", "tns:%s".formatted(groupDescr.getRef())));
+        if(!groupDescr.isNonNullable()){
+            attributes.add(new attribute("minOccurs", "0"));
+        }
+        addElement("group", seqElm2, attributes.toArray(new attribute[0]));
     }
 
     private static String getType(UiViewTemplatePropertyType type, String className) {

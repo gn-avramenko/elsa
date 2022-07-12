@@ -5,11 +5,11 @@
 
 package com.gridnine.elsa.gradle.parser.domain;
 
+import com.gridnine.elsa.common.meta.common.XmlNode;
 import com.gridnine.elsa.common.meta.domain.*;
 import com.gridnine.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.elsa.gradle.parser.common.MetaDataParsingResult;
 import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
-import com.gridnine.elsa.gradle.utils.BuildXmlNode;
 
 import java.io.File;
 import java.util.List;
@@ -21,7 +21,7 @@ public class DomainMetaRegistryParser {
     public void updateMetaRegistry(DomainMetaRegistry registry, List<File> sources) {
         sources.forEach(it -> BuildExceptionUtils.wrapException(() -> {
             MetaDataParsingResult pr = CommonParserUtils.parse(it);
-            BuildXmlNode node = pr.node();
+            XmlNode node = pr.node();
             node.getChildren("enum").forEach(child ->
                     CommonParserUtils.updateEnum(registry.getEnums(), child, pr.localizations()));
             node.getChildren("entity").forEach(child ->
@@ -60,7 +60,7 @@ public class DomainMetaRegistryParser {
         }));
     }
 
-    private <T extends BaseSearchableDescription> void fillSearchable(BuildXmlNode elm, T description, Map<String, Map<Locale, String>> localizations) {
+    private <T extends BaseSearchableDescription> void fillSearchable(XmlNode elm, T description, Map<String, Map<Locale, String>> localizations) {
         CommonParserUtils.updateLocalizationsOfChild(description, localizations, null);
         CommonParserUtils.updateParameters(elm, description);
         elm.getChildren("property").forEach(child -> {

@@ -11,19 +11,62 @@
         </columns>
         <row height="STANDARD">
             <cell id="textField1">
-                <text-box notEditable="true"/>
+                <text-box-widget  notEditable="true"/>
             </cell>
             <cell id="textField2">
-                <text-box notEditable="true"/>
+                <text-box-widget  notEditable="true"/>
             </cell>
         </row>
         <row height="REMAINING">
             <cell id="numberField1">
-                <big-decimal-box precision="3"/>
+                <big-decimal-box-widget precision="3"/>
             </cell>
             <cell id="textField3">
-                <text-box />
+                <text-box-widget  />
             </cell>
         </row>
     </grid-container>
+
+    <table id="com.gridnine.elsa.demo.server.ui.TestTable">
+        <column id = "enumColumn" caption="table.enumColumn" pref-width="100">
+            <text-box-widget/>
+        </column>
+        <column id = "entityRefColumn" caption="table.entityRefColumn" pref-width="200">
+            <big-decimal-box-widget/>
+        </column>
+    </table>
+    <tile-space id="com.gridnine.elsa.demo.server.ui.TestComplexDocumentTileSpace">
+        <overview caption="complexDocument.overview" >
+            <grid-container id="com.gridnine.elsa.demo.server.ui.TestComplexDocumentOverviewEditor" columns-count="1">
+                <row>
+                    <cell caption="complexDocument.stringProperty" id="stringProperty">
+                        <text-box-widget/>
+                    </cell>
+                </row>
+            </grid-container>
+        </overview>
+        <tile caption="complexDocument.simpleFields" id="simpleFields" container-ref="com.gridnine.elsa.demo.server.ui.TestGridEditor"/>
+        <tile caption="complexDocument.nestedDocuments" id="nestedDocuments">
+            <navigator id="com.gridnine.elsa.demo.server.ui.TestNavigatorEditor">
+                <variant>
+                    <grid-container id="com.gridnine.elsa.demo.server.ui.TestNavigatorEditorVariant1Editor">
+                        <row>
+                            <cell caption="variant1.intValue" id="intValue">
+                                <big-decimal-box-widget/>
+                            </cell>
+                        </row>
+                    </grid-container>
+                </variant>
+                <variant>
+                    <grid-container id="com.gridnine.elsa.demo.server.ui.TestNavigatorEditorVariant2Editor">
+                        <row>
+                            <cell caption="variant2.dateValue" id="dateValue">
+                                <text-box-widget/>
+                            </cell>
+                        </row>
+                    </grid-container>
+                </variant>
+            </navigator>
+        </tile>
+    </tile-space>
 </ui>

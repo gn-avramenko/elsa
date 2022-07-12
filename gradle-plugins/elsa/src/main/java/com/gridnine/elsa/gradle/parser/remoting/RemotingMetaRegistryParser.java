@@ -5,11 +5,11 @@
 
 package com.gridnine.elsa.gradle.parser.remoting;
 
+import com.gridnine.elsa.common.meta.common.XmlNode;
 import com.gridnine.elsa.common.meta.remoting.*;
 import com.gridnine.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.elsa.gradle.parser.common.MetaDataParsingResult;
 import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
-import com.gridnine.elsa.gradle.utils.BuildXmlNode;
 
 import java.io.File;
 import java.util.List;
@@ -19,7 +19,7 @@ public class RemotingMetaRegistryParser {
     public void updateMetaRegistry(RemotingMetaRegistry registry, List<File> sources) {
         sources.forEach(it -> BuildExceptionUtils.wrapException(() -> {
             MetaDataParsingResult pr = CommonParserUtils.parse(it);
-            BuildXmlNode node = pr.node();
+            XmlNode node = pr.node();
 
             node.getChildren("enum").forEach(child ->
                     CommonParserUtils.updateEnum(registry.getEnums(), child, pr.localizations()));
@@ -58,7 +58,7 @@ public class RemotingMetaRegistryParser {
         }));
     }
 
-    private String parseEntity(RemotingMetaRegistry registry, BuildXmlNode elm) {
+    private String parseEntity(RemotingMetaRegistry registry, XmlNode elm) {
         var ett = CommonParserUtils.updateEntity(registry.getEntities(), elm);
         return ett.getId();
     }

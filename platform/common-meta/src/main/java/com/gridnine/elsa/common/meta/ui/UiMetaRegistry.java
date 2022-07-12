@@ -5,6 +5,7 @@
 
 package com.gridnine.elsa.common.meta.ui;
 
+import com.gridnine.elsa.common.meta.common.EntityDescription;
 import com.gridnine.elsa.common.meta.common.EnumDescription;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,7 +15,9 @@ import java.util.Map;
 
 
 public class UiMetaRegistry {
-    private final Map<String, EnumDescription> templateEnums = new LinkedHashMap<>();
+    private final Map<String, EnumDescription> enums = new LinkedHashMap<>();
+
+    private final Map<String, EntityDescription> entities = new LinkedHashMap<>();
 
     private final Map<String, UiWidgetDescription> widgets = new LinkedHashMap<>();
 
@@ -22,13 +25,16 @@ public class UiMetaRegistry {
 
     private final Map<String, UiTemplateGroupDescription> groups = new LinkedHashMap<>();
 
+    private final Map<String, UiViewDescription> views = new LinkedHashMap<>();
+
+
     @Autowired(required = false)
     public void setConfigurators(List<UiMetaRegistryConfigurator> configurators){
         configurators.forEach(it -> it.updateMetaRegistry(this));
     }
 
-    public Map<String, EnumDescription> getTemplateEnums() {
-        return templateEnums;
+    public Map<String, EnumDescription> getEnums() {
+        return enums;
     }
 
     public Map<String, UiWidgetDescription> getWidgets() {
@@ -41,5 +47,13 @@ public class UiMetaRegistry {
 
     public Map<String, UiTemplateGroupDescription> getGroups() {
         return groups;
+    }
+
+    public Map<String, EntityDescription> getEntities() {
+        return entities;
+    }
+
+    public Map<String, UiViewDescription> getViews() {
+        return views;
     }
 }

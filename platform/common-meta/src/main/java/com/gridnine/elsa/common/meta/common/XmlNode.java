@@ -3,19 +3,19 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.elsa.gradle.utils;
+package com.gridnine.elsa.common.meta.common;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BuildXmlNode
+public class XmlNode
 {
     private  String name;
 
     private String value;
-    private final List<BuildXmlNode> children = new ArrayList<>();
+    private final List<XmlNode> children = new ArrayList<>();
     private final Map<String,String> attributes = new LinkedHashMap<>();
 
     public String getName() {
@@ -26,7 +26,7 @@ public class BuildXmlNode
         this.name = name;
     }
 
-    public List<BuildXmlNode> getChildren() {
+    public List<XmlNode> getChildren() {
         return children;
     }
 
@@ -34,11 +34,11 @@ public class BuildXmlNode
         return attributes;
     }
 
-    public List<BuildXmlNode> getChildren(String name) {
+    public List<XmlNode> getChildren(String name) {
         return children.stream().filter(it -> it.name.equals(name)).toList();
     }
 
-    public BuildXmlNode getFirstChild(String name) {
+    public XmlNode getFirstChild(String name) {
         return children.stream().filter(it -> it.name.equals(name)).findFirst().orElse(null);
     }
 

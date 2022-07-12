@@ -15,7 +15,7 @@
             <attribute type="BOOLEAN" name="notEditable"/>
             <attribute type="INT" name="precision"/>
         </properties>
-        <model type="STRING"/>
+        <model type="BIG_DECIMAL"/>
         <configuration type="ENTITY"
                        class-name="com.gridnine.elsa.demo.server.ui.template.BigDecimalBoxWidgetConfiguration">
             <property type="BOOLEAN" id="notEditable"/>
@@ -23,8 +23,14 @@
         <validation type="STRING"/>
     </widget>
     <group id="simple-widget">
-        <widget-ref ref="text-box-widget" tag-name="text-box"/>
-        <widget-ref ref="big-decimal-box-widget" tag-name="big-decimal-box"/>
+        <element-ref ref="text-box-widget"/>
+        <element-ref ref="big-decimal-box-widget"/>
+        <element-ref ref="table"/>
+    </group>
+    <group id="container">
+        <element-ref ref="grid-container"/>
+        <element-ref ref="navigator"/>
+        <element-ref ref="tile-space"/>
     </group>
     <enum id="com.gridnine.elsa.demo.server.ui.template.GridColumnWidth">
         <enum-item id="STANDARD"/>
@@ -41,28 +47,61 @@
             <attribute name="columns-count" type="INT" default="1"/>
         </properties>
         <content>
-            <property tag-name="columns" type="ENTITY"
-                      class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerColumns">
-                <collection element-tag-name="column" element-type="ENTITY"
-                            element-class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerColumn">
+            <property tag-name="columns" type="ENTITY">
+                <collection element-tag-name="column" element-type="ENTITY">
                     <attribute name="width" type="ENUM"
                                class-name="com.gridnine.elsa.demo.server.ui.template.GridColumnWidth"
                                default="STANDARD"/>
                     <attribute name="custom-width" type="STRING"/>
                 </collection>
             </property>
-            <collection element-tag-name="row" element-type="ENTITY"
-                        element-class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerRow">
+            <collection element-tag-name="row" element-type="ENTITY">
                 <attribute name="height" type="ENUM"
                            class-name="com.gridnine.elsa.demo.server.ui.template.GridRowHeight" default="STANDARD"/>
                 <attribute name="custom-height" type="STRING"/>
-                <collection element-tag-name="cell" element-type="ENTITY"
-                            element-class-name="com.gridnine.elsa.demo.server.ui.template.GridContainerCell">
+                <collection element-tag-name="cell" element-type="ENTITY">
                     <group-ref ref="simple-widget"/>
                     <attribute name="col-span" type="INT" default="1"/>
                     <attribute name="caption" type="STRING"/>
                     <attribute name="id" type="STRING" non-nullable="true"/>
+                    <attribute name="container-ref" type="STRING"/>
                 </collection>
+            </collection>
+        </content>
+    </view-template>
+    <view-template id="navigator" ts-class-name="Navigator">
+        <content>
+            <collection element-tag-name="variant" element-type="ENTITY">
+                <attribute name="container-ref" type="STRING"/>
+                <group-ref ref="container"/>
+            </collection>
+        </content>
+    </view-template>
+    <view-template id="table" ts-class-name="TableEditor">
+        <properties>
+            <attribute name="notEditable" type="BOOLEAN"/>
+        </properties>
+        <content>
+            <collection element-tag-name="column" element-type="ENTITY">
+                <attribute name="caption" type="STRING" non-nullable="true"/>
+                <attribute name="pref-width" type="STRING"/>
+                <attribute name="id" type="STRING" non-nullable="true"/>
+                <group-ref ref="simple-widget"/>
+            </collection>
+        </content>
+    </view-template>
+    <view-template id="tile-space" ts-class-name="TileSpace">
+        <content>
+            <property tag-name="overview" type="ENTITY">
+                <attribute name="caption" type="STRING"/>
+                <attribute name="container-ref" type="STRING"/>
+                <group-ref ref="container"/>
+            </property>
+            <collection element-tag-name="tile" element-type="ENTITY">
+                <attribute name="id" type="STRING" non-nullable="true"/>
+                <attribute name="caption" type="STRING" non-nullable="true"/>
+                <attribute name="container-ref" type="STRING"/>
+                <group-ref ref="container"/>
             </collection>
         </content>
     </view-template>

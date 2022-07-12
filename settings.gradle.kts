@@ -5,6 +5,7 @@ include("platform:server-postgres")
 include("platform:web-core")
 include("gradle-plugins:internal")
 include("gradle-plugins:elsa")
+include("demo:gradle")
 include("demo:server")
 include("demo:site")
 rootProject.name ="elsa"

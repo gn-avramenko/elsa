@@ -7,8 +7,7 @@ package com.gridnine.elsa.gradle.parser.common;
 
 import com.gridnine.elsa.common.meta.common.*;
 import com.gridnine.elsa.gradle.utils.BuildTextUtils;
-import com.gridnine.elsa.gradle.utils.BuildXmlNode;
-import com.gridnine.elsa.gradle.utils.BuildXmlUtils;
+import com.gridnine.elsa.common.meta.common.XmlUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,7 +22,7 @@ public final class CommonParserUtils {
 
     private static final Pattern languagePattern = Pattern.compile(".*_([a-z]+)\\.properties");
 
-    public static String getIdAttribute(BuildXmlNode node){
+    public static String getIdAttribute(XmlNode node){
         var id = node.getAttribute("id");
         if(BuildTextUtils.isBlank(id)){
             throw new IllegalArgumentException("id attribute of element %s".formatted(node.getName()));
@@ -33,7 +32,7 @@ public final class CommonParserUtils {
 
     public static MetaDataParsingResult parse(File file) throws Exception {
         var content = Files.readAllBytes(file.toPath());
-        var node = BuildXmlUtils.parseXml(content);
+        var node = XmlUtils.parseXml(content);
         var baseName = file.getName().substring(0, file.getName().lastIndexOf("."));
         var dir = new File(file.getParentFile(), "l10n");
         var localizations = new LinkedHashMap<String, Map<Locale,String>>();
@@ -77,13 +76,13 @@ public final class CommonParserUtils {
         updateLocalizations(description.getDisplayNames(), localizations, id);
     }
 
-    private static void updateTsId(BaseModelElementDescription md, BuildXmlNode node, String attName){
+    private static void updateTsId(BaseModelElementDescription md, XmlNode node, String attName){
         var tsClassName = node.getAttribute(attName);
         if(tsClassName != null){
             md.getParameters().put(attName, tsClassName);
         }
     }
-    public static void fillEntityDescription(BuildXmlNode elm, EntityDescription description) {
+    public static void fillEntityDescription(XmlNode elm, EntityDescription description) {
         description.setAbstract("true".equals(elm.getAttribute("abstract")));
         description.setExtendsId(elm.getAttribute("extends"));
         elm.getChildren("property").forEach(prop ->{
@@ -113,13 +112,13 @@ public final class CommonParserUtils {
 
     }
 
-    public static EntityDescription updateEntity(Map<String, EntityDescription> entities, BuildXmlNode node){
+    public static EntityDescription updateEntity(Map<String, EntityDescription> entities, XmlNode node){
         var entityDescr = entities.computeIfAbsent(getIdAttribute(node), EntityDescription::new);
         fillEntityDescription(node, entityDescr);
         return entityDescr;
     }
 
-    public static void updateEnum(Map<String, EnumDescription> enums, BuildXmlNode node, Map<String, Map<Locale, String>> localizations){
+    public static void updateEnum(Map<String, EnumDescription> enums, XmlNode node, Map<String, Map<Locale, String>> localizations){
         var ed = enums.computeIfAbsent(getIdAttribute(node), EnumDescription::new);
         node.getChildren("enum-item").forEach(item ->{
             var id = getIdAttribute(item);
@@ -130,7 +129,7 @@ public final class CommonParserUtils {
         });
     }
 
-    public static void updateParameters(BuildXmlNode node, BaseModelElementDescription elm){
+    public static void updateParameters(XmlNode node, BaseModelElementDescription elm){
         node.getChildren("parameter").forEach(child -> elm.getParameters().put(child.getAttribute("name"), child.getAttribute("value")));
     }
 

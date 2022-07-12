@@ -5,11 +5,14 @@
 
 package com.gridnine.elsa.gradle.parser.ui.template;
 
+import com.gridnine.elsa.common.meta.common.EntityDescription;
+import com.gridnine.elsa.common.meta.common.StandardPropertyDescription;
+import com.gridnine.elsa.common.meta.common.StandardValueType;
+import com.gridnine.elsa.common.meta.common.XmlNode;
 import com.gridnine.elsa.common.meta.ui.*;
 import com.gridnine.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.elsa.gradle.parser.common.MetaDataParsingResult;
 import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
-import com.gridnine.elsa.gradle.utils.BuildXmlNode;
 
 import java.io.File;
 import java.util.List;
@@ -20,9 +23,9 @@ public class UiTemplateMetaRegistryParser {
     public void updateMetaRegistry(UiMetaRegistry registry, List<File> sources) {
         sources.forEach(it -> BuildExceptionUtils.wrapException(() -> {
             MetaDataParsingResult pr = CommonParserUtils.parse(it);
-            BuildXmlNode node = pr.node();
+            XmlNode node = pr.node();
             node.getChildren("enum").forEach(child ->
-                    CommonParserUtils.updateEnum(registry.getTemplateEnums(), child, pr.localizations()));
+                    CommonParserUtils.updateEnum(registry.getEnums(), child, pr.localizations()));
             node.getChildren("widget").forEach(widgetElm -> {
                 var widgetDescr = registry.getWidgets().computeIfAbsent(CommonParserUtils.getIdAttribute(widgetElm), UiWidgetDescription::new);
                 widgetDescr.setTsClassName(widgetElm.getAttribute("ts-class-name"));
@@ -41,6 +44,19 @@ public class UiTemplateMetaRegistryParser {
                         prop.setType(UiWidgetModelPropertyType.valueOf(propElm.getAttribute("type")));
                         prop.setNonNullable("true".equals(propElm.getAttribute("non-nullable")));
                     });
+                    if(model.getType() == UiWidgetModelPropertyType.ENTITY){
+                            var ed = new EntityDescription();
+                            ed.setId(model.getClassName());
+                            for(UiWidgetModelPropertyDescription propDescr: model.getProperties().values()){
+                                var prop = new StandardPropertyDescription();
+                                prop.setId(propDescr.getId());
+                                prop.setType(toStandardType(propDescr.getType()));
+                                prop.setClassName(propDescr.getClassName());
+                                prop.setNonNullable(propDescr.isNonNullable());
+                                ed.getProperties().put(prop.getId(), prop);
+                            }
+                            registry.getEntities().put(ed.getId(), ed);
+                    }
                 }
                 {
                     var configElm = widgetElm.getFirstChild("configuration");
@@ -53,6 +69,19 @@ public class UiTemplateMetaRegistryParser {
                         prop.setType(UiWidgetConfigurationPropertyType.valueOf(propElm.getAttribute("type")));
                         prop.setNonNullable("true".equals(propElm.getAttribute("non-nullable")));
                     });
+                    if(config.getType() == UiWidgetConfigurationPropertyType.ENTITY){
+                        var ed = new EntityDescription();
+                        ed.setId(config.getClassName());
+                        for(UiWidgetConfigurationPropertyDescription propDescr: config.getProperties().values()){
+                            var prop = new StandardPropertyDescription();
+                            prop.setId(propDescr.getId());
+                            prop.setType(toStandardType(propDescr.getType()));
+                            prop.setClassName(propDescr.getClassName());
+                            prop.setNonNullable(propDescr.isNonNullable());
+                            ed.getProperties().put(prop.getId(), prop);
+                        }
+                        registry.getEntities().put(ed.getId(), ed);
+                    }
                 }
                 {
                     var validationElm = widgetElm.getFirstChild("validation");
@@ -88,17 +117,14 @@ public class UiTemplateMetaRegistryParser {
             });
             node.getChildren("group").forEach(groupElm -> {
                 var groupDescr = registry.getGroups().computeIfAbsent(CommonParserUtils.getIdAttribute(groupElm), UiTemplateGroupDescription::new);
-                groupElm.getChildren("widget-ref").forEach(wElm ->{
-                    groupDescr.getWidgets().add(new UiRefTagDescription(wElm.getAttribute("tag-name"), wElm.getAttribute("ref")));
-                });
-                groupElm.getChildren("view-ref").forEach(wElm ->{
-                    groupDescr.getViews().add(new UiRefTagDescription(wElm.getAttribute("tag-name"), wElm.getAttribute("ref")));
+                groupElm.getChildren("element-ref").forEach(wElm ->{
+                    groupDescr.getElements().add(wElm.getAttribute("ref"));
                 });
             });
         }));
     }
 
-    private void updateCollection(UiViewTemplateCollectionDescription coll, BuildXmlNode collElm) {
+    private void updateCollection(UiViewTemplateCollectionDescription coll, XmlNode collElm) {
         coll.setElementClassName(collElm.getAttribute("element-class-name"));
         coll.setElementType(UiViewTemplatePropertyType.valueOf(collElm.getAttribute("element-type")));
         coll.setWrapperTagName(collElm.getAttribute("wrapper-tag-name"));
@@ -114,11 +140,11 @@ public class UiTemplateMetaRegistryParser {
             updateCollection(coll2, collElm2);
         });
         collElm.getChildren("group-ref").forEach(grouElm ->{
-            coll.getGroups().add(new UiRefDescription(grouElm.getAttribute("ref")));
+            coll.getGroups().add(new UiGroupDescription(grouElm.getAttribute("ref")));
         });
     }
 
-    private void updateProperty(UiViewTemplatePropertyDescription prop, BuildXmlNode propElm) {
+    private void updateProperty(UiViewTemplatePropertyDescription prop, XmlNode propElm) {
         prop.setClassName(propElm.getAttribute("class-name"));
         prop.setNonNullable("true".equals(propElm.getAttribute("non-nullable")));
         prop.setType(UiViewTemplatePropertyType.valueOf(propElm.getAttribute("type")));
@@ -134,11 +160,11 @@ public class UiTemplateMetaRegistryParser {
             updateCollection(coll2, collElm2);
         });
         propElm.getChildren("group-ref").forEach(grouElm ->{
-            prop.getGroups().add(new UiRefDescription(grouElm.getAttribute("ref")));
+            prop.getGroups().add(new UiGroupDescription(grouElm.getAttribute("ref")));
         });
     }
 
-    private void updateAttributes(Map<String, UiAttributeDescription> attributes, BuildXmlNode propsElm) {
+    private void updateAttributes(Map<String, UiAttributeDescription> attributes, XmlNode propsElm) {
         propsElm.getChildren("attribute").forEach(attrElm -> {
             var name = attrElm.getAttribute("name");
             var attr = attributes.computeIfAbsent(name, UiAttributeDescription::new);
@@ -149,5 +175,35 @@ public class UiTemplateMetaRegistryParser {
         });
     }
 
+    public static StandardValueType toStandardType(UiWidgetConfigurationPropertyType type) {
+        return switch (type){
+            case STRING -> StandardValueType.STRING;
+            case BOOLEAN -> StandardValueType.BOOLEAN;
+            case ENTITY -> StandardValueType.ENTITY;
+            case INT -> StandardValueType.INT;
+        };
+    }
 
+    public static StandardValueType toStandardType(UiWidgetValidationPropertyType type) {
+        return switch (type){
+            case STRING -> StandardValueType.STRING;
+            case ENTITY -> StandardValueType.ENTITY;
+        };
+    }
+
+    public static StandardValueType toStandardType(UiWidgetModelPropertyType type) {
+        return switch (type){
+            case STRING -> StandardValueType.STRING;
+            case LOCAL_DATE -> StandardValueType.LOCAL_DATE;
+            case LOCAL_DATE_TIME -> StandardValueType.LOCAL_DATE_TIME;
+            case ENUM -> StandardValueType.ENUM;
+            case BOOLEAN -> StandardValueType.BOOLEAN;
+            case BYTE_ARRAY -> StandardValueType.BYTE_ARRAY;
+            case ENTITY -> StandardValueType.ENTITY;
+            case ENTITY_REFERENCE -> StandardValueType.ENTITY_REFERENCE;
+            case LONG -> StandardValueType.LONG;
+            case INT -> StandardValueType.INT;
+            case BIG_DECIMAL -> StandardValueType.BIG_DECIMAL;
+        };
+    }
 }

@@ -1,11 +1,16 @@
-plugins{
+plugins {
     java
-    id( "org.springframework.boot") version "2.6.0"
+    id("org.springframework.boot") version "2.6.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 buildscript {
-    dependencies{
-        classpath(files(File(projectDir.parentFile.parentFile, "gradle/elsa-gradle.jar")))
+    dependencies {
+        classpath(
+            files(
+                File(projectDir.parentFile.parentFile, "gradle/elsa-gradle.jar"),
+                File(projectDir.parentFile, "gradle/dist/elsa-gradle-demo.jar")
+            )
+        )
     }
 }
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
@@ -13,22 +18,28 @@ apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 repositories {
     mavenCentral()
 }
-configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension>{
+configure<com.gridnine.elsa.gradle.plugin.ElsaJavaExtension> {
     codegen {
         domain(
             "src/main/java-gen",
-            "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator", arrayListOf("code-gen/demo-elsa-domain.xml"))
-        remoting("src/main/java-gen", "com.gridnine.elsa.demo.DemoElsaRemotingMetaRegistryConfigurator",
-            arrayListOf("code-gen/demo-elsa-remoting.xml") )
-        uiTemplate("src/main/java-gen", "elsa-demo-ui.xsd", "http://gridnine.com/elsa/demo-ui-template",
-        arrayListOf("code-gen/demo-elsa-ui-template.xml"))
+            "com.gridnine.elsa.demo.DemoElsaDomainMetaRegistryConfigurator",
+            arrayListOf("code-gen/demo-elsa-domain.xml")
+        )
+        remoting(
+            "src/main/java-gen", "com.gridnine.elsa.demo.DemoElsaRemotingMetaRegistryConfigurator",
+            arrayListOf("code-gen/demo-elsa-remoting.xml")
+        )
+        uiTemplate(
+            "src/main/java-gen", "elsa-demo-ui.xsd", "http://gridnine.com/elsa/demo-ui-template",
+            arrayListOf("code-gen/demo-elsa-ui-template.xml")
+        )
+        ui("src/main/java-gen", arrayListOf("code-gen/demo-elsa-ui.xml","code-gen/demo-elsa-ui2.xml"))
     }
 }
 
+apply<com.gridnine.elsa.demo.gradle.ElsaDemoJavaPlugin>()
 
-
-
-dependencies{
+dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework:spring-websocket")
     implementation("org.springframework:spring-messaging")
@@ -45,8 +56,8 @@ dependencies{
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-sourceSets.main{
-    java.srcDirs("src/main/java","src/main/java-gen")
+sourceSets.main {
+    java.srcDirs("src/main/java", "src/main/java-gen")
 }
 
 //plugins {
@@ -86,3 +97,4 @@ sourceSets.main{
 //}
 //
 //
+

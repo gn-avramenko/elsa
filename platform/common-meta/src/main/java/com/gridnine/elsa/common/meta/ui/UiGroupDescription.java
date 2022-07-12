@@ -5,11 +5,13 @@
 
 package com.gridnine.elsa.common.meta.ui;
 
-public class UiRefDescription {
-    public UiRefDescription() {
+public class UiGroupDescription {
+    public UiGroupDescription() {
     }
 
-    public UiRefDescription(String ref) {
+    private boolean nonNullable;
+
+    public UiGroupDescription(String ref) {
         this.ref = ref;
     }
 
@@ -21,5 +23,13 @@ public class UiRefDescription {
 
     public void setRef(String ref) {
         this.ref = ref;
+    }
+
+    public boolean isNonNullable() {
+        return nonNullable;
+    }
+
+    public void setNonNullable(boolean nonNullable) {
+        this.nonNullable = nonNullable;
     }
 }

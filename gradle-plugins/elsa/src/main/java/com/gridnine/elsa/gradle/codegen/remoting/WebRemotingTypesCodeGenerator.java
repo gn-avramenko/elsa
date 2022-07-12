@@ -11,6 +11,7 @@ import com.gridnine.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Set;
 
 public class WebRemotingTypesCodeGenerator {

@@ -3,8 +3,9 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.elsa.gradle.utils;
+package com.gridnine.elsa.common.meta.common;
 
+import com.gridnine.elsa.common.meta.common.XmlNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,9 +13,9 @@ import org.w3c.dom.Node;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 
-public final class BuildXmlUtils {
-    public static BuildXmlNode parseXml(byte[] content) throws Exception {
-        var result = new BuildXmlNode();
+public final class XmlUtils {
+    public static XmlNode parseXml(byte[] content) throws Exception {
+        var result = new XmlNode();
         var db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc;
         try {
@@ -26,7 +27,7 @@ public final class BuildXmlUtils {
         return result;
     }
 
-    private static void updateElm(BuildXmlNode result, Element elm) {
+    private static void updateElm(XmlNode result, Element elm) {
         result.setName(elm.getTagName());
         var attributes = elm.getAttributes();
         var attributeLength = attributes.getLength();
@@ -42,7 +43,7 @@ public final class BuildXmlUtils {
                 switch (child.getNodeType()) {
                     case Node.TEXT_NODE, Node.CDATA_SECTION_NODE -> result.setValue(child.getNodeValue());
                     case Node.ELEMENT_NODE -> {
-                        var childNode = new BuildXmlNode();
+                        var childNode = new XmlNode();
                         updateElm(childNode, (Element) child);
                         result.getChildren().add(childNode);
                     }
@@ -51,6 +52,6 @@ public final class BuildXmlUtils {
         }
     }
 
-    private BuildXmlUtils() {
+    private XmlUtils() {
     }
 }

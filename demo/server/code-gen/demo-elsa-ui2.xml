@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui xmlns="http://gridnine.com/elsa/demo-ui-template">
+    <enum id="com.gridnine.elsa.demo.server.ui.TestUiEnum">
+        <enum-item id="ENUM1"/>
+        <enum-item id="ENUM2"/>
+    </enum>
+    <grid-container id="com.gridnine.elsa.demo.server.ui.TestGridEditor2">
+        <columns>
+            <column width="STANDARD"/>
+        </columns>
+        <row height="STANDARD">
+            <cell id="embeddedEditor" container-ref="com.gridnine.elsa.demo.server.ui.TestGridEditor" />
+        </row>
+    </grid-container>
+</ui>

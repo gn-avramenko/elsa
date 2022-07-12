@@ -5,10 +5,10 @@
 
 package com.gridnine.elsa.gradle.parser.common;
 
-import com.gridnine.elsa.gradle.utils.BuildXmlNode;
+import com.gridnine.elsa.common.meta.common.XmlNode;
 
 import java.util.Locale;
 import java.util.Map;
 
-public record MetaDataParsingResult(BuildXmlNode node, Map<String, Map<Locale, String>> localizations) {
+public record MetaDataParsingResult(XmlNode node, Map<String, Map<Locale, String>> localizations) {
 }

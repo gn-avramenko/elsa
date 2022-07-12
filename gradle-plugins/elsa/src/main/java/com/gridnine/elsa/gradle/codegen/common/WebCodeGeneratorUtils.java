@@ -10,7 +10,8 @@ import com.gridnine.elsa.common.meta.common.EnumDescription;
 import com.gridnine.elsa.common.meta.common.StandardPropertyDescription;
 import com.gridnine.elsa.common.meta.common.StandardValueType;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.util.*;
 
 public class WebCodeGeneratorUtils {
 
@@ -27,7 +28,7 @@ public class WebCodeGeneratorUtils {
         gen.print(";\n");
     }
 
-    public static void generateWebEntityCode(EntityDescription ed, TypeScriptCodeGenerator gen) throws Exception {
+    public static void generateWebEntityCode(EntityDescription ed,  TypeScriptCodeGenerator gen) throws Exception {
         gen.wrapWithBlock("export type %s=".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())), () ->{
             for(var pd: ed.getProperties().values()){
                 gen.printLine("%s%s: %s,".formatted(pd.getId(), isNullable(pd)? "?": "", getType(pd.getType(), pd.getClassName())));
@@ -57,5 +58,57 @@ public class WebCodeGeneratorUtils {
 
     private static boolean isNullable(StandardPropertyDescription pd) {
         return !pd.isNonNullable();
+    }
+
+    public static void generateImportCode(Collection<EntityDescription> values, Set<String> additionalEntities, Map<String, File> tsa, TypeScriptCodeGenerator gen, File file) throws Exception{
+        Set<String> entities = new LinkedHashSet<>();
+        values.forEach(ett -> {
+            ett.getProperties().values().forEach(prop ->{
+                if(prop.getType() == StandardValueType.ENTITY || prop.getType() == StandardValueType.ENUM ){
+                    entities.add(prop.getClassName());
+                }
+            });
+            ett.getCollections().values().forEach(coll ->{
+                if(coll.getElementType() == StandardValueType.ENTITY || coll.getElementType() == StandardValueType.ENUM ){
+                    entities.add(coll.getElementClassName());
+                }
+            });
+            ett.getMaps().values().forEach(map ->{
+                if(map.getKeyType() == StandardValueType.ENTITY || map.getKeyType() == StandardValueType.ENUM ){
+                    entities.add(map.getKeyClassName());
+                }
+                if(map.getValueType() == StandardValueType.ENTITY || map.getValueType() == StandardValueType.ENUM ){
+                    entities.add(map.getValueClassName());
+                }
+            });
+        });
+        entities.addAll(additionalEntities);
+        var imports = new LinkedHashMap<String, Set<String>>();
+        for(String clsName: entities){
+            var sf = tsa.get(clsName);
+            if(sf != null && !sf.equals(file)){
+                String relPath;
+                if(sf.getParentFile().equals(file.getParentFile())){
+                    relPath = "./%s".formatted(sf.getName());
+                } else {
+                    relPath = file.getParentFile().toPath().relativize(sf.toPath()).toString();
+                }
+                relPath = relPath.substring(0, relPath.length()-3);
+                imports.computeIfAbsent(relPath, (it) -> new LinkedHashSet<>()).add(JavaCodeGeneratorUtils.getSimpleName(clsName));
+            }
+        }
+        if(imports.isEmpty()){
+            return;
+        }
+        for(Map.Entry<String, Set<String>> entry : imports.entrySet()){
+            gen.wrapWithBlock("import ", () ->{
+                entry.getValue().forEach(value ->{
+                    gen.printLine("%s,".formatted(value));
+                });
+            });
+            gen.print(" from '%s';".formatted(entry.getKey()));
+        }
+        gen.blankLine();
+
     }
 }

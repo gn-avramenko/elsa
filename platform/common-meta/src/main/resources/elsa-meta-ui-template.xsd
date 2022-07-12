@@ -77,8 +77,7 @@
                                 <extension base="common:MetaElementType">
                                     <sequence>
                                         <choice maxOccurs="unbounded" minOccurs="0">
-                                            <element name="widget-ref" type="tns:UiRefTag"/>
-                                            <element name="view-ref" type="tns:UiRefTag"/>
+                                            <element name="element-ref" type="tns:UiRef"/>
                                         </choice>
                                     </sequence>
                                 </extension>
@@ -193,10 +192,6 @@
             </extension>
         </complexContent>
     </complexType>
-    <complexType name="UiRefTag">
-        <attribute name="ref" type="string" use="required"/>
-        <attribute name="tag-name" type="string" use="required"/>
-    </complexType>
     <simpleType name="UiViewTemplatePropertyType">
         <restriction base="string">
             <enumeration value="ENUM"/>
@@ -249,13 +244,6 @@
         <attribute name="element-type" type="tns:UiViewTemplatePropertyType" use="required"/>
         <attribute name="wrapper-tag-name" type="string"/>
         <attribute name="element-class-name" type="string"/>
-    </complexType>
-    <complexType name="Ui">
-        <attribute name="tag-name" type="string" use="required"/>
-        <attribute name="type" type="tns:UiViewTemplatePropertyType" use="required"/>
-        <attribute name="wrapper-tag-name" type="string"/>
-        <attribute name="non-nullable" type="boolean"/>
-        <attribute name="class-name" type="string"/>
     </complexType>
     <complexType name="UiRef">
         <attribute name="ref" type="string" use="required"/>

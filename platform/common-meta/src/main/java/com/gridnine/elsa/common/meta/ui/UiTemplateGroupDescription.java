@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UiTemplateGroupDescription extends BaseElementWithId {
-    private final List<UiRefTagDescription> widgets = new ArrayList<>();
-    private final List<UiRefTagDescription> views = new ArrayList<>();
+    private final List<String> elements = new ArrayList<>();
 
     public UiTemplateGroupDescription() {
     }
@@ -21,11 +20,8 @@ public class UiTemplateGroupDescription extends BaseElementWithId {
         super(id);
     }
 
-    public List<UiRefTagDescription> getWidgets() {
-        return widgets;
-    }
 
-    public List<UiRefTagDescription> getViews() {
-        return views;
+    public List<String> getElements() {
+        return elements;
     }
 }

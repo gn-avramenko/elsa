@@ -14,7 +14,10 @@ import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.remoting.JavaRemotingCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.remoting.WebRemotingCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.ui.JavaUiCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.ui.template.JavaUiTemplateCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.ui.WebUiCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.ui.template.WebUiTemplateCodeGenerator;
 import com.gridnine.elsa.gradle.parser.domain.DomainMetaRegistryParser;
 import com.gridnine.elsa.gradle.utils.BuildExceptionUtils;
 import org.gradle.api.DefaultTask;
@@ -27,30 +30,32 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ElsaCodeGenTask extends DefaultTask {
-    public ElsaCodeGenTask(){
+    public ElsaCodeGenTask() {
         setGroup("elsa");
     }
+
     @TaskAction
-    public void generate(){
+    public void generate() {
         var records = new ArrayList<BaseCodeGenRecord>();
         var jext = getProject().getExtensions().findByType(ElsaJavaExtension.class);
         var javaProject = false;
-        if(jext != null){
+        if (jext != null) {
             records.addAll(jext.getCodegenRecords());
             javaProject = true;
         } else {
-           var wext = getProject().getExtensions().findByType(ElsaWebExtension.class);
-           records.addAll(wext.getCodegenRecords());
+            var wext = getProject().getExtensions().findByType(ElsaWebExtension.class);
+            records.addAll(wext.getCodegenRecords());
         }
         Set<File> generatedFiles = new HashSet<>();
         var generators = new LinkedHashMap<GeneratorType, Map<File, List<BaseCodeGenRecord>>>();
-        records.forEach(it-> {
+        records.forEach(it -> {
             var dests = generators
                     .computeIfAbsent(it.getGeneratorType(), t -> new LinkedHashMap<>());
             dests.computeIfAbsent(it.getDestinationDir(), t -> new ArrayList<>()).add(it);
         });
         Map<Object, Object> context = new HashMap<>();
-        if(javaProject) {
+        context.put("project", getProject());
+        if (javaProject) {
             var domainMetaRegistry = new DomainMetaRegistry();
             context.put("domain-meta-registry", domainMetaRegistry);
             var parser = new DomainMetaRegistryParser();
@@ -73,16 +78,24 @@ public class ElsaCodeGenTask extends DefaultTask {
                 }
             });
         }
-        generators.forEach((key, value) -> {
-            @SuppressWarnings("unchecked") var codeGen = (CodeGenerator<BaseCodeGenRecord>) switch (key) {
+        var gens = new ArrayList<>(generators.entrySet());
+        gens.sort(Comparator.comparing(it -> switch (it.getKey()){
+            case JAVA_UI -> 1;
+            default -> 0;
+        }));
+        gens.forEach(entry -> {
+            @SuppressWarnings("unchecked") var codeGen = (CodeGenerator<BaseCodeGenRecord>) switch (entry.getKey()) {
                 case JAVA_DOMAIN -> new JavaDomainCodeGenerator();
                 case JAVA_CUSTOM -> new JavaCustomCodeGenerator();
                 case JAVA_REMOTING -> new JavaRemotingCodeGenerator();
                 case JAVA_L10N -> new JavaL10nCodeGenerator();
                 case JAVA_UI_TEMPLATE -> new JavaUiTemplateCodeGenerator();
+                case JAVA_UI -> new JavaUiCodeGenerator();
                 case WEB_REMOTING -> new WebRemotingCodeGenerator();
+                case WEB_UI_TEMPLATE -> new WebUiTemplateCodeGenerator();
+                case WEB_UI -> new WebUiCodeGenerator();
             };
-            value.forEach((key1, value1) -> BuildExceptionUtils.wrapException(() -> codeGen.generate(value1, key1, generatedFiles, context)));
+            entry.getValue().forEach((key1, value1) -> BuildExceptionUtils.wrapException(() -> codeGen.generate(value1, key1, generatedFiles, context)));
         });
         Set<File> destDirs = new HashSet<>();
         records.forEach(it -> destDirs.add(it.getDestinationDir()));
@@ -91,20 +104,20 @@ public class ElsaCodeGenTask extends DefaultTask {
 
     private boolean cleanupDirs(Collection<File> destDirs, Set<File> generatedFiles) {
         var result = new AtomicBoolean(false);
-        destDirs.forEach(fileOrDir ->{
-            if(!fileOrDir.exists()){
+        destDirs.forEach(fileOrDir -> {
+            if (!fileOrDir.exists()) {
                 return;
             }
-            if(fileOrDir.isFile()){
-                if(!generatedFiles.contains(fileOrDir)){
+            if (fileOrDir.isFile()) {
+                if (!generatedFiles.contains(fileOrDir)) {
                     assert fileOrDir.delete();
                 } else {
                     result.set(true);
                 }
                 return;
             }
-            var subRes = cleanupDirs(Arrays.asList(Objects.requireNonNull(fileOrDir.listFiles())),generatedFiles);
-            if(subRes){
+            var subRes = cleanupDirs(Arrays.asList(Objects.requireNonNull(fileOrDir.listFiles())), generatedFiles);
+            if (subRes) {
                 result.set(true);
                 return;
             }

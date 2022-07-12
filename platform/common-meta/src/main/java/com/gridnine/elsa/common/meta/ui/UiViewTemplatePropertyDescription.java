@@ -18,7 +18,7 @@ public class UiViewTemplatePropertyDescription {
     private final Map<String, UiAttributeDescription> attributes = new LinkedHashMap<>();
     private final Map<String, UiViewTemplatePropertyDescription> properties = new LinkedHashMap<>();
     private final Map<String, UiViewTemplateCollectionDescription> collections = new LinkedHashMap<>();
-    private final List<UiRefDescription> groups = new ArrayList<>();
+    private final List<UiGroupDescription> groups = new ArrayList<>();
 
     public UiViewTemplatePropertyDescription() {
     }
@@ -64,7 +64,7 @@ public class UiViewTemplatePropertyDescription {
         return attributes;
     }
 
-    public List<UiRefDescription> getGroups() {
+    public List<UiGroupDescription> getGroups() {
         return groups;
     }
 

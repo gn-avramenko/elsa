@@ -6,6 +6,9 @@
         <choice maxOccurs="unbounded" minOccurs="0">
           <element name="enum" type="tns:EnumType"/>
           <element name="grid-container" type="tns:grid-container"/>
+          <element name="navigator" type="tns:navigator"/>
+          <element name="table" type="tns:table"/>
+          <element name="tile-space" type="tns:tile-space"/>
         </choice>
       </sequence>
     </complexType>
@@ -42,13 +45,21 @@
   </complexType>
   <group name="simple-widget">
     <choice>
-      <element name="text-box" type="tns:text-box-widget"/>
-      <element name="big-decimal-box" type="tns:big-decimal-box-widget"/>
+      <element name="text-box-widget" type="tns:text-box-widget"/>
+      <element name="big-decimal-box-widget" type="tns:big-decimal-box-widget"/>
+      <element name="table" type="tns:table"/>
+    </choice>
+  </group>
+  <group name="container">
+    <choice>
+      <element name="grid-container" type="tns:grid-container"/>
+      <element name="navigator" type="tns:navigator"/>
+      <element name="tile-space" type="tns:tile-space"/>
     </choice>
   </group>
   <complexType name="grid-container">
     <sequence>
-      <element minOccurs="0" name="columns" maxOccurs="1">
+      <element minOccurs="0" name="columns">
         <complexType>
           <sequence>
             <element maxOccurs="unbounded" minOccurs="0" name="column">
@@ -67,11 +78,12 @@
             <element maxOccurs="unbounded" minOccurs="0" name="cell">
               <complexType>
                 <sequence>
-                  <group ref="tns:simple-widget"/>
+                  <group minOccurs="0" ref="tns:simple-widget"/>
                 </sequence>
                 <attribute default="1" name="col-span" type="integer"/>
                 <attribute name="caption" type="string"/>
                 <attribute name="id" type="string" use="required"/>
+                <attribute name="container-ref" type="string"/>
               </complexType>
             </element>
           </sequence>
@@ -82,5 +94,58 @@
     </sequence>
     <attribute name="id" type="string" use="required"/>
     <attribute default="1" name="columns-count" type="integer"/>
+  </complexType>
+  <complexType name="navigator">
+    <sequence>
+      <element maxOccurs="unbounded" minOccurs="0" name="variant">
+        <complexType>
+          <sequence>
+            <group minOccurs="0" ref="tns:container"/>
+          </sequence>
+          <attribute name="container-ref" type="string"/>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
+  </complexType>
+  <complexType name="table">
+    <sequence>
+      <element maxOccurs="unbounded" minOccurs="0" name="column">
+        <complexType>
+          <sequence>
+            <group minOccurs="0" ref="tns:simple-widget"/>
+          </sequence>
+          <attribute name="caption" type="string" use="required"/>
+          <attribute name="pref-width" type="string"/>
+          <attribute name="id" type="string" use="required"/>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="notEditable" type="boolean"/>
+  </complexType>
+  <complexType name="tile-space">
+    <sequence>
+      <element minOccurs="0" name="overview">
+        <complexType>
+          <sequence>
+            <group minOccurs="0" ref="tns:container"/>
+          </sequence>
+          <attribute name="caption" type="string"/>
+          <attribute name="container-ref" type="string"/>
+        </complexType>
+      </element>
+      <element maxOccurs="unbounded" minOccurs="0" name="tile">
+        <complexType>
+          <sequence>
+            <group minOccurs="0" ref="tns:container"/>
+          </sequence>
+          <attribute name="id" type="string" use="required"/>
+          <attribute name="caption" type="string" use="required"/>
+          <attribute name="container-ref" type="string"/>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
   </complexType>
 </schema>

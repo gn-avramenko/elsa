@@ -6,13 +6,13 @@
 package com.gridnine.elsa.gradle.parser.l10n;
 
 import com.gridnine.elsa.common.meta.common.StandardValueType;
+import com.gridnine.elsa.common.meta.common.XmlNode;
 import com.gridnine.elsa.common.meta.l10n.L10nMessageDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMessageParameterDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMessagesBundleDescription;
 import com.gridnine.elsa.common.meta.l10n.L10nMetaRegistry;
 import com.gridnine.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.elsa.gradle.parser.common.MetaDataParsingResult;
-import com.gridnine.elsa.gradle.utils.BuildXmlNode;
 
 import java.io.File;
 
@@ -20,7 +20,7 @@ public class L10nMetaRegistryParser {
 
     public void updateMetaRegistry(L10nMetaRegistry registry, File source) throws Exception {
             MetaDataParsingResult pr = CommonParserUtils.parse(source);
-            BuildXmlNode node = pr.node();
+            XmlNode node = pr.node();
             var bundleDescription = registry.getBundles().computeIfAbsent(CommonParserUtils.getIdAttribute(node),
                     L10nMessagesBundleDescription::new);
             node.getChildren("message").forEach(child ->{
