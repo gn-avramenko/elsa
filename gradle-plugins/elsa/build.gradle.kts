@@ -18,7 +18,7 @@ repositories{
     mavenCentral()
 }
 dependencies{
-    implementation(project(":platform:common-meta"))
+    // implementation(project(":platform:common-meta"))
 }
 
 java{

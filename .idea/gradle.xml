@@ -11,16 +11,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/demo" />
-            <option value="$PROJECT_DIR$/demo/server" />
             <option value="$PROJECT_DIR$/gradle-plugins" />
             <option value="$PROJECT_DIR$/gradle-plugins/elsa" />
             <option value="$PROJECT_DIR$/gradle-plugins/internal" />
-            <option value="$PROJECT_DIR$/platform" />
-            <option value="$PROJECT_DIR$/platform/common-core" />
-            <option value="$PROJECT_DIR$/platform/common-meta" />
-            <option value="$PROJECT_DIR$/platform/server-core" />
-            <option value="$PROJECT_DIR$/platform/server-postgres" />
           </set>
         </option>
       </GradleProjectSettings>

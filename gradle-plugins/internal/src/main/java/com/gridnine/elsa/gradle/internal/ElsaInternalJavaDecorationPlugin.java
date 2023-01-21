@@ -48,7 +48,7 @@ public class ElsaInternalJavaDecorationPlugin implements Plugin<Project> {
         target.getRepositories().add(target.getRepositories().mavenCentral());
         target.getPlugins().apply("java-library");
         target.getPlugins().apply("maven-publish");
-        target.setProperty("group", "com.gridnine");
+        target.setProperty("group", "com.gridnine.elsa");
         target.setProperty("version", props.getProperty("version") == null? "0.0.1" : props.getProperty("version"));
         target.getExtensions().configure("java", (JavaPluginExtension ext) ->{
             ext.setSourceCompatibility(JavaVersion.VERSION_17);
