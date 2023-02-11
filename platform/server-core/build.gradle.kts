@@ -49,6 +49,8 @@ dependencies{
     testFixturesImplementation("com.mchange:c3p0:0.9.5.5")
     testFixturesImplementation("org.hsqldb:hsqldb:2+")
     testFixturesImplementation("org.springframework.boot:spring-boot-starter-jdbc")
+
+    testImplementation(testFixtures(project(":platform:common-core")))
 }
 
 
