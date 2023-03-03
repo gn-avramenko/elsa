@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://gridnine.com/elsa/serializable-types"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://gridnine.com/elsa/serializable-types">
+    <element name="types">
+        <complexType>
+            <sequence>
+                <choice maxOccurs="unbounded" minOccurs="0">
+                    <element name="type" type="tns:SerializableType">
+                    </element>
+                </choice>
+            </sequence>
+        </complexType>
+    </element>
+    <complexType name="SerializableType">
+        <attribute use="required" name="id" type="string"/>
+        <attribute use="required" name="java-qualified-name" type="string"/>
+    </complexType>
+</schema>

@@ -2,6 +2,15 @@ plugins {
     `java-gradle-plugin`
 }
 
+buildscript {
+    repositories{
+        mavenLocal()
+    }
+    dependencies{
+        classpath("com.gridnine:elsa-gradle-internal:0+")
+    }
+}
+
 gradlePlugin {
     plugins {
         create("elsa-java-configuration") {
@@ -9,16 +18,25 @@ gradlePlugin {
             implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin"
         }
         create("elsa-java-decoration") {
-            id = "elsa-java"
+            id = "elsa-java-decoration"
             implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaDecorationPlugin"
         }
     }
 }
 repositories{
-    mavenCentral()
+    mavenLocal()
 }
+
+apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaConfigurationPlugin>()
+
+configure<com.gridnine.elsa.gradle.internal.ElsaInternalJavaExtension>{
+    artefactId = "elsa-gradle"
+}
+
+apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaDecorationPlugin>()
+
 dependencies{
-    // implementation(project(":platform:common-meta"))
+    implementation("com.gridnine:elsa-meta:${project.property("version")}")
 }
 
 java{
@@ -30,15 +48,10 @@ val jarArchiveName = "elsa-gradle"
 
 tasks.withType<Jar>{
     archiveBaseName.set(jarArchiveName)
-    from(files(project.file("../../platform/common-meta/build/classes/java/main")))
 }
 
-task("updateLocalGradlePlugins"){
-    dependsOn("build")
-    group = "other"
-    doLast{
-        val gradleDir = File(projectDir.parentFile.parentFile, "gradle")
-        project.file("build/libs/${jarArchiveName}.jar").copyTo(File(gradleDir, "${jarArchiveName}.jar"), true)
-    }
+task("publishGradlePluginToLocalMavenRepository"){
+    dependsOn("publishToMavenLocal")
+    group = "elsa"
 }
 

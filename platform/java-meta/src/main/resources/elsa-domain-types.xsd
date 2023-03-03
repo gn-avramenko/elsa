@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://gridnine.com/elsa/domain-types"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:cns="http://gridnine.com/elsa/common-types">
+    <element name="domain">
+        <complexType>
+            <sequence>
+                <choice maxOccurs="unbounded" minOccurs="0">
+                    <element name="document-attribute" type="cns:AttributeDescription"/>
+                    <element name="projection-attribute" type="cns:AttributeDescription"/>
+                    <element name="asset-attribute" type="cns:AttributeDescription"/>
+                    <element name="entity-property" type="cns:PropertyTypeDescription"/>
+                    <element name="entity-property" type="cns:PropertyTypeDescription"/>
+                    <element name="entity-collection" type="cns:CollectionTypeDescription"/>
+                    <element name="entity-map" type="cns:MapTypeDescription"/>
+                    <element name="database-property" type="cns:PropertyTypeDescription"/>
+                    <element name="database-collection" type="cns:CollectionTypeDescription"/>
+                </choice>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

@@ -1,3 +1,5 @@
+include("platform:java-meta")
 include("gradle-plugins:internal")
 include("gradle-plugins:elsa")
+include("platform:java-core")
 rootProject.name ="elsa"

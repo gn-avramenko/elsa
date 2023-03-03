@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://gridnine.com/elsa/common-types"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://gridnine.com/elsa/common-types">
+    <complexType name="AttributeDescription">
+        <sequence minOccurs="0" maxOccurs="unbounded">
+            <element name="item" type="string"/>
+        </sequence>
+        <attribute name="name" type="string" use="required"/>
+        <attribute name="type" type="tns:AttributeType" use="required"/>
+        <attribute name="default-value" type="string"/>
+    </complexType>
+    <simpleType name="AttributeType">
+        <restriction base="string">
+            <enumeration value="BOOLEAN"/>
+            <enumeration value="STRING"/>
+            <enumeration value="SELECT"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="ValueType">
+        <restriction base="string">
+            <enumeration value="SIMPLE"/>
+            <enumeration value="ENUM"/>
+            <enumeration value="ENTITY"/>
+        </restriction>
+    </simpleType>
+    <complexType name="PropertyTypeDescription">
+        <complexContent>
+            <extension base="tns:BaseFieldTypeDescription">
+                <attribute name="type" type="tns:ValueType" use="required"/>
+                <attribute name="qualifiedTypeName" type="string"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="CollectionTypeDescription">
+        <complexContent>
+            <extension base="tns:BaseFieldTypeDescription">
+                <attribute name="genericType" type="tns:ValueType" use="required"/>
+                <attribute name="genericTypeName" type="string"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="MapTypeDescription">
+        <complexContent>
+            <extension base="tns:BaseFieldTypeDescription">
+                <attribute name="keyGenericType" type="tns:ValueType" use="required"/>
+                <attribute name="keyGenericTypeName" type="string"/>
+                <attribute name="valueGenericType" type="tns:ValueType" use="required"/>
+                <attribute name="valueGenericTypeName" type="string"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="BaseFieldTypeDescription">
+        <sequence minOccurs="0" maxOccurs="unbounded">
+            <element name="attribute" type="tns:AttributeDescription"/>
+        </sequence>
+        <attribute name="tag-name" type="string" use="required"/>
+    </complexType>
+</schema>
