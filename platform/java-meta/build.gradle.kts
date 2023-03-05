@@ -15,7 +15,7 @@ buildscript {
 apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
 
 elsaInternal {
-    artefactId = "elsa-meta"
+    artefactId = "elsa-java-meta"
 }
 
 task("publishJavaMetaToLocalMavenRepository"){

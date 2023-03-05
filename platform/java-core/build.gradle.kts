@@ -17,7 +17,7 @@ buildscript {
 apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
 
 elsaInternal {
-    artefactId = "elsa-core"
+    artefactId = "elsa-java-core"
 }
 
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
