@@ -42,10 +42,8 @@ dependencies{
 }
 
 java{
-    sourceCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
 }
-
 val jarArchiveName = "elsa-gradle"
 
 tasks.withType<Jar>{
