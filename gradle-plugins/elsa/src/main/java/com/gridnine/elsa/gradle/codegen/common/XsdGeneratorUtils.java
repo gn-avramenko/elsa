@@ -28,7 +28,7 @@ public class XsdGeneratorUtils {
                             processGenerics(tag.getGenerics(), gen);
                         }
                         for (AttributeDescription attr : tag.getAttributes().values()) {
-                            gen.addTag("attribute", "use", "required", "name", "id", "type", "string");
+                            gen.addTag("attribute", "name", attr.getName(), "type", "string");
                         }
                     });
                 });

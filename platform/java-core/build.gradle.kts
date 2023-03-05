@@ -3,6 +3,7 @@ import com.gridnine.elsa.gradle.plugin.elsa
 
 plugins {
     java
+    id("java-test-fixtures")
 }
 buildscript {
     repositories{
@@ -34,6 +35,10 @@ elsa{
 
 sourceSets.main {
     java.srcDirs("src/main/java", "src/main/java-gen")
+}
+
+sourceSets.testFixtures{
+    java.srcDirs("src/testFixtures/java-gen")
 }
 
 dependencies {

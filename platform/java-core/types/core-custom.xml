@@ -6,12 +6,18 @@
     <entity-tag tag-name="boolean-property" type="BOOLEAN"/>
     <entity-tag tag-name="big-decimal-property" type="BIG-DECIMAL"/>
     <entity-tag tag-name="byte-array-property" type="BYTE-ARRAY"/>
+    <entity-tag tag-name="enum-property" type="ENUM" object-id-attribute-name="class-name"/>
+    <entity-tag tag-name="long-property" type="LONG"/>
+    <entity-tag tag-name="int-property" type="INT"/>
     <entity-tag tag-name="entity-reference-property" type="ENTITY-REFERENCE">
         <generic  id = "class-name" type = "ENTITY" object-id-attribute-name="class-name"/>
     </entity-tag>
     <entity-tag tag-name="entity-property" type="ENTITY" object-id-attribute-name="class-name"/>
     <entity-tag tag-name="entity-list" type="ARRAY-LIST">
         <generic  id = "element-class-name" type = "ENTITY" object-id-attribute-name="element-class-name"/>
+    </entity-tag>
+    <entity-tag tag-name="entity-reference-list" type="ARRAY-LIST">
+        <generic  id = "element-class-name" type = "ENTITY" object-id-attribute-name="class-name"/>
     </entity-tag>
     <entity-tag tag-name="enum-list" type="ARRAY-LIST">
         <generic  id = "element-class-name" type = "ENUM" object-id-attribute-name="element-class-name"/>

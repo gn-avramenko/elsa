@@ -81,6 +81,13 @@ public class CoreDomainTypesConfigurator{
 		}
 		{
 			var tag = new TagDescription();
+			tag.setTagName("long-property");
+			tag.setType("LONG");
+			tag.setType("LONG");
+			registry.getEntityTags().put("long-property", tag);
+		}
+		{
+			var tag = new TagDescription();
 			tag.setTagName("big-decimal-property");
 			tag.setType("BIG-DECIMAL");
 			tag.setType("BIG-DECIMAL");
@@ -92,6 +99,13 @@ public class CoreDomainTypesConfigurator{
 			tag.setType("BYTE-ARRAY");
 			tag.setType("BYTE-ARRAY");
 			registry.getEntityTags().put("byte-array-property", tag);
+		}
+		{
+			var tag = new TagDescription();
+			tag.setTagName("int-property");
+			tag.setType("INT");
+			tag.setType("INT");
+			registry.getEntityTags().put("int-property", tag);
 		}
 		{
 			var tag = new TagDescription();
@@ -119,6 +133,14 @@ public class CoreDomainTypesConfigurator{
 		}
 		{
 			var tag = new TagDescription();
+			tag.setTagName("enum-property");
+			tag.setType("ENUM");
+			tag.setObjectIdAttributeName("class-name");
+			tag.setType("ENUM");
+			registry.getEntityTags().put("enum-property", tag);
+		}
+		{
+			var tag = new TagDescription();
 			tag.setTagName("entity-list");
 			tag.setType("ARRAY-LIST");
 			tag.setType("ARRAY-LIST");
@@ -132,6 +154,22 @@ public class CoreDomainTypesConfigurator{
 			}
 			tag.getGenerics().addAll(generics_0);
 			registry.getEntityTags().put("entity-list", tag);
+		}
+		{
+			var tag = new TagDescription();
+			tag.setTagName("entity-reference-list");
+			tag.setType("ARRAY-LIST");
+			tag.setType("ARRAY-LIST");
+			var generics_0 = new ArrayList<GenericDescription>();
+			{
+				var generic = new GenericDescription();
+				generic.setId("element-class-name");
+				generic.setType("ENTITY");
+				generic.setObjectIdAttributeName("class-name");
+				generics_0.add(generic);
+			}
+			tag.getGenerics().addAll(generics_0);
+			registry.getEntityTags().put("entity-reference-list", tag);
 		}
 		{
 			var tag = new TagDescription();
@@ -199,6 +237,20 @@ public class CoreDomainTypesConfigurator{
 				attr.setDefaultValue("false");
 				tag.getAttributes().put("cache-find", attr);
 			}
+			{
+				var attr = new AttributeDescription();
+				attr.setName("cache-get-all");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("cache-get-all", attr);
+			}
+			{
+				var attr = new AttributeDescription();
+				attr.setName("use-in-text-search");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("use-in-text-search", attr);
+			}
 			registry.getDatabaseTags().put("string-property", tag);
 		}
 		{
@@ -220,6 +272,13 @@ public class CoreDomainTypesConfigurator{
 			tag.setTagName("boolean-property");
 			tag.setType("BOOLEAN");
 			tag.setType("BOOLEAN");
+			{
+				var attr = new AttributeDescription();
+				attr.setName("cache-get-all");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("cache-get-all", attr);
+			}
 			{
 				var attr = new AttributeDescription();
 				attr.setName("cache-find");
@@ -245,15 +304,36 @@ public class CoreDomainTypesConfigurator{
 		}
 		{
 			var tag = new TagDescription();
+			tag.setTagName("long-property");
+			tag.setType("LONG");
+			tag.setType("LONG");
+			registry.getDatabaseTags().put("long-property", tag);
+		}
+		{
+			var tag = new TagDescription();
 			tag.setTagName("entity-reference-property");
 			tag.setType("ENTITY-REFERENCE");
 			tag.setType("ENTITY-REFERENCE");
+			{
+				var attr = new AttributeDescription();
+				attr.setName("cache-get-all");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("cache-get-all", attr);
+			}
+			{
+				var attr = new AttributeDescription();
+				attr.setName("use-in-text-search");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("use-in-text-search", attr);
+			}
 			var generics_0 = new ArrayList<GenericDescription>();
 			{
 				var generic = new GenericDescription();
-				generic.setId("element-class-name");
+				generic.setId("class-name");
 				generic.setType("ENTITY");
-				generic.setObjectIdAttributeName("element-class-name");
+				generic.setObjectIdAttributeName("class-name");
 				generics_0.add(generic);
 			}
 			tag.getGenerics().addAll(generics_0);
@@ -261,9 +341,45 @@ public class CoreDomainTypesConfigurator{
 		}
 		{
 			var tag = new TagDescription();
+			tag.setTagName("enum-property");
+			tag.setType("ENUM");
+			tag.setObjectIdAttributeName("class-name");
+			tag.setType("ENUM");
+			{
+				var attr = new AttributeDescription();
+				attr.setName("cache-find");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("cache-find", attr);
+			}
+			{
+				var attr = new AttributeDescription();
+				attr.setName("cache-get-all");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("cache-get-all", attr);
+			}
+			{
+				var attr = new AttributeDescription();
+				attr.setName("use-in-text-search");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("use-in-text-search", attr);
+			}
+			registry.getDatabaseTags().put("enum-property", tag);
+		}
+		{
+			var tag = new TagDescription();
 			tag.setTagName("enum-list");
 			tag.setType("ARRAY-LIST");
 			tag.setType("ARRAY-LIST");
+			{
+				var attr = new AttributeDescription();
+				attr.setName("use-in-text-search");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("use-in-text-search", attr);
+			}
 			var generics_0 = new ArrayList<GenericDescription>();
 			{
 				var generic = new GenericDescription();
@@ -280,6 +396,13 @@ public class CoreDomainTypesConfigurator{
 			tag.setTagName("string-list");
 			tag.setType("ARRAY-LIST");
 			tag.setType("ARRAY-LIST");
+			{
+				var attr = new AttributeDescription();
+				attr.setName("use-in-text-search");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("use-in-text-search", attr);
+			}
 			var generics_0 = new ArrayList<GenericDescription>();
 			{
 				var generic = new GenericDescription();
@@ -289,6 +412,36 @@ public class CoreDomainTypesConfigurator{
 			}
 			tag.getGenerics().addAll(generics_0);
 			registry.getDatabaseTags().put("string-list", tag);
+		}
+		{
+			var tag = new TagDescription();
+			tag.setTagName("entity-reference-list");
+			tag.setType("ARRAY-LIST");
+			tag.setType("ARRAY-LIST");
+			{
+				var attr = new AttributeDescription();
+				attr.setName("use-in-text-search");
+				attr.setType(AttributeType.BOOLEAN);
+				attr.setDefaultValue("false");
+				tag.getAttributes().put("use-in-text-search", attr);
+			}
+			var generics_0 = new ArrayList<GenericDescription>();
+			{
+				var generic = new GenericDescription();
+				generic.setId("element-class-name");
+				generic.setType("ENTITY_REFERENCE");
+				var generics_1 = new ArrayList<GenericDescription>();
+				{
+					var generic = new GenericDescription();
+					generic.setId("class-name");
+					generic.setType("ENTITY");
+					generic.setObjectIdAttributeName("class-name");
+					generics_1.add(generic);
+				}
+				generics_0.add(generic);
+			}
+			tag.getGenerics().addAll(generics_0);
+			registry.getDatabaseTags().put("entity-reference-list", tag);
 		}
 	}
 }

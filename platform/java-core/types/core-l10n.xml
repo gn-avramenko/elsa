@@ -6,8 +6,12 @@
     <parameter-type-tag tag-name="boolean-property" type="BOOLEAN"/>
     <parameter-type-tag tag-name="big-decimal-property" type="BIG-DECIMAL"/>
     <parameter-type-tag tag-name="byte-array-property" type="BYTE-ARRAY"/>
+    <parameter-type-tag tag-name="enum-property" type="ENUM" object-id-attribute-name="class-name"/>
     <parameter-type-tag tag-name="entity-reference-property" type="ENTITY-REFERENCE">
         <generic  id = "class-name" type = "ENTITY" object-id-attribute-name="class-name"/>
+    </parameter-type-tag>
+    <parameter-type-tag tag-name="entity-reference-list" type="ARRAY-LIST">
+        <generic  id = "element-class-name" type = "ENTITY" object-id-attribute-name="class-name"/>
     </parameter-type-tag>
     <parameter-type-tag tag-name="entity-property" type="ENTITY" object-id-attribute-name="class-name"/>
     <parameter-type-tag tag-name="entity-list" type="ARRAY-LIST">

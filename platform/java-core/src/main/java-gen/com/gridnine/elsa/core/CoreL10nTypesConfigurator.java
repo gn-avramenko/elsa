@@ -58,6 +58,14 @@ public class CoreL10nTypesConfigurator{
 		}
 		{
 			var tag = new TagDescription();
+			tag.setTagName("enum-property");
+			tag.setType("ENUM");
+			tag.setObjectIdAttributeName("class-name");
+			tag.setType("ENUM");
+			registry.getParameterTypeTags().put("enum-property", tag);
+		}
+		{
+			var tag = new TagDescription();
 			tag.setTagName("entity-reference-property");
 			tag.setType("ENTITY-REFERENCE");
 			tag.setType("ENTITY-REFERENCE");
@@ -71,6 +79,22 @@ public class CoreL10nTypesConfigurator{
 			}
 			tag.getGenerics().addAll(generics_0);
 			registry.getParameterTypeTags().put("entity-reference-property", tag);
+		}
+		{
+			var tag = new TagDescription();
+			tag.setTagName("entity-reference-list");
+			tag.setType("ARRAY-LIST");
+			tag.setType("ARRAY-LIST");
+			var generics_0 = new ArrayList<GenericDescription>();
+			{
+				var generic = new GenericDescription();
+				generic.setId("element-class-name");
+				generic.setType("ENTITY");
+				generic.setObjectIdAttributeName("class-name");
+				generics_0.add(generic);
+			}
+			tag.getGenerics().addAll(generics_0);
+			registry.getParameterTypeTags().put("entity-reference-list", tag);
 		}
 		{
 			var tag = new TagDescription();

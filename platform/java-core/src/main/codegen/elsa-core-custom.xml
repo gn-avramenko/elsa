@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<custom xmlns="http://gridnine.com/elsa/meta-custom" >
+    <entity id="com.gridnine.elsa.common.core.model.common.BaseIdentity" abstract="true">
+        <long-property id="id"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.core.model.domain.BaseAsset" abstract="true" extends="com.gridnine.elsa.common.core.model.common.BaseIdentity">
+        <entity-property id="versionInfo" class-name="com.gridnine.elsa.common.core.model.domain.VersionInfo"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.core.model.domain.BaseProjection" abstract="true">
+        <entity-reference-property id="document" class-name="Object"/>
+        <int-property id="navigationKey"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.core.model.common.L10nMessage">
+        <string-property id="key"/>
+        <string-property id="bundle"/>
+        <entity-list id="parameters" element-class-name="Object"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.core.model.domain.VersionInfo">
+        <int-property id="versionNumber"/>
+        <int-property id="revision"/>
+        <string-property id="modifiedBy"/>
+        <local-date-time-property id="modified"/>
+        <string-property id="comment"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.core.model.domain.BaseDocument" abstract="true" extends="com.gridnine.elsa.common.core.model.common.BaseIdentity">
+        <entity-property id="versionInfo" class-name="com.gridnine.elsa.common.core.model.domain.VersionInfo"/>
+    </entity>
+</custom>

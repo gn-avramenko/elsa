@@ -20,7 +20,9 @@
 													<element name="boolean-property" type="tns:paramter-tag-boolean-property"/>
 													<element name="big-decimal-property" type="tns:paramter-tag-big-decimal-property"/>
 													<element name="byte-array-property" type="tns:paramter-tag-byte-array-property"/>
+													<element name="enum-property" type="tns:paramter-tag-enum-property"/>
 													<element name="entity-reference-property" type="tns:paramter-tag-entity-reference-property"/>
+													<element name="entity-reference-list" type="tns:paramter-tag-entity-reference-list"/>
 													<element name="entity-property" type="tns:paramter-tag-entity-property"/>
 													<element name="entity-list" type="tns:paramter-tag-entity-list"/>
 													<element name="enum-list" type="tns:paramter-tag-enum-list"/>
@@ -76,7 +78,21 @@
 			</extension>
 		</complexContent>
 	</complexType>
+	<complexType name="parameter-tag-enum-property">
+		<complexContent>
+			<extension base="tns:IdWithParametersType">
+				<attribute use="required" name="class-name" type="string"/>
+			</extension>
+		</complexContent>
+	</complexType>
 	<complexType name="parameter-tag-entity-reference-property">
+		<complexContent>
+			<extension base="tns:IdWithParametersType">
+				<attribute use="required" name="class-name" type="string"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="parameter-tag-entity-reference-list">
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute use="required" name="class-name" type="string"/>
