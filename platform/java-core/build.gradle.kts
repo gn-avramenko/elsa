@@ -1,3 +1,6 @@
+import com.gridnine.elsa.gradle.internal.elsaInternal
+import com.gridnine.elsa.gradle.plugin.elsa
+
 plugins {
     java
 }
@@ -11,21 +14,30 @@ buildscript {
     }
 }
 
-apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaConfigurationPlugin>()
+apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
 
-configure<com.gridnine.elsa.gradle.internal.ElsaInternalJavaExtension>{
+elsaInternal {
     artefactId = "elsa-core"
 }
 
-apply<com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin>()
+apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
-configure<com.gridnine.elsa.gradle.plugin.ElsaTypesExtension> {
-    destDir("src/main/java-gen")
-    serialization("types/core-serialization.xml", "com.gridnine.elsa.core.SerializableTypeConfigurator")
+elsa{
+    types{
+        destDir("src/main/java-gen")
+        serialization("types/core-serialization.xml", "com.gridnine.elsa.core.CoreSerializableTypesConfigurator")
+        domain("types/core-domain.xml", "com.gridnine.elsa.core.CoreDomainTypesConfigurator")
+        custom("types/core-custom.xml", "com.gridnine.elsa.core.CoreCustomTypesConfigurator")
+        l10n("types/core-l10n.xml", "com.gridnine.elsa.core.CoreL10nTypesConfigurator")
+    }
 }
 
-apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaDecorationPlugin>()
+sourceSets.main {
+    java.srcDirs("src/main/java", "src/main/java-gen")
+}
 
-
-
-
+dependencies {
+    implementation("ch.qos.logback:logback-core:1+")
+    implementation("org.slf4j:slf4j-api:2+")
+    implementation(project(":platform:java-meta"))
+}

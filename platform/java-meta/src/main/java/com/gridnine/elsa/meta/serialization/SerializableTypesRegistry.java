@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SerializableTypesRegistry {
+
     private final Map<String, SerializableType> types = new LinkedHashMap<>();
 
     public Map<String, SerializableType> getTypes() {

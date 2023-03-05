@@ -9,12 +9,10 @@
                     <element name="document-attribute" type="cns:AttributeDescription"/>
                     <element name="projection-attribute" type="cns:AttributeDescription"/>
                     <element name="asset-attribute" type="cns:AttributeDescription"/>
-                    <element name="entity-property" type="cns:PropertyTypeDescription"/>
-                    <element name="entity-property" type="cns:PropertyTypeDescription"/>
-                    <element name="entity-collection" type="cns:CollectionTypeDescription"/>
-                    <element name="entity-map" type="cns:MapTypeDescription"/>
-                    <element name="database-property" type="cns:PropertyTypeDescription"/>
-                    <element name="database-collection" type="cns:CollectionTypeDescription"/>
+                    <element name="enum-attribute" type="cns:AttributeDescription"/>
+                    <element name="enum-item-attribute" type="cns:AttributeDescription"/>
+                    <element name="entity-tag" type="cns:TagDescription"/>
+                    <element name="database-tag" type="cns:TagDescription"/>
                 </choice>
             </sequence>
         </complexType>

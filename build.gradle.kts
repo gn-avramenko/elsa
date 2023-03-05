@@ -1,20 +1,22 @@
+import com.gridnine.elsa.gradle.plugin.elsa
+
 buildscript {
     repositories{
         mavenLocal()
+        mavenCentral()
     }
     dependencies{
         classpath("com.gridnine:elsa-gradle:0+")
     }
 }
 
-apply<com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin>()
+apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
-configure<com.gridnine.elsa.gradle.plugin.ElsaTypesExtension> {
-    xsdsLocation("xsds")
+elsa {
+    types {
+        xsdsLocation("xsds")
+    }
 }
-
-apply<com.gridnine.elsa.gradle.plugin.ElsaJavaDecorationPlugin>()
-
 
 task("publishToMavenLocal"){
     group = "other"

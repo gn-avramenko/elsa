@@ -16,4 +16,8 @@ public class ElsaTypesProjectData {
     public File destDir;
     public final List<ElsaTypesFileData> serializableTypes = new ArrayList<>();
     public final List<ElsaTypesFileData> domainTypes = new ArrayList<>();
+
+    public final List<ElsaTypesFileData> customTypes = new ArrayList<>();
+
+    public final List<ElsaTypesFileData> l10nTypes = new ArrayList<>();
 }

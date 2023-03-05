@@ -3,8 +3,14 @@
         elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:tns="http://gridnine.com/elsa/common-types">
     <complexType name="AttributeDescription">
-        <sequence minOccurs="0" maxOccurs="unbounded">
-            <element name="item" type="string"/>
+        <sequence minOccurs="0" maxOccurs="1">
+            <element name="select-values">
+                <complexType>
+                    <sequence minOccurs="0" maxOccurs="unbounded">
+                        <element name="value" type="string"/>
+                    </sequence>
+                </complexType>
+            </element>
         </sequence>
         <attribute name="name" type="string" use="required"/>
         <attribute name="type" type="tns:AttributeType" use="required"/>
@@ -17,43 +23,21 @@
             <enumeration value="SELECT"/>
         </restriction>
     </simpleType>
-    <simpleType name="ValueType">
-        <restriction base="string">
-            <enumeration value="SIMPLE"/>
-            <enumeration value="ENUM"/>
-            <enumeration value="ENTITY"/>
-        </restriction>
-    </simpleType>
-    <complexType name="PropertyTypeDescription">
-        <complexContent>
-            <extension base="tns:BaseFieldTypeDescription">
-                <attribute name="type" type="tns:ValueType" use="required"/>
-                <attribute name="qualifiedTypeName" type="string"/>
-            </extension>
-        </complexContent>
-    </complexType>
-    <complexType name="CollectionTypeDescription">
-        <complexContent>
-            <extension base="tns:BaseFieldTypeDescription">
-                <attribute name="genericType" type="tns:ValueType" use="required"/>
-                <attribute name="genericTypeName" type="string"/>
-            </extension>
-        </complexContent>
-    </complexType>
-    <complexType name="MapTypeDescription">
-        <complexContent>
-            <extension base="tns:BaseFieldTypeDescription">
-                <attribute name="keyGenericType" type="tns:ValueType" use="required"/>
-                <attribute name="keyGenericTypeName" type="string"/>
-                <attribute name="valueGenericType" type="tns:ValueType" use="required"/>
-                <attribute name="valueGenericTypeName" type="string"/>
-            </extension>
-        </complexContent>
-    </complexType>
-    <complexType name="BaseFieldTypeDescription">
+    <complexType name="TagDescription">
         <sequence minOccurs="0" maxOccurs="unbounded">
-            <element name="attribute" type="tns:AttributeDescription"/>
+            <element name="attribute" type="tns:AttributeDescription" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="generic" type="tns:GenericDescription" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
         <attribute name="tag-name" type="string" use="required"/>
+        <attribute name="type" type="string" use="required"/>
+        <attribute name="object-id-attribute-name" type="string"/>
+    </complexType>
+    <complexType name="GenericDescription">
+        <sequence minOccurs="0" maxOccurs="unbounded">
+            <element name = "generic" type="tns:GenericDescription"/>
+        </sequence>
+        <attribute use="required" name="id" type="string"/>
+        <attribute use="required" name="type" type="string"/>
+        <attribute  name="object-id-attribute-name" type="string"/>
     </complexType>
 </schema>

@@ -1,3 +1,5 @@
+import com.gridnine.elsa.gradle.internal.elsaInternal
+
 plugins {
     java
 }
@@ -10,13 +12,11 @@ buildscript {
     }
 }
 
-apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaConfigurationPlugin>()
+apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
 
-configure<com.gridnine.elsa.gradle.internal.ElsaInternalJavaExtension>{
+elsaInternal {
     artefactId = "elsa-meta"
 }
-
-apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaDecorationPlugin>()
 
 task("publishJavaMetaToLocalMavenRepository"){
     group="elsa"

@@ -13,6 +13,8 @@ public class ElsaTypesExtensionData {
 
     public File xsdsLocation;
 
+    public String xsdsCustomizationSuffix=null;
+
     public final List<ElsaTypesProjectData> items = new ArrayList<>();
 
 }

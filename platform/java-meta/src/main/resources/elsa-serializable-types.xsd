@@ -6,14 +6,27 @@
         <complexType>
             <sequence>
                 <choice maxOccurs="unbounded" minOccurs="0">
-                    <element name="type" type="tns:SerializableType">
-                    </element>
+                    <element name="type" type="tns:Type"/>
                 </choice>
             </sequence>
         </complexType>
     </element>
-    <complexType name="SerializableType">
+    <complexType name="Type">
+        <sequence minOccurs="0" maxOccurs="1">
+            <element name="generics" type="tns:GenericsDeclaration"/>
+        </sequence>
         <attribute use="required" name="id" type="string"/>
         <attribute use="required" name="java-qualified-name" type="string"/>
+    </complexType>
+    <complexType name="SingleGenericDeclaration">
+        <attribute use="required" name="id" type="string"/>
+    </complexType>
+    <complexType name="GenericsDeclaration">
+        <sequence minOccurs="1" maxOccurs="unbounded">
+            <choice>
+                <element name="generic" type="tns:SingleGenericDeclaration"/>
+                <element name="generics" type="tns:GenericsDeclaration"/>
+            </choice>
+        </sequence>
     </complexType>
 </schema>

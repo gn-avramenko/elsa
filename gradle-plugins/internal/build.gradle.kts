@@ -5,20 +5,20 @@ buildscript {
 }
 
 plugins {
-    java
+    kotlin("jvm")  version "1.8.10"
     `java-gradle-plugin`
     `maven-publish`
 }
 
+repositories{
+    mavenCentral()
+}
+
 gradlePlugin {
     plugins {
-        create("elsa-internal-configuration") {
-            id = "elsa-internal-configuration"
-            implementationClass = "com.gridnine.elsa.gradle.internal.ElsaInternalJavaConfigurationPlugin"
-        }
-        create("elsa-internal-java-decoration") {
-            id = "elsa-internal-java-decoration"
-            implementationClass = "com.gridnine.elsa.gradle.internal.ElsaInternalJavaDecorationPlugin"
+        create("elsa-internal") {
+            id = "elsa-internal"
+            implementationClass = "com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin"
         }
     }
 }
@@ -30,7 +30,7 @@ publishing {
             artifactId = "elsa-gradle-internal"
             version = "0.0.1"
 
-            from(components["java"])
+            from(components["kotlin"])
         }
     }
 }

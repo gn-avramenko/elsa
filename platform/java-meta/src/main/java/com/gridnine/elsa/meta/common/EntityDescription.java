@@ -16,9 +16,6 @@ public class EntityDescription extends BaseElementWithId {
 
     private final Map<String, PropertyDescription> properties = new LinkedHashMap<>();
 
-    private final Map<String, CollectionDescription> collections = new LinkedHashMap<>();
-
-    private final Map<String, MapDescription> maps = new LinkedHashMap<>();
 
     public EntityDescription() {
     }
@@ -39,11 +36,4 @@ public class EntityDescription extends BaseElementWithId {
         return properties;
     }
 
-    public Map<String, CollectionDescription> getCollections() {
-        return collections;
-    }
-
-    public Map<String, MapDescription> getMaps() {
-        return maps;
-    }
 }

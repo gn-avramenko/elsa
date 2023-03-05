@@ -1,6 +1,4 @@
-plugins {
-    `java-gradle-plugin`
-}
+import com.gridnine.elsa.gradle.internal.elsaInternal
 
 buildscript {
     repositories{
@@ -11,9 +9,15 @@ buildscript {
     }
 }
 
+plugins {
+    `java-gradle-plugin`
+    kotlin("jvm")  version "1.8.10"
+}
+
+
 gradlePlugin {
     plugins {
-        create("elsa-java-configuration") {
+        create("elsa-java") {
             id = "elsa-java-configuration"
             implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin"
         }
@@ -27,13 +31,11 @@ repositories{
     mavenLocal()
 }
 
-apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaConfigurationPlugin>()
+apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
 
-configure<com.gridnine.elsa.gradle.internal.ElsaInternalJavaExtension>{
+elsaInternal {
     artefactId = "elsa-gradle"
 }
-
-apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaDecorationPlugin>()
 
 dependencies{
     implementation("com.gridnine:elsa-meta:${project.property("version")}")
