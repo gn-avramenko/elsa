@@ -54,6 +54,7 @@ public class L10nMessage extends BaseIntrospectableObject{
         return switch (propertyName){
             case keyPropertyName -> key;
             case bundlePropertyName -> bundle;
+            case parametersPropertyName -> parameters;
             default -> super.getValue(propertyName);
         };
     }
@@ -66,14 +67,5 @@ public class L10nMessage extends BaseIntrospectableObject{
             default -> super.setValue(propertyName, value);
         }
     }
-
-    @Override
-    public Collection<?> getCollection(String collectionName) {
-        if(parametersPropertyName.equals(collectionName)){
-            return getParameters();
-        }
-        return super.getCollection(collectionName);
-    }
-
 
 }

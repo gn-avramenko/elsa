@@ -9,10 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class PropertyDescription extends BaseElementWithId {
-    private String javaType;
-    private final Map<String,String> parameters = new LinkedHashMap<>();
-    private final Map<Locale, String> displayNames = new LinkedHashMap<>();
+public class PropertyDescription extends BaseElement {
+    private String tagName;
 
     public PropertyDescription() {
     }
@@ -21,19 +19,11 @@ public class PropertyDescription extends BaseElementWithId {
         super(id);
     }
 
-    public Map<String, String> getParameters() {
-        return parameters;
+    public String getTagName() {
+        return tagName;
     }
 
-    public Map<Locale, String> getDisplayNames() {
-        return displayNames;
-    }
-
-    public String getJavaType() {
-        return javaType;
-    }
-
-    public void setJavaType(String javaType) {
-        this.javaType = javaType;
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 }

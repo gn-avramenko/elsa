@@ -6,7 +6,9 @@
 package com.gridnine.elsa.meta.domain;
 
 import com.gridnine.elsa.meta.common.AttributeDescription;
+import com.gridnine.elsa.meta.common.DatabaseTagDescription;
 import com.gridnine.elsa.meta.common.TagDescription;
+import com.gridnine.elsa.meta.config.Environment;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,7 +24,7 @@ public class DomainTypesRegistry {
 
     private final  Map<String, TagDescription> entityTags = new LinkedHashMap<>();
 
-    private final  Map<String, TagDescription> databaseTags = new LinkedHashMap<>();
+    private final  Map<String, DatabaseTagDescription> databaseTags = new LinkedHashMap<>();
 
     public Map<String, AttributeDescription> getDocumentAttributes() {
         return documentAttributes;
@@ -41,7 +43,7 @@ public class DomainTypesRegistry {
         return entityTags;
     }
 
-    public Map<String, TagDescription> getDatabaseTags() {
+    public Map<String, DatabaseTagDescription> getDatabaseTags() {
         return databaseTags;
     }
 
@@ -51,5 +53,9 @@ public class DomainTypesRegistry {
 
     public Map<String, AttributeDescription> getEnumItemAttributes() {
         return enumItemAttributes;
+    }
+
+    public static DomainTypesRegistry get(){
+        return Environment.getPublished(DomainTypesRegistry.class);
     }
 }

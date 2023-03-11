@@ -16,7 +16,7 @@ import java.util.Map;
 public class XsdGeneratorUtils {
 
 
-    public static void processTags(Collection<TagDescription> values, String prefix, XsdCodeGenerator gen) throws Exception {
+    public static<T extends TagDescription> void processTags(Collection<T> values, String prefix, XsdCodeGenerator gen) throws Exception {
         for (TagDescription tag : values) {
             gen.wrapWithBlock("complexType", gen.attributes("name", "%s-tag-%s".formatted(prefix, tag.getTagName())), () -> {
                 gen.wrapWithBlock("complexContent", gen.attributes(), () -> {
@@ -27,6 +27,7 @@ public class XsdGeneratorUtils {
                         } else {
                             processGenerics(tag.getGenerics(), gen);
                         }
+                        gen.addTag("attribute", "name", "displayName", "type", "string");
                         for (AttributeDescription attr : tag.getAttributes().values()) {
                             gen.addTag("attribute", "name", attr.getName(), "type", "string");
                         }
@@ -49,6 +50,19 @@ public class XsdGeneratorUtils {
             }
             gen.addTag("attribute", true, atrs);
         }
+    }
+
+    public static void genEnumItemElement(Map<String, AttributeDescription> customAttributes, XsdCodeGenerator gen) throws Exception {
+        gen.wrapWithBlock("element", gen.attributes("name", "enum-item", "maxOccurs", "unbounded", "minOccurs", "0"), () -> {
+            gen.wrapWithBlock("complexType", gen.attributes(), () -> {
+                gen.wrapWithBlock("complexContent", gen.attributes(), () -> {
+                    gen.wrapWithBlock("extension", gen.attributes("base", "tns:IdWithParametersType"), () -> {
+                        gen.addTag("attribute", "name", "displayName", "type", "string");
+                        genCustomAttributes(customAttributes, "enum-item", gen);
+                    });
+                });
+            });
+        });
     }
 
     public static void processGenerics(List<GenericDescription> generics, XsdCodeGenerator gen) {

@@ -6,16 +6,11 @@
 package com.gridnine.elsa.meta.common;
 
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
-public class EntityDescription extends BaseElementWithId {
-
-    private final Map<String,String> parameters = new LinkedHashMap<>();
-    private final Map<Locale, String> displayNames = new LinkedHashMap<>();
+public class EntityDescription extends BaseElement {
 
     private final Map<String, PropertyDescription> properties = new LinkedHashMap<>();
-
 
     public EntityDescription() {
     }
@@ -23,15 +18,6 @@ public class EntityDescription extends BaseElementWithId {
     public EntityDescription(String id) {
         super(id);
     }
-
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
-
-    public Map<Locale, String> getDisplayNames() {
-        return displayNames;
-    }
-
     public Map<String, PropertyDescription> getProperties() {
         return properties;
     }

@@ -1,5 +1,9 @@
 import com.gridnine.elsa.gradle.plugin.elsa
 
+plugins {
+    java
+}
+
 buildscript {
     repositories{
         mavenLocal()
@@ -12,10 +16,8 @@ buildscript {
 
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
-elsa {
-    types {
-        xsdsLocation("xsds")
-    }
+elsa{
+
 }
 
 task("publishToMavenLocal"){

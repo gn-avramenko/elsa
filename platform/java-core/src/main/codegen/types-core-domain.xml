@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain xmlns="http://gridnine.com/elsa/domain-types">
+    <asset-attribute name="cache-resolve" type="BOOLEAN" default-value="false"/>
+    <asset-attribute name="cache-caption" type="BOOLEAN" default-value="false"/>
+    <document-attribute name="cache-resolve" type="BOOLEAN" default-value="false"/>
+    <document-attribute name="cache-caption" type="BOOLEAN" default-value="false"/>
+    <enum-attribute name="non-localizable" type="BOOLEAN" default-value="false"/>
+    <entity-tag tag-name="string-property" type="STRING"/>
+    <entity-tag tag-name="local-date-time-property" type="LOCAL-DATE-TIME"/>
+    <entity-tag tag-name="local-date-property" type="LOCAL-DATE"/>
+    <entity-tag tag-name="boolean-property" type="BOOLEAN"/>
+    <entity-tag tag-name="long-property" type="LONG"/>
+    <entity-tag tag-name="big-decimal-property" type="BIG-DECIMAL"/>
+    <entity-tag tag-name="byte-array-property" type="BYTE-ARRAY"/>
+    <entity-tag tag-name="int-property" type="INT"/>
+    <entity-tag tag-name="entity-reference-property" type="ENTITY-REFERENCE">
+        <generic id="class-name" type="ENTITY" object-id-attribute-name="class-name"/>
+    </entity-tag>
+    <entity-tag tag-name="entity-property" type="ENTITY" object-id-attribute-name="class-name"/>
+    <entity-tag tag-name="enum-property" type="ENUM" object-id-attribute-name="class-name"/>
+    <entity-tag tag-name="entity-list" type="ARRAY-LIST">
+        <generic id="element-class-name" type="ENTITY" object-id-attribute-name="element-class-name"/>
+    </entity-tag>
+    <entity-tag tag-name="entity-reference-list" type="ARRAY-LIST">
+        <generic id="element-class-name" type="ENTITY-REFERENCE">
+            <generic id="class-name" type="ENTITY" object-id-attribute-name="class-name"/>
+        </generic>
+    </entity-tag>
+    <entity-tag tag-name="enum-list" type="ARRAY-LIST">
+        <generic id="element-class-name" type="ENUM" object-id-attribute-name="element-class-name"/>
+    </entity-tag>
+    <entity-tag tag-name="string-list" type="ARRAY-LIST">
+        <generic id="element-class-name" type="STRING"/>
+    </entity-tag>
+    <entity-tag tag-name="entity-map" type="LINKED-HASH-MAP">
+        <generic id="key-class-name" type="ENTITY" object-id-attribute-name="key-class-name"/>
+        <generic id="value-class-name" type="ENTITY" object-id-attribute-name="value-class-name"/>
+    </entity-tag>
+    <database-tag tag-name="string-property" type="STRING" has-equality-support="true" has-comparison-support="true"
+                  has-sort-support="true"
+                  has-string-operations-support="true" search-query-argument-type="STRING">
+        <attribute name="cache-find" type="BOOLEAN" default-value="false"/>
+        <attribute name="cache-get-all" type="BOOLEAN" default-value="false"/>
+        <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
+    </database-tag>
+    <database-tag tag-name="local-date-time-property" type="LOCAL-DATE-TIME" has-sort-support="true"
+                  has-comparison-support="true"
+                  search-query-argument-type="LOCAL-DATE-TIME"/>
+    <database-tag tag-name="local-date-property" type="LOCAL-DATE" has-comparison-support="true" has-sort-support="true"
+                  has-equality-support="true"
+                  search-query-argument-type="LOCAL-DATE-TIME"/>
+    <database-tag tag-name="boolean-property" type="BOOLEAN" has-sort-support="true" has-equality-support="true">
+        <attribute name="cache-get-all" type="BOOLEAN" default-value="false"/>
+        <attribute name="cache-find" type="BOOLEAN" default-value="false"/>
+    </database-tag>
+    <database-tag tag-name="big-decimal-property" type="BIG-DECIMAL" has-comparison-support="true"
+                  has-equality-support="true" has-sort-support="true" has-number-operations-support="true"
+                  search-query-argument-type="BIG-DECIMAL"/>
+    <database-tag tag-name="byte-array-property" type="BYTE-ARRAY"/>
+    <database-tag tag-name="long-property" type="LONG" has-sort-support="true" has-number-operations-support="true"
+                  has-equality-support="true" has-comparison-support="true"/>
+    <database-tag tag-name="entity-reference-property" type="ENTITY-REFERENCE" has-equality-support="true"
+                  has-sort-support="true">
+        <attribute name="cache-get-all" type="BOOLEAN" default-value="false"/>
+        <generic id="class-name" type="ENTITY" object-id-attribute-name="class-name"/>
+        <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
+    </database-tag>
+    <database-tag tag-name="enum-property" type="ENUM" object-id-attribute-name="class-name" has-equality-support="true"
+                  has-sort-support="true" search-query-argument-type="ENUM">
+        <attribute name="cache-find" type="BOOLEAN" default-value="false"/>
+        <attribute name="cache-get-all" type="BOOLEAN" default-value="false"/>
+        <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
+    </database-tag>
+    <database-tag tag-name="enum-list" type="ARRAY-LIST" has-collection-support="true" search-query-argument-type="ENUM">
+        <generic id="element-class-name" type="ENTITY" object-id-attribute-name="element-class-name"/>
+        <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
+    </database-tag>
+    <database-tag tag-name="string-list" type="ARRAY-LIST" has-collection-support="true" search-query-argument-type="STRING">
+        <generic id="element-class-name" type="STRING"/>
+        <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
+    </database-tag>
+    <database-tag tag-name="entity-reference-list" type="ARRAY-LIST" has-collection-support="true" search-query-argument-type="ENTITY-REFERENCE">
+        <generic id="element-class-name" type="ENTITY-REFERENCE">
+            <generic id="class-name" type="ENTITY" object-id-attribute-name="class-name"/>
+        </generic>
+        <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
+    </database-tag>
+</domain>

@@ -17,6 +17,8 @@
         </sequence>
         <attribute use="required" name="id" type="string"/>
         <attribute use="required" name="java-qualified-name" type="string"/>
+        <attribute name="readonly-java-qualified-name" type="string"/>
+        <attribute name="final-field" type="boolean"/>
     </complexType>
     <complexType name="SingleGenericDeclaration">
         <attribute use="required" name="id" type="string"/>

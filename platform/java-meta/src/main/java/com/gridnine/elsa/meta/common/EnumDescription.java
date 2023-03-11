@@ -8,9 +8,7 @@ package com.gridnine.elsa.meta.common;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class EnumDescription extends BaseElementWithId {
-
-    private final Map<String,String> parameters = new LinkedHashMap<>();
+public class EnumDescription extends BaseElement {
 
     private final Map<String, EnumItemDescription> items = new LinkedHashMap<>();
 
@@ -19,10 +17,6 @@ public class EnumDescription extends BaseElementWithId {
 
     public EnumDescription(String id) {
         super(id);
-    }
-
-    public Map<String, String> getParameters() {
-        return parameters;
     }
 
     public Map<String, EnumItemDescription> getItems() {

@@ -4,7 +4,7 @@
 
 package com.gridnine.elsa.core;
 
-import com.gridnine.elsa.core.config.Environment;
+import com.gridnine.elsa.meta.config.Environment;
 import com.gridnine.elsa.meta.serialization.GenericDeclaration;
 import com.gridnine.elsa.meta.serialization.SerializableType;
 import com.gridnine.elsa.meta.serialization.SerializableTypesRegistry;
@@ -33,6 +33,8 @@ public class CoreSerializableTypesConfigurator{
 
 	public static final String ARRAY_LIST = "ARRAY-LIST";
 
+	public static final String LINKED_HASH_SET = "LINKED-HASH-SET";
+
 	public static final String LINKED_HASH_MAP = "LINKED-HASH-MAP";
 
 	public void configure(){
@@ -43,6 +45,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "STRING";
 			type.setId(id);
 			type.setJavaQualifiedName("String");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -51,6 +54,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "LONG";
 			type.setId(id);
 			type.setJavaQualifiedName("long");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -59,6 +63,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "INT";
 			type.setId(id);
 			type.setJavaQualifiedName("int");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -67,6 +72,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "LOCAL-DATE-TIME";
 			type.setId(id);
 			type.setJavaQualifiedName("java.time.LocalDateTime");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -75,6 +81,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "LOCAL-DATE";
 			type.setId(id);
 			type.setJavaQualifiedName("java.time.LocalDate");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -83,6 +90,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "BOOLEAN";
 			type.setId(id);
 			type.setJavaQualifiedName("boolean");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -91,6 +99,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "BYTE-ARRAY";
 			type.setId(id);
 			type.setJavaQualifiedName("byte[]");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -99,6 +108,7 @@ public class CoreSerializableTypesConfigurator{
 			var id = "BIG-DECIMAL";
 			type.setId(id);
 			type.setJavaQualifiedName("java.math.BigDecimal");
+			type.setReadonlyJavaQualifiedName("null");
 			registry.getTypes().put(id, type);
 		}
 
@@ -106,7 +116,8 @@ public class CoreSerializableTypesConfigurator{
 			var type = new SerializableType();
 			var id = "ENTITY-REFERENCE";
 			type.setId(id);
-			type.setJavaQualifiedName("com.gridnine.elsa.core.domain.EntityReference");
+			type.setJavaQualifiedName("com.gridnine.elsa.core.model.domain.EntityReference");
+			type.setReadonlyJavaQualifiedName("com.gridnine.elsa.core.model.domain._CachedEntityReference");
 			var genererics_0 = new ArrayList<GenericDeclaration>();
 			{
 				var generic = new SingleGenericDeclaration();
@@ -122,6 +133,25 @@ public class CoreSerializableTypesConfigurator{
 			var id = "ARRAY-LIST";
 			type.setId(id);
 			type.setJavaQualifiedName("java.util.ArrayList");
+			type.setReadonlyJavaQualifiedName("com.gridnine.elsa.core.model.common.ReadOnlyArrayList");
+			type.setFinalField(true);
+			var genererics_0 = new ArrayList<GenericDeclaration>();
+			{
+				var generic = new SingleGenericDeclaration();
+				generic.setId("element-class-name");
+				genererics_0.add(generic);
+			}
+			type.getGenerics().addAll(genererics_0);
+			registry.getTypes().put(id, type);
+		}
+
+		{
+			var type = new SerializableType();
+			var id = "LINKED-HASH-SET";
+			type.setId(id);
+			type.setJavaQualifiedName("java.util.LinkedHashSet");
+			type.setReadonlyJavaQualifiedName("com.gridnine.elsa.core.model.common.ReadOnlyLinkedHashSet");
+			type.setFinalField(true);
 			var genererics_0 = new ArrayList<GenericDeclaration>();
 			{
 				var generic = new SingleGenericDeclaration();
@@ -137,6 +167,8 @@ public class CoreSerializableTypesConfigurator{
 			var id = "LINKED-HASH-MAP";
 			type.setId(id);
 			type.setJavaQualifiedName("java.util.LinkedHashMap");
+			type.setReadonlyJavaQualifiedName("com.gridnine.elsa.core.model.common.ReadOnlyLinkedHashMap");
+			type.setFinalField(true);
 			var genererics_0 = new ArrayList<GenericDeclaration>();
 			{
 				var generic = new SingleGenericDeclaration();

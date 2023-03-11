@@ -1,7 +1,7 @@
 package com.gridnine.elsa.gradle.plugin
 
 import com.gridnine.elsa.gradle.codegen.ElsaCodeGenTask
-import com.gridnine.elsa.gradle.config.ElsaTypesExtensionData
+import com.gridnine.elsa.gradle.config.ElsaCodeGenExtensionData
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -12,24 +12,19 @@ open class ElsaJavaPlugin : Plugin<Project> {
         val epe = target.rootProject.extensions.findByType(
             ExtraPropertiesExtension::class.java
         )!!
-        val key = "elsa-types-extension-data"
-        if (!epe.has(key)) {
-            epe[key] = ElsaTypesExtensionData()
+        val codeGenKey = "elsa-codegen-extension-data"
+        if (!epe.has(codeGenKey)) {
+            epe[codeGenKey] = ElsaCodeGenExtensionData()
         }
-        val data = epe[key] as ElsaTypesExtensionData?
+        val codeGenData = epe[codeGenKey] as ElsaCodeGenExtensionData
         target.extensions.create(
             "elsa-java-extension",
-            ElsaJavaExtension::class.java, target, data
+            ElsaJavaExtension::class.java, target, codeGenData
         )
     }
 
-    companion object {
-        fun decorate(target: Project) {
-            target.tasks.create("eCodeGen", ElsaCodeGenTask::class.java)
-        }
-    }
 }
 fun Project.elsa(configure: ElsaJavaExtension.() -> Unit): Unit {
     (this as ExtensionAware).extensions.configure("elsa-java-extension", configure)
-    ElsaJavaPlugin.decorate(this);
+    this.tasks.create("eCodeGen", ElsaCodeGenTask::class.java)
 }
