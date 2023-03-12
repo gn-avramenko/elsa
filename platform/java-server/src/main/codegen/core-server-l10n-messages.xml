@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages-bundle xmlns="http://gridnine.com/elsa/meta-l10n" id ="core" >
+    <message id="Found_several_records">
+        <string-property id="objectType"/>
+        <string-property id="propertyName"/>
+        <string-property id="propertyValue"/>
+    </message>
+</messages-bundle>

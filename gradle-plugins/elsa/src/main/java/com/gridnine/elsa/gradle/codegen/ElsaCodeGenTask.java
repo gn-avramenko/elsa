@@ -7,6 +7,7 @@ package com.gridnine.elsa.gradle.codegen;
 
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGen;
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainEntitiesCodeGen;
+import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nFactoryGenerator;
 import com.gridnine.elsa.gradle.codegen.serializable.SerializableTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomXsdCodeGen;
@@ -72,6 +73,7 @@ public class ElsaCodeGenTask extends DefaultTask {
             var cmg = new JavaCustomMetaRegistryConfiguratorCodeGenerator();
             var dmg = new JavaDomainMetaRegistryConfiguratorCodeGen();
             var l10nmg = new JavaL10nMetaRegistryConfiguratorCodeGen();
+            var l10nfg = new JavaL10nFactoryGenerator();
             var dcg = new JavaDomainCodeGen();
             for (var projectData : ext.getData().items) {
                 for (var folderData : projectData.folders) {
@@ -118,9 +120,12 @@ public class ElsaCodeGenTask extends DefaultTask {
                     if(folderData.l10nMetaRegistryConfigurator != null){
                         var registry = new L10nMetaRegistry();
                         for(ElsaJavaL10nCodeGenRecord record: folderData.l10nCodeGenRecords){
+                            var reg2 = new L10nMetaRegistry();
                             l10nmp.updateMetaRegistry(registry, record.getSources());
+                            l10nmp.updateMetaRegistry(reg2, record.getSources());
+                            l10nfg.generate(record.getFactory(), reg2, totalSerializableTypesRegistry, totalL10nTypesRegistry, folderData.folder, files);
                         }
-                        l10nmg.generate(registry, folderData.l10nTypesConfigurator, folderData.folder, files);
+                        l10nmg.generate(registry, folderData.l10nMetaRegistryConfigurator, folderData.folder, files);
                     }
                     if(folderData.domainMetaRegistryConfigurator != null){
                         var registry = new DomainMetaRegistry();

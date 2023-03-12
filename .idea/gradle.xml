@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/platform" />
             <option value="$PROJECT_DIR$/platform/java-core" />
             <option value="$PROJECT_DIR$/platform/java-meta" />
+            <option value="$PROJECT_DIR$/platform/java-server" />
           </set>
         </option>
       </GradleProjectSettings>

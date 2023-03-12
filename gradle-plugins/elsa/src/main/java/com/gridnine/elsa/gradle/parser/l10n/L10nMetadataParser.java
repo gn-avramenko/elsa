@@ -38,15 +38,14 @@ public class L10nMetadataParser {
                 var fullId = message.getId();
                 var localizations = pr.localizations();
                 if (fullId != null && localizations != null) {
-                    String key = "%s.name".formatted(fullId);
-                    var locs = localizations.get(key);
+                    var locs = localizations.get(fullId);
                     if (locs != null) {
                         locs.forEach((locale, name) -> {
                             message.getDisplayNames().put(locale, name);
                         });
                     }
                 }
-                child.getChildren("parameter").forEach(paramChild -> {
+                child.getChildren().forEach(paramChild -> {
                     var param = message.getParameters().computeIfAbsent(CommonParserUtils.getIdAttribute(paramChild),
                             PropertyDescription::new);
                     param.setTagName(paramChild.getName());
