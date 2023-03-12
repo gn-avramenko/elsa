@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.gridnine.elsa.core.CoreSerializableTypesConfigurator;
-import com.gridnine.elsa.core.model.common.BaseIntrospectableObject;
+import com.gridnine.elsa.core.model.common.ReadOnlyArrayList;
 import com.gridnine.elsa.core.serialization.SerializationHandler;
 import com.gridnine.elsa.core.serialization.metadata.PropertySerializationMetadata;
 
@@ -52,4 +52,37 @@ public class ArrayListSerializationHandler implements SerializationHandler<Array
         }
         return array;
     }
+
+    @Override
+    public ArrayList<?> clone(ArrayList<?> source, ArrayList<?> tgt, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        tgt.clear();
+        var data = prop.genericsSerializers.get("element-class-name");
+        for(Object item: source){
+            ((ArrayList) tgt).add(data.handler.clone(item, null, data, processed));
+        }
+        return tgt;
+    }
+
+    public ArrayList<?> toCachedObject(ArrayList<?> source, ArrayList<?> tgt, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        var target = (ReadOnlyArrayList<Object>) tgt;
+        target.setAllowChanges(true);
+        target.clear();
+        var data = prop.genericsSerializers.get("element-class-name");
+        for(Object item: source){
+           target.add(data.handler.toCachedObject(item, null, data, processed));
+        }
+        target.setAllowChanges(false);
+        return target;
+    }
+
+    public ArrayList<?> toStandardObject(ArrayList<?> source, ArrayList<?> tgt, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        var target = (ArrayList<Object>) tgt;
+        target.clear();
+        var data = prop.genericsSerializers.get("element-class-name");
+        for(Object item: source){
+            target.add(data.handler.toStandardObject(item, null, data, processed));
+        }
+        return target;
+    }
+
 }

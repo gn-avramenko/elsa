@@ -43,4 +43,19 @@ public class LocalDateSerializationHandler implements SerializationHandler<Local
     public LocalDate deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, LocalDate currentValue) throws Exception {
         return LocalDate.parse(parser.getText(), dateFormatter);
     }
+
+    @Override
+    public LocalDate clone(LocalDate source, LocalDate target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public LocalDate toCachedObject(LocalDate source, LocalDate target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public LocalDate toStandardObject(LocalDate source, LocalDate target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }

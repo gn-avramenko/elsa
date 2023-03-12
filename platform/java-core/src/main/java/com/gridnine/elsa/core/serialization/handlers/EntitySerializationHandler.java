@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.gridnine.elsa.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.core.model.common.ClassMapper;
+import com.gridnine.elsa.core.model.domain.CachedObject;
 import com.gridnine.elsa.core.reflection.ReflectionFactory;
 import com.gridnine.elsa.core.serialization.SerializationHandler;
 import com.gridnine.elsa.core.serialization.StandardSerializationParameters;
@@ -18,10 +19,6 @@ import com.gridnine.elsa.core.serialization.metadata.PropertySerializationMetada
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -110,6 +107,21 @@ public class EntitySerializationHandler implements SerializationHandler<BaseIntr
         return deserialize0(parser, nestedProp, params, processed, currentValue);
     }
 
+    @Override
+    public BaseIntrospectableObject clone(BaseIntrospectableObject source, BaseIntrospectableObject target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return clone0(source, target, prop, processed);
+    }
+
+    @Override
+    public BaseIntrospectableObject toCachedObject(BaseIntrospectableObject source, BaseIntrospectableObject target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return toCachedObject0(source, target, property, processed);
+    }
+
+    @Override
+    public BaseIntrospectableObject toStandardObject(BaseIntrospectableObject source, BaseIntrospectableObject target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return toStandardObject0(source, target, property, processed);
+    }
+
     public static BaseIntrospectableObject deserialize0(JsonParser parser, PropertySerializationMetadata property, Map<String,Object> params, Map<Integer, Object> processed, BaseIntrospectableObject currentValue) throws Exception {
         BaseIntrospectableObject result = null;
         String className = property.property.getAttributes().get(property.tagDescription.getObjectIdAttributeName());
@@ -154,5 +166,81 @@ public class EntitySerializationHandler implements SerializationHandler<BaseIntr
             }
         }
         return result;
+    }
+
+
+    public static BaseIntrospectableObject clone0(BaseIntrospectableObject source, BaseIntrospectableObject tgt, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        if(processed.containsKey(source)){
+            return (BaseIntrospectableObject) processed.get(source);
+        }
+        BaseIntrospectableObject target = tgt == null ? ReflectionFactory.get().newInstance(source.getClass().getName()): tgt;
+        var metadata = ObjectSerializationMetadataProvider.get().getMetadata(source.getClass().getName());
+        for(var prop: metadata.getAllProperties().entrySet()){
+            var value = source.getValue(prop.getKey());
+            if(value == null){
+                target.setValue(prop.getKey(), null);
+                continue;
+            }
+            if(prop.getValue().serializableTypeDescription != null && prop.getValue().serializableTypeDescription.isFinalField()){
+                prop.getValue().handler.clone(value, target.getValue(prop.getKey()), prop.getValue(), processed);
+            } else {
+                target.setValue(prop.getKey(), prop.getValue().handler.clone(value, null, prop.getValue(), processed));
+            }
+        }
+        return target;
+    }
+
+    public static BaseIntrospectableObject toCachedObject0(BaseIntrospectableObject source, BaseIntrospectableObject tgt, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        if(processed.containsKey(source)){
+            return (BaseIntrospectableObject) processed.get(source);
+        }
+        if(source instanceof CachedObject){
+            return source;
+        }
+        final var className = source.getClass().getName();
+        final var idx = className.lastIndexOf(".");
+        final var cachedClassName = className.substring(0, idx)+"._Cached"+className.substring(idx+1);
+        final var target = (BaseIntrospectableObject) ReflectionFactory.get().newInstance(cachedClassName);
+        ((CachedObject)  target).setAllowChanges(true);
+        var metadata = ObjectSerializationMetadataProvider.get().getMetadata(source.getClass().getName());
+        for(var prop: metadata.getAllProperties().entrySet()){
+            var value = source.getValue(prop.getKey());
+            if(value == null){
+                target.setValue(prop.getKey(), null);
+                continue;
+            }
+            if(prop.getValue().serializableTypeDescription != null && prop.getValue().serializableTypeDescription.isFinalField()){
+                prop.getValue().handler.toCachedObject(value, target.getValue(prop.getKey()), prop.getValue(), processed);
+            } else {
+                target.setValue(prop.getKey(), prop.getValue().handler.toCachedObject(value, null, prop.getValue(), processed));
+            }
+        }
+        ((CachedObject)  target).setAllowChanges(false);
+        return target;
+    }
+
+    public static BaseIntrospectableObject toStandardObject0(BaseIntrospectableObject source, BaseIntrospectableObject tgt, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        if(processed.containsKey(source)){
+            return (BaseIntrospectableObject) processed.get(source);
+        }
+        if(!(source instanceof CachedObject)){
+            return source;
+        }
+        final var className = source.getClass().getName().replace("_Cached","");
+        final var target = (BaseIntrospectableObject) ReflectionFactory.get().newInstance(className);
+        var metadata = ObjectSerializationMetadataProvider.get().getMetadata(className);
+        for(var prop: metadata.getAllProperties().entrySet()){
+            var value = source.getValue(prop.getKey());
+            if(value == null){
+                target.setValue(prop.getKey(), null);
+                continue;
+            }
+            if(prop.getValue().serializableTypeDescription != null && prop.getValue().serializableTypeDescription.isFinalField()){
+                prop.getValue().handler.toStandardObject(value, target.getValue(prop.getKey()), prop.getValue(), processed);
+            } else {
+                target.setValue(prop.getKey(), prop.getValue().handler.toStandardObject(value, null, prop.getValue(), processed));
+            }
+        }
+        return target;
     }
 }

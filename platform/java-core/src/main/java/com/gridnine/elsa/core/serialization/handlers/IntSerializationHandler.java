@@ -36,4 +36,19 @@ public class IntSerializationHandler implements SerializationHandler<Integer> {
     public Integer deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, Integer currentValue) throws Exception {
         return parser.getIntValue();
     }
+
+    @Override
+    public Integer clone(Integer source, Integer target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Integer toCachedObject(Integer source, Integer target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Integer toStandardObject(Integer source, Integer target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }

@@ -36,4 +36,19 @@ public class BooleanSerializationHandler implements SerializationHandler<Boolean
     public Boolean deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, Boolean currentValue) throws Exception {
         return parser.getBooleanValue();
     }
+
+    @Override
+    public Boolean clone(Boolean source, Boolean target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Boolean toCachedObject(Boolean source, Boolean target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Boolean toStandardObject(Boolean source, Boolean target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }

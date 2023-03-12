@@ -22,6 +22,10 @@ public class _CachedTestItem extends TestItem implements CachedObject{
 		super.setName(value);
 	}
 	@Override
+	public Object getValue(String propertyName){
+		return super.getValue(propertyName);
+	}
+	@Override
 	public void setValue(String propertyName, Object value){
 		if(!allowChanges){
 			throw Xeption.forDeveloper("changes are not allowed");

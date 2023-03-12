@@ -4,6 +4,7 @@
 
 package com.gridnine.elsa.common.core.test;
 
+import com.gridnine.elsa.core.utils.LocaleUtils;
 import com.gridnine.elsa.meta.common.EntityDescription;
 import com.gridnine.elsa.meta.common.EnumDescription;
 import com.gridnine.elsa.meta.common.EnumItemDescription;
@@ -22,17 +23,17 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator{
 			var enumDescription = new EnumDescription("com.gridnine.elsa.common.core.test.model.domain.TestEnum");
 			{
 				var enumItemDescription = new EnumItemDescription("ITEM1");
-				enumItemDescription.getDisplayNames().put(new Locale("ru"), "Item 1");
+				enumItemDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Item 1");
 				enumDescription.getItems().put("ITEM1", enumItemDescription);
 			}
 			{
 				var enumItemDescription = new EnumItemDescription("ITEM2");
-				enumItemDescription.getDisplayNames().put(new Locale("ru"), "Item 2");
+				enumItemDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Item 2");
 				enumDescription.getItems().put("ITEM2", enumItemDescription);
 			}
 			{
 				var enumItemDescription = new EnumItemDescription("ITEM3");
-				enumItemDescription.getDisplayNames().put(new Locale("ru"), "Item 3");
+				enumItemDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Item 3");
 				enumDescription.getItems().put("ITEM3", enumItemDescription);
 			}
 			smr.getEnums().put("com.gridnine.elsa.common.core.test.model.domain.TestEnum", enumDescription);
@@ -90,13 +91,13 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.core.test.model.domain.TestDomainAsset");
 			entityDescription.getAttributes().put("cache-resolve", "true");
 			entityDescription.getAttributes().put("caption-expression", "stringProperty");
-			entityDescription.getDisplayNames().put(new Locale("ru"), "Test Domain Assets");
+			entityDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Test Domain Assets");
 			{
 				var propertyDescription = new PropertyDescription("stringProperty");
 				propertyDescription.setTagName("string-property");
 				propertyDescription.getAttributes().put("cache-find", "true");
 				propertyDescription.getAttributes().put("use-in-text-search", "true");
-				propertyDescription.getDisplayNames().put(new Locale("ru"), "String property");
+				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "String property");
 				entityDescription.getProperties().put("stringProperty", propertyDescription);
 			}
 			{
@@ -174,13 +175,13 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator{
 		{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.core.test.model.domain.TestDomainDocumentProjection");
 			entityDescription.getAttributes().put("document", "com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument");
-			entityDescription.getDisplayNames().put(new Locale("ru"), "Test documents");
+			entityDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Test documents");
 			{
 				var propertyDescription = new PropertyDescription("stringProperty");
 				propertyDescription.setTagName("string-property");
 				propertyDescription.getAttributes().put("cache-find", "true");
 				propertyDescription.getAttributes().put("use-in-text-search", "true");
-				propertyDescription.getDisplayNames().put(new Locale("ru"), "String  property");
+				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "String  property");
 				entityDescription.getProperties().put("stringProperty", propertyDescription);
 			}
 			{
@@ -194,7 +195,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator{
 				var propertyDescription = new PropertyDescription("stringCollection");
 				propertyDescription.setTagName("string-list");
 				propertyDescription.getAttributes().put("use-in-text-search", "true");
-				propertyDescription.getDisplayNames().put(new Locale("ru"), "String  collection");
+				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "String  collection");
 				entityDescription.getProperties().put("stringCollection", propertyDescription);
 			}
 			{
@@ -202,7 +203,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator{
 				propertyDescription.setTagName("enum-property");
 				propertyDescription.getAttributes().put("class-name", "com.gridnine.elsa.common.core.test.model.domain.TestEnum");
 				propertyDescription.getAttributes().put("use-in-text-search", "true");
-				propertyDescription.getDisplayNames().put(new Locale("ru"), "Enum  property");
+				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Enum  property");
 				entityDescription.getProperties().put("enumProperty", propertyDescription);
 			}
 			{
@@ -217,7 +218,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator{
 				propertyDescription.setTagName("enum-list");
 				propertyDescription.getAttributes().put("element-class-name", "com.gridnine.elsa.common.core.test.model.domain.TestEnum");
 				propertyDescription.getAttributes().put("use-in-text-search", "true");
-				propertyDescription.getDisplayNames().put(new Locale("ru"), "Enum collection");
+				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Enum collection");
 				entityDescription.getProperties().put("enumCollection", propertyDescription);
 			}
 			{
@@ -225,7 +226,7 @@ public class ElsaCommonCoreTestDomainMetaRegistryConfigurator{
 				propertyDescription.setTagName("entity-reference-list");
 				propertyDescription.getAttributes().put("class-name", "com.gridnine.elsa.common.core.test.model.domain.TestDomainDocument");
 				propertyDescription.getAttributes().put("use-in-text-search", "true");
-				propertyDescription.getDisplayNames().put(new Locale("ru"), "Entity ref collection");
+				propertyDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Entity ref collection");
 				entityDescription.getProperties().put("entityRefCollection", propertyDescription);
 			}
 			smr.getEntities().put("com.gridnine.elsa.common.core.test.model.domain.TestDomainDocumentProjection", entityDescription);

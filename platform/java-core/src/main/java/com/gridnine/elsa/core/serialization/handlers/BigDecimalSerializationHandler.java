@@ -37,4 +37,19 @@ public class BigDecimalSerializationHandler implements SerializationHandler<BigD
     public BigDecimal deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, BigDecimal currentValue) throws Exception {
         return BigDecimal.valueOf(parser.getDoubleValue());
     }
+
+    @Override
+    public BigDecimal clone(BigDecimal source, BigDecimal target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public BigDecimal toCachedObject(BigDecimal source, BigDecimal target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public BigDecimal toStandardObject(BigDecimal source, BigDecimal target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }

@@ -36,4 +36,19 @@ public class LongSerializationHandler implements SerializationHandler<Long> {
     public Long deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, Long currentValue) throws Exception {
         return parser.getLongValue();
     }
+
+    @Override
+    public Long clone(Long source, Long target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Long toCachedObject(Long source, Long target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Long toStandardObject(Long source, Long target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }

@@ -31,6 +31,14 @@ public class _CachedTestGroup extends TestGroup implements CachedObject{
 		return this.items;
 	}
 	@Override
+	public Object getValue(String propertyName){
+
+		if("items".equals(propertyName)){
+			return items;
+		}
+		return super.getValue(propertyName);
+	}
+	@Override
 	public void setValue(String propertyName, Object value){
 		if(!allowChanges){
 			throw Xeption.forDeveloper("changes are not allowed");

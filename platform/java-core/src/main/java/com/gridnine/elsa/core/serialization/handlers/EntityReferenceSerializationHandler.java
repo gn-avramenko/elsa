@@ -13,6 +13,7 @@ import com.gridnine.elsa.core.model.common.BaseIdentity;
 import com.gridnine.elsa.core.model.common.CaptionProvider;
 import com.gridnine.elsa.core.model.common.ClassMapper;
 import com.gridnine.elsa.core.model.domain.EntityReference;
+import com.gridnine.elsa.core.model.domain._CachedEntityReference;
 import com.gridnine.elsa.core.reflection.ReflectionFactory;
 import com.gridnine.elsa.core.serialization.SerializationHandler;
 import com.gridnine.elsa.core.serialization.StandardSerializationParameters;
@@ -103,5 +104,38 @@ public class EntityReferenceSerializationHandler implements SerializationHandler
             return result;
         }
         return null;
+    }
+
+    @Override
+    public EntityReference<?> clone(EntityReference<?> source, EntityReference<?> target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        var result = new EntityReference<>();
+        result.setType((Class) source.getType());
+        result.setId(source.getId());
+        result.setCaption(source.getCaption());
+        return result;
+    }
+
+    @Override
+    public EntityReference<?> toCachedObject(EntityReference<?> source, EntityReference<?> target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+       var result = new _CachedEntityReference<>();
+        result.setAllowChanges(true);
+        result.setCaption(source.getCaption());
+        result.setId(source.getId());
+        result.setType((Class<BaseIdentity>) source.getType());
+        result.setAllowChanges(false);
+        return result;
+    }
+
+    @Override
+    public EntityReference<?> toStandardObject(EntityReference<?> source, EntityReference<?> target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        var result = new EntityReference<>();
+        result.setCaption(source.getCaption());
+        result.setId(source.getId());
+        if(source.getType().getName().contains("_Cached")){
+            result.setType(ReflectionFactory.get().getClass(source.getType().getName().replace("_Cached","")));
+        } else {
+            result.setType((Class<BaseIdentity>) source.getType());
+        }
+        return result;
     }
 }

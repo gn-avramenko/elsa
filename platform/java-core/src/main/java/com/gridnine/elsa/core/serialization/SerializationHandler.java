@@ -22,4 +22,12 @@ public interface SerializationHandler<T> {
     void processDuplicatingEntities(T value, Map<String, PropertySerializationMetadata> generics, Set<Object> duplicatingEntities, Set<Object> processed);
 
     T deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, T currentValue) throws Exception;
+
+    T clone(T source, T target, PropertySerializationMetadata prop, Map<Object,Object> processed);
+
+    T toCachedObject(T source, T target, PropertySerializationMetadata property, Map<Object, Object> processed);
+
+    T toStandardObject(T source, T target, PropertySerializationMetadata property, Map<Object, Object> processed);
+
+
 }

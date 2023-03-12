@@ -45,6 +45,10 @@ public class _CachedTestDomainAsset extends TestDomainAsset implements CachedObj
 		super.setId(value);
 	}
 	@Override
+	public Object getValue(String propertyName){
+		return super.getValue(propertyName);
+	}
+	@Override
 	public void setValue(String propertyName, Object value){
 		if(!allowChanges){
 			throw Xeption.forDeveloper("changes are not allowed");

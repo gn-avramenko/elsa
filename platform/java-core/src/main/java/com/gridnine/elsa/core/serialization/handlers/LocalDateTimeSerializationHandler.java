@@ -42,4 +42,19 @@ public class LocalDateTimeSerializationHandler implements SerializationHandler<L
     public LocalDateTime deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, LocalDateTime currentValue) throws Exception {
         return LocalDateTime.parse(parser.getText(), dateTimeFormatter);
     }
+
+    @Override
+    public LocalDateTime clone(LocalDateTime source, LocalDateTime target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public LocalDateTime toCachedObject(LocalDateTime source, LocalDateTime target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public LocalDateTime toStandardObject(LocalDateTime source, LocalDateTime target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }

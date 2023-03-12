@@ -45,4 +45,19 @@ public class EnumSerializationHandler implements SerializationHandler<Enum<?>> {
             case NAME -> ReflectionFactory.get().safeGetEnum(className, parser.getText());
         };
     }
+
+    @Override
+    public Enum<?> clone(Enum<?> source, Enum<?> target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Enum<?> toCachedObject(Enum<?> source, Enum<?> target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public Enum<?> toStandardObject(Enum<?> source, Enum<?> target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }

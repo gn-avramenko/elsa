@@ -103,6 +103,30 @@ public class _CachedTestDomainDocument extends TestDomainDocument implements Cac
 		super.setId(value);
 	}
 	@Override
+	public Object getValue(String propertyName){
+
+		if("stringCollection".equals(propertyName)){
+			return stringCollection;
+		}
+
+		if("entityCollection".equals(propertyName)){
+			return entityCollection;
+		}
+
+		if("groups".equals(propertyName)){
+			return groups;
+		}
+
+		if("enumCollection".equals(propertyName)){
+			return enumCollection;
+		}
+
+		if("entityRefCollection".equals(propertyName)){
+			return entityRefCollection;
+		}
+		return super.getValue(propertyName);
+	}
+	@Override
 	public void setValue(String propertyName, Object value){
 		if(!allowChanges){
 			throw Xeption.forDeveloper("changes are not allowed");

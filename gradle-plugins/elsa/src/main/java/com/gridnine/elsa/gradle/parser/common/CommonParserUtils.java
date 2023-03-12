@@ -66,65 +66,6 @@ public final class CommonParserUtils {
         props.forEach((key, value) -> localizations.computeIfAbsent((String) key,
                 k -> new LinkedHashMap<>()).put(locale, (String) value));
     }
-//
-//    public static<T extends O> void updateLocalizationsOfChild(T description ,  Map<String, Map<Locale, String>>  localizations, String parentId){
-//        var id = parentId == null? "%s.name".formatted(description.getId()) : "%s.%s.name".formatted(parentId, description.getId());
-//        updateLocalizations(description, localizations, id);
-//    }
-//
-//    public static<T extends BaseModelElementDescription> void  updateLocalizations(Map<Locale,String> displayNames , Map<String, Map<Locale, String>>  localizations, String id) {
-//        var locs = localizations.get(id);
-//        if(locs == null){
-//            return;
-//        }
-//        displayNames.putAll(locs);
-//    }
-//    private static<T extends BaseModelElementDescription> void  updateLocalizations(T description , Map<String, Map<Locale, String>>  localizations, String id) {
-//        updateLocalizations(description.getDisplayNames(), localizations, id);
-//    }
-//
-//    private static void updateTsId(BaseModelElementDescription md, BuildXmlNode node, String attName){
-//        var tsClassName = node.getAttribute(attName);
-//        if(tsClassName != null){
-//            md.getParameters().put(attName, tsClassName);
-//        }
-//    }
-//    public static void fillEntityDescription(BuildXmlNode elm, EntityDescription description) {
-//        description.setAbstract("true".equals(elm.getAttribute("abstract")));
-//        description.setExtendsId(elm.getAttribute("extends"));
-//        elm.getChildren("property").forEach(prop ->{
-//            var pd = description.getProperties().computeIfAbsent(getIdAttribute(prop), StandardPropertyDescription::new);
-//            pd.setClassName(prop.getAttribute("class-name"));
-//            pd.setNonNullable("true".equals(prop.getAttribute("non-nullable")));
-//            pd.setType(StandardValueType.valueOf(prop.getAttribute("type")));
-//            updateTsId(pd, prop, "ts-class-name");
-//        });
-//        elm.getChildren("collection").forEach(coll ->{
-//            var cd = description.getCollections().computeIfAbsent(getIdAttribute(coll), StandardCollectionDescription::new);
-//            cd.setElementClassName(coll.getAttribute("element-class-name"));
-//            cd.setElementType(StandardValueType.valueOf(coll.getAttribute("element-type")));
-//            cd.setUnique("true".equals(coll.getAttribute("unique")));
-//            updateTsId(cd, coll, "ts-element-class-name");
-//        });
-//        elm.getChildren("map").forEach(map ->{
-//            var md = description.getMaps().computeIfAbsent(getIdAttribute(map), StandardMapDescription::new);
-//            md.setKeyClassName(map.getAttribute("key-class-name"));
-//            md.setKeyType(StandardValueType.valueOf(map.getAttribute("key-type")));
-//            md.setValueClassName(map.getAttribute("value-class-name"));
-//            md.setValueType(StandardValueType.valueOf(map.getAttribute("key-type")));
-//            updateTsId(md, map, "ts-key-class-name");
-//            updateTsId(md, map, "ts-value-class-name");
-//        });
-//        updateParameters(elm, description);
-//
-//    }
-//
-//    public static EntityDescription updateEntity(Map<String, EntityDescription> entities, BuildXmlNode node){
-//        var entityDescr = entities.computeIfAbsent(getIdAttribute(node), EntityDescription::new);
-//        fillEntityDescription(node, entityDescr);
-//        return entityDescr;
-//    }
-//
 
     public static void updateBaseElement(BaseElement elm, BuildXmlNode node, String fullId, Map<String, Map<Locale, String>> localization) {
         node.getAttributes().forEach((key, value) -> {

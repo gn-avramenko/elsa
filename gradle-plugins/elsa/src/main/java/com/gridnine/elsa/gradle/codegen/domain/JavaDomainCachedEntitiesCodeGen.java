@@ -127,6 +127,17 @@ public class JavaDomainCachedEntitiesCodeGen {
                 });
             }
             gen.printLine("@Override");
+            gen.wrapWithBlock("public Object getValue(String propertyName)", () -> {
+                for(GenPropertyDescription prop: ed.getProperties().values()){
+                    var st = sRegistry.getTypes().get(prop.getTagDescription().getType());
+                    if(st != null && st.isFinalField() && st.getReadonlyJavaQualifiedName() != null){
+                        gen.blankLine();
+                        gen.wrapWithBlock("if(\"%s\".equals(propertyName))".formatted(prop.getId()), () -> gen.printLine("return %s;".formatted(prop.getId())));
+                    }
+                }
+                gen.printLine("return super.getValue(propertyName);");
+            });
+            gen.printLine("@Override");
             gen.wrapWithBlock("public void setValue(String propertyName, Object value)", () -> {
                 gen.wrapWithBlock("if(!allowChanges)", () -> gen.printLine("throw Xeption.forDeveloper(\"changes are not allowed\");"));
                 gen.printLine("super.setValue(propertyName, value);");

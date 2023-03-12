@@ -47,12 +47,13 @@ public class JavaL10nMetaRegistryConfiguratorCodeGen {
                                 }
                                 for(Map.Entry<Locale, String> entry : md.getDisplayNames().entrySet()){
                                     gen.addImport("java.util.Locale");
+                                    gen.addImport("com.gridnine.elsa.core.utils.LocaleUtils");
                                     if(Locale.ROOT.equals(entry.getKey())){
                                         gen.printLine("messageDescription.getDisplayNames().put(Locale.ROOT, \"%s\");".formatted(entry.getValue()));
                                     } else if (entry.getKey().getCountry() == null || "".equals(entry.getKey().getCountry())){
-                                        gen.printLine("messageDescription.getDisplayNames().put(new Locale(\"%s\"), \"%s\");".formatted(entry.getKey().getLanguage(),  entry.getValue()));
+                                        gen.printLine("messageDescription.getDisplayNames().put(LocaleUtils.getLocale(\"%s\"), \"%s\");".formatted(entry.getKey().getLanguage(),  entry.getValue()));
                                     } else {
-                                        gen.printLine("messageDescriptions.getDisplayNames().put(new Locale(\"%s\",\"%s\"), \"%s\");".formatted(entry.getKey().getLanguage(), entry.getKey().getCountry(), entry.getValue()));
+                                        gen.printLine("messageDescriptions.getDisplayNames().put(LocaleUtils.getLocale(\"%s\",\"%s\"), \"%s\");".formatted(entry.getKey().getLanguage(), entry.getKey().getCountry(), entry.getValue()));
                                     }
                                 }
                                 gen.printLine("bundleDescription.getMessages().put(messageDescription.getId(), messageDescription);");

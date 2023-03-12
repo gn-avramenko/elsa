@@ -158,9 +158,11 @@ public class JavaCodeGeneratorUtils {
             if(Locale.ROOT.equals(entry.getKey())){
                 gen.printLine("%s.getDisplayNames().put(Locale.ROOT, \"%s\");".formatted(elementName, entry.getValue()));
             } else if (entry.getKey().getCountry() == null || "".equals(entry.getKey().getCountry())){
-                gen.printLine("%s.getDisplayNames().put(new Locale(\"%s\"), \"%s\");".formatted(elementName, entry.getKey().getLanguage(),  entry.getValue()));
+                gen.addImport("com.gridnine.elsa.core.utils.LocaleUtils");
+                gen.printLine("%s.getDisplayNames().put(LocaleUtils.getLocale(\"%s\"), \"%s\");".formatted(elementName, entry.getKey().getLanguage(),  entry.getValue()));
             } else {
-                gen.printLine("%s.getDisplayNames().put(new Locale(\"%s\",\"%s\"), \"%s\");".formatted(elementName, entry.getKey().getLanguage(), entry.getKey().getCountry(), entry.getValue()));
+                gen.addImport("com.gridnine.elsa.core.utils.LocaleUtils");
+                gen.printLine("%s.getDisplayNames().put(LocaleUtils.getLocale(\"%s\",\"%s\"), \"%s\");".formatted(elementName, entry.getKey().getLanguage(), entry.getKey().getCountry(), entry.getValue()));
             }
         }
     }

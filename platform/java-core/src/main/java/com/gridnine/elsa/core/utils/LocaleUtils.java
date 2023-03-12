@@ -23,6 +23,11 @@ public class LocaleUtils {
         return new Locale(language, countryCode);
     }
 
+    public static Locale getLocale(String language){
+        return getLocale(language, "");
+    }
+
+
     public static void setCurrentLocale(Locale locale){
         currentLocale.set(locale);
     }

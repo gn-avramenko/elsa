@@ -43,12 +43,21 @@ public class ObjectSerializationMetadataProvider {
 
     private void fillMetadata(ObjectSerializationMetadata res, String id) {
         var eid = id;
+        boolean document = false;
+        boolean asset = false;
+        boolean defaultClassProcessed = false;
         while (eid != null){
             EntityDescription ed = SerializableMetaRegistry.get().getEntities().get(eid);
             Map<String, TagDescription> tags;
-            if(DomainMetaRegistry.get().getAssetsIds().contains(eid) || DomainMetaRegistry.get().getProjectionsIds().contains(eid)){
+            if(DomainMetaRegistry.get().getAssetsIds().contains(eid)){
                 tags = (Map) DomainTypesRegistry.get().getDatabaseTags();
-            } else if(DomainMetaRegistry.get().getDocumentsIds().contains(eid) || DomainMetaRegistry.get().getEntitiesIds().contains(eid)){
+                asset = true;
+            }else if(DomainMetaRegistry.get().getProjectionsIds().contains(eid)){
+                tags = (Map) DomainTypesRegistry.get().getDatabaseTags();
+            } else if(DomainMetaRegistry.get().getDocumentsIds().contains(eid)){
+                tags = DomainTypesRegistry.get().getEntityTags();
+                document = true;
+            } else if(DomainMetaRegistry.get().getEntitiesIds().contains(eid)){
                 tags = DomainTypesRegistry.get().getEntityTags();
             } else if(CustomMetaRegistry.get().getEntitiesIds().contains(eid)){
                 tags = CustomTypesRegistry.get().getEntityTags();
@@ -65,6 +74,14 @@ public class ObjectSerializationMetadataProvider {
                 res.getAllProperties().put(prop.getId(), pm);
             }
             eid = ed.getAttributes().get("extends");
+            if(eid == null && !defaultClassProcessed){
+                if(document){
+                    eid = "com.gridnine.elsa.core.model.domain.BaseDocument";
+                } else if (asset){
+                    eid = "com.gridnine.elsa.core.model.domain.BaseAsset";
+                }
+                defaultClassProcessed = true;
+            }
         }
 
     }

@@ -36,4 +36,19 @@ public class StringSerializationHandler implements SerializationHandler<String> 
     public String deserialize(JsonParser parser, PropertySerializationMetadata nestedProp, Map<String, Object> params, Map<Integer, Object> processed, String currentValue) throws Exception {
         return parser.getValueAsString();
     }
+
+    @Override
+    public String clone(String source, String target, PropertySerializationMetadata prop, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public String toCachedObject(String source, String target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
+
+    @Override
+    public String toStandardObject(String source, String target, PropertySerializationMetadata property, Map<Object, Object> processed) {
+        return source;
+    }
 }
