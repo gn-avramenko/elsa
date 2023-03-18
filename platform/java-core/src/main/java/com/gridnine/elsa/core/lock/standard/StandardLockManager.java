@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class StandardLockManager implements LockManager {
+public class StandardLockManager extends LockManager {
 
     private final ReentrantLock masterLock = new ReentrantLock();
 

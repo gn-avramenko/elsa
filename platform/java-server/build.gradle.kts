@@ -38,6 +38,12 @@ sourceSets.main {
 
 
 dependencies {
+    implementation("ch.qos.logback:logback-core:1+")
+    implementation("ch.qos.logback:logback-classic:1+")
+    implementation("com.fasterxml.jackson.core:jackson-core:2+")
+    implementation("com.nothome:javaxdelta:2.0.1")
+    implementation("org.ehcache:ehcache:3+")
+    implementation("javax.servlet:javax.servlet-api:4.0.1")
     implementation(project(":platform:java-meta"))
     implementation(project(":platform:java-core"))
 }

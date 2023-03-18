@@ -15,6 +15,8 @@ public interface Configuration {
 
     String getValue(String propertyName);
 
+    String getValue(String propertyName,String defaultValue);
+
     Configuration getSubConfiguration(String propertyName);
 
     List<Configuration> getSubConfigurations(String propertyName);

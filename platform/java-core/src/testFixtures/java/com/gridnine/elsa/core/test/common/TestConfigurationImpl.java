@@ -35,6 +35,12 @@ public class TestConfigurationImpl implements Configuration {
     }
 
     @Override
+    public String getValue(String propertyName, String defaultValue) {
+        var value = getValue(propertyName);
+        return value == null? defaultValue: value;
+    }
+
+    @Override
     public Configuration getSubConfiguration(String propertyName) {
         var values =  getSubConfigurations(propertyName);
         return values.size()> 0? values.get(0): null;
