@@ -9,6 +9,7 @@ import com.gridnine.elsa.server.storage.transaction.TransactionManager;
 
 import java.sql.Array;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class JdbcUtils {
         });
     }
 
-    public static<T> T update(String sql, ResultSetMapper<T> rsm){
+    public static<T> T updateAndReturnResult(String sql, ResultSetMapper<T> rsm){
         return TransactionManager.get().withTransaction((ctx) -> {
             try(var ps = connections.get().prepareStatement(sql)){
                 ResultSet rs = ps.executeQuery();
@@ -84,6 +85,14 @@ public class JdbcUtils {
         }, false);
     }
 
+    public static void update(String sql, PreparedStatementSetter pss){
+        TransactionManager.get().withTransaction((ctx) -> {
+            try(var ps = connections.get().prepareStatement(sql)){
+                pss.update(ps);
+            }
+        });
+    }
+
     public static boolean isNotEmptyResult(String sql){
         return TransactionManager.get().withTransaction((ctx) -> {
             try(var ps = connections.get().prepareStatement(sql)){
@@ -93,9 +102,16 @@ public class JdbcUtils {
         }, true);
     }
 
-    public static<T> T query(String sql, ResultSetMapper<T> rsm){
+    public static<T> T queryForSingleValue(String sql, ResultSetMapper<T> rsm){
+        return queryForSingleValue(sql, null, rsm);
+    }
+
+    public static<T> T queryForSingleValue(String sql, PreparedStatementSetter pss, ResultSetMapper<T> rsm){
         return TransactionManager.get().withTransaction((ctx) -> {
             try(var ps = connections.get().prepareStatement(sql)){
+                if(pss != null) {
+                    pss.update(ps);
+                }
                 var rs = ps.executeQuery();
                 if(!rs.next()){
                     return null;
@@ -106,8 +122,15 @@ public class JdbcUtils {
     }
 
     public static<T> List<T> queryForList(String sql,  ResultSetMapper<T> rsm){
+       return queryForList(sql, null, rsm);
+    }
+
+    public static<T> List<T> queryForList(String sql,  PreparedStatementSetter pss, ResultSetMapper<T> rsm){
         return TransactionManager.get().withTransaction((ctx) -> {
             try(var ps = connections.get().prepareStatement(sql)){
+                if(pss != null){
+                    pss.update(ps);
+                }
                 var rs = ps.executeQuery();
                 List<T> result = new ArrayList<>();
                 while(rs.next()){
@@ -118,10 +141,16 @@ public class JdbcUtils {
         }, true);
     }
 
+    public static Connection getConnection(){
+        return connections.get();
+    }
     private JdbcUtils(){}
 
     public interface ResultSetMapper<T> {
         T getValue(ResultSet rs) throws Exception;
     }
 
+    public interface PreparedStatementSetter {
+        void update(PreparedStatement ps) throws Exception;
+    }
 }

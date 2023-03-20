@@ -5,6 +5,7 @@
 
 package com.gridnine.elsa.server.storage.repository.jdbc;
 
+import com.gridnine.elsa.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.core.model.common.Pair;
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcIndexDescription;
 
@@ -17,4 +18,9 @@ public interface JdbcFieldHandler {
     Object getModelValue(ResultSet rs) throws Exception;
     Map<String, Pair<Object, String>> getSqlValues(Object value) throws Exception;
     Pair<Object, String> getSqlQueryValue(Object value) throws Exception;
+
+    default void setValue(BaseIntrospectableObject obj, String propertyName, Object value){
+        obj.setValue(propertyName, value);
+    }
+
 }

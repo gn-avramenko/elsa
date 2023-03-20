@@ -32,6 +32,7 @@ import com.gridnine.elsa.core.serialization.JsonUnmarshaller;
 import com.gridnine.elsa.core.utils.ExceptionUtils;
 import com.gridnine.elsa.core.utils.IoUtils;
 import com.gridnine.elsa.core.utils.LocaleUtils;
+import com.gridnine.elsa.meta.config.Environment;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 import com.gridnine.elsa.server.ServerL10nMessagesRegistryFactory;
 import com.gridnine.elsa.server.auth.AuthContext;
@@ -750,4 +751,7 @@ public class Storage {
                                                                  OperationContext<D> operationContext) {
     }
 
+    public static Storage get(){
+        return Environment.getPublished(Storage.class);
+    }
 }

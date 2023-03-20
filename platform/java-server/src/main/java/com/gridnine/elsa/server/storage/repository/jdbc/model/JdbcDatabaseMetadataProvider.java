@@ -51,7 +51,7 @@ public class JdbcDatabaseMetadataProvider {
         return sequencesMap;
     }
 
-    public void init(){
+    public JdbcDatabaseMetadataProvider(){
         sequencesMap.put("intid", new JdbcSequenceDescription("intid", JdbcSequenceType.INT));
         sequencesMap.put("longid", new JdbcSequenceDescription("longid", JdbcSequenceType.LONG));
         {

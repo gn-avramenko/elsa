@@ -46,4 +46,8 @@ dependencies {
     implementation("javax.servlet:javax.servlet-api:4.0.1")
     implementation(project(":platform:java-meta"))
     implementation(project(":platform:java-core"))
+    testFixturesImplementation(project(":platform:java-meta"))
+    testFixturesImplementation(testFixtures(project(":platform:java-core")))
+    testFixturesImplementation("com.mchange:c3p0:0.9.5.5")
+    testFixturesImplementation("org.hsqldb:hsqldb:2+")
 }

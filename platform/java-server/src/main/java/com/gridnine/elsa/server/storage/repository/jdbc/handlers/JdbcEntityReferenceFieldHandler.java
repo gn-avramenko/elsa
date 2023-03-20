@@ -29,7 +29,6 @@ import java.util.Map;
 
 public class JdbcEntityReferenceFieldHandler implements JdbcFieldHandler {
 
-
     private final String fieldName;
 
     private final boolean indexed;
@@ -68,12 +67,12 @@ public class JdbcEntityReferenceFieldHandler implements JdbcFieldHandler {
     @Override
     public Map<String, String> getColumns() {
         final var result = new LinkedHashMap<String, String>();
-        result.put(fieldName, JdbcLongFieldHandler.FIELD_TYPE);
+        result.put(fieldName, SqlTypeLongHandler.type);
         if(isAbstract){
-            result.put(typeFieldName, JdbcIntFieldHandler.FIELD_TYPE);
+            result.put(typeFieldName, SqlTypeIntHandler.type);
         }
         if(storeCaptions){
-            result.put(captionFieldName, JdbcStringFieldHandler.FIELD_TYPE);
+            result.put(captionFieldName, SqlTypeStringHandler.type);
         }
         return result;
     }
@@ -106,12 +105,12 @@ public class JdbcEntityReferenceFieldHandler implements JdbcFieldHandler {
     public Map<String, Pair<Object, String>> getSqlValues(Object value) {
         var result = new LinkedHashMap<String, Pair<Object, String>>();
         var ref = (EntityReference<?>) value;
-        result.put(fieldName, new Pair<>(ref == null ? null : ref.getId(), JdbcLongFieldHandler.FIELD_TYPE));
+        result.put(fieldName, new Pair<>(ref == null ? null : ref.getId(), SqlTypeLongHandler.type));
         if(isAbstract){
-            result.put(typeFieldName, new Pair<>(ref == null ? null : ClassMapper.get().getId(ref.getType().getName()), JdbcIntFieldHandler.FIELD_TYPE));
+            result.put(typeFieldName, new Pair<>(ref == null ? null : ClassMapper.get().getId(ref.getType().getName()), SqlTypeIntHandler.type));
         }
         if(storeCaptions){
-            result.put(captionFieldName, new Pair<>(ref == null ? null : ref.getCaption(), JdbcStringFieldHandler.FIELD_TYPE));
+            result.put(captionFieldName, new Pair<>(ref == null ? null : ref.getCaption(), SqlTypeStringHandler.type));
         }
 
         return result;
@@ -119,7 +118,7 @@ public class JdbcEntityReferenceFieldHandler implements JdbcFieldHandler {
 
     @Override
     public Pair<Object, String> getSqlQueryValue(Object value) throws Exception {
-        return new Pair<>(value == null? null: ((EntityReference<?>) value).getId(), JdbcLongFieldHandler.FIELD_TYPE);
+        return new Pair<>(value == null? null: ((EntityReference<?>) value).getId(), SqlTypeLongHandler.type);
     }
 
 }

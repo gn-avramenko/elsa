@@ -15,10 +15,8 @@ import java.util.Map;
 
 public class JdbcLongIdFieldHandler extends BaseJdbcSingleFieldHandler {
 
-    public static  final String FIELD_TYPE = "LONG_ID";
-
     public JdbcLongIdFieldHandler() {
-        super(BaseIdentity.Fields.id, false, FIELD_TYPE);
+        super(BaseIdentity.Fields.id, false, SqlTypeLongIdHandler.type);
     }
 
     @Override
@@ -28,11 +26,11 @@ public class JdbcLongIdFieldHandler extends BaseJdbcSingleFieldHandler {
 
     @Override
     public Map<String, Pair<Object, String>> getSqlValues(Object value) throws Exception {
-        return Collections.singletonMap(fieldName, new Pair<>(value, type));
+        return Collections.singletonMap(fieldName, new Pair<>(value, SqlTypeLongIdHandler.type));
     }
 
     @Override
     public Pair<Object, String> getSqlQueryValue(Object value) throws Exception {
-        return new Pair<>(value, type);
+        return new Pair<>(value, SqlTypeLongHandler.type);
     }
 }

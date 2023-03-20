@@ -7,6 +7,7 @@ package com.gridnine.elsa.server.cache;
 
 import com.gridnine.elsa.core.model.common.BaseIdentity;
 import com.gridnine.elsa.meta.common.BaseElementWithId;
+import com.gridnine.elsa.meta.config.Environment;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
 import java.util.Map;
@@ -120,5 +121,9 @@ public class CacheMetadataProvider {
         var attrs = SerializableMetaRegistry.get().getEntities().get(className).getAttributes();
         cacheLocalizedCaption.put(className, "true".equals(attrs.get("cache-caption")) && attrs.containsKey("localizable-caption-expression"));
         return cacheLocalizedCaption.get(className);
+    }
+
+    public static CacheMetadataProvider get(){
+        return Environment.getPublished(CacheMetadataProvider.class);
     }
 }

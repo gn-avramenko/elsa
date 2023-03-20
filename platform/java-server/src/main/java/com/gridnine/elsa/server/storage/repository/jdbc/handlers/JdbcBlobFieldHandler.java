@@ -15,10 +15,8 @@ import java.util.Map;
 
 public class JdbcBlobFieldHandler extends BaseJdbcSingleFieldHandler {
 
-    public static final String FIELD_TYPE = "BLOB";
-
     public JdbcBlobFieldHandler(String fieldName) {
-        super(fieldName, false, FIELD_TYPE);
+        super(fieldName, false, SqlTypeBlobHandler.type);
     }
 
     @Override
@@ -28,11 +26,11 @@ public class JdbcBlobFieldHandler extends BaseJdbcSingleFieldHandler {
 
     @Override
     public Map<String, Pair<Object, String>> getSqlValues(Object value) throws Exception {
-        return Collections.singletonMap(fieldName, new Pair<>(value, FIELD_TYPE));
+        return Collections.singletonMap(fieldName, new Pair<>(value, SqlTypeBlobHandler.type));
     }
 
     @Override
     public Pair<Object, String> getSqlQueryValue(Object value) throws Exception {
-        return new Pair<>(value, FIELD_TYPE);
+        return new Pair<>(value, SqlTypeBlobHandler.type);
     }
 }

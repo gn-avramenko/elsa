@@ -18,6 +18,7 @@ public interface TransactionManager {
         }, false);
     }
 
+
     <P> P withTransaction(CallableWithExceptionAndArgument<P, TransactionContext> func, boolean readonly);
 
 

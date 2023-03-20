@@ -15,7 +15,7 @@ public class JdbcIdGeneratorImpl implements IdGenerator {
         var found = true;
         var id = 0L;
         while (found) {
-            id = JdbcUtils.update(JdbcDialect.get().getSequenceNextValueSql("longid"), rs -> {
+            id = JdbcUtils.updateAndReturnResult(JdbcDialect.get().getSequenceNextValueSql("longid"), rs -> {
                 rs.next();
                 return rs.getLong(1);
             });

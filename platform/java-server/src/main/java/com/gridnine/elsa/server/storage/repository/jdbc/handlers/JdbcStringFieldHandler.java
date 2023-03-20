@@ -14,10 +14,8 @@ import java.util.Map;
 
 public class JdbcStringFieldHandler extends BaseJdbcSingleFieldHandler {
 
-    public static final String FIELD_TYPE = "STRING";
-
     public JdbcStringFieldHandler(String fieldName, boolean indexed) {
-        super(fieldName, indexed, FIELD_TYPE);
+        super(fieldName, indexed, SqlTypeStringHandler.type);
     }
     @Override
     public Object getModelValue(ResultSet rs) throws Exception {
@@ -26,11 +24,11 @@ public class JdbcStringFieldHandler extends BaseJdbcSingleFieldHandler {
 
     @Override
     public Map<String, Pair<Object, String>> getSqlValues(Object value) throws Exception {
-        return Collections.singletonMap(fieldName, new Pair<>( value, FIELD_TYPE));
+        return Collections.singletonMap(fieldName, new Pair<>( value, SqlTypeStringHandler.type));
     }
 
     @Override
     public Pair<Object, String> getSqlQueryValue(Object value) throws Exception {
-        return new Pair<>(value, FIELD_TYPE);
+        return new Pair<>(value, SqlTypeStringHandler.type);
     }
 }

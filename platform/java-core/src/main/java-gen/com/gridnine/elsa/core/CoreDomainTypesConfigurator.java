@@ -15,6 +15,30 @@ import java.util.ArrayList;
 
 public class CoreDomainTypesConfigurator{
 
+	public static final String TAG_STRING_PROPERTY = "string-property";
+
+	public static final String TAG_LOCAL_DATE_TIME_PROPERTY = "local-date-time-property";
+
+	public static final String TAG_LOCAL_DATE_PROPERTY = "local-date-property";
+
+	public static final String TAG_BOOLEAN_PROPERTY = "boolean-property";
+
+	public static final String TAG_BIG_DECIMAL_PROPERTY = "big-decimal-property";
+
+	public static final String TAG_BYTE_ARRAY_PROPERTY = "byte-array-property";
+
+	public static final String TAG_LONG_PROPERTY = "long-property";
+
+	public static final String TAG_ENTITY_REFERENCE_PROPERTY = "entity-reference-property";
+
+	public static final String TAG_ENUM_PROPERTY = "enum-property";
+
+	public static final String TAG_ENUM_LIST = "enum-list";
+
+	public static final String TAG_STRING_LIST = "string-list";
+
+	public static final String TAG_ENTITY_REFERENCE_LIST = "entity-reference-list";
+
 	public void configure(){
 		var registry = Environment.getPublished(DomainTypesRegistry.class);
 		{

@@ -13,6 +13,7 @@ import com.gridnine.elsa.meta.common.TagDescription;
 import com.gridnine.elsa.meta.domain.DomainTypesRegistry;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Set;
 
 public class DomainTypesConfiguratorCodeGen {
@@ -23,6 +24,10 @@ public class DomainTypesConfiguratorCodeGen {
         gen.addImport("com.gridnine.elsa.meta.domain.DomainTypesRegistry");
         gen.addImport("com.gridnine.elsa.meta.config.Environment");
         gen.wrapWithBlock("public class %s".formatted(JavaCodeGeneratorUtils.getSimpleName(className)), ()->{
+            for(DatabaseTagDescription tag: registry.getDatabaseTags().values()){
+                gen.blankLine();
+                gen.printLine("public static final String TAG_%s = \"%s\";".formatted(tag.getTagName().replace("-", "_").toUpperCase(Locale.ROOT), tag.getTagName()));
+            }
             gen.blankLine();
             gen.wrapWithBlock("public void configure()", ()->{
                 gen.printLine("var registry = Environment.getPublished(DomainTypesRegistry.class);");

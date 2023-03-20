@@ -14,10 +14,8 @@ import java.util.Map;
 
 public class JdbcIntFieldHandler extends BaseJdbcSingleFieldHandler {
 
-    public final static String FIELD_TYPE = "INT";
-
     public JdbcIntFieldHandler(String fieldName, boolean indexed) {
-        super(fieldName, indexed, FIELD_TYPE);
+        super(fieldName, indexed, SqlTypeIntHandler.type);
     }
 
     @Override
@@ -27,11 +25,11 @@ public class JdbcIntFieldHandler extends BaseJdbcSingleFieldHandler {
 
     @Override
     public Map<String, Pair<Object, String>> getSqlValues(Object value) throws Exception {
-        return Collections.singletonMap(fieldName, new Pair<>(value, FIELD_TYPE));
+        return Collections.singletonMap(fieldName, new Pair<>(value, SqlTypeIntHandler.type));
     }
 
     @Override
     public Pair<Object, String> getSqlQueryValue(Object value) throws Exception {
-        return new Pair<>(value, FIELD_TYPE);
+        return new Pair<>(value, SqlTypeIntHandler.type);
     }
 }
