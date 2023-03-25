@@ -25,11 +25,11 @@ public class JdbcEnumFieldHandler extends BaseJdbcSingleFieldHandler {
     private final Class<Enum<?>> enumClass;
 
     public JdbcEnumFieldHandler(String entityId, String fieldName, boolean indexed) {
-        super(fieldName, indexed, SqlTypeIntArrayHandler.type);
+        super(fieldName, indexed, SqlTypeIntHandler.type);
         EntityDescription ed = SerializableMetaRegistry.get().getEntities().get(entityId);
         PropertyDescription pd = ed.getProperties().get(fieldName);
         DatabaseTagDescription dtd = DomainTypesRegistry.get().getDatabaseTags().get(pd.getTagName());
-        String classNameAttribute = dtd.getGenerics().get(0).getObjectIdAttributeName();
+        String classNameAttribute = dtd.getObjectIdAttributeName();
         String className = pd.getAttributes().get(classNameAttribute);
         this.enumClass = ReflectionFactory.get().getClass(className);
     }

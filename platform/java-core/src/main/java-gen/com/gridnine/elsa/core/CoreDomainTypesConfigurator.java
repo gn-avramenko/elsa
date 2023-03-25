@@ -269,6 +269,7 @@ public class CoreDomainTypesConfigurator{
 				tag.getAttributes().put("use-in-text-search", attr);
 			}
 			tag.setHasComparisonSupport(true);
+			tag.setHasEqualitySupport(true);
 			tag.setHasSortSupport(true);
 			tag.setHasStringOperationsSupport(true);
 			tag.setSearchQueryArgumentType("STRING");
@@ -290,6 +291,7 @@ public class CoreDomainTypesConfigurator{
 			tag.setType("LOCAL-DATE");
 			tag.setType("LOCAL-DATE");
 			tag.setHasComparisonSupport(true);
+			tag.setHasEqualitySupport(true);
 			tag.setHasSortSupport(true);
 			tag.setSearchQueryArgumentType("LOCAL-DATE-TIME");
 			registry.getDatabaseTags().put("local-date-property", tag);
@@ -313,7 +315,9 @@ public class CoreDomainTypesConfigurator{
 				attr.setDefaultValue("false");
 				tag.getAttributes().put("cache-find", attr);
 			}
+			tag.setHasEqualitySupport(true);
 			tag.setHasSortSupport(true);
+			tag.setSearchQueryArgumentType("BOOLEAN");
 			registry.getDatabaseTags().put("boolean-property", tag);
 		}
 		{
@@ -322,6 +326,7 @@ public class CoreDomainTypesConfigurator{
 			tag.setType("BIG-DECIMAL");
 			tag.setType("BIG-DECIMAL");
 			tag.setHasComparisonSupport(true);
+			tag.setHasEqualitySupport(true);
 			tag.setHasSortSupport(true);
 			tag.setSearchQueryArgumentType("BIG-DECIMAL");
 			registry.getDatabaseTags().put("big-decimal-property", tag);
@@ -339,7 +344,9 @@ public class CoreDomainTypesConfigurator{
 			tag.setType("LONG");
 			tag.setType("LONG");
 			tag.setHasComparisonSupport(true);
+			tag.setHasEqualitySupport(true);
 			tag.setHasSortSupport(true);
+			tag.setSearchQueryArgumentType("LONG");
 			registry.getDatabaseTags().put("long-property", tag);
 		}
 		{
@@ -361,7 +368,9 @@ public class CoreDomainTypesConfigurator{
 				attr.setDefaultValue("false");
 				tag.getAttributes().put("use-in-text-search", attr);
 			}
+			tag.setHasEqualitySupport(true);
 			tag.setHasSortSupport(true);
+			tag.setSearchQueryArgumentType("ENTITY-REFERENCE");
 			var generics_0 = new ArrayList<GenericDescription>();
 			{
 				var generic_1 = new GenericDescription();
@@ -400,6 +409,7 @@ public class CoreDomainTypesConfigurator{
 				attr.setDefaultValue("false");
 				tag.getAttributes().put("use-in-text-search", attr);
 			}
+			tag.setHasEqualitySupport(true);
 			tag.setHasSortSupport(true);
 			tag.setSearchQueryArgumentType("ENUM");
 			registry.getDatabaseTags().put("enum-property", tag);

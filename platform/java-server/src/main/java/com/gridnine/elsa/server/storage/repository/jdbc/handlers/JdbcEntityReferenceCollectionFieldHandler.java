@@ -6,6 +6,7 @@
 package com.gridnine.elsa.server.storage.repository.jdbc.handlers;
 
 import com.gridnine.elsa.core.model.common.BaseIdentity;
+import com.gridnine.elsa.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.core.model.common.ClassMapper;
 import com.gridnine.elsa.core.model.common.Pair;
 import com.gridnine.elsa.core.model.domain.EntityReference;
@@ -22,6 +23,7 @@ import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcIndexType;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,7 +55,7 @@ public class JdbcEntityReferenceCollectionFieldHandler implements JdbcFieldHandl
         }else {
             PropertyDescription pd = ed.getProperties().get(fieldName);
             DatabaseTagDescription dtd = DomainTypesRegistry.get().getDatabaseTags().get(pd.getTagName());
-            String classNameAttribute = dtd.getGenerics().get(0).getObjectIdAttributeName();
+            String classNameAttribute = dtd.getGenerics().get(0).getNestedGenerics().get(0).getObjectIdAttributeName();
             className = pd.getAttributes().get(classNameAttribute);
         }
         referencedEntity = SerializableMetaRegistry.get().getEntities().get(className);
@@ -109,7 +111,7 @@ public class JdbcEntityReferenceCollectionFieldHandler implements JdbcFieldHandl
         var captionsValues = new ArrayList<String>();
         if(storeCaptions){
             var captionsJdbcValues = rs.getArray(captionFieldName);
-            captionsValues.addAll( Arrays.stream((Object[]) idJdbcValues.getArray()).map(it -> (String) it).toList());
+            captionsValues.addAll( Arrays.stream((Object[]) captionsJdbcValues.getArray()).map(it -> (String) it).toList());
         } else {
             for(int n = 0; n < idValues.size(); n++){
                 captionsValues.add(null);
@@ -132,7 +134,7 @@ public class JdbcEntityReferenceCollectionFieldHandler implements JdbcFieldHandl
             result.put(typeFieldName, new Pair<>(ref.stream().map(it -> ClassMapper.get().getId(it.getType().getName())).toList(), SqlTypeIntArrayHandler.type));
         }
         if(storeCaptions){
-            result.put(typeFieldName, new Pair<>(ref.stream().map(EntityReference::getCaption).toList(), SqlTypeStringArrayHandler.type));
+            result.put(captionFieldName, new Pair<>(ref.stream().map(EntityReference::getCaption).toList(), SqlTypeStringArrayHandler.type));
         }
         return result;
     }
@@ -142,4 +144,12 @@ public class JdbcEntityReferenceCollectionFieldHandler implements JdbcFieldHandl
         return new Pair<>(value == null ? null : ((EntityReference<?>) value).getId(), SqlTypeLongHandler.type);
     }
 
+    @Override
+    public void setValue(BaseIntrospectableObject obj, String propertyName, Object value) {
+        Collection<Object> coll = (Collection<Object>) obj.getValue(propertyName);
+        coll.clear();
+        if(value != null) {
+            coll.addAll((Collection<Object>) value);
+        }
+    }
 }

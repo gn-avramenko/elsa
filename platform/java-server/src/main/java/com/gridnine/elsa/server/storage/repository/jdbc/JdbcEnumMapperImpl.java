@@ -41,10 +41,7 @@ public class JdbcEnumMapperImpl implements EnumMapper {
                     Integer id = null;
                     boolean found = false;
                     while (id == null || found) {
-                        id = JdbcUtils.updateAndReturnResult(JdbcDialect.get().getSequenceNextValueSql("intid"), rs -> {
-                            rs.next();
-                            return rs.getInt(1);
-                        });
+                        id = JdbcUtils.updateAndReturnResult(JdbcDialect.get().getSequenceNextValueSql("intid"), rs -> rs.getInt(1));
                         var id2 = id;
                         found = res.stream().anyMatch(it2 -> id2 != null && id2.equals(it2.id));
                     }

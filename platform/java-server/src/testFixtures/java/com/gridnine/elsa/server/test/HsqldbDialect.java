@@ -8,7 +8,6 @@ package com.gridnine.elsa.server.test;
 import com.gridnine.elsa.core.model.common.Pair;
 import com.gridnine.elsa.server.storage.repository.RepositoryBinaryData;
 import com.gridnine.elsa.server.storage.repository.jdbc.JdbcDialect;
-import com.gridnine.elsa.server.storage.repository.jdbc.handlers.*;
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcIndexDescription;
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcIndexType;
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcSequenceDescription;
@@ -23,8 +22,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HsqldbDialect implements JdbcDialect {
+
+    private final Map<String,String> hsqlDbTypesMapping = new ConcurrentHashMap<>();
 
     @Override
     public Set<String> getTableNames() {
@@ -39,11 +41,17 @@ public class HsqldbDialect implements JdbcDialect {
                 (rs) ->{
                     var dataType = rs.getString(2);
                     var maxLength = rs.getInt(3);
-                    var sqlType = switch (dataType){
-                        case "CHARACTER VARYING" -> maxLength > 256? SqlTypeTextHandler.type: SqlTypeStringHandler.type;
-                        default -> throw new UnsupportedOperationException("type %s %s is not supported".formatted(dataType, maxLength));
-                    };
-                    return new Pair<>(rs.getString(1).toLowerCase(), sqlType);
+                    String jdbcType = null;
+                    for(HsqldbTypeHandler handler: HsqldbRegistry.get().getHandlers()){
+                        jdbcType = handler.getJdbcType(dataType, maxLength);
+                        if(jdbcType != null){
+                            break;
+                        }
+                    }
+                    if(jdbcType == null){
+                        throw new UnsupportedOperationException("type %s %s is not supported".formatted(dataType, maxLength));
+                    }
+                    return new Pair<>(rs.getString(1).toLowerCase(), jdbcType);
                 }).forEach(it -> result.put(it.key(), it.value()));
         return result;
     }
@@ -67,23 +75,22 @@ public class HsqldbDialect implements JdbcDialect {
 
     @Override
     public String getSqlType(String value) {
-        return switch (value){
-            case SqlTypeLongIdHandler.type -> "BIGINT PRIMARY KEY";
-            case SqlTypeIntIdHandler.type -> "INT PRIMARY KEY";
-            case SqlTypeStringHandler.type -> "CHAR VARYING(256)";
-            case SqlTypeBooleanHandler.type -> "BOOLEAN";
-            case SqlTypeTextHandler.type -> "LONGVARCHAR";
-            case SqlTypeDateHandler.type -> "DATE";
-            case SqlTypeTimestampHandler.type -> "TIMESTAMP(2)";
-            case SqlTypeLongHandler.type -> "BIGINT";
-            case SqlTypeIntHandler.type -> "INT";
-            case SqlTypeBigDecimalHandler.type -> "DECIMAL(19,2)";
-            case SqlTypeBlobHandler.type -> "BLOB";
-            case SqlTypeStringArrayHandler.type -> "CHAR VARYING(256) ARRAY";
-            case SqlTypeLongArrayHandler.type -> "BIGINT ARRAY";
-            case SqlTypeIntArrayHandler.type -> "INT ARRAY";
-            default -> throw new IllegalArgumentException("unsupported type %s".formatted(value));
-        };
+        String type = null;
+        if(!hsqlDbTypesMapping.containsKey(value)){
+            for(HsqldbTypeHandler handler: HsqldbRegistry.get().getHandlers()){
+                String hsqldbType = handler.getHsqldbType(value);
+                if(hsqldbType != null){
+                    type = hsqldbType;
+                    break;
+                }
+            }
+            hsqlDbTypesMapping.put(value, type);
+        }
+        type = hsqlDbTypesMapping.get(value);
+        if(type != null){
+            return type;
+        }
+        throw new IllegalArgumentException("unsupported type %s".formatted(value));
     }
 
     @Override

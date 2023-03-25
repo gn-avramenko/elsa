@@ -25,6 +25,9 @@ public abstract class TestBase {
 
     private final List<Activator> activators = new ArrayList<>();
     @BeforeEach
+    protected void initialize() throws Exception {
+        setUp();
+    }
     protected void setUp() throws Exception{
         configureEnvironment();
         var configuration = new TestConfigurationImpl();
@@ -70,7 +73,7 @@ public abstract class TestBase {
 
     @AfterEach
     protected void dispose(){
-        //noops
+        Environment.dispose();
     }
 
 

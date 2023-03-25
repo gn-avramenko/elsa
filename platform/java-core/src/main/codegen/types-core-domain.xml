@@ -49,7 +49,7 @@
     <database-tag tag-name="local-date-property" type="LOCAL-DATE" has-comparison-support="true" has-sort-support="true"
                   has-equality-support="true"
                   search-query-argument-type="LOCAL-DATE-TIME"/>
-    <database-tag tag-name="boolean-property" type="BOOLEAN" has-sort-support="true" has-equality-support="true">
+    <database-tag tag-name="boolean-property" type="BOOLEAN" has-sort-support="true" has-equality-support="true" search-query-argument-type="BOOLEAN">
         <attribute name="cache-get-all" type="BOOLEAN" default-value="false"/>
         <attribute name="cache-find" type="BOOLEAN" default-value="false"/>
     </database-tag>
@@ -58,9 +58,9 @@
                   search-query-argument-type="BIG-DECIMAL"/>
     <database-tag tag-name="byte-array-property" type="BYTE-ARRAY"/>
     <database-tag tag-name="long-property" type="LONG" has-sort-support="true" has-number-operations-support="true"
-                  has-equality-support="true" has-comparison-support="true"/>
+                  search-query-argument-type="LONG" has-equality-support="true" has-comparison-support="true"/>
     <database-tag tag-name="entity-reference-property" type="ENTITY-REFERENCE" has-equality-support="true"
-                  has-sort-support="true">
+                  has-sort-support="true" search-query-argument-type="ENTITY-REFERENCE">
         <attribute name="cache-get-all" type="BOOLEAN" default-value="false"/>
         <generic id="class-name" type="ENTITY" object-id-attribute-name="class-name"/>
         <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>

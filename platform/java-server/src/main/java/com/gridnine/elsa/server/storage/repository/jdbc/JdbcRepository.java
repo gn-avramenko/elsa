@@ -49,17 +49,12 @@ public class JdbcRepository implements Repository {
         Objects.requireNonNull(description);
         var columnNames = getColumnNames(description, Collections.emptySet(), Collections.emptySet());
         var sql = "select %s from %s where %s = ?".formatted(TextUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.id);
-        var result = JdbcUtils.queryForSingleValue(sql, ps -> ps.setLong(1, id), rs -> {
-            if (!rs.next()) {
-                return null;
-            }
-            return ExceptionUtils.wrapException(() -> {
-                var asset = aClass.getDeclaredConstructor().newInstance();
-                var handler = new AssetWrapperReflectionHandler<>(asset);
-                fillObject(rs, handler, description, Collections.emptySet(), Collections.emptySet());
-                return handler;
-            });
-        });
+        var result = JdbcUtils.queryForSingleValue(sql, ps -> ps.setLong(1, id), rs -> ExceptionUtils.wrapException(() -> {
+            var asset = aClass.getDeclaredConstructor().newInstance();
+            var handler = new AssetWrapperReflectionHandler<>(asset);
+            fillObject(rs, handler, description, Collections.emptySet(), Collections.emptySet());
+            return handler;
+        }));
         return result == null ? null : result.getWrapper();
     }
 
@@ -215,17 +210,12 @@ public class JdbcRepository implements Repository {
         Objects.requireNonNull(description);
         var columnNames = getColumnNames(description, Collections.emptySet(), Collections.singleton(RepositoryAssetWrapper.Fields.aggregatedData));
         var sql = "select %s from %s where %s = ?".formatted(TextUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.id);
-        var result = JdbcUtils.queryForSingleValue(sql, ps -> ps.setLong(1, id), rs -> {
-            if (!rs.next()) {
-                return null;
-            }
-            return ExceptionUtils.wrapException(() -> {
-                var asset = cls.getDeclaredConstructor().newInstance();
-                var handler = new AssetWrapperReflectionHandler<>(asset);
-                fillObject(rs, handler, description, Collections.emptySet(), Collections.singleton(RepositoryAssetWrapper.Fields.aggregatedData));
-                return handler;
-            });
-        });
+        var result = JdbcUtils.queryForSingleValue(sql, ps -> ps.setLong(1, id), rs -> ExceptionUtils.wrapException(() -> {
+            var asset = cls.getDeclaredConstructor().newInstance();
+            var handler = new AssetWrapperReflectionHandler<>(asset);
+            fillObject(rs, handler, description, Collections.emptySet(), Collections.singleton(RepositoryAssetWrapper.Fields.aggregatedData));
+            return handler;
+        }));
         return result == null ? null : result.getWrapper().getAsset();
     }
 
@@ -578,13 +568,13 @@ public class JdbcRepository implements Repository {
         return JdbcRegistry.get().getSqlTypeHandler(key).getSqlType();
     }
 
-    private void fillObject(ResultSet rs, BaseIntrospectableObject handler, JdbcTableDescription description,
+    private void fillObject(ResultSet rs, BaseIntrospectableObject object, JdbcTableDescription description,
                             Set<String> includedProperties, Set<String> excludedProperties) throws Exception {
         for (Map.Entry<String, JdbcFieldHandler> entry : description.getFields().entrySet()) {
             if (!isIncluded(entry.getKey(), includedProperties, excludedProperties)) {
                 continue;
             }
-            handler.setValue(entry.getKey(), entry.getValue().getModelValue(rs));
+            entry.getValue().setValue(object, entry.getKey(), entry.getValue().getModelValue(rs));
         }
     }
 
@@ -875,14 +865,14 @@ public class JdbcRepository implements Repository {
 
         AssetWrapperReflectionHandler(RepositoryAssetWrapper<A> wrapper) {
             this.wrapper = wrapper;
-            description = JdbcDatabaseMetadataProvider.get().getDescriptions().get(wrapper.getAsset().getClass().getName());
+            description = JdbcDatabaseMetadataProvider.get().getDescriptions().get(JdbcUtils.getTableName(wrapper.getAsset().getClass().getName()));
         }
 
         AssetWrapperReflectionHandler(A asset) {
             this.wrapper = new RepositoryAssetWrapper<>();
             wrapper.setAsset(asset);
             wrapper.getAsset().setVersionInfo(new VersionInfo());
-            description = JdbcDatabaseMetadataProvider.get().getDescriptions().get(asset.getClass().getName());
+            description = JdbcDatabaseMetadataProvider.get().getDescriptions().get(JdbcUtils.getTableName(asset.getClass().getName()));
         }
 
         public RepositoryAssetWrapper<A> getWrapper() {

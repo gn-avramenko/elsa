@@ -55,7 +55,7 @@ public class Environment {
         return test;
     }
 
-    public void dispose() {
+    public static void dispose() {
         counter.set(0);
         var entries = publishedObjects.values().stream().sorted((a, b) -> b.order - a.order).toList();
         entries.forEach(it -> unpublish(it.cls));

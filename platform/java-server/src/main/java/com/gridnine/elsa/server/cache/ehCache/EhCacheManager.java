@@ -12,7 +12,10 @@ import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.spi.serialization.Serializer;
+import org.ehcache.spi.serialization.SerializerException;
 
+import java.nio.ByteBuffer;
 import java.time.Duration;
 
 public class EhCacheManager implements com.gridnine.elsa.server.cache.CacheManager {
@@ -27,6 +30,22 @@ public class EhCacheManager implements com.gridnine.elsa.server.cache.CacheManag
     public <K, D> KeyValueCache<K, D> createKeyValueCache(Class<K> keyClass, Class<D> cls, String name, int capacity, int expirationInSeconds) {
         var delegate = cacheManager.createCache(name,
                 CacheConfigurationBuilder.newCacheConfigurationBuilder(keyClass, CachedValue.class, ResourcePoolsBuilder.heap(capacity))
+                        .withValueSerializer(new Serializer<>() {
+                            @Override
+                            public ByteBuffer serialize(CachedValue object) throws SerializerException {
+                                return null;
+                            }
+
+                            @Override
+                            public CachedValue<?> read(ByteBuffer binary) throws SerializerException {
+                                return null;
+                            }
+
+                            @Override
+                            public boolean equals(CachedValue object, ByteBuffer binary) throws SerializerException {
+                                return false;
+                            }
+                        })
                         .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(expirationInSeconds))));
         return new KeyValueCache<>() {
             @SuppressWarnings("unchecked")

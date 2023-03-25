@@ -7,6 +7,7 @@ package com.gridnine.elsa.server.codec;
 
 import com.gridnine.elsa.core.config.Configuration;
 import com.gridnine.elsa.core.utils.ExceptionUtils;
+import com.gridnine.elsa.meta.config.Environment;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -54,5 +55,9 @@ public class DesCodec {
 
     public String decrypt(String strIn) {
         return new String(decrypt(Base64.getDecoder().decode(strIn)), StandardCharsets.UTF_8);
+    }
+
+    public static DesCodec get(){
+        return Environment.getPublished(DesCodec.class);
     }
 }

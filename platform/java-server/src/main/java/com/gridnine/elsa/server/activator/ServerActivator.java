@@ -11,7 +11,6 @@ import com.gridnine.elsa.core.model.common.CaptionProvider;
 import com.gridnine.elsa.core.model.common.EnumMapper;
 import com.gridnine.elsa.core.model.common.IdGenerator;
 import com.gridnine.elsa.meta.config.Environment;
-import com.gridnine.elsa.meta.domain.DomainTypesRegistry;
 import com.gridnine.elsa.server.ServerL10nMessagesRegistryConfigurator;
 import com.gridnine.elsa.server.cache.CacheManager;
 import com.gridnine.elsa.server.cache.CacheMetadataProvider;
@@ -72,6 +71,7 @@ public class ServerActivator implements Activator {
         JdbcRegistry.get().register(CoreDomainTypesConfigurator.TAG_LOCAL_DATE_TIME_PROPERTY, new JdbcLocalDateTimeFieldHandlerFactory());
         JdbcRegistry.get().register(CoreDomainTypesConfigurator.TAG_LONG_PROPERTY, new JdbcLongFieldHandlerFactory());
         JdbcRegistry.get().register(CoreDomainTypesConfigurator.TAG_STRING_PROPERTY, new JdbcStringFieldHandlerFactory());
+        JdbcRegistry.get().register(CoreDomainTypesConfigurator.TAG_STRING_LIST, new JdbcStringListFieldHandlerFactory());
 
         Environment.publish(TransactionManager.class, new JdbcTranscationManager());
 

@@ -5,6 +5,7 @@
 
 package com.gridnine.elsa.server.storage.repository.jdbc.handlers;
 
+import com.gridnine.elsa.core.model.common.BaseIntrospectableObject;
 import com.gridnine.elsa.core.model.common.EnumMapper;
 import com.gridnine.elsa.core.model.common.Pair;
 import com.gridnine.elsa.core.reflection.ReflectionFactory;
@@ -19,6 +20,7 @@ import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcIndexType;
 
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +71,15 @@ public class JdbcEnumCollectionFieldHandler implements JdbcFieldHandler {
     @Override
     public Pair<Object, String> getSqlQueryValue(Object value) throws Exception {
         return new Pair<>(EnumMapper.get().getId((Enum<?>) value), SqlTypeIntHandler.type);
+    }
+
+    @Override
+    public void setValue(BaseIntrospectableObject obj, String propertyName, Object value) {
+        Collection<Object> coll = (Collection<Object>) obj.getValue(propertyName);
+        coll.clear();
+        if(value != null) {
+            coll.addAll((Collection<Object>) value);
+        }
     }
 
 }

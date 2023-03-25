@@ -62,6 +62,6 @@ public class RepositoryProjectionWrapper<D extends BaseDocument, I extends BaseP
             projection = (I) value;
             return;
         }
-        super.setValue(propertyName, value);
+        projection.setValue(propertyName, value);
     }
 }

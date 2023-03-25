@@ -5,18 +5,20 @@
 
 package com.gridnine.elsa.server.storage.repository.jdbc.handlers;
 
+import com.gridnine.elsa.server.storage.repository.RepositoryBinaryData;
+import com.gridnine.elsa.server.storage.repository.jdbc.JdbcDialect;
 import com.gridnine.elsa.server.storage.repository.jdbc.SqlTypeHandler;
 
 import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 
-public class SqlTypeBlobHandler implements SqlTypeHandler<Blob> {
+public class SqlTypeBlobHandler implements SqlTypeHandler<RepositoryBinaryData> {
 
     public final static String type = "BLOB";
     @Override
-    public void setValue(PreparedStatement ps, int idx, Blob value) throws Exception {
-        ps.setBlob(idx, value);
+    public void setValue(PreparedStatement ps, int idx, RepositoryBinaryData value) throws Exception {
+       JdbcDialect.get().setBlob(ps, idx, value);;
     }
 
     @Override

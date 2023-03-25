@@ -27,7 +27,7 @@ public class ServerTestActivator implements Activator {
         ComboPooledDataSource ds = new ComboPooledDataSource();
         ds.setDriverClass(JDBCDriver.class.getName());
         ds.setJdbcUrl("jdbc:hsqldb:mem:elsa;shutdown=true");
-//        ds.setJdbcUrl("jdbc:hsqldb:file:/home/avramenko/IdeaProjects/own/elsa/temp/db/elsa;shutdown=true");
+        //ds.setJdbcUrl("jdbc:hsqldb:file:/home/avramenko/projects/platform/elsa/platform/java-server/temp/data;shutdown=true");
         ds.setInitialPoolSize(1);
         ds.setAcquireIncrement(5);
         ds.setMinPoolSize(1);
@@ -38,6 +38,8 @@ public class ServerTestActivator implements Activator {
         Environment.publish(DataSource.class, ds);
         Environment.publish((Disposable) ds::close);
         Environment.publish(JdbcDialect.class, new HsqldbDialect());
+        Environment.publish(new HsqldbRegistry());
+        HsqldbRegistry.get().register("standard", new StandardHsqldbTypeHandler());
     }
 
     @Override

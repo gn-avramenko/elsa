@@ -8,6 +8,7 @@ import com.gridnine.elsa.core.model.domain.EntityReference;
 import com.gridnine.elsa.core.search.ArgumentType;
 import com.gridnine.elsa.core.search.CollectionSupport;
 import com.gridnine.elsa.core.search.ComparisonSupport;
+import com.gridnine.elsa.core.search.EqualitySupport;
 import com.gridnine.elsa.core.search.FieldNameSupport;
 import com.gridnine.elsa.core.search.SortSupport;
 import com.gridnine.elsa.core.search.StringOperationsSupport;
@@ -28,13 +29,13 @@ public class TestDomainDocumentProjectionFields{
 
 	public final static _entityRefCollectionField entityRefCollection = new _entityRefCollectionField();
 
-	private static class _stringPropertyField extends FieldNameSupport implements StringOperationsSupport, SortSupport, ComparisonSupport, ArgumentType<String>{
+	private static class _stringPropertyField extends FieldNameSupport implements StringOperationsSupport, SortSupport, EqualitySupport, ComparisonSupport, ArgumentType<String>{
 		_stringPropertyField(){
 			super("stringProperty");
 		}
 	}
 
-	private static class _getAllPropertyField extends FieldNameSupport implements StringOperationsSupport, SortSupport, ComparisonSupport, ArgumentType<String>{
+	private static class _getAllPropertyField extends FieldNameSupport implements StringOperationsSupport, SortSupport, EqualitySupport, ComparisonSupport, ArgumentType<String>{
 		_getAllPropertyField(){
 			super("getAllProperty");
 		}
@@ -46,13 +47,13 @@ public class TestDomainDocumentProjectionFields{
 		}
 	}
 
-	private static class _enumPropertyField extends FieldNameSupport implements SortSupport, ArgumentType<TestEnum>{
+	private static class _enumPropertyField extends FieldNameSupport implements SortSupport, EqualitySupport, ArgumentType<TestEnum>{
 		_enumPropertyField(){
 			super("enumProperty");
 		}
 	}
 
-	private static class _entityReferencePropertyField extends FieldNameSupport implements SortSupport{
+	private static class _entityReferencePropertyField extends FieldNameSupport implements SortSupport, EqualitySupport, ArgumentType<EntityReference<TestDomainDocument>>{
 		_entityReferencePropertyField(){
 			super("entityReferenceProperty");
 		}

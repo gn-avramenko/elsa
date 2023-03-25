@@ -54,7 +54,7 @@ public class DomainTypesParser {
             CommonParserUtils.addAttribute(tag.getAttributes(), attr);
         }
         tag.setHasCollectionSupport("true".equals(child.getAttribute("has-collection-support")));
-        tag.setHasEqualitySupport("true".equals(child.getAttribute("has-equility-support")));
+        tag.setHasEqualitySupport("true".equals(child.getAttribute("has-equality-support")));
         tag.setHasComparisonSupport("true".equals(child.getAttribute("has-comparison-support")));
         tag.setHasNumberOperationsSupport("true".equals(child.getAttribute("has-number-opertations-support")));
         tag.setHasSortSupport("true".equals(child.getAttribute("has-sort-support")));
