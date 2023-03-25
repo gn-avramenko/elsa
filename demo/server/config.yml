@@ -1,0 +1,7 @@
+sjl:
+  applicationClass: com.gridnine.elsa.sjl.ElsaApplication
+  arguments:
+    common:
+      - --add-opens=java.base/java.io=ALL-UNNAMED
+    start:
+      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
