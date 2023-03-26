@@ -158,10 +158,10 @@ public class JavaCodeGeneratorUtils {
             if(Locale.ROOT.equals(entry.getKey())){
                 gen.printLine("%s.getDisplayNames().put(Locale.ROOT, \"%s\");".formatted(elementName, entry.getValue()));
             } else if (entry.getKey().getCountry() == null || "".equals(entry.getKey().getCountry())){
-                gen.addImport("com.gridnine.elsa.core.utils.LocaleUtils");
+                gen.addImport("com.gridnine.elsa.common.utils.LocaleUtils");
                 gen.printLine("%s.getDisplayNames().put(LocaleUtils.getLocale(\"%s\"), \"%s\");".formatted(elementName, entry.getKey().getLanguage(),  entry.getValue()));
             } else {
-                gen.addImport("com.gridnine.elsa.core.utils.LocaleUtils");
+                gen.addImport("com.gridnine.elsa.common.utils.LocaleUtils");
                 gen.printLine("%s.getDisplayNames().put(LocaleUtils.getLocale(\"%s\",\"%s\"), \"%s\");".formatted(elementName, entry.getKey().getLanguage(), entry.getKey().getCountry(), entry.getValue()));
             }
         }
@@ -227,7 +227,7 @@ public class JavaCodeGeneratorUtils {
         gen.setPackageName(packageName);
         var extendsId = ed.getExtendsId();
         if (extendsId == null) {
-            extendsId = "com.gridnine.elsa.core.model.common.BaseIntrospectableObject";
+            extendsId = "com.gridnine.elsa.common.model.common.BaseIntrospectableObject";
         }
         var extId1 = extendsId;
         var extId2 = extendsId;
@@ -244,8 +244,8 @@ public class JavaCodeGeneratorUtils {
         }
         String implementsId = null;
         if (ed.getToLocalizableStringExpression() != null) {
-            implementsId = "com.gridnine.elsa.core.model.common.Localizable";
-            gen.addImport("com.gridnine.elsa.core.model.common.L10nMessage");
+            implementsId = "com.gridnine.elsa.common.model.common.Localizable";
+            gen.addImport("com.gridnine.elsa.common.model.common.L10nMessage");
         }
         if (implementsId != null && !implementsId.equals(getPackage(extendsId))) {
             gen.addImport(implementsId);

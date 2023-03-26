@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain xmlns="http://gridnine.com/elsa/meta-domain" >
+	<enum id="com.gridnine.elsa.common.test.model.domain.TestEnum">
+		<enum-item id="ITEM1"/>
+		<enum-item id="ITEM2"/>
+		<enum-item id="ITEM3"/>
+	</enum>
+	<document id="com.gridnine.elsa.common.test.model.domain.TestDomainDocument" cache-resolve="true">
+		<string-property id="stringProperty"/>
+		<string-property id="getAllProperty"/>
+		<string-list id="stringCollection"/>
+		<entity-property id="entityProperty" class-name="com.gridnine.elsa.common.test.model.domain.BaseTestDomainNestedDocument"/>
+		<enum-property id="enumProperty" class-name="com.gridnine.elsa.common.test.model.domain.TestEnum"/>
+		<entity-reference-property id="entityReferenceProperty" class-name="com.gridnine.elsa.common.test.model.domain.TestDomainDocument"/>
+		<entity-list id="entityCollection" element-class-name="com.gridnine.elsa.common.test.model.domain.BaseTestDomainNestedDocument"/>
+		<entity-list id="groups" element-class-name="com.gridnine.elsa.common.test.model.domain.TestGroup"/>
+		<enum-list id="enumCollection" element-class-name="com.gridnine.elsa.common.test.model.domain.TestEnum"/>
+		<entity-reference-list id="entityRefCollection" class-name="com.gridnine.elsa.common.test.model.domain.TestDomainDocument"/>
+		<caption-expression>stringProperty</caption-expression>
+	</document>
+	<entity id="com.gridnine.elsa.common.test.model.domain.BaseTestDomainNestedDocument" abstract="true">
+		<string-property id="name"/>
+	</entity>
+	<entity id="com.gridnine.elsa.common.test.model.domain.TestDomainNestedDocumentImpl" extends = "com.gridnine.elsa.common.test.model.domain.BaseTestDomainNestedDocument">
+		<string-property id="value"/>
+	</entity>
+	<entity id="com.gridnine.elsa.common.test.model.domain.TestGroup">
+		<string-property id="name"/>
+		<entity-list element-class-name="com.gridnine.elsa.common.test.model.domain.TestItem" id="items"/>
+	</entity>
+	<entity id="com.gridnine.elsa.common.test.model.domain.TestItem">
+		<string-property id="name"/>
+	</entity>
+	<projection document="com.gridnine.elsa.common.test.model.domain.TestDomainDocument" id="com.gridnine.elsa.common.test.model.domain.TestDomainDocumentProjection">
+		<string-property id="stringProperty" cache-find="true" use-in-text-search="true" />
+		<string-property id="getAllProperty" cache-get-all="true" use-in-text-search="true" />
+		<string-list id="stringCollection" use-in-text-search="true"/>
+		<enum-property id="enumProperty" class-name="com.gridnine.elsa.common.test.model.domain.TestEnum" use-in-text-search="true"/>
+		<entity-reference-property id="entityReferenceProperty" class-name="com.gridnine.elsa.common.test.model.domain.TestDomainDocument" use-in-text-search="true"/>
+		<enum-list id="enumCollection" element-class-name="com.gridnine.elsa.common.test.model.domain.TestEnum" use-in-text-search="true"/>
+		<entity-reference-list id="entityRefCollection" class-name="com.gridnine.elsa.common.test.model.domain.TestDomainDocument" use-in-text-search="true"/>
+	</projection>
+	<asset id="com.gridnine.elsa.common.test.model.domain.TestDomainAsset" cache-resolve="true">
+		<string-property id="stringProperty" cache-find="true" use-in-text-search="true"/>
+		<local-date-time-property id="dateTimeProperty"/>
+		<caption-expression>stringProperty</caption-expression>
+	</asset>
+</domain>

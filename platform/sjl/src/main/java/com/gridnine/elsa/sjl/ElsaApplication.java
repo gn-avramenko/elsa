@@ -5,19 +5,16 @@
 
 package com.gridnine.elsa.sjl;
 
-import com.gridnine.elsa.core.config.Activator;
-import com.gridnine.elsa.core.config.Configuration;
+import com.gridnine.elsa.common.config.Activator;
+import com.gridnine.elsa.common.config.Configuration;
 import com.gridnine.elsa.meta.config.Environment;
 import com.vga.sjl.Application;
 import com.vga.sjl.ApplicationCallback;
 import com.vga.sjl.config.AppConfiguration;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.ServiceLoader;
-import java.util.stream.Collectors;
 
 public class ElsaApplication implements Application {
     @Override

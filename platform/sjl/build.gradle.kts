@@ -23,7 +23,7 @@ apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
 
 dependencies {
-    implementation(project(":platform:java-meta"))
-    implementation(project(":platform:java-core"))
+    implementation(project(":platform:meta"))
+    implementation(project(":platform:common"))
     implementation(files("lib/sjl.jar"))
 }

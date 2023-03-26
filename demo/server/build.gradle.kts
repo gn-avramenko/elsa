@@ -5,9 +5,9 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation(project(":platform:java-meta"))
-    implementation(project(":platform:java-core"))
-    implementation(project(":platform:java-server"))
-    implementation(project(":platform:java-server-postgres"))
+    implementation(project(":platform:meta"))
+    implementation(project(":platform:common"))
+    implementation(project(":platform:server"))
+    implementation(project(":platform:server-postgres"))
     implementation(project(":platform:sjl"))
 }

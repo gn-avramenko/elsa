@@ -37,29 +37,29 @@ public class JavaDomainFieldsClassCodeGenerator {
             }
             for(PropertyDescription prop: sd.getProperties().values()){
                 gen.blankLine();
-                gen.addImport("com.gridnine.elsa.core.search.FieldNameSupport");
+                gen.addImport("com.gridnine.elsa.common.search.FieldNameSupport");
                 var sb = new StringBuilder("private static class _%sField extends FieldNameSupport".formatted(prop.getId()));
                 DatabaseTagDescription dtd = dtr.getDatabaseTags().get(prop.getTagName());
                 if(dtd.isHasStringOperationsSupport()){
-                    addImplements(sb, "com.gridnine.elsa.core.search.StringOperationsSupport", gen);
+                    addImplements(sb, "com.gridnine.elsa.common.search.StringOperationsSupport", gen);
                 }
                 if(dtd.isHasSortSupport()){
-                    addImplements(sb, "com.gridnine.elsa.core.search.SortSupport", gen);
+                    addImplements(sb, "com.gridnine.elsa.common.search.SortSupport", gen);
                 }
                 if(dtd.isHasEqualitySupport()){
-                    addImplements(sb, "com.gridnine.elsa.core.search.EqualitySupport", gen);
+                    addImplements(sb, "com.gridnine.elsa.common.search.EqualitySupport", gen);
                 }
                 if(dtd.isHasComparisonSupport()){
-                    addImplements(sb, "com.gridnine.elsa.core.search.ComparisonSupport", gen);
+                    addImplements(sb, "com.gridnine.elsa.common.search.ComparisonSupport", gen);
                 }
                 if(dtd.isHasNumberOperationsSupport()){
-                    addImplements(sb, "com.gridnine.elsa.core.search.NumberOperationsSupport", gen);
+                    addImplements(sb, "com.gridnine.elsa.common.search.NumberOperationsSupport", gen);
                 }
                 if(dtd.isHasCollectionSupport()){
-                    addImplements(sb, "com.gridnine.elsa.core.search.CollectionSupport", gen);
+                    addImplements(sb, "com.gridnine.elsa.common.search.CollectionSupport", gen);
                 }
                 if(dtd.getSearchQueryArgumentType() != null){
-                    gen.addImport("com.gridnine.elsa.core.search.ArgumentType");
+                    gen.addImport("com.gridnine.elsa.common.search.ArgumentType");
                     if(dtd.getSearchQueryArgumentType().equals("ENUM")){
                         //TODO dont hardcode
                         String className = prop.getAttributes().get("class-name");

@@ -5,7 +5,7 @@
 
 package com.gridnine.elsa.sjl;
 
-import com.gridnine.elsa.core.config.Configuration;
+import com.gridnine.elsa.common.config.Configuration;
 import com.vga.sjl.config.model.ConfigurationNode;
 
 import java.util.Collections;

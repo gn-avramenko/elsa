@@ -25,7 +25,7 @@ public class JavaDomainEntitiesCodeGen {
         }
         for(String entityId: registry.getDocumentsIds()){
             var ged = JavaCodeGeneratorUtils.buildGenEntityDescription(entityId, sRegistry,dtReg.getEntityTags());
-            ged.setExtendsId(ged.getExtendsId() == null? "com.gridnine.elsa.core.model.domain.BaseDocument": ged.getExtendsId());
+            ged.setExtendsId(ged.getExtendsId() == null? "com.gridnine.elsa.common.model.domain.BaseDocument": ged.getExtendsId());
             var ed = sRegistry.getEntities().get(ged.getId());
             ged.setToLocalizableStringExpression(ed.getAttributes().get("localizable-caption-expression"));
             ged.setToStringExpression(ed.getAttributes().get("caption-expression"));
@@ -34,13 +34,13 @@ public class JavaDomainEntitiesCodeGen {
         for(String projectionId: registry.getProjectionsIds()){
             var ed = sRegistry.getEntities().get(projectionId);
             var ged = JavaCodeGeneratorUtils.buildGenEntityDescription(projectionId, sRegistry,dtReg.getDatabaseTags());
-            ged.setExtendsId("com.gridnine.elsa.core.model.domain.BaseProjection<%s>".formatted(ed.getAttributes().get("document")));
+            ged.setExtendsId("com.gridnine.elsa.common.model.domain.BaseProjection<%s>".formatted(ed.getAttributes().get("document")));
             JavaCodeGeneratorUtils.generateJavaEntityCode(ged, stRegistry, destDir, generatedFiles);
         }
         for(String assetId: registry.getAssetsIds()){
             var ed = sRegistry.getEntities().get(assetId);
             var ged = JavaCodeGeneratorUtils.buildGenEntityDescription(assetId, sRegistry,dtReg.getDatabaseTags());
-            ged.setExtendsId(ged.getExtendsId() != null? ged.getExtendsId(): "com.gridnine.elsa.core.model.domain.BaseAsset");
+            ged.setExtendsId(ged.getExtendsId() != null? ged.getExtendsId(): "com.gridnine.elsa.common.model.domain.BaseAsset");
             ged.setToLocalizableStringExpression(ed.getAttributes().get("localizable-caption-expression"));
             ged.setToStringExpression(ed.getAttributes().get("caption-expression"));
             JavaCodeGeneratorUtils.generateJavaEntityCode(ged, stRegistry, destDir, generatedFiles);

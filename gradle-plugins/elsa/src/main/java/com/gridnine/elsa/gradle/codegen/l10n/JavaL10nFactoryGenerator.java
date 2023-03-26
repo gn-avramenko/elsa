@@ -23,8 +23,8 @@ public class JavaL10nFactoryGenerator {
     public void generate(String factory, L10nMetaRegistry l10nMetaRegistry, SerializableTypesRegistry stRegistry, L10nTypesRegistry l10Registry, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
         gen.setPackageName(JavaCodeGeneratorUtils.getPackage(factory));
-        gen.addImport("com.gridnine.elsa.core.l10n.Localizer");
-        gen.addImport("com.gridnine.elsa.core.model.common.L10nMessage");
+        gen.addImport("com.gridnine.elsa.common.l10n.Localizer");
+        gen.addImport("com.gridnine.elsa.common.model.common.L10nMessage");
         gen.wrapWithBlock("public class %s".formatted(JavaCodeGeneratorUtils.getSimpleName(factory)), () -> {
             for(L10nMessagesBundleDescription bundle: l10nMetaRegistry.getBundles().values()) {
                 for (L10nMessageDescription message : bundle.getMessages().values()) {

@@ -46,7 +46,7 @@ public class JavaL10nMetaRegistryConfiguratorCodeGen {
                                     });
                                 }
                                 for(Map.Entry<Locale, String> entry : md.getDisplayNames().entrySet()){
-                                    gen.addImport("com.gridnine.elsa.core.utils.LocaleUtils");
+                                    gen.addImport("com.gridnine.elsa.common.utils.LocaleUtils");
                                     if(Locale.ROOT.equals(entry.getKey())){
                                         gen.printLine("messageDescription.getDisplayNames().put(Locale.ROOT, \"%s\");".formatted(entry.getValue()));
                                     } else if (entry.getKey().getCountry() == null || "".equals(entry.getKey().getCountry())){

@@ -51,14 +51,14 @@ public class JavaDomainCachedEntitiesCodeGen {
         registry.getDocumentsIds().forEach(id -> {
             if (isCached(id, cachedObjects, sRegistry) && !isAbstract(id, sRegistry)) {
                 BuildExceptionUtils.wrapException(() -> {
-                    generateJavaCode(id, sRegistry, stRegistry, dtReg.getEntityTags(), "com.gridnine.elsa.core.model.domain.BaseDocument", destDir, generatedFiles);
+                    generateJavaCode(id, sRegistry, stRegistry, dtReg.getEntityTags(), "com.gridnine.elsa.common.model.domain.BaseDocument", destDir, generatedFiles);
                 });
             }
         });
         registry.getAssetsIds().forEach(id -> {
             if (isCached(id, cachedObjects, sRegistry) && !isAbstract(id, sRegistry)) {
                 BuildExceptionUtils.wrapException(() -> {
-                    generateJavaCode(id, sRegistry, stRegistry, dtReg.getDatabaseTags(), "com.gridnine.elsa.core.model.domain.BaseAsset", destDir, generatedFiles);
+                    generateJavaCode(id, sRegistry, stRegistry, dtReg.getDatabaseTags(), "com.gridnine.elsa.common.model.domain.BaseAsset", destDir, generatedFiles);
                 });
             }
         });
@@ -86,8 +86,8 @@ public class JavaDomainCachedEntitiesCodeGen {
     private static void generateJavaEntityCode(GenEntityDescription ed, SerializableTypesRegistry sRegistry, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
         var packageName = JavaCodeGeneratorUtils.getPackage(ed.getId());
-        gen.addImport("com.gridnine.elsa.core.model.common.Xeption");
-        gen.addImport("com.gridnine.elsa.core.model.domain.CachedObject");
+        gen.addImport("com.gridnine.elsa.common.model.common.Xeption");
+        gen.addImport("com.gridnine.elsa.common.model.domain.CachedObject");
         gen.setPackageName(packageName);
         String cnsb = "public class _Cached%s extends %s implements CachedObject".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId()),
                 JavaCodeGeneratorUtils.getSimpleName(ed.getId()));

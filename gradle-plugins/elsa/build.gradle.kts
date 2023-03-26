@@ -38,7 +38,7 @@ elsaInternal {
 }
 
 dependencies{
-    implementation("com.gridnine:elsa-java-meta:${project.property("version")}")
+    implementation("com.gridnine:elsa-meta:${project.property("version")}")
 }
 
 java{
