@@ -102,7 +102,7 @@ public final class CommonParserUtils {
         });
     }
 
-    public static void updateEntity(Set<String> entityIds, Map<String, EntityDescription> enums, BuildXmlNode node, Map<String, Map<Locale, String>> localizations) {
+    public static String updateEntity(Set<String> entityIds, Map<String, EntityDescription> enums, BuildXmlNode node, Map<String, Map<Locale, String>> localizations) {
         var ed = enums.computeIfAbsent(getIdAttribute(node), EntityDescription::new);
         entityIds.add(ed.getId());
         updateBaseElement(ed, node, ed.getId(), localizations);
@@ -119,6 +119,7 @@ public final class CommonParserUtils {
             pd.setTagName(item.getName());
             updateBaseElement(pd, item, "%s.%s".formatted(ed.getId(), pd.getId()), localizations);
         });
+        return ed.getId();
     }
 
     public static void addAttribute(Map<String, AttributeDescription> assetAttributes, BuildXmlNode child) {

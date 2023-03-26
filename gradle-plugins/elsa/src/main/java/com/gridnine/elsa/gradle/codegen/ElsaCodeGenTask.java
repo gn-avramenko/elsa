@@ -6,8 +6,11 @@
 package com.gridnine.elsa.gradle.codegen;
 
 import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGen;
-import com.gridnine.elsa.gradle.codegen.domain.JavaDomainEntitiesCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nFactoryGenerator;
+import com.gridnine.elsa.gradle.codegen.remoting.RemotingJavaCodeGen;
+import com.gridnine.elsa.gradle.codegen.remoting.RemotingJavaMetaRegistryConfiguratorCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.remoting.RemotingTypesConfiguratorCodeGen;
+import com.gridnine.elsa.gradle.codegen.remoting.RemotingXsdCodeGen;
 import com.gridnine.elsa.gradle.codegen.serializable.SerializableTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomXsdCodeGen;
@@ -21,12 +24,15 @@ import com.gridnine.elsa.gradle.codegen.l10n.L10nXsdCodeGen;
 import com.gridnine.elsa.gradle.config.ElsaJavaCustomCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaDomainCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaL10nCodeGenRecord;
+import com.gridnine.elsa.gradle.config.ElsaJavaRemotingCodeGenRecord;
 import com.gridnine.elsa.gradle.parser.custom.CustomMetadataParser;
 import com.gridnine.elsa.gradle.parser.custom.CustomTypesParser;
 import com.gridnine.elsa.gradle.parser.domain.DomainMetadataParser;
 import com.gridnine.elsa.gradle.parser.domain.DomainTypesParser;
 import com.gridnine.elsa.gradle.parser.l10n.L10nMetadataParser;
 import com.gridnine.elsa.gradle.parser.l10n.L10nTypesParser;
+import com.gridnine.elsa.gradle.parser.remoting.RemotingMetadataParser;
+import com.gridnine.elsa.gradle.parser.remoting.RemotingTypesParser;
 import com.gridnine.elsa.gradle.parser.serializable.SerializableTypesParser;
 import com.gridnine.elsa.gradle.plugin.ElsaJavaExtension;
 import com.gridnine.elsa.meta.custom.CustomMetaRegistry;
@@ -35,6 +41,8 @@ import com.gridnine.elsa.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.meta.domain.DomainTypesRegistry;
 import com.gridnine.elsa.meta.l10n.L10nMetaRegistry;
 import com.gridnine.elsa.meta.l10n.L10nTypesRegistry;
+import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
+import com.gridnine.elsa.meta.remoting.RemotingTypesRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableTypesRegistry;
 import org.gradle.api.DefaultTask;
@@ -60,6 +68,8 @@ public class ElsaCodeGenTask extends DefaultTask {
             var dtg = new DomainTypesConfiguratorCodeGen();
             var ctp = new CustomTypesParser();
             var ctg = new CustomTypesConfiguratorCodeGen();
+            var rtp = new RemotingTypesParser();
+            var rtg = new RemotingTypesConfiguratorCodeGen();
             var l10ntp = new L10nTypesParser();
             var l10ntg = new L10nTypesConfiguratorCodeGen();
             var totalDomainTypesRegistry = new DomainTypesRegistry();
@@ -67,14 +77,19 @@ public class ElsaCodeGenTask extends DefaultTask {
             var totalSerializableTypesRegistry = new SerializableTypesRegistry();
             var totalL10nTypesRegistry = new L10nTypesRegistry();
             var totalSerializableMetaRegistry = new SerializableMetaRegistry();
+            var remotingMetaRegistry = new RemotingMetaRegistry();
+            var totalRemotingTypesRegistry = new RemotingTypesRegistry();
             var dmp = new DomainMetadataParser();
             var cmp = new CustomMetadataParser();
             var l10nmp = new L10nMetadataParser();
+            var rmp = new RemotingMetadataParser();
             var cmg = new JavaCustomMetaRegistryConfiguratorCodeGenerator();
             var dmg = new JavaDomainMetaRegistryConfiguratorCodeGen();
+            var rmg = new RemotingJavaMetaRegistryConfiguratorCodeGenerator();
             var l10nmg = new JavaL10nMetaRegistryConfiguratorCodeGen();
             var l10nfg = new JavaL10nFactoryGenerator();
             var dcg = new JavaDomainCodeGen();
+            var rcd = new RemotingJavaCodeGen();
             for (var projectData : ext.getData().items) {
                 for (var folderData : projectData.folders) {
                     Set<File> files = new LinkedHashSet<>();
@@ -110,6 +125,14 @@ public class ElsaCodeGenTask extends DefaultTask {
                         }
                         l10ntg.generate(registry, folderData.folder, folderData.l10nTypesConfigurator, files);
                     }
+                    for (var record : folderData.remotingTypes) {
+                        var registry = new RemotingTypesRegistry();
+                        for(File file: record.metadataFiles){
+                            rtp.updateRegistry(registry, file);
+                            rtp.updateRegistry(totalRemotingTypesRegistry, file);
+                        }
+                        rtg.generate(registry, folderData.folder, folderData.remotingTypesConfigurator, files);
+                    }
                     if(folderData.customMetaRegistryConfigurator != null){
                         var registry = new CustomMetaRegistry();
                         for(ElsaJavaCustomCodeGenRecord record: folderData.customCodeGenRecords){
@@ -135,6 +158,14 @@ public class ElsaCodeGenTask extends DefaultTask {
                         dmg.generate(registry, totalSerializableMetaRegistry, folderData.domainMetaRegistryConfigurator, folderData.folder, files);
                         dcg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalDomainTypesRegistry, folderData.folder, files);
                     }
+                    if(folderData.remotingMetaRegistryConfigurator != null){
+                        var registry = new RemotingMetaRegistry();
+                        for(ElsaJavaRemotingCodeGenRecord record: folderData.remotingCodeGenRecords){
+                            rmp.updateRegistry(registry, totalSerializableMetaRegistry, record.getSources());
+                        }
+                        rcd.generate(registry, totalSerializableMetaRegistry,totalSerializableTypesRegistry, totalRemotingTypesRegistry, folderData.folder, files );
+                        rmg.generate(registry, totalSerializableMetaRegistry, folderData.remotingMetaRegistryConfigurator, folderData.folder, files);
+                    }
                     cleanupDir(folderData.folder, files);
                 }
             }
@@ -142,6 +173,7 @@ public class ElsaCodeGenTask extends DefaultTask {
                 new DomainXsdCodeGen().generate(totalDomainTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
                 new CustomXsdCodeGen().generate(totalCustomTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
                 new L10nXsdCodeGen().generate(totalL10nTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
+                new RemotingXsdCodeGen().generate(totalRemotingTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
             }
         }
     }

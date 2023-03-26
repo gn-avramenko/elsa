@@ -4,6 +4,7 @@ import com.gridnine.elsa.gradle.config.ElsaCodeGenFolderData
 import com.gridnine.elsa.gradle.config.ElsaJavaCustomCodeGenRecord
 import com.gridnine.elsa.gradle.config.ElsaJavaDomainCodeGenRecord
 import com.gridnine.elsa.gradle.config.ElsaJavaL10nCodeGenRecord
+import com.gridnine.elsa.gradle.config.ElsaJavaRemotingCodeGenRecord
 import com.gridnine.elsa.gradle.config.ElsaTypesRecord
 import org.gradle.api.Project
 
@@ -32,6 +33,14 @@ open class ElsaCodeFolderExtension(private val project:Project, private val fold
         folderData.l10nMetaRegistryConfigurator = configurator
     }
 
+    fun remotingMetaRegistryConfigurator(configurator:String){
+        folderData.remotingMetaRegistryConfigurator = configurator
+    }
+
+    fun remotingTypesConfigurator(configurator:String){
+        folderData.remotingTypesConfigurator = configurator
+    }
+
     fun serializationTypes(vararg sources: String) {
         folderData.serializableTypes.add(ElsaTypesRecord().also {
             it.metadataFiles.addAll(sources.map { project.file(it) })
@@ -49,6 +58,12 @@ open class ElsaCodeFolderExtension(private val project:Project, private val fold
     }
     fun customTypes(vararg sources: String) {
         folderData.customTypes.add(ElsaTypesRecord().also {
+            it.metadataFiles.addAll(sources.map { project.file(it) })
+        })
+    }
+
+    fun remotingTypes(vararg sources: String) {
+        folderData.remotingTypes.add(ElsaTypesRecord().also {
             it.metadataFiles.addAll(sources.map { project.file(it) })
         })
     }
@@ -75,6 +90,14 @@ open class ElsaCodeFolderExtension(private val project:Project, private val fold
             record.sources.add(project.file(it))
         }
         folderData.customCodeGenRecords.add(record)
+    }
+
+    fun remotingMeta(vararg sources: String) {
+        val record = ElsaJavaRemotingCodeGenRecord();
+        sources.forEach {
+            record.sources.add(project.file(it))
+        }
+        folderData.remotingCodeGenRecords.add(record)
     }
 
 }

@@ -23,6 +23,10 @@ public class ElsaCodeGenFolderData {
     public String customMetaRegistryConfigurator;
     public String l10nMetaRegistryConfigurator;
 
+    public String remotingMetaRegistryConfigurator;
+
+    public String remotingTypesConfigurator;
+
     public final List<ElsaTypesRecord> serializableTypes = new ArrayList<>();
 
     public final List<ElsaTypesRecord> domainTypes = new ArrayList<>();
@@ -31,9 +35,13 @@ public class ElsaCodeGenFolderData {
 
     public final List<ElsaTypesRecord> l10nTypes = new ArrayList<>();
 
+    public final List<ElsaTypesRecord> remotingTypes = new ArrayList<>();
+
     public final List<ElsaJavaDomainCodeGenRecord> domainCodeGenRecords = new ArrayList<>();
 
     public final List<ElsaJavaCustomCodeGenRecord> customCodeGenRecords = new ArrayList<>();
 
     public final List<ElsaJavaL10nCodeGenRecord> l10nCodeGenRecords = new ArrayList<>();
+
+    public final List<ElsaJavaRemotingCodeGenRecord> remotingCodeGenRecords = new ArrayList<>();
 }

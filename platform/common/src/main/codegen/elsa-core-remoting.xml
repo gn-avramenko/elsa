@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<remoting xmlns="http://gridnine.com/elsa/meta-remoting" id="core" >
+    <enum id="com.gridnine.elsa.common.model.remoting.REntityType">
+        <enum-item id="DOMAIN"/>
+        <enum-item id="CUSTOM"/>
+        <enum-item id="L10N"/>
+        <enum-item id="REMOTING"/>
+    </enum>
+    <entity id="com.gridnine.elsa.common.model.remoting.RGenericDeclaration">
+        <string-property id="id"/>
+        <entity-list id="nestedGenerics" element-class-name="com.gridnine.elsa.common.model.remoting.RGenericDeclaration"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.model.remoting.RSerializableType">
+        <string-property id="id"/>
+        <entity-list id="generics" element-class-name="com.gridnine.elsa.common.model.remoting.RGenericDeclaration"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.model.remoting.RGenericDescription">
+        <string-property id="id"/>
+        <string-property id="type"/>
+        <string-property id="objectIdAttributeName"/>
+        <entity-list id="nestedGenerics" element-class-name="com.gridnine.elsa.common.model.remoting.RGenericDescription"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.model.remoting.RTagDescription">
+        <string-property id="tagName"/>
+        <string-property id="type"/>
+        <entity-list id="generics" element-class-name="com.gridnine.elsa.common.model.remoting.RGenericDescription"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.model.remoting.RAttribute">
+        <string-property id="name"/>
+        <string-property id="value"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.model.remoting.RPropertyDescription">
+        <string-property id="id"/>
+        <string-property id="tagName"/>
+        <entity-list id="attributes" element-class-name="com.gridnine.elsa.common.model.remoting.RAttribute"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.model.remoting.REntityDescription">
+        <string-property id="id"/>
+        <entity-list id="properties" element-class-name="com.gridnine.elsa.common.model.remoting.RPropertyDescription"/>
+        <entity-list id="attributes" element-class-name="com.gridnine.elsa.common.model.remoting.RAttribute"/>
+    </entity>
+    <group id="meta">
+        <server-call id="get-server-call-description">
+            <request id="com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionRequest">
+                <string-property id="remotingId"/>
+                <string-property id="groupId"/>
+                <string-property id="methodId"/>
+            </request>
+            <response id="com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionResponse">
+                <string-property id="requestClassName"/>
+                <string-property id="responseClassName"/>
+            </response>
+        </server-call>
+        <server-call id="get-subscription-description">
+            <request id="com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionRequest">
+                <string-property id="remotingId"/>
+                <string-property id="groupId"/>
+                <string-property id="subscriptionId"/>
+            </request>
+            <response id="com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionResponse">
+                <string-property id="parameterClassName"/>
+                <string-property id="eventClassName"/>
+            </response>
+        </server-call>
+        <server-call id="get-types-metadata">
+            <response id="com.gridnine.elsa.common.model.remoting.TypesMetadata">
+                <entity-list id="serializableTypes" element-class-name="com.gridnine.elsa.common.model.remoting.RSerializableType"/>
+                <entity-list id="domainEntityTags" element-class-name="com.gridnine.elsa.common.model.remoting.RTagDescription"/>
+                <entity-list id="domainDatabaseTags" element-class-name="com.gridnine.elsa.common.model.remoting.RTagDescription"/>
+                <entity-list id="customEntityTags" element-class-name="com.gridnine.elsa.common.model.remoting.RTagDescription"/>
+                <entity-list id="l10nEntityTags" element-class-name="com.gridnine.elsa.common.model.remoting.RTagDescription"/>
+                <entity-list id="remotingEntityTags" element-class-name="com.gridnine.elsa.common.model.remoting.RTagDescription"/>
+            </response>
+        </server-call>
+        <server-call id="get-entity-description">
+            <request id="com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionRequest">
+                <string-property id="entityId"/>
+            </request>
+            <response id="com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionResponse">
+                <enum-property id="type" class-name="com.gridnine.elsa.common.model.remoting.REntityType"/>
+                <entity-property id="description" class-name="com.gridnine.elsa.common.model.remoting.REntityDescription"/>
+            </response>
+        </server-call>
+    </group>
+</remoting>

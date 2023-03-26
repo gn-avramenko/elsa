@@ -15,6 +15,8 @@ import com.gridnine.elsa.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.meta.custom.CustomTypesRegistry;
 import com.gridnine.elsa.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.meta.domain.DomainTypesRegistry;
+import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
+import com.gridnine.elsa.meta.remoting.RemotingTypesRegistry;
 import com.gridnine.elsa.meta.serialization.GenericDeclaration;
 import com.gridnine.elsa.meta.serialization.GenericsDeclaration;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
@@ -61,6 +63,8 @@ public class ObjectSerializationMetadataProvider {
                 tags = DomainTypesRegistry.get().getEntityTags();
             } else if(CustomMetaRegistry.get().getEntitiesIds().contains(eid)){
                 tags = CustomTypesRegistry.get().getEntityTags();
+            } else if(RemotingMetaRegistry.get().getEntitiesIds().contains(eid)){
+                tags = RemotingTypesRegistry.get().getEntityTags();
             } else {
                 throw new UnsupportedOperationException("type %s is not supported".formatted(eid));
             }

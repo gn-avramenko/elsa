@@ -5,10 +5,10 @@
 
 package com.gridnine.elsa.gradle.config;
 
-public enum ElsaGeneratorType {
-    JAVA_DOMAIN,
-    JAVA_CUSTOM,
-    JAVA_L10N,
+public class ElsaJavaRemotingCodeGenRecord extends BaseElsaCodeGenRecord {
+    @Override
+    public ElsaGeneratorType getGeneratorType() {
+        return ElsaGeneratorType.JAVA_REMOTING;
+    }
 
-    JAVA_REMOTING,
 }

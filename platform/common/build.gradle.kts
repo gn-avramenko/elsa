@@ -31,12 +31,16 @@ elsa{
             domainTypesConfigurator("com.gridnine.elsa.common.CoreDomainTypesConfigurator")
             customTypesConfigurator("com.gridnine.elsa.common.CoreCustomTypesConfigurator")
             l10nTypesConfigurator("com.gridnine.elsa.common.CoreL10nTypesConfigurator")
+            remotingTypesConfigurator("com.gridnine.elsa.common.CoreRemotingTypesConfigurator")
             customMetaRegistryConfigurator("com.gridnine.elsa.common.ElsaCommonCustomMetaRegistryConfigurator")
+            remotingMetaRegistryConfigurator("com.gridnine.elsa.common.CoreRemotingMetaRegistryConfigurator")
             serializationTypes("src/main/codegen/types-core-serialization.xml")
             domainTypes("src/main/codegen/types-core-domain.xml")
             customTypes("src/main/codegen/types-core-custom.xml")
             l10nTypes("src/main/codegen/types-core-l10n.xml")
             customMeta("src/main/codegen/elsa-core-custom.xml")
+            remotingTypes("src/main/codegen/types-core-remoting.xml")
+            remotingMeta("src/main/codegen/elsa-core-remoting.xml")
         }
         folder("src/testFixtures/java-gen"){
             domainMetaRegistryConfigurator("com.gridnine.elsa.common.test.ElsaCommonTestDomainMetaRegistryConfigurator")
