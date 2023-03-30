@@ -34,6 +34,10 @@ import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingTypesRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableTypesRegistry;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CommonActivator implements Activator {
     @Override
@@ -43,6 +47,9 @@ public class CommonActivator implements Activator {
 
     @Override
     public void configure() throws Exception {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+        Logger.getLogger("").setLevel(Level.FINEST);
         Environment.publish(new SerializableTypesRegistry());
         Environment.publish(new DomainTypesRegistry());
         Environment.publish(new CustomTypesRegistry());

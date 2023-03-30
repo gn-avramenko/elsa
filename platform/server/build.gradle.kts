@@ -43,7 +43,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2+")
     implementation("com.nothome:javaxdelta:2.0.1")
     implementation("org.ehcache:ehcache:3+")
-    implementation("javax.servlet:javax.servlet-api:4.0.1")
+    implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
     implementation(project(":platform:meta"))
     implementation(project(":platform:common"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5+")

@@ -21,6 +21,7 @@
             <option value="$PROJECT_DIR$/platform/meta" />
             <option value="$PROJECT_DIR$/platform/server" />
             <option value="$PROJECT_DIR$/platform/server-postgres" />
+            <option value="$PROJECT_DIR$/platform/server-tomcat" />
             <option value="$PROJECT_DIR$/platform/sjl" />
           </set>
         </option>

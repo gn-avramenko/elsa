@@ -1,7 +1,7 @@
 sjl:
   applicationClass: com.gridnine.elsa.sjl.ElsaApplication
-  arguments:
-    common:
-      - --add-opens=java.base/java.io=ALL-UNNAMED
-    start:
-      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
+repository:
+   type: POSTGRESQL
+   postgresql:
+     url: jdbc:postgresql://localhost:15437/elsa-db?loginTimeout=10
+     login: elsa-user

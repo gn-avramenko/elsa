@@ -9,5 +9,6 @@ dependencies {
     implementation(project(":platform:common"))
     implementation(project(":platform:server"))
     implementation(project(":platform:server-postgres"))
+    implementation(project(":platform:server-tomcat"))
     implementation(project(":platform:sjl"))
 }

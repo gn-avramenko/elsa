@@ -62,6 +62,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1+")
     implementation("com.fasterxml.jackson.core:jackson-core:2+")
     implementation("org.slf4j:slf4j-api:2+")
+    implementation("org.slf4j:jul-to-slf4j:2+")
     implementation(project(":platform:meta"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5+")
     testImplementation("ch.qos.logback:logback-core:1+")

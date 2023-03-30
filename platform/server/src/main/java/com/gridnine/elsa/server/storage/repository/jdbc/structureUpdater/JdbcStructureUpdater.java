@@ -105,7 +105,7 @@ public final class JdbcStructureUpdater {
             var indexesToDelete = exclusion(existingIndexes.keySet(), newTableData.indexes().keySet());
             newTableData.columns().forEach((key1, value1) -> {
                 var et = getIgnoreCase(existingColumns, key1);
-                if (et != null && et.equals(value1)) {
+                if (et != null && !et.equals(value1)) {
                     columnsToDelete.add(key1);
                     removeIgnoreCase(existingColumns, key1);
                     Set<String> delete2 = new HashSet<>();

@@ -16,15 +16,16 @@ buildscript {
 apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
 
 elsaInternal {
-    artefactId = "elsa-server-postgres"
+    artefactId = "elsa-server-tomcat"
 }
 
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
 
 dependencies {
-    implementation("org.postgresql:postgresql:42.2.18")
     implementation("javax.servlet:javax.servlet-api:4+")
-    implementation("com.mchange:c3p0:0.9.5.5")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.7")
+    implementation("org.apache.tomcat.embed:tomcat-embed-jasper:10.1.7")
+    implementation("org.slf4j:slf4j-api:2+")
     implementation(project(":platform:meta"))
     implementation(project(":platform:common"))
     implementation(project(":platform:server"))

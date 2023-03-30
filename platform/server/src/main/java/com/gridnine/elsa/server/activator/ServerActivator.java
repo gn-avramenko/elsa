@@ -18,6 +18,7 @@ import com.gridnine.elsa.server.cache.ehCache.EhCacheManager;
 import com.gridnine.elsa.server.codec.DesCodec;
 import com.gridnine.elsa.server.lock.LockManager;
 import com.gridnine.elsa.server.lock.standard.StandardLockManager;
+import com.gridnine.elsa.server.remoting.RemotingHttpServlet;
 import com.gridnine.elsa.server.storage.Storage;
 import com.gridnine.elsa.server.storage.StorageRegistry;
 import com.gridnine.elsa.server.storage.repository.Repository;
@@ -34,6 +35,9 @@ import com.gridnine.elsa.server.storage.standard.IdUpdaterInterceptor;
 import com.gridnine.elsa.server.storage.standard.InvalidateCacheStorageInterceptor;
 import com.gridnine.elsa.server.storage.standard.StorageCaptionProviderImpl;
 import com.gridnine.elsa.server.storage.transaction.TransactionManager;
+import com.gridnine.elsa.server.web.HttpServletDescription;
+import com.gridnine.elsa.server.web.VirtualWebApplication;
+import com.gridnine.elsa.server.web.WebConfiguration;
 
 public class ServerActivator implements Activator {
     @Override
@@ -85,6 +89,9 @@ public class ServerActivator implements Activator {
         Environment.publish(CaptionProvider.class, captionProvider);
         StorageRegistry.get().register(new InvalidateCacheStorageInterceptor(cacheStorageAdvice, captionProvider));
         StorageRegistry.get().register(new IdUpdaterInterceptor());
+
+        Environment.publish(new WebConfiguration());
+        WebConfiguration.get().register(new VirtualWebApplication("/remoting", new HttpServletDescription<>(RemotingHttpServlet.class, "/*")));
     }
 
     @Override
