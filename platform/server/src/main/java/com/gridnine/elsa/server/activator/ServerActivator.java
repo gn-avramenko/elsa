@@ -19,6 +19,7 @@ import com.gridnine.elsa.server.codec.DesCodec;
 import com.gridnine.elsa.server.lock.LockManager;
 import com.gridnine.elsa.server.lock.standard.StandardLockManager;
 import com.gridnine.elsa.server.remoting.RemotingHttpServlet;
+import com.gridnine.elsa.server.remoting.RemotingRegistry;
 import com.gridnine.elsa.server.storage.Storage;
 import com.gridnine.elsa.server.storage.StorageRegistry;
 import com.gridnine.elsa.server.storage.repository.Repository;
@@ -92,6 +93,8 @@ public class ServerActivator implements Activator {
 
         Environment.publish(new WebConfiguration());
         WebConfiguration.get().register(new VirtualWebApplication("/remoting", new HttpServletDescription<>(RemotingHttpServlet.class, "/*")));
+
+        Environment.publish(new RemotingRegistry());
     }
 
     @Override

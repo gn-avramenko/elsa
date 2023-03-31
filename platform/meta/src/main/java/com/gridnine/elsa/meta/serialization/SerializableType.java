@@ -17,7 +17,11 @@ public class SerializableType extends BaseElementWithId {
 
     private boolean finalField;
 
+    private String tsQualifiedName;
+
     private final List<GenericDeclaration> generics = new ArrayList<>();
+
+    private final List<GenericDeclaration> tsGenerics = new ArrayList<>();
 
     public String getJavaQualifiedName() {
         return javaQualifiedName;
@@ -45,5 +49,17 @@ public class SerializableType extends BaseElementWithId {
 
     public void setFinalField(boolean finalField) {
         this.finalField = finalField;
+    }
+
+    public String getTsQualifiedName() {
+        return tsQualifiedName;
+    }
+
+    public void setTsQualifiedName(String tsQualifiedName) {
+        this.tsQualifiedName = tsQualifiedName;
+    }
+
+    public List<GenericDeclaration> getTsGenerics() {
+        return tsGenerics;
     }
 }

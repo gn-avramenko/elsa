@@ -27,10 +27,12 @@
         <sequence minOccurs="0" maxOccurs="unbounded">
             <element name="attribute" type="tns:AttributeDescription" minOccurs="0" maxOccurs="unbounded"/>
             <element name="generic" type="tns:GenericDescription" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="ts-generic" type="tns:GenericDescription" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
         <attribute name="tag-name" type="string" use="required"/>
         <attribute name="type" type="string" use="required"/>
         <attribute name="object-id-attribute-name" type="string"/>
+        <attribute name="ts-object-id-attribute-name" type="string"/>
     </complexType>
     <complexType name="GenericDescription">
         <sequence minOccurs="0" maxOccurs="unbounded">
@@ -39,5 +41,6 @@
         <attribute use="required" name="id" type="string"/>
         <attribute use="required" name="type" type="string"/>
         <attribute  name="object-id-attribute-name" type="string"/>
+        <attribute  name="ts-object-id-attribute-name" type="string"/>
     </complexType>
 </schema>

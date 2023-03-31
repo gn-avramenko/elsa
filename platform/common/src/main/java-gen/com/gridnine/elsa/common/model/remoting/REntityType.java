@@ -6,11 +6,11 @@ package com.gridnine.elsa.common.model.remoting;
 
 public enum REntityType{
 
-	DOMAIN,
+	DOMAIN_ENTITY,
+
+	DOMAIN_DATABASE_ENTITY,
 
 	CUSTOM,
-
-	L10N,
 
 	REMOTING
 }

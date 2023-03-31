@@ -23,16 +23,16 @@ public class CoreRemotingMetaRegistryConfigurator{
 		{
 			var enumDescription = new EnumDescription("com.gridnine.elsa.common.model.remoting.REntityType");
 			{
-				var enumItemDescription = new EnumItemDescription("DOMAIN");
-				enumDescription.getItems().put("DOMAIN", enumItemDescription);
+				var enumItemDescription = new EnumItemDescription("DOMAIN_ENTITY");
+				enumDescription.getItems().put("DOMAIN_ENTITY", enumItemDescription);
+			}
+			{
+				var enumItemDescription = new EnumItemDescription("DOMAIN_DATABASE_ENTITY");
+				enumDescription.getItems().put("DOMAIN_DATABASE_ENTITY", enumItemDescription);
 			}
 			{
 				var enumItemDescription = new EnumItemDescription("CUSTOM");
 				enumDescription.getItems().put("CUSTOM", enumItemDescription);
-			}
-			{
-				var enumItemDescription = new EnumItemDescription("L10N");
-				enumDescription.getItems().put("L10N", enumItemDescription);
 			}
 			{
 				var enumItemDescription = new EnumItemDescription("REMOTING");
@@ -275,10 +275,10 @@ public class CoreRemotingMetaRegistryConfigurator{
 				entityDescription.getProperties().put("customEntityTags", propertyDescription);
 			}
 			{
-				var propertyDescription = new PropertyDescription("l10nEntityTags");
+				var propertyDescription = new PropertyDescription("l10nParameterTypeTags");
 				propertyDescription.setTagName("entity-list");
 				propertyDescription.getAttributes().put("element-class-name", "com.gridnine.elsa.common.model.remoting.RTagDescription");
-				entityDescription.getProperties().put("l10nEntityTags", propertyDescription);
+				entityDescription.getProperties().put("l10nParameterTypeTags", propertyDescription);
 			}
 			{
 				var propertyDescription = new PropertyDescription("remotingEntityTags");
@@ -325,23 +325,27 @@ public class CoreRemotingMetaRegistryConfigurator{
 				remotingDescription.getGroups().put("meta", groupDescription);
 				{
 					var serverCallDescription = new RemotingServerCallDescription("get-server-call-description");
+					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.server.remoting.standard.ServerCallDescriptionHandler");
 					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionRequest");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionResponse");
 					groupDescription.getServerCalls().put("get-server-call-description", serverCallDescription);
 				}
 				{
 					var serverCallDescription = new RemotingServerCallDescription("get-subscription-description");
+					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.server.remoting.standard.SubscriptionDescriptionHandler");
 					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionRequest");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionResponse");
 					groupDescription.getServerCalls().put("get-subscription-description", serverCallDescription);
 				}
 				{
 					var serverCallDescription = new RemotingServerCallDescription("get-types-metadata");
+					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.server.remoting.standard.TypesMetadataRemotingHandler");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.TypesMetadata");
 					groupDescription.getServerCalls().put("get-types-metadata", serverCallDescription);
 				}
 				{
 					var serverCallDescription = new RemotingServerCallDescription("get-entity-description");
+					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.server.remoting.standard.EntityDescriptionRemotingHandler");
 					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionRequest");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionResponse");
 					groupDescription.getServerCalls().put("get-entity-description", serverCallDescription);

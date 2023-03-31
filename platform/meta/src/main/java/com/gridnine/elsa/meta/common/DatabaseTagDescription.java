@@ -6,7 +6,6 @@
 package com.gridnine.elsa.meta.common;
 
 public class DatabaseTagDescription extends TagDescription {
-    private String tagName;
 
     public DatabaseTagDescription() {
     }
@@ -73,14 +72,6 @@ public class DatabaseTagDescription extends TagDescription {
 
     private boolean hasStringOperationsSupport;
 
-
-    public String getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
 
     public String getSearchQueryArgumentType() {
         return searchQueryArgumentType;

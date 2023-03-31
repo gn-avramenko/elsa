@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types xmlns="http://gridnine.com/elsa/serializable-types">
-    <type id="STRING" java-qualified-name="String"/>
-    <type id="LONG" java-qualified-name="long"/>
-    <type id="INT" java-qualified-name="int"/>
-    <type id="LOCAL-DATE-TIME" java-qualified-name="java.time.LocalDateTime"/>
-    <type id="LOCAL-DATE" java-qualified-name="java.time.LocalDate"/>
-    <type id="BOOLEAN" java-qualified-name="boolean"/>
-    <type id="BYTE-ARRAY" java-qualified-name="byte[]"/>
-    <type id="BIG-DECIMAL" java-qualified-name="java.math.BigDecimal"/>
-    <type id="ENTITY-REFERENCE" java-qualified-name="com.gridnine.elsa.common.model.domain.EntityReference" readonly-java-qualified-name="com.gridnine.elsa.common.model.domain._CachedEntityReference">
+    <type id="STRING" java-qualified-name="String" ts-qualified-name="string"/>
+    <type id="LONG" java-qualified-name="long" ts-qualified-name="bigint"/>
+    <type id="INT" java-qualified-name="int" ts-qualified-name="number"/>
+    <type id="LOCAL-DATE-TIME" java-qualified-name="java.time.LocalDateTime" ts-qualified-name="Date"/>
+    <type id="LOCAL-DATE" java-qualified-name="java.time.LocalDate" ts-qualified-name="Date"/>
+    <type id="BOOLEAN" java-qualified-name="boolean" ts-qualified-name="boolean"/>
+    <type id="BYTE-ARRAY" java-qualified-name="byte[]" ts-qualified-name="Uint8Array"/>
+    <type id="BIG-DECIMAL" java-qualified-name="java.math.BigDecimal" ts-qualified-name="number"/>
+    <type id="ENTITY-REFERENCE" java-qualified-name="com.gridnine.elsa.common.model.domain.EntityReference"
+          readonly-java-qualified-name="com.gridnine.elsa.common.model.domain._CachedEntityReference"
+          ts-qualified-name="elsa-core:EntityReference"  >
         <generics>
             <generic id="class-name"/>
         </generics>
     </type>
-    <type id="ARRAY-LIST" java-qualified-name="java.util.ArrayList" readonly-java-qualified-name="com.gridnine.elsa.common.model.common.ReadOnlyArrayList" final-field="true">
+    <type id="ARRAY-LIST" java-qualified-name="java.util.ArrayList" ts-qualified-name="[]" readonly-java-qualified-name="com.gridnine.elsa.common.model.common.ReadOnlyArrayList" final-field="true">
         <generics>
             <generic id="element-class-name"/>
         </generics>
+        <ts-generics>
+            <generic id="element-class-name"/>
+        </ts-generics>
     </type>
-    <type id="LINKED-HASH-SET" java-qualified-name="java.util.LinkedHashSet" readonly-java-qualified-name="com.gridnine.elsa.common.model.common.ReadOnlyLinkedHashSet" final-field="true">
+    <type id="LINKED-HASH-SET" java-qualified-name="java.util.LinkedHashSet" ts-qualified-name="[]" readonly-java-qualified-name="com.gridnine.elsa.common.model.common.ReadOnlyLinkedHashSet" final-field="true">
         <generics>
             <generic id="element-class-name"/>
         </generics>
+        <ts-generics>
+            <generic id="element-class-name"/>
+        </ts-generics>
     </type>
-    <type id="LINKED-HASH-MAP" java-qualified-name="java.util.LinkedHashMap" readonly-java-qualified-name="com.gridnine.elsa.common.model.common.ReadOnlyLinkedHashMap" final-field="true">
+    <type id="LINKED-HASH-MAP" java-qualified-name="java.util.LinkedHashMap" ts-qualified-name="Map" readonly-java-qualified-name="com.gridnine.elsa.common.model.common.ReadOnlyLinkedHashMap" final-field="true">
         <generics>
             <generic id="key-class-name"/>
             <generic id="value-class-name"/>
         </generics>
+        <ts-generics>
+            <generic id="key-class-name"/>
+            <generic id="value-class-name"/>
+        </ts-generics>
     </type>
 </types>

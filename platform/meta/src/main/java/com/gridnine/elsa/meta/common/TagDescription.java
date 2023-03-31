@@ -19,7 +19,11 @@ public class TagDescription {
 
     private String objectIdAttributeName;
 
+    private String tsObjectIdAttributeName;
+
     private final List<GenericDescription> generics = new ArrayList<>();
+
+    private final List<GenericDescription> tsGenerics = new ArrayList<>();
 
     public String getTagName() {
         return tagName;
@@ -51,5 +55,17 @@ public class TagDescription {
 
     public void setObjectIdAttributeName(String objectIdAttributeName) {
         this.objectIdAttributeName = objectIdAttributeName;
+    }
+
+    public String getTsObjectIdAttributeName() {
+        return tsObjectIdAttributeName;
+    }
+
+    public void setTsObjectIdAttributeName(String tsObjectIdAttributeName) {
+        this.tsObjectIdAttributeName = tsObjectIdAttributeName;
+    }
+
+    public List<GenericDescription> getTsGenerics() {
+        return tsGenerics;
     }
 }

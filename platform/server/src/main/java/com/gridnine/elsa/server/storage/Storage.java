@@ -546,7 +546,7 @@ public class Storage {
         if (idx == advices.size()) {
             return Repository.get().loadAsset(cls, id);
         }
-        return StorageRegistry.get().getAdvices().get(0).onLoadAsset(cls, id, forModification, (cls2, id2, forModification2) ->
+        return StorageRegistry.get().getAdvices().get(idx).onLoadAsset(cls, id, forModification, (cls2, id2, forModification2) ->
                 loadAsset(cls2, id2, forModification2, StorageRegistry.get().getAdvices(), idx + 1)
         );
     }

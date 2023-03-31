@@ -17,7 +17,7 @@ public class TypesMetadata extends BaseIntrospectableObject{
 
 	private final ArrayList<RTagDescription> customEntityTags = new ArrayList<>();
 
-	private final ArrayList<RTagDescription> l10nEntityTags = new ArrayList<>();
+	private final ArrayList<RTagDescription> l10nParameterTypeTags = new ArrayList<>();
 
 	private final ArrayList<RTagDescription> remotingEntityTags = new ArrayList<>();
 
@@ -37,8 +37,8 @@ public class TypesMetadata extends BaseIntrospectableObject{
 		return customEntityTags;
 	}
 
-	public ArrayList<RTagDescription> getL10nEntityTags(){
-		return l10nEntityTags;
+	public ArrayList<RTagDescription> getL10nParameterTypeTags(){
+		return l10nParameterTypeTags;
 	}
 
 	public ArrayList<RTagDescription> getRemotingEntityTags(){
@@ -64,8 +64,8 @@ public class TypesMetadata extends BaseIntrospectableObject{
 			return customEntityTags;
 		}
 
-		if("l10nEntityTags".equals(propertyName)){
-			return l10nEntityTags;
+		if("l10nParameterTypeTags".equals(propertyName)){
+			return l10nParameterTypeTags;
 		}
 
 		if("remotingEntityTags".equals(propertyName)){
