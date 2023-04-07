@@ -102,6 +102,12 @@ public class Storage {
         saveAsset(asset, false, comment);
     }
 
+    public <A extends BaseAsset> void saveAsset(A asset) {
+
+        saveAsset(asset, false, null);
+    }
+
+
     public <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query, boolean forModification) {
         
         return ExceptionUtils.wrapException(() -> searchAssets(cls, query, forModification, StorageRegistry.get().getAdvices(), 0));

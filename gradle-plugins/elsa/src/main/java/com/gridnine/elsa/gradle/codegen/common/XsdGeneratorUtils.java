@@ -24,10 +24,12 @@ public class XsdGeneratorUtils {
                         String typeName = tag.getType();
                         if (typeName.equals("ENTITY") || typeName.equals("ENUM")) {
                             gen.addTag("attribute", "use", "required", "name", tag.getObjectIdAttributeName(), "type", "string");
+                            gen.addTag("attribute", "name", tag.getObjectIdAttributeName(), "type", "string");
                         } else {
                             processGenerics(tag.getGenerics(), gen);
                         }
                         gen.addTag("attribute", "name", "displayName", "type", "string");
+                        gen.addTag("attribute", "name", "non-nullable", "type", "boolean");
                         for (AttributeDescription attr : tag.getAttributes().values()) {
                             gen.addTag("attribute", "name", attr.getName(), "type", "string");
                         }
@@ -74,4 +76,5 @@ public class XsdGeneratorUtils {
             processGenerics(generic.getNestedGenerics(), gen);
         }
     }
+
 }

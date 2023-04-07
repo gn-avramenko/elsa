@@ -16,7 +16,7 @@ open class ElsaCodeGenExtension(private val project: Project, val data: ElsaCode
         data.xsdsCustomizationSuffix = suffix
     }
 
-    fun folder(folder:String, configure: ElsaCodeFolderExtension.()->Unit){
+    fun folder(folder:String, configure: ElsaCodeGenFolderExtension.()->Unit){
         var item = data.items.stream().filter { it: ElsaCodeGenProjectData -> it.project == project }
             .findFirst().orElse(null)
         if (item == null) {
@@ -31,39 +31,7 @@ open class ElsaCodeGenExtension(private val project: Project, val data: ElsaCode
             fd.folder = dir
             item.folders.add(fd)
         }
-        ElsaCodeFolderExtension(project, fd).configure()
+        ElsaCodeGenFolderExtension(project, fd).configure()
     }
-
-//    fun l10n(destDir: String, configurator: String, factory:String, sourcesFileNames: List<String>) {
-//        val record = ElsaJavaL10nCodeGenRecord()
-//        record.registryConfigurator = configurator
-//        sourcesFileNames.forEach {
-//            record.sources.add(project.file(it))
-//        }
-//        record.destinationDir = project.file(destDir)
-//        record.factory = factory
-//        findItem().l10nCodeGenRecords.add(record)
-//    }
-//
-//    fun domain(destDir: String, configurator: String, sourcesFileNames: List<String>) {
-//        val record = ElsaJavaDomainCodeGenRecord()
-//        record.registryConfigurator = configurator
-//        sourcesFileNames.forEach {
-//            record.sources.add(project.file(it))
-//        }
-//        record.destinationDir = project.file(destDir)
-//        findItem().domainCodeGenRecords.add(record)
-//    }
-//
-//    fun custom(destDir: String, configurator: String, sourcesFileNames: List<String>) {
-//        val record = ElsaJavaCustomCodeGenRecord()
-//        record.registryConfigurator = configurator
-//        sourcesFileNames.forEach {
-//            record.sources.add(project.file(it))
-//        }
-//        record.destinationDir = project.file(destDir)
-//        findItem().customCodeGenRecords.add(record)
-//    }
-
 
 }

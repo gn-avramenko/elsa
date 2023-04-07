@@ -78,7 +78,7 @@ public final class JdbcStructureUpdater {
         indexes.forEach((key, value) ->{
             try {
                 JdbcUtils.update(JdbcDialect.get().getCreateIndexSql(tableName, key, value));
-            } catch (Exception e){
+            } catch (Throwable e){
                 JdbcUtils.update(JdbcDialect.get().createIndexExtensionsSql(value.type()));
                 JdbcUtils.update(JdbcDialect.get().getCreateIndexSql(tableName, key, value));
             }

@@ -28,10 +28,14 @@ public class SerializableTypesParser {
             res.setJavaQualifiedName(child.getAttribute("java-qualified-name"));
             res.setReadonlyJavaQualifiedName(child.getAttribute("readonly-java-qualified-name"));
             res.setFinalField("true".equals(child.getAttribute("final-field")));
-
+            res.setTsQualifiedName(child.getAttribute("ts-qualified-name"));
             var generics = child.getFirstChild("generics");
             if(generics != null){
                 processGenerics(res.getGenerics(), generics);
+            }
+            var tsGenerics = child.getFirstChild("ts-generics");
+            if(tsGenerics != null){
+                processGenerics(res.getTsGenerics(), tsGenerics);
             }
         }
     }

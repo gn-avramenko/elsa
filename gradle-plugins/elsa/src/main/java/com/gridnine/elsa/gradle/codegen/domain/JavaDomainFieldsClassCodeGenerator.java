@@ -78,7 +78,7 @@ public class JavaDomainFieldsClassCodeGenerator {
                             }
                             sb.append(", ArgumentType<EntityReference<%s>>".formatted(JavaCodeGeneratorUtils.getSimpleName(className)));
                         } else {
-                            var type = JavaCodeGeneratorUtils.getSimpleName(st.getJavaQualifiedName(), gen);
+                            var type = getArgumentType(st.getJavaQualifiedName(), gen);
 
                             sb.append(", ArgumentType<%s>".formatted(type));
                         }
@@ -91,6 +91,13 @@ public class JavaDomainFieldsClassCodeGenerator {
         var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), "%sFields.java"
                 .formatted(sd.getId()), destDir);
         generatedFiles.add(file);
+    }
+
+    private String getArgumentType(String className, JavaCodeGenerator gen) {
+        if("int".equals(className) || "long".equals(className) || "boolean".equals(className) || "String".equals(className) ){
+            return className.substring(0,1).toUpperCase()+className.substring(1);
+        }
+        return JavaCodeGeneratorUtils.getSimpleName(className,gen);
     }
 
     private static void addImplements(StringBuilder sb, String name, JavaCodeGenerator gen) {

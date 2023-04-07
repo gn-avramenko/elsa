@@ -11,4 +11,6 @@ public enum ElsaGeneratorType {
     JAVA_L10N,
 
     JAVA_REMOTING,
+
+    TS_REMOTING,
 }

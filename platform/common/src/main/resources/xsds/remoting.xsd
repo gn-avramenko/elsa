@@ -117,6 +117,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -124,6 +125,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -131,6 +133,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -138,6 +141,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -145,6 +149,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -152,6 +157,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -159,6 +165,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -166,6 +173,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -174,6 +182,7 @@
 			<extension base="tns:IdWithParametersType">
 				<attribute use="required" name="class-name" type="string"/>
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -181,7 +190,9 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute use="required" name="class-name" type="string"/>
+				<attribute name="class-name" type="string"/>
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -189,7 +200,9 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute use="required" name="class-name" type="string"/>
+				<attribute name="class-name" type="string"/>
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -198,6 +211,7 @@
 			<extension base="tns:IdWithParametersType">
 				<attribute use="required" name="element-class-name" type="string"/>
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -206,6 +220,7 @@
 			<extension base="tns:IdWithParametersType">
 				<attribute use="required" name="class-name" type="string"/>
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -214,6 +229,7 @@
 			<extension base="tns:IdWithParametersType">
 				<attribute use="required" name="element-class-name" type="string"/>
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -221,6 +237,7 @@
 		<complexContent>
 			<extension base="tns:IdWithParametersType">
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -230,6 +247,7 @@
 				<attribute use="required" name="key-class-name" type="string"/>
 				<attribute use="required" name="value-class-name" type="string"/>
 				<attribute name="displayName" type="string"/>
+				<attribute name="non-nullable" type="boolean"/>
 			</extension>
 		</complexContent>
 	</complexType>

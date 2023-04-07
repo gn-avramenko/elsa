@@ -49,6 +49,7 @@ public class L10nMetadataParser {
                     var param = message.getParameters().computeIfAbsent(CommonParserUtils.getIdAttribute(paramChild),
                             PropertyDescription::new);
                     param.setTagName(paramChild.getName());
+                    param.setNonNullable("true".equals(paramChild.getAttribute("non-nullable")));
                     CommonParserUtils.updateBaseElement(param, paramChild, "%s.%s".formatted(message.getId(), param.getId()), localizations);
                 });
             });

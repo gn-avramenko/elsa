@@ -21,6 +21,7 @@ import com.gridnine.elsa.gradle.codegen.domain.JavaDomainMetaRegistryConfigurato
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nMetaRegistryConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nXsdCodeGen;
+import com.gridnine.elsa.gradle.config.ElsaCodeGenProjectData;
 import com.gridnine.elsa.gradle.config.ElsaJavaCustomCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaDomainCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaL10nCodeGenRecord;
@@ -46,9 +47,14 @@ import com.gridnine.elsa.meta.remoting.RemotingTypesRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableTypesRegistry;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.ProjectDependency;
+import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -61,7 +67,7 @@ public class ElsaCodeGenTask extends DefaultTask {
     @TaskAction
     public void generate() throws Exception {
         if (getProject().equals(getProject().getRootProject())) {
-            var ext = getProject().getExtensions().findByType(ElsaJavaExtension.class).getCodeGenExtension();
+            var javaExt = getProject().getExtensions().findByType(ElsaJavaExtension.class).getCodeGenExtension();
             var stp = new SerializableTypesParser();
             var stg = new SerializableTypesConfiguratorCodeGen();
             var dtp = new DomainTypesParser();
@@ -90,12 +96,14 @@ public class ElsaCodeGenTask extends DefaultTask {
             var l10nfg = new JavaL10nFactoryGenerator();
             var dcg = new JavaDomainCodeGen();
             var rcd = new RemotingJavaCodeGen();
-            for (var projectData : ext.getData().items) {
+            var projects = new ArrayList<>(javaExt.getData().items);
+            projects.sort((o1, o2) -> isDepends(o1.project, o2.project) ? 1 : (isDepends(o2.project, o1.project) ? -1 : 0));
+            for (var projectData : projects) {
                 for (var folderData : projectData.folders) {
                     Set<File> files = new LinkedHashSet<>();
                     for (var record : folderData.serializableTypes) {
                         var registry = new SerializableTypesRegistry();
-                        for(File file: record.metadataFiles){
+                        for (File file : record.metadataFiles) {
                             stp.updateRegistry(registry, file);
                             stp.updateRegistry(totalSerializableTypesRegistry, file);
                         }
@@ -103,7 +111,7 @@ public class ElsaCodeGenTask extends DefaultTask {
                     }
                     for (var record : folderData.domainTypes) {
                         var registry = new DomainTypesRegistry();
-                        for(File file: record.metadataFiles){
+                        for (File file : record.metadataFiles) {
                             dtp.updateRegistry(registry, file);
                             dtp.updateRegistry(totalDomainTypesRegistry, file);
                         }
@@ -111,7 +119,7 @@ public class ElsaCodeGenTask extends DefaultTask {
                     }
                     for (var record : folderData.customTypes) {
                         var registry = new CustomTypesRegistry();
-                        for(File file: record.metadataFiles){
+                        for (File file : record.metadataFiles) {
                             ctp.updateRegistry(registry, file);
                             ctp.updateRegistry(totalCustomTypesRegistry, file);
                         }
@@ -119,7 +127,7 @@ public class ElsaCodeGenTask extends DefaultTask {
                     }
                     for (var record : folderData.l10nTypes) {
                         var registry = new L10nTypesRegistry();
-                        for(File file: record.metadataFiles){
+                        for (File file : record.metadataFiles) {
                             l10ntp.updateRegistry(registry, file);
                             l10ntp.updateRegistry(totalL10nTypesRegistry, file);
                         }
@@ -127,22 +135,22 @@ public class ElsaCodeGenTask extends DefaultTask {
                     }
                     for (var record : folderData.remotingTypes) {
                         var registry = new RemotingTypesRegistry();
-                        for(File file: record.metadataFiles){
+                        for (File file : record.metadataFiles) {
                             rtp.updateRegistry(registry, file);
                             rtp.updateRegistry(totalRemotingTypesRegistry, file);
                         }
                         rtg.generate(registry, folderData.folder, folderData.remotingTypesConfigurator, files);
                     }
-                    if(folderData.customMetaRegistryConfigurator != null){
+                    if (folderData.customMetaRegistryConfigurator != null) {
                         var registry = new CustomMetaRegistry();
-                        for(ElsaJavaCustomCodeGenRecord record: folderData.customCodeGenRecords){
+                        for (ElsaJavaCustomCodeGenRecord record : folderData.customCodeGenRecords) {
                             cmp.updateRegistry(registry, totalSerializableMetaRegistry, record.getSources());
                         }
                         cmg.generate(registry, totalSerializableMetaRegistry, folderData.customMetaRegistryConfigurator, folderData.folder, files);
                     }
-                    if(folderData.l10nMetaRegistryConfigurator != null){
+                    if (folderData.l10nMetaRegistryConfigurator != null) {
                         var registry = new L10nMetaRegistry();
-                        for(ElsaJavaL10nCodeGenRecord record: folderData.l10nCodeGenRecords){
+                        for (ElsaJavaL10nCodeGenRecord record : folderData.l10nCodeGenRecords) {
                             var reg2 = new L10nMetaRegistry();
                             l10nmp.updateMetaRegistry(registry, record.getSources());
                             l10nmp.updateMetaRegistry(reg2, record.getSources());
@@ -150,32 +158,42 @@ public class ElsaCodeGenTask extends DefaultTask {
                         }
                         l10nmg.generate(registry, folderData.l10nMetaRegistryConfigurator, folderData.folder, files);
                     }
-                    if(folderData.domainMetaRegistryConfigurator != null){
+                    if (folderData.domainMetaRegistryConfigurator != null) {
                         var registry = new DomainMetaRegistry();
-                        for(ElsaJavaDomainCodeGenRecord record: folderData.domainCodeGenRecords){
+                        for (ElsaJavaDomainCodeGenRecord record : folderData.domainCodeGenRecords) {
                             dmp.updateRegistry(registry, totalSerializableMetaRegistry, record.getSources());
                         }
                         dmg.generate(registry, totalSerializableMetaRegistry, folderData.domainMetaRegistryConfigurator, folderData.folder, files);
                         dcg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalDomainTypesRegistry, folderData.folder, files);
                     }
-                    if(folderData.remotingMetaRegistryConfigurator != null){
+                    if (folderData.remotingMetaRegistryConfigurator != null) {
                         var registry = new RemotingMetaRegistry();
-                        for(ElsaJavaRemotingCodeGenRecord record: folderData.remotingCodeGenRecords){
+                        for (ElsaJavaRemotingCodeGenRecord record : folderData.remotingCodeGenRecords) {
                             rmp.updateRegistry(registry, totalSerializableMetaRegistry, record.getSources());
                         }
-                        rcd.generate(registry, totalSerializableMetaRegistry,totalSerializableTypesRegistry, totalRemotingTypesRegistry, folderData.folder, files );
+                        rcd.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, folderData.folder, files);
                         rmg.generate(registry, totalSerializableMetaRegistry, folderData.remotingMetaRegistryConfigurator, folderData.folder, files);
                     }
                     cleanupDir(folderData.folder, files);
                 }
             }
-            if(ext.getData().xsdsLocation != null) {
-                new DomainXsdCodeGen().generate(totalDomainTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
-                new CustomXsdCodeGen().generate(totalCustomTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
-                new L10nXsdCodeGen().generate(totalL10nTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
-                new RemotingXsdCodeGen().generate(totalRemotingTypesRegistry, totalSerializableTypesRegistry, ext.getData().xsdsLocation, ext.getData().xsdsCustomizationSuffix);
+            if (javaExt.getData().xsdsLocation != null) {
+                new DomainXsdCodeGen().generate(totalDomainTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
+                new CustomXsdCodeGen().generate(totalCustomTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
+                new L10nXsdCodeGen().generate(totalL10nTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
+                new RemotingXsdCodeGen().generate(totalRemotingTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
             }
         }
+    }
+
+    private boolean isDepends(Project proj1, Project proj2) {
+        return proj1.getConfigurations().getByName("implementation").getAllDependencies().withType(ProjectDependency.class).stream()
+                .anyMatch(it -> {
+                    if (it instanceof DefaultProjectDependency dpg) {
+                        return dpg.getDependencyProject().getName().equals(proj2.getName());
+                    }
+                    return false;
+                });
     }
 
     private void cleanupDir(File dir, Set<File> generatedFiles) {

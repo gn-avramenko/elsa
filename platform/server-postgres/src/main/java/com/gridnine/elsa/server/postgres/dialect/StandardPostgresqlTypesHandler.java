@@ -30,7 +30,7 @@ public class StandardPostgresqlTypesHandler implements PostgresqlTypesHandler {
     }
 
     @Override
-    public String getJdbcType(String dataType, int maxLength, String columnName) {
+    public String getJdbcType(String dataType, int maxLength, String columnName,String udtName) {
         if ("character varying".equalsIgnoreCase(dataType)) {
             return SqlTypeStringHandler.type;
         }
@@ -59,7 +59,16 @@ public class StandardPostgresqlTypesHandler implements PostgresqlTypesHandler {
             return SqlTypeBooleanHandler.type;
         }
         if ("ARRAY".equalsIgnoreCase(dataType)) {
-            return SqlTypeStringArrayHandler.type;
+            if(udtName.equalsIgnoreCase("_int4")){
+               return SqlTypeIntArrayHandler.type;
+            }
+            if(udtName.equalsIgnoreCase("_int8")){
+                return SqlTypeLongArrayHandler.type;
+            }
+            if(udtName.equalsIgnoreCase("_varchar")){
+                return  SqlTypeStringArrayHandler.type;
+            }
+            return null;
         }
         return null;
     }

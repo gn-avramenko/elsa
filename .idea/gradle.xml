@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/gradle-plugins/elsa" />
             <option value="$PROJECT_DIR$/gradle-plugins/internal" />
             <option value="$PROJECT_DIR$/platform" />
+            <option value="$PROJECT_DIR$/platform/client-ts" />
             <option value="$PROJECT_DIR$/platform/common" />
             <option value="$PROJECT_DIR$/platform/meta" />
             <option value="$PROJECT_DIR$/platform/server" />

@@ -5,6 +5,7 @@ include("platform:common")
 include("platform:server")
 include("platform:server-postgres")
 include("platform:server-tomcat")
+include("platform:client-ts")
 include("platform:sjl")
 include("demo:server")
 rootProject.name ="elsa"

@@ -12,6 +12,8 @@ import java.util.Map;
 public class PropertyDescription extends BaseElement {
     private String tagName;
 
+    private boolean nonNullable;
+
     public PropertyDescription() {
     }
 
@@ -25,5 +27,13 @@ public class PropertyDescription extends BaseElement {
 
     public void setTagName(String tagName) {
         this.tagName = tagName;
+    }
+
+    public boolean isNonNullable() {
+        return nonNullable;
+    }
+
+    public void setNonNullable(boolean nonNullable) {
+        this.nonNullable = nonNullable;
     }
 }

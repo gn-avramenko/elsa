@@ -9,7 +9,7 @@ import com.gridnine.elsa.gradle.config.ElsaTypesRecord
 import org.gradle.api.Project
 
 @ElsaJavaConfigMarker
-open class ElsaCodeFolderExtension(private val project:Project, private val folderData:ElsaCodeGenFolderData) {
+open class ElsaCodeGenFolderExtension(private val project:Project, private val folderData:ElsaCodeGenFolderData) {
 
     fun serializableTypesConfigurator(configurator:String){
         folderData.serializableTypesConfigurator = configurator

@@ -60,6 +60,6 @@ public class DomainTypesParser {
         tag.setHasSortSupport("true".equals(child.getAttribute("has-sort-support")));
         tag.setHasStringOperationsSupport("true".equals(child.getAttribute("has-string-operations-support")));
         tag.setSearchQueryArgumentType(child.getAttribute("search-query-argument-type"));
-        CommonParserUtils.processGenerics(tag.getGenerics(), child);
+        CommonParserUtils.processGenerics(tag.getGenerics(), child.getChildren("generic"));
     }
 }

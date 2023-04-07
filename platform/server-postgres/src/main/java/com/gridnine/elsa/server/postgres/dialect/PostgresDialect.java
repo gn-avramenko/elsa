@@ -40,19 +40,20 @@ public class PostgresDialect implements JdbcDialect {
     @Override
     public Map<String, String> getColumnTypes(String tableName) {
         var result = new LinkedHashMap<String, String>();
-        JdbcUtils.queryForList("SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = '%s'".
+        JdbcUtils.queryForList("SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, UDT_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = '%s'".
                 formatted(tableName), rs ->{
             var columnName = rs.getString("COLUMN_NAME");
             var maxLength = rs.getInt("CHARACTER_MAXIMUM_LENGTH");
             var dataTypeStr = rs.getString("DATA_TYPE");
-            return new Pair<>(columnName, getType(dataTypeStr, maxLength, columnName));
+            var udtName = rs.getString("UDT_NAME");
+            return new Pair<>(columnName, getType(dataTypeStr, maxLength, columnName, udtName));
         }).forEach(map -> result.put(map.key(), map.value()));
         return result;
     }
 
-    private String getType(String dataType, int maxLength, String columnName) {
+    private String getType(String dataType, int maxLength, String columnName,String udtName) {
         for(PostgresqlTypesHandler handler: PostgresqlRegistry.get().getHandlers()){
-            String type = handler.getJdbcType(dataType, maxLength, columnName);
+            String type = handler.getJdbcType(dataType, maxLength, columnName,udtName);
             if(type != null){
                 return type;
             }

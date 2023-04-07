@@ -117,6 +117,7 @@ public final class CommonParserUtils {
             }
             var pd = ed.getProperties().computeIfAbsent(getIdAttribute(item), PropertyDescription::new);
             pd.setTagName(item.getName());
+            pd.setNonNullable("true".equals(item.getAttribute("non-nullable")));
             updateBaseElement(pd, item, "%s.%s".formatted(ed.getId(), pd.getId()), localizations);
         });
         return ed.getId();
@@ -151,17 +152,17 @@ public final class CommonParserUtils {
         for (BuildXmlNode attr : child.getChildren("attribute")) {
             addAttribute(tag.getAttributes(), attr);
         }
-        processGenerics(tag.getGenerics(), child);
+        processGenerics(tag.getGenerics(), child.getChildren("generic"));
     }
 
-    public static void processGenerics(List<GenericDescription> generics, BuildXmlNode child) {
-        for (BuildXmlNode attr : child.getChildren("generic")) {
+    public static void processGenerics(List<GenericDescription> generics, List<BuildXmlNode> children) {
+        for (BuildXmlNode attr : children) {
             var gen = new GenericDescription();
             gen.setType(attr.getAttribute("type"));
             gen.setId(attr.getAttribute("id"));
             gen.setObjectIdAttributeName(attr.getAttribute("object-id-attribute-name"));
             generics.add(gen);
-            processGenerics(gen.getNestedGenerics(), attr);
+            processGenerics(gen.getNestedGenerics(), attr.getChildren("generic"));
         }
     }
 

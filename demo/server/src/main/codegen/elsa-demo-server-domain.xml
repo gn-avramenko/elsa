@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain xmlns="http://gridnine.com/elsa/meta-domain" >
+	<document id="com.gridnine.elsa.demo.model.domain.DemoDomainDocument" cache-resolve="true">
+		<string-property id="stringProperty"/>
+		<string-property id="getAllProperty"/>
+		<string-list id="stringCollection"/>
+		<local-date-time-property id="dateTimeProperty"/>
+		<int-property id="intProperty"/>
+		<long-property id="longProperty"/>
+		<big-decimal-property id="bigDecimalProprerty"/>
+		<boolean-property id="booleanProperty"/>
+		<local-date-property id="dateProperty"/>
+		<entity-property id="entityProperty" class-name="com.gridnine.elsa.demo.model.domain.BaseDemoDomainNestedDocument"/>
+		<enum-property id="enumProperty" class-name="com.gridnine.elsa.demo.model.domain.DemoEnum"/>
+		<entity-reference-property id="entityReferenceProperty" class-name="com.gridnine.elsa.demo.model.domain.DemoDomainDocument"/>
+		<entity-list id="entityCollection" element-class-name="com.gridnine.elsa.demo.model.domain.BaseDemoDomainNestedDocument"/>
+		<entity-list id="groups" element-class-name="com.gridnine.elsa.demo.model.domain.DemoGroup"/>
+		<enum-list id="enumCollection" element-class-name="com.gridnine.elsa.demo.model.domain.DemoEnum"/>
+		<entity-reference-list id="entityRefCollection" class-name="com.gridnine.elsa.demo.model.domain.DemoDomainDocument"/>
+		<caption-expression>stringProperty</caption-expression>
+	</document>
+	<entity id="com.gridnine.elsa.demo.model.domain.BaseDemoDomainNestedDocument" abstract="true">
+		<string-property id="name"/>
+	</entity>
+	<entity id="com.gridnine.elsa.demo.model.domain.DemoDomainNestedDocumentImpl" extends = "com.gridnine.elsa.demo.model.domain.BaseDemoDomainNestedDocument">
+		<string-property id="value"/>
+	</entity>
+	<entity id="com.gridnine.elsa.demo.model.domain.DemoGroup">
+		<string-property id="name"/>
+		<entity-list element-class-name="com.gridnine.elsa.demo.model.domain.DemoItem" id="items"/>
+	</entity>
+	<entity id="com.gridnine.elsa.demo.model.domain.DemoItem">
+		<string-property id="name"/>
+	</entity>
+</domain>
