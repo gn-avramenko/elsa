@@ -27,7 +27,7 @@ import com.gridnine.elsa.server.storage.repository.jdbc.JdbcEnumMapperImpl;
 import com.gridnine.elsa.server.storage.repository.jdbc.JdbcIdGeneratorImpl;
 import com.gridnine.elsa.server.storage.repository.jdbc.JdbcRegistry;
 import com.gridnine.elsa.server.storage.repository.jdbc.JdbcRepository;
-import com.gridnine.elsa.server.storage.repository.jdbc.JdbcTranscationManager;
+import com.gridnine.elsa.server.storage.repository.jdbc.JdbcTransactionManager;
 import com.gridnine.elsa.server.storage.repository.jdbc.handlers.*;
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcDatabaseMetadataProvider;
 import com.gridnine.elsa.server.storage.repository.jdbc.structureUpdater.JdbcStructureUpdater;
@@ -81,7 +81,7 @@ public class ServerActivator implements Activator {
         JdbcRegistry.get().register(CoreDomainTypesConfigurator.TAG_STRING_PROPERTY, new JdbcStringFieldHandlerFactory());
         JdbcRegistry.get().register(CoreDomainTypesConfigurator.TAG_STRING_LIST, new JdbcStringListFieldHandlerFactory());
 
-        Environment.publish(TransactionManager.class, new JdbcTranscationManager());
+        Environment.publish(TransactionManager.class, new JdbcTransactionManager());
 
         Environment.publish(new StorageRegistry());
         CacheStorageAdvice cacheStorageAdvice = new CacheStorageAdvice();

@@ -1,0 +1,45 @@
+import com.gridnine.elsa.gradle.internal.elsaInternal
+
+plugins {
+    java
+    id("java-test-fixtures")
+}
+buildscript {
+    repositories{
+        mavenLocal()
+    }
+    dependencies{
+        classpath("com.gridnine:elsa-gradle-internal:0+")
+        classpath("com.gridnine:elsa-gradle:0+")
+    }
+}
+
+apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
+
+elsaInternal {
+     artefactId = "elsa-server-atomikos"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies{
+    implementation("ch.qos.logback:logback-core:1+")
+    implementation("ch.qos.logback:logback-classic:1+")
+    implementation("javax.transaction:jta:1.1")
+    implementation("com.atomikos:transactions-jdbc:5.0.9")
+    implementation(project(":platform:meta"))
+    implementation(project(":platform:common"))
+    implementation(project(":platform:server"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5+")
+    testImplementation(testFixtures(project(":platform:common")))
+    testImplementation(testFixtures(project(":platform:server")))
+    testFixturesImplementation(testFixtures(project(":platform:server")))
+    testFixturesImplementation(testFixtures(project(":platform:common")))
+}
+
+
+tasks.test {
+    useJUnitPlatform()
+}

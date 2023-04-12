@@ -18,11 +18,11 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.sql.Connection;
 
-public class JdbcTranscationManager implements TransactionManager {
+public class JdbcTransactionManager implements TransactionManager {
 
     private final static ThreadLocal<TransactionContext> contexts = new ThreadLocal<>();
 
-    private final static Logger log = LoggerFactory.getLogger(JdbcTranscationManager.class);
+    private final static Logger log = LoggerFactory.getLogger(JdbcTransactionManager.class);
     @Override
     public <P> P withTransaction(CallableWithExceptionAndArgument<P, TransactionContext> func, boolean readonly) {
         return ExceptionUtils.wrapException(() ->{

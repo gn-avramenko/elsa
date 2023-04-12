@@ -11,6 +11,7 @@ import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcIndexDescripti
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcIndexType;
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcSequenceDescription;
 
+import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,4 +54,6 @@ public interface JdbcDialect {
     static JdbcDialect get(){
         return Environment.getPublished(JdbcDialect.class);
     }
+
+    XADataSource createXADataSource() throws SQLException;
 }

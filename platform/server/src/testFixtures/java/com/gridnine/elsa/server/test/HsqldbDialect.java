@@ -14,10 +14,13 @@ import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcSequenceDescri
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcSequenceType;
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcUtils;
 import org.hsqldb.jdbc.JDBCBlob;
+import org.hsqldb.jdbc.pool.JDBCXADataSource;
 
+import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -94,6 +97,15 @@ public class HsqldbDialect implements JdbcDialect {
     }
 
     @Override
+    public XADataSource createXADataSource() throws SQLException {
+        var ds = new JDBCXADataSource();
+        ds.setURL("jdbc:hsqldb:mem:elsa;shutdown=true");
+        ds.setUser("SA");
+        ds.setPassword("");
+        return ds;
+    }
+
+    @Override
     public String createDropIndexQuery(String tableName, String index) {
         return "DROP INDEX %s IF EXISTS".formatted(index.toUpperCase());
     }
@@ -157,4 +169,5 @@ public class HsqldbDialect implements JdbcDialect {
     public String createIndexExtensionsSql(JdbcIndexType type) {
         return "select 1";
     }
+
 }

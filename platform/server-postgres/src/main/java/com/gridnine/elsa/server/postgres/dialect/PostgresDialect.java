@@ -5,6 +5,7 @@
 
 package com.gridnine.elsa.server.postgres.dialect;
 
+import com.gridnine.elsa.common.config.Configuration;
 import com.gridnine.elsa.common.model.common.Pair;
 import com.gridnine.elsa.common.utils.IoUtils;
 import com.gridnine.elsa.server.storage.repository.RepositoryBinaryData;
@@ -15,7 +16,9 @@ import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcSequenceDescri
 import com.gridnine.elsa.server.storage.repository.jdbc.model.JdbcUtils;
 import org.postgresql.PGConnection;
 import org.postgresql.largeobject.LargeObjectManager;
+import org.postgresql.xa.PGXADataSource;
 
+import javax.sql.XADataSource;
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -102,6 +105,15 @@ public class PostgresDialect implements JdbcDialect {
             return type;
         }
         throw new IllegalArgumentException("unsupported type %s".formatted(value));
+    }
+
+    @Override
+    public XADataSource createXADataSource() {
+        var ds = new PGXADataSource();
+        Configuration config = Configuration.get().getSubConfiguration("repository.postgresql");
+        ds.setUser(config.getValue("login"));
+        ds.setPassword(config.getValue("password"));
+        return ds;
     }
 
     @Override
