@@ -11,6 +11,8 @@ import com.gridnine.elsa.meta.config.Environment;
 
 public interface TransactionManager {
 
+    TransactionContext getCurrentContext();
+
     default void withTransaction(RunnableWithExceptionAndArgument<TransactionContext> func) {
         withTransaction((context) ->{
             func.run(context);

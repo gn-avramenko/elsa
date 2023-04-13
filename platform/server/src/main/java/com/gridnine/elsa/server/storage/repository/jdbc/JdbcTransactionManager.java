@@ -23,6 +23,12 @@ public class JdbcTransactionManager implements TransactionManager {
     private final static ThreadLocal<TransactionContext> contexts = new ThreadLocal<>();
 
     private final static Logger log = LoggerFactory.getLogger(JdbcTransactionManager.class);
+
+    @Override
+    public TransactionContext getCurrentContext() {
+        return contexts.get();
+    }
+
     @Override
     public <P> P withTransaction(CallableWithExceptionAndArgument<P, TransactionContext> func, boolean readonly) {
         return ExceptionUtils.wrapException(() ->{

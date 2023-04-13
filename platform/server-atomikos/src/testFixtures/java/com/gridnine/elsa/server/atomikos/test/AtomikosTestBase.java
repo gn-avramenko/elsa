@@ -16,8 +16,8 @@ public class AtomikosTestBase extends ServerTestBase {
 
     @Override
     protected void setUp() throws Exception {
-        System.setProperty("com.atomikos.icatch.file", new File("src/testFixtures/java/com/gridnine/elsa/server/atomikos/test/jta.properties").getAbsolutePath());
-        System.setProperty("atomikos-log-base-dir", new File("temp/atomikos").getAbsolutePath());
+        System.setProperty("com.atomikos.icatch.file", System.getProperty("com.atomikos.icatch.file", new File("src/testFixtures/java/com/gridnine/elsa/server/atomikos/test/jta.properties").getAbsolutePath()));
+        System.setProperty("atomikos-log-base-dir", System.getProperty("atomikos-log-base-dir", new File("temp/atomikos").getAbsolutePath()));
         super.setUp();
     }
 

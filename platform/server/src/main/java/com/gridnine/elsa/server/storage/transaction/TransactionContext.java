@@ -16,13 +16,13 @@ public class TransactionContext {
 
     private final List<RunnableWithException> postCommitCallbacks = new ArrayList<>();
 
-    private final Map<String, Object> context = new HashMap<>();
+    private final Map<String, Object> attributes = new HashMap<>();
 
     public List<RunnableWithException> getPostCommitCallbacks() {
         return postCommitCallbacks;
     }
 
-    public Map<String, Object> getContext() {
-        return context;
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 }

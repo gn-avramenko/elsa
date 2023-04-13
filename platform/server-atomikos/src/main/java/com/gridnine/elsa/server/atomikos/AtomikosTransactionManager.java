@@ -30,6 +30,11 @@ public class AtomikosTransactionManager implements TransactionManager {
 
     private final static ThreadLocal<TransactionContext> contexts = new ThreadLocal<>();
 
+    @Override
+    public TransactionContext getCurrentContext() {
+        return contexts.get();
+    }
+
     public AtomikosTransactionManager(){
         if ( TransactionManagerImp.getTransactionManager () == null ) {
             UserTransactionService uts = new UserTransactionServiceImp();
@@ -48,7 +53,7 @@ public class AtomikosTransactionManager implements TransactionManager {
                 context = new TransactionContext();
                 utx = new UserTransactionImp();
                 utx.begin();
-                context.getContext().put(USER_TRANSACTION_KEY, utx);
+                context.getAttributes().put(USER_TRANSACTION_KEY, utx);
                 connection = Environment.getPublished(DataSource.class).getConnection();
                 connection.setAutoCommit(false);
                 contexts.set(context);
