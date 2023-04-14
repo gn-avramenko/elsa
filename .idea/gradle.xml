@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/platform/server" />
             <option value="$PROJECT_DIR$/platform/server-atomikos" />
             <option value="$PROJECT_DIR$/platform/server-file-storage" />
+            <option value="$PROJECT_DIR$/platform/server-jms" />
             <option value="$PROJECT_DIR$/platform/server-postgres" />
             <option value="$PROJECT_DIR$/platform/server-tomcat" />
             <option value="$PROJECT_DIR$/platform/sjl" />
