@@ -29,5 +29,6 @@ public interface SerializationHandler<T> {
 
     T toStandardObject(T source, T target, PropertySerializationMetadata property, Map<Object, Object> processed);
 
+    T deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, T currentValue) throws Exception;
 
 }

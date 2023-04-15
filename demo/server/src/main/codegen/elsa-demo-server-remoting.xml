@@ -1,0 +1,10 @@
+<remoting xmlns="http://gridnine.com/elsa/meta-remoting" id="elsa-demo-remoting">
+    <group id="test">
+        <download id="download-index" handler-class-name="com.gridnine.elsa.demo.server.remoting.DownloadIndexHandler">
+            <request id="com.gridnine.elsa.demo.model.remoting.DownloadIndexRequest">
+                <string-property id="fileId"/>
+            </request>
+        </download>
+        <download id="download-video" handler-class-name="com.gridnine.elsa.demo.server.remoting.DownloadVideoHandler"/>
+    </group>
+</remoting>

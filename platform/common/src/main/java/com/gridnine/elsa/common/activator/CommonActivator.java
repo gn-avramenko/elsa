@@ -21,6 +21,7 @@ import com.gridnine.elsa.common.serialization.Cloner;
 import com.gridnine.elsa.common.serialization.JsonMarshaller;
 import com.gridnine.elsa.common.serialization.JsonUnmarshaller;
 import com.gridnine.elsa.common.serialization.SerializationHandlersRegistry;
+import com.gridnine.elsa.common.serialization.StringUnmarshaller;
 import com.gridnine.elsa.common.serialization.handlers.*;
 import com.gridnine.elsa.common.serialization.metadata.ObjectSerializationMetadataProvider;
 import com.gridnine.elsa.meta.config.Environment;
@@ -76,6 +77,7 @@ public class CommonActivator implements Activator {
         Environment.publish(new SerializationHandlersRegistry());
         Environment.publish(new SupportedLocalesProvider());
         Environment.publish(new Localizer());
+        Environment.publish(new StringUnmarshaller());
         SerializationHandlersRegistry.get().register(new StringSerializationHandler());
         SerializationHandlersRegistry.get().register(new ArrayListSerializationHandler());
         SerializationHandlersRegistry.get().register(new BigDecimalSerializationHandler());

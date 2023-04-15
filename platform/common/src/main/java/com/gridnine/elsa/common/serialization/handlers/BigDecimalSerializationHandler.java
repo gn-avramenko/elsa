@@ -52,4 +52,9 @@ public class BigDecimalSerializationHandler implements SerializationHandler<BigD
     public BigDecimal toStandardObject(BigDecimal source, BigDecimal target, PropertySerializationMetadata property, Map<Object, Object> processed) {
         return source;
     }
+
+    @Override
+    public BigDecimal deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, BigDecimal currentValue) throws Exception {
+        return new BigDecimal(value);
+    }
 }

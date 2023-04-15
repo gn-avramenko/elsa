@@ -28,8 +28,8 @@ public class RemotingTypesParser {
         for(BuildXmlNode child : node.getChildren("server-call-attribute")){
             CommonParserUtils.addAttribute(registry.getServerCallAttributes(), child);
         }
-        for(BuildXmlNode child : node.getChildren("server-subscription-attribute")){
-            CommonParserUtils.addAttribute(registry.getServerSubscriptionAttributes(), child);
+        for(BuildXmlNode child : node.getChildren("download-attribute")){
+            CommonParserUtils.addAttribute(registry.getDownloadAttributes(), child);
         }
         for(BuildXmlNode child : node.getChildren("entity-tag")){
             CommonParserUtils.addTag(registry.getEntityTags(), child);

@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RemotingServerCallContext {
+public class RemotingCallContext {
 
     private HttpServletRequest httpRequest;
 

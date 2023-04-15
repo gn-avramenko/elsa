@@ -51,4 +51,9 @@ public class IntSerializationHandler implements SerializationHandler<Integer> {
     public Integer toStandardObject(Integer source, Integer target, PropertySerializationMetadata property, Map<Object, Object> processed) {
         return source;
     }
+
+    @Override
+    public Integer deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, Integer currentValue) throws Exception {
+        return Integer.valueOf(value);
+    }
 }

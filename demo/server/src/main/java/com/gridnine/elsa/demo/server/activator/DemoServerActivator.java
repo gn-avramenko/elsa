@@ -9,6 +9,7 @@ import com.gridnine.elsa.common.config.Activator;
 import com.gridnine.elsa.common.model.domain.EntityReference;
 import com.gridnine.elsa.common.search.SearchQuery;
 import com.gridnine.elsa.demo.ElsaDemoDomainMetaRegistryConfigurator;
+import com.gridnine.elsa.demo.ElsaDemoRemotingMetaRegistryConfigurator;
 import com.gridnine.elsa.demo.model.domain.DemoDomainAsset;
 import com.gridnine.elsa.demo.model.domain.DemoDomainDocument;
 import com.gridnine.elsa.demo.model.domain.DemoDomainDocumentProjection;
@@ -34,6 +35,7 @@ public class DemoServerActivator implements Activator {
     @Override
     public void configure() throws Exception {
         new ElsaDemoDomainMetaRegistryConfigurator().configure();
+        new ElsaDemoRemotingMetaRegistryConfigurator().configure();
         StorageRegistry.get().register(new DemoDomainDocumentProjectionHandler());
     }
 

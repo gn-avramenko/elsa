@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <remoting xmlns="http://gridnine.com/elsa/remoting-types">
     <server-call-attribute name="handler-class-name" type="STRING"/>
+    <download-attribute name="handler-class-name" type="STRING" />
     <entity-tag tag-name="string-property" type="STRING"/>
     <entity-tag tag-name="local-date-time-property" type="LOCAL-DATE-TIME"/>
     <entity-tag tag-name="local-date-property" type="LOCAL-DATE"/>

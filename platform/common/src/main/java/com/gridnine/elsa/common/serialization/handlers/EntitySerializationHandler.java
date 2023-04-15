@@ -122,6 +122,11 @@ public class EntitySerializationHandler implements SerializationHandler<BaseIntr
         return toStandardObject0(source, target, property, processed);
     }
 
+    @Override
+    public BaseIntrospectableObject deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, BaseIntrospectableObject currentValue) throws Exception {
+        throw  new UnsupportedOperationException();
+    }
+
     public static BaseIntrospectableObject deserialize0(JsonParser parser, PropertySerializationMetadata property, Map<String,Object> params, Map<Integer, Object> processed, BaseIntrospectableObject currentValue) throws Exception {
         BaseIntrospectableObject result = null;
         String className = property.property.getAttributes().get(property.tagDescription.getObjectIdAttributeName());

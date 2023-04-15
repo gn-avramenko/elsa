@@ -36,8 +36,10 @@ elsa {
     codegen {
         folder("src/main/java-gen"){
             domainMetaRegistryConfigurator("com.gridnine.elsa.demo.ElsaDemoDomainMetaRegistryConfigurator")
+            remotingMetaRegistryConfigurator("com.gridnine.elsa.demo.ElsaDemoRemotingMetaRegistryConfigurator")
             domainMeta("src/main/codegen/elsa-demo-common-domain.xml",
                 "src/main/codegen/elsa-demo-server-domain.xml")
+            remotingMeta("src/main/codegen/elsa-demo-server-remoting.xml")
         }
     }
 }

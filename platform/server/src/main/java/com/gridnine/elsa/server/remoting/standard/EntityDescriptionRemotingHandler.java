@@ -17,7 +17,7 @@ import com.gridnine.elsa.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.meta.domain.DomainMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
-import com.gridnine.elsa.server.remoting.RemotingServerCallContext;
+import com.gridnine.elsa.server.remoting.RemotingCallContext;
 import com.gridnine.elsa.server.remoting.RemotingServerCallHandler;
 
 import java.util.Map;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class EntityDescriptionRemotingHandler implements RemotingServerCallHandler<GetRemotingEntityDescriptionRequest, GetRemotingEntityDescriptionResponse> {
 
     @Override
-    public GetRemotingEntityDescriptionResponse service(GetRemotingEntityDescriptionRequest request, RemotingServerCallContext context) throws Exception {
+    public GetRemotingEntityDescriptionResponse service(GetRemotingEntityDescriptionRequest request, RemotingCallContext context) throws Exception {
         if(DomainMetaRegistry.get().getProjectionsIds().contains(request.getEntityId())){
             return createEntityDescription(REntityType.DOMAIN_DATABASE_ENTITY, SerializableMetaRegistry.get().getEntities().get(request.getEntityId()));
         }

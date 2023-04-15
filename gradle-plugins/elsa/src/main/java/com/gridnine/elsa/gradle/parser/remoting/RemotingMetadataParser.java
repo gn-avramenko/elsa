@@ -9,14 +9,13 @@ import com.gridnine.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.elsa.gradle.parser.common.MetaDataParsingResult;
 import com.gridnine.elsa.gradle.utils.BuildXmlNode;
 import com.gridnine.elsa.meta.remoting.RemotingDescription;
+import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
-import com.gridnine.elsa.meta.remoting.RemotingServerSubscriptionDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 public class RemotingMetadataParser {
@@ -61,21 +60,17 @@ public class RemotingMetadataParser {
                         scd.setResponseClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), responseElm, pr.localizations()));
                     }
                 }
-                for(BuildXmlNode serverCallElm:groupElm.getChildren("server-subscription")){
+                for(BuildXmlNode serverCallElm:groupElm.getChildren("download")){
                     String scid = CommonParserUtils.getIdAttribute(serverCallElm);
-                    var scd = rgd.getServerSubscriptions().computeIfAbsent(scid, (s)->{
-                        var sgds = new RemotingServerSubscriptionDescription();
+                    var scd = rgd.getDownloads().computeIfAbsent(scid, (s)->{
+                        var sgds = new RemotingDownloadDescription();
                         sgds.setId(s);
                         return sgds;
                     });
                     CommonParserUtils.updateBaseElement(scd, serverCallElm, "%s.%s.%s".formatted(id, gid, scid), pr.localizations());
-                    BuildXmlNode parameterElm = serverCallElm.getFirstChild("subscription-parameter");
+                    BuildXmlNode parameterElm = serverCallElm.getFirstChild("request");
                     if(parameterElm != null){
-                        scd.setParameterClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), parameterElm, pr.localizations()));
-                    }
-                    BuildXmlNode eventElm = serverCallElm.getFirstChild("event");
-                    if(eventElm != null){
-                        scd.setEventClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), eventElm, pr.localizations()));
+                        scd.setRequestClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), parameterElm, pr.localizations()));
                     }
                 }
             }

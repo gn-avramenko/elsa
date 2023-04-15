@@ -44,14 +44,14 @@
 												</complexContent>
 											</complexType>
 										</element>
-										<element name="server-subscription">
+										<element name="download">
 											<complexType>
 												<complexContent>
 													<extension base="tns:IdWithParametersType">
 														<sequence>
-															<element name="subscription-parameter" type="tns:EntityType"/>
-															<element name="event" type="tns:EntityType"/>
+															<element name="request" type="tns:EntityType" minOccurs="0"/>
 														</sequence>
+														<attribute name="handler-class-name" type="string"/>
 													</extension>
 												</complexContent>
 											</complexType>

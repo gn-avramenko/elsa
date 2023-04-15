@@ -138,4 +138,12 @@ public class EntityReferenceSerializationHandler implements SerializationHandler
         }
         return result;
     }
+
+    @Override
+    public EntityReference<?> deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, EntityReference<?> currentValue) throws Exception {
+        var result = new EntityReference<>();
+        result.setId(Long.parseLong(value));
+        result.setType(ReflectionFactory.get().getClass(nestedProp.property.getAttributes().get(nestedProp.tagDescription.getObjectIdAttributeName())));
+        return result;
+    }
 }

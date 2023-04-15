@@ -85,4 +85,9 @@ public class ArrayListSerializationHandler implements SerializationHandler<Array
         return target;
     }
 
+    @Override
+    public ArrayList<?> deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params,ArrayList<?> currentValue) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
 }

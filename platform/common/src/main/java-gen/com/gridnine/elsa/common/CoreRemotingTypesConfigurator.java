@@ -23,6 +23,12 @@ public class CoreRemotingTypesConfigurator{
 			registry.getServerCallAttributes().put("handler-class-name", attr);
 		}
 		{
+			var attr = new AttributeDescription();
+			attr.setName("handler-class-name");
+			attr.setType(AttributeType.STRING);
+			registry.getDownloadAttributes().put("handler-class-name", attr);
+		}
+		{
 			var tag = new TagDescription();
 			tag.setTagName("string-property");
 			tag.setType("STRING");

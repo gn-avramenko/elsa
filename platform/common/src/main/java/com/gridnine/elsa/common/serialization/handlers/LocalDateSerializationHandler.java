@@ -57,4 +57,9 @@ public class LocalDateSerializationHandler implements SerializationHandler<Local
     public LocalDate toStandardObject(LocalDate source, LocalDate target, PropertySerializationMetadata property, Map<Object, Object> processed) {
         return source;
     }
+
+    @Override
+    public LocalDate deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params,  LocalDate currentValue) throws Exception {
+        return LocalDate.parse(value, dateFormatter);
+    }
 }

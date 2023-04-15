@@ -10,11 +10,9 @@ import com.gridnine.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.elsa.meta.common.AttributeDescription;
 import com.gridnine.elsa.meta.common.DatabaseTagDescription;
 import com.gridnine.elsa.meta.common.TagDescription;
-import com.gridnine.elsa.meta.domain.DomainTypesRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingTypesRegistry;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.Set;
 
 public class RemotingTypesConfiguratorCodeGen {
@@ -37,8 +35,8 @@ public class RemotingTypesConfiguratorCodeGen {
                 for(AttributeDescription attr: registry.getServerCallAttributes().values()){
                     JavaCodeGeneratorUtils.generateAttributeDescription(gen, attr, "registry.getServerCallAttributes()");
                 }
-                for(AttributeDescription attr: registry.getServerSubscriptionAttributes().values()){
-                    JavaCodeGeneratorUtils.generateAttributeDescription(gen, attr, "registry.getServerSubscriptionAttributes()");
+                for(AttributeDescription attr: registry.getDownloadAttributes().values()){
+                    JavaCodeGeneratorUtils.generateAttributeDescription(gen, attr, "registry.getDownloadAttributes()");
                 }
                 for(TagDescription tag: registry.getEntityTags().values()){
                     JavaCodeGeneratorUtils.generateTagDescription(gen, tag, "registry.getEntityTags()");

@@ -6,7 +6,6 @@
 package com.gridnine.elsa.meta.remoting;
 
 import com.gridnine.elsa.meta.common.AttributeDescription;
-import com.gridnine.elsa.meta.common.DatabaseTagDescription;
 import com.gridnine.elsa.meta.common.TagDescription;
 import com.gridnine.elsa.meta.config.Environment;
 
@@ -17,7 +16,7 @@ public class RemotingTypesRegistry {
     private final Map<String, AttributeDescription> remotingAttributes = new LinkedHashMap<>();
     private final Map<String, AttributeDescription> groupAttributes = new LinkedHashMap<>();
     private final Map<String, AttributeDescription> serverCallAttributes = new LinkedHashMap<>();
-    private final Map<String, AttributeDescription> serverSubscriptionAttributes = new LinkedHashMap<>();
+    private final Map<String, AttributeDescription> downloadAttributes = new LinkedHashMap<>();
     private final  Map<String, TagDescription> entityTags = new LinkedHashMap<>();
 
     public Map<String, AttributeDescription> getRemotingAttributes() {
@@ -32,8 +31,8 @@ public class RemotingTypesRegistry {
         return serverCallAttributes;
     }
 
-    public Map<String, AttributeDescription> getServerSubscriptionAttributes() {
-        return serverSubscriptionAttributes;
+    public Map<String, AttributeDescription> getDownloadAttributes() {
+        return downloadAttributes;
     }
 
     public Map<String, TagDescription> getEntityTags() {

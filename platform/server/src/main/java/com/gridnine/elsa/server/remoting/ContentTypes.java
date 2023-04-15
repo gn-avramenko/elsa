@@ -5,7 +5,7 @@
 
 package com.gridnine.elsa.server.remoting;
 
-public interface RemotingSubscriptionHandler<P,E> {
-    String getId();
-    boolean isApplicable(E event, P parameters) throws Exception;
+public class ContentTypes {
+    public static final String HTML = "text/html; charset=utf-8";
+    public static final String VIDEO_MP4 = "video/mp4";
 }

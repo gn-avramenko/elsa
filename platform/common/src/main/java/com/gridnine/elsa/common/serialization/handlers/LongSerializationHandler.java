@@ -51,4 +51,9 @@ public class LongSerializationHandler implements SerializationHandler<Long> {
     public Long toStandardObject(Long source, Long target, PropertySerializationMetadata property, Map<Object, Object> processed) {
         return source;
     }
+
+    @Override
+    public Long deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, Long currentValue) throws Exception {
+        return Long.valueOf(value);
+    }
 }

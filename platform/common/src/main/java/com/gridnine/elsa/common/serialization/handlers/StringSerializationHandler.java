@@ -51,4 +51,9 @@ public class StringSerializationHandler implements SerializationHandler<String> 
     public String toStandardObject(String source, String target, PropertySerializationMetadata property, Map<Object, Object> processed) {
         return source;
     }
+
+    @Override
+    public String deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, String currentValue) throws Exception {
+        return value;
+    }
 }

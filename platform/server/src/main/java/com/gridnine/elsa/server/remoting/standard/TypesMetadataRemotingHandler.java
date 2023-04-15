@@ -10,7 +10,6 @@ import com.gridnine.elsa.common.model.remoting.RGenericDescription;
 import com.gridnine.elsa.common.model.remoting.RSerializableType;
 import com.gridnine.elsa.common.model.remoting.RTagDescription;
 import com.gridnine.elsa.common.model.remoting.TypesMetadata;
-import com.gridnine.elsa.meta.common.DatabaseTagDescription;
 import com.gridnine.elsa.meta.common.GenericDescription;
 import com.gridnine.elsa.meta.common.TagDescription;
 import com.gridnine.elsa.meta.custom.CustomTypesRegistry;
@@ -22,7 +21,7 @@ import com.gridnine.elsa.meta.serialization.GenericsDeclaration;
 import com.gridnine.elsa.meta.serialization.SerializableType;
 import com.gridnine.elsa.meta.serialization.SerializableTypesRegistry;
 import com.gridnine.elsa.meta.serialization.SingleGenericDeclaration;
-import com.gridnine.elsa.server.remoting.RemotingServerCallContext;
+import com.gridnine.elsa.server.remoting.RemotingCallContext;
 import com.gridnine.elsa.server.remoting.RemotingServerCallHandler;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ import java.util.List;
 
 public class TypesMetadataRemotingHandler implements RemotingServerCallHandler<Void, TypesMetadata> {
     @Override
-    public TypesMetadata service(Void request, RemotingServerCallContext context) throws Exception {
+    public TypesMetadata service(Void request, RemotingCallContext context) throws Exception {
         var result = new TypesMetadata();
         for(SerializableType item: SerializableTypesRegistry.get().getTypes().values()){
             var type = new RSerializableType();

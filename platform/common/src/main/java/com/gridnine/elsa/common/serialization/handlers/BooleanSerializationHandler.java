@@ -51,4 +51,9 @@ public class BooleanSerializationHandler implements SerializationHandler<Boolean
     public Boolean toStandardObject(Boolean source, Boolean target, PropertySerializationMetadata property, Map<Object, Object> processed) {
         return source;
     }
+
+    @Override
+    public Boolean deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params,Boolean currentValue) throws Exception {
+        return Boolean.valueOf(value);
+    }
 }

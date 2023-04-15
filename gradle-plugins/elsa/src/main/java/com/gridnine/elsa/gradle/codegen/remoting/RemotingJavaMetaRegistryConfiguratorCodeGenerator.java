@@ -8,10 +8,10 @@ package com.gridnine.elsa.gradle.codegen.remoting;
 import com.gridnine.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.elsa.meta.remoting.RemotingDescription;
+import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
-import com.gridnine.elsa.meta.remoting.RemotingServerSubscriptionDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
 import java.io.File;
@@ -64,18 +64,15 @@ public class RemotingJavaMetaRegistryConfiguratorCodeGenerator {
                                         gen.printLine("groupDescription.getServerCalls().put(\"%s\", serverCallDescription);".formatted(serverCall.getId()));
                                     });
                                 }
-                                for(RemotingServerSubscriptionDescription serverSubscription: group.getServerSubscriptions().values()){
+                                for(RemotingDownloadDescription download: group.getDownloads().values()){
                                     gen.wrapWithBlock("", () -> {
-                                        gen.addImport("com.gridnine.elsa.meta.remoting.RemotingServerSubscriptionDescription");
-                                        gen.printLine("var serverSubscriptionDescription = new RemotingServerSubscriptionDescription(\"%s\");".formatted(serverSubscription.getId()));
-                                        JavaCodeGeneratorUtils.generateBaseElementMetaRegistryConfiguratorCode(serverSubscription, "serverSubscriptionDescription", gen);
-                                        if(serverSubscription.getEventClassName() != null){
-                                            gen.printLine("serverSubscriptionDescription.setEventClassName(\"%s\");".formatted(serverSubscription.getEventClassName()));
+                                        gen.addImport("com.gridnine.elsa.meta.remoting.RemotingDownloadDescription");
+                                        gen.printLine("var downloadDescription = new RemotingDownloadDescription(\"%s\");".formatted(download.getId()));
+                                        JavaCodeGeneratorUtils.generateBaseElementMetaRegistryConfiguratorCode(download, "downloadDescription", gen);
+                                        if(download.getRequestClassName() != null){
+                                            gen.printLine("downloadDescription.setRequestClassName(\"%s\");".formatted(download.getRequestClassName()));
                                         }
-                                        if(serverSubscription.getParameterClassName() != null){
-                                            gen.printLine("serverSubscriptionDescription.setParameterClassName(\"%s\");".formatted(serverSubscription.getParameterClassName()));
-                                        }
-                                        gen.printLine("groupDescription.getServerSubscriptions().put(\"%s\", serverSubscriptionDescription);".formatted(serverSubscription.getId()));
+                                        gen.printLine("groupDescription.getDownloads().put(\"%s\", downloadDescription);".formatted(download.getId()));
                                     });
                                 }
                             });

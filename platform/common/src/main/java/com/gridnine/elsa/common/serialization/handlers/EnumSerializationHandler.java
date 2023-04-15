@@ -60,4 +60,10 @@ public class EnumSerializationHandler implements SerializationHandler<Enum<?>> {
     public Enum<?> toStandardObject(Enum<?> source, Enum<?> target, PropertySerializationMetadata property, Map<Object, Object> processed) {
         return source;
     }
+
+    @Override
+    public Enum<?> deserialize(String value, PropertySerializationMetadata nestedProp, Map<String, Object> params, Enum<?> currentValue) throws Exception {
+        String className = nestedProp.property.getAttributes().get(nestedProp.tagDescription.getObjectIdAttributeName());
+        return ReflectionFactory.get().safeGetEnum(className, value);
+    }
 }
