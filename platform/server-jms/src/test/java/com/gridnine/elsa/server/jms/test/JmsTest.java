@@ -8,20 +8,15 @@ package com.gridnine.elsa.server.jms.test;
 import com.gridnine.elsa.common.search.SearchQuery;
 import com.gridnine.elsa.common.test.model.domain.TestDomainDocument;
 import com.gridnine.elsa.common.test.model.domain.TestDomainDocumentProjection;
-import com.gridnine.elsa.common.utils.IoUtils;
 import com.gridnine.elsa.server.auth.AuthContext;
 import com.gridnine.elsa.server.jms.JMSBrokersManager;
 import com.gridnine.elsa.server.jms.JMSFacade;
 import com.gridnine.elsa.server.jms.JMSTopicConfiguration;
-import com.gridnine.elsa.server.jms.JMSTopicListener;
 import com.gridnine.elsa.server.storage.Storage;
 import com.gridnine.elsa.server.storage.transaction.TransactionManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JmsTest extends JmsTestBase{

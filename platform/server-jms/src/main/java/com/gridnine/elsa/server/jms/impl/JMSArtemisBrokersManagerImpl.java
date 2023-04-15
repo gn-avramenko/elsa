@@ -86,10 +86,13 @@ public class JMSArtemisBrokersManagerImpl
     public void stop() {
         for (ServerData data : services.values()) {
             final ActiveMQServer server = data.service;
-            if (null == server) {
-                continue;
-            }
             try {
+                if(data.getConnectionFactory() != null){
+                    data.getConnectionFactory().close();
+                }
+                if (null == server) {
+                    continue;
+                }
                 server.stop();
             } catch (Exception e) {
                 log.error(String.format("unable to stop server %s", server), //$NON-NLS-1$
