@@ -27,9 +27,8 @@ public class PartialDownloadHelper {
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
 
-    public static void processPartialDownload(HttpServletRequest request, HttpServletResponse response, DownloadableResourceWrapper rp) throws Exception {
+    public static void processPartialDownload(HttpServletRequest request, HttpServletResponse response, File file) throws Exception {
         var content = true;
-        File file = rp.getFile();
         String fileName = file.getName();
         long length = file.length();
         long lastModified = file.lastModified();
@@ -259,8 +258,9 @@ public class PartialDownloadHelper {
 
     /**
      * Returns true if the given accept header accepts the given value.
+     *
      * @param acceptHeader The accept header.
-     * @param toAccept The value to be accepted.
+     * @param toAccept     The value to be accepted.
      * @return True if the given accept header accepts the given value.
      */
     private static boolean accepts(String acceptHeader, String toAccept) {
@@ -273,8 +273,9 @@ public class PartialDownloadHelper {
 
     /**
      * Returns true if the given match header matches the given value.
+     *
      * @param matchHeader The match header.
-     * @param toMatch The value to be matched.
+     * @param toMatch     The value to be matched.
      * @return True if the given match header matches the given value.
      */
     private static boolean matches(String matchHeader, String toMatch) {
@@ -287,9 +288,10 @@ public class PartialDownloadHelper {
     /**
      * Returns a substring of the given string value from the given begin index to the given end
      * index as a long. If the substring is empty, then -1 will be returned
-     * @param value The string value to return a substring as long for.
+     *
+     * @param value      The string value to return a substring as long for.
      * @param beginIndex The begin index of the substring to be returned as long.
-     * @param endIndex The end index of the substring to be returned as long.
+     * @param endIndex   The end index of the substring to be returned as long.
      * @return A substring of the given string value as long or -1 if substring is empty.
      */
     private static long sublong(String value, int beginIndex, int endIndex) {
@@ -299,28 +301,28 @@ public class PartialDownloadHelper {
 
     /**
      * Copy the given byte range of the given input to the given output.
-     * @param input The input to copy the given range to the given output for.
+     *
+     * @param input  The input to copy the given range to the given output for.
      * @param output The output to copy the given range from the given input for.
-     * @param start Start of the byte range.
+     * @param start  Start of the byte range.
      * @param length Length of the byte range.
      * @throws IOException If something fails at I/O level.
      */
     private static void copy(RandomAccessFile input, OutputStream output, long start, long length)
-            throws IOException
-    {
-        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-        int read;
+            throws IOException {
+        try {
+            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+            int read;
 
-        if (input.length() == length) {
-            // Write full range.
-            while ((read = input.read(buffer)) > 0) {
-                output.write(buffer, 0, read);
-            }
-        } else {
-            // Write partial range.
-            input.seek(start);
-            long toRead = length;
-            try {
+            if (input.length() == length) {
+                // Write full range.
+                while ((read = input.read(buffer)) > 0) {
+                    output.write(buffer, 0, read);
+                }
+            } else {
+                // Write partial range.
+                input.seek(start);
+                long toRead = length;
                 while ((read = input.read(buffer)) > 0) {
                     if ((toRead -= read) > 0) {
                         output.write(buffer, 0, read);
@@ -329,17 +331,18 @@ public class PartialDownloadHelper {
                         break;
                     }
                 }
-            } catch (IOException e){
-                if(e.getMessage().contains("Connection reset by peer") || e.getMessage().contains("Broken pipe")){
-                    return;
-                }
-                throw e;
             }
+        } catch (IOException e) {
+            if (e.getMessage().contains("Connection reset by peer") || e.getMessage().contains("Broken pipe")) {
+                return;
+            }
+            throw e;
         }
     }
 
     /**
      * Close the given resource.
+     *
      * @param resource The resource to be closed.
      */
     private static void close(Closeable resource) {
@@ -366,8 +369,9 @@ public class PartialDownloadHelper {
 
         /**
          * Construct a byte range.
+         *
          * @param start Start of the byte range.
-         * @param end End of the byte range.
+         * @param end   End of the byte range.
          * @param total Total length of the byte source.
          */
         public Range(long start, long end, long total) {

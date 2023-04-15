@@ -11,10 +11,6 @@ import java.io.InputStream;
 public class DownloadableResourceWrapper {
     private InputStream inputStream;
 
-    private File file;
-
-    private String contentType;
-
     private String fileName;
 
     private Long contentLength;
@@ -25,14 +21,6 @@ public class DownloadableResourceWrapper {
 
     public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
     }
 
     public String getFileName() {
@@ -51,11 +39,4 @@ public class DownloadableResourceWrapper {
         this.contentLength = contentLength;
     }
 
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
 }

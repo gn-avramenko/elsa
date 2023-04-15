@@ -52,6 +52,7 @@
 															<element name="request" type="tns:EntityType" minOccurs="0"/>
 														</sequence>
 														<attribute name="handler-class-name" type="string"/>
+														<attribute name="big-file" type="boolean"/>
 													</extension>
 												</complexContent>
 											</complexType>

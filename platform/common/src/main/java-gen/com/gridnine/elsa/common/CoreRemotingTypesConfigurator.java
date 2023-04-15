@@ -29,6 +29,12 @@ public class CoreRemotingTypesConfigurator{
 			registry.getDownloadAttributes().put("handler-class-name", attr);
 		}
 		{
+			var attr = new AttributeDescription();
+			attr.setName("big-file");
+			attr.setType(AttributeType.BOOLEAN);
+			registry.getDownloadAttributes().put("big-file", attr);
+		}
+		{
 			var tag = new TagDescription();
 			tag.setTagName("string-property");
 			tag.setType("STRING");

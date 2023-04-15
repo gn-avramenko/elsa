@@ -41,34 +41,36 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RemotingHttpServlet extends HttpServlet {
 
-    private final Map<String, Pair<RemotingServerCallHandler<?,?>, Pair<RemotingDescription, RemotingServerCallDescription>>> scHandlersCache = new ConcurrentHashMap<>();
+    private final Map<String, Pair<RemotingServerCallHandler<?, ?>, Pair<RemotingDescription, RemotingServerCallDescription>>> scHandlersCache = new ConcurrentHashMap<>();
 
-    private final Map<String, Pair<RemotingDownloadHandler<?>, Pair<RemotingDescription, RemotingDownloadDescription>>> downloadHandlersCache = new ConcurrentHashMap<>();
+    private final Map<String, Pair<Object, Pair<RemotingDescription, RemotingDownloadDescription>>> downloadHandlersCache = new ConcurrentHashMap<>();
+
 
     private final Map<String, Object> serializationParameters = new HashMap<>();
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public RemotingHttpServlet(){
+    public RemotingHttpServlet() {
         StandardSerializationParameters.setClassSerializationStrategy(StandardSerializationParameters.ClassSerializationStrategy.NAME, serializationParameters);
         StandardSerializationParameters.setEnumSerializationStrategy(StandardSerializationParameters.EnumSerializationStrategy.NAME, serializationParameters);
         StandardSerializationParameters.setEntityReferenceCaptionSerializationStrategy(StandardSerializationParameters.EntityReferenceCaptionSerializationStrategy.ALL, serializationParameters);
         StandardSerializationParameters.setPrettyPrint(false, serializationParameters);
     }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         var pathInfo = req.getPathInfo();
         var dh = downloadHandlersCache.get(pathInfo);
-        if(dh != null){
-            processDownloadCall(req,resp, dh);
+        if (dh != null) {
+            processDownloadCall(req, resp, dh);
             return;
         }
         var parts = pathInfo.split("/");
         var remoting = RemotingMetaRegistry.get().getRemotings().get(parts[1]);
         var group = remoting.getGroups().get(parts[2]);
         var downloadCall = group.getDownloads().get(parts[3]);
-        if(downloadCall != null){
-            var pair = new Pair(ReflectionFactory.get().newInstance( downloadCall.getAttributes().get("handler-class-name")), new Pair<>(remoting, downloadCall));
+        if (downloadCall != null) {
+            var pair = new Pair(ReflectionFactory.get().newInstance(downloadCall.getAttributes().get("handler-class-name")), new Pair<>(remoting, downloadCall));
             downloadHandlersCache.put(pathInfo, pair);
             processDownloadCall(req, resp, pair);
             return;
@@ -76,94 +78,59 @@ public class RemotingHttpServlet extends HttpServlet {
         throw new IllegalArgumentException("unable to map %s".formatted(pathInfo));
     }
 
-    private void processDownloadCall(HttpServletRequest req, HttpServletResponse resp, Pair<RemotingDownloadHandler<?>, Pair<RemotingDescription, RemotingDownloadDescription>> sc) {
+    private void processDownloadCall(HttpServletRequest req, HttpServletResponse resp, Pair<Object, Pair<RemotingDescription, RemotingDownloadDescription>> sc) {
         var rid = sc.value().key().getId();
         var context = new RemotingCallContext();
         context.setHttpRequest(req);
         context.setHttpResponse(resp);
         context.setParameter(StandardRemotingParameters.REMOTING_DESCRIPTION, sc.value().key());
         context.setParameter(StandardRemotingParameters.DOWNLOAD_DESCRIPTION, sc.value().value());
-        ExceptionUtils.wrapException(() ->processDownloadCall(context, (RemotingDownloadHandler<Object>) sc.key(), RemotingRegistry.get().getAdvices(), 0));
+        ExceptionUtils.wrapException(() -> processDownloadCall(context, sc.key(), RemotingRegistry.get().getAdvices(), 0));
     }
 
 
-    private void processDownloadCall(RemotingCallContext context, RemotingDownloadHandler<Object> handler, List<RemotingAdvice> advices, int idx) throws Exception {
+    private void processDownloadCall(RemotingCallContext context, Object handler, List<RemotingAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            processDownloadCallInternal(context,handler);
+            processDownloadCallInternal(context, handler);
             return;
         }
         RemotingRegistry.get().getAdvices().get(idx).onDownload(context, (context2) ->
-                processDownloadCall(context2, handler,  RemotingRegistry.get().getAdvices(), idx + 1)
+                processDownloadCall(context2, handler, RemotingRegistry.get().getAdvices(), idx + 1)
         );
     }
-    private void processDownloadCallInternal(RemotingCallContext context, RemotingDownloadHandler<Object> handler) throws Exception{
+
+    private void processDownloadCallInternal(RemotingCallContext context, Object handler) throws Exception {
         RemotingDownloadDescription scd = context.getParameter(StandardRemotingParameters.DOWNLOAD_DESCRIPTION);
         Object rq = null;
-        if(scd.getRequestClassName() != null){
+        if (scd.getRequestClassName() != null) {
             try (var is = context.getHttpRequest().getInputStream()) {
                 rq = StringUnmarshaller.get().unmarshal(scd.getRequestClassName(), context.getHttpRequest().getQueryString(), serializationParameters);
             }
         }
-        var rp = handler.createResource(rq, context);
         HttpServletResponse response = context.getHttpResponse();
-        if(rp == null){
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        String range = context.getHttpRequest().getHeader("Range");
-        if(context.getHttpRequest().getHeader("Range") == null){
+        if (handler instanceof RemotingDownloadHandler<?>) {
+            var rdh = (RemotingDownloadHandler<Object>) handler;
+            var rp = rdh.createResource(rq, context);
+            if (rp == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            String range = context.getHttpRequest().getHeader("Range");
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType(rp.getContentType());
+            response.setContentType(context.getHttpRequest().getServletContext().getMimeType(rp.getFileName()));
             response.setHeader("Content-Length", rp.getContentLength().toString());
             // response.setHeader("Content-Disposition", "attachement;filename=\"" + URLEncoder.encode(rp.getFileName(), StandardCharsets.UTF_8) + "\"");
-            try(var is = rp.getInputStream()){
-                try(var os = response.getOutputStream()){
+            try (var is = rp.getInputStream()) {
+                try (var os = response.getOutputStream()) {
                     IoUtils.copy(is, os);
                     os.flush();
                 }
             }
             return;
         }
-        PartialDownloadHelper.processPartialDownload(context.getHttpRequest(), response, rp);
-//
-//
-//        var start = 0L;
-//        var videoSize = rp.getContentLength();
-//        if(range != null){
-//            log.info("range-header:"+range);
-//            var endIdx = range.lastIndexOf("-");
-//            if(endIdx == -1){
-//                endIdx = range.length();
-//            }
-//            start = Long.parseLong(range.substring(range.indexOf("=")+1, endIdx));
-//            response.setHeader("Content-Range", "bytes %s-%s/%s".formatted(start, videoSize-1, videoSize));
-//            response.setHeader("Accept-Ranges", "bytes");
-//            response.setHeader("Content-Length", videoSize.toString());
-//            response.setHeader("Content-Type", rp.getContentType());
-//            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-//        } else {
-//            response.setStatus(HttpServletResponse.SC_OK);
-//            response.setContentType(rp.getContentType());
-//        }
-//        int DEFAULT_BUFFER_SIZE = 20480; // ..bytes = 20KB.
-//        try(var input = new BufferedInputStream(rp.getInputStream())){
-//            try(var output = response.getOutputStream()){
-//                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-//                int read;
-//                input.skip(start);
-//                long toRead = videoSize-start;
-//                while ((read = input.read(buffer)) > 0) {
-//                    if ((toRead -= read) > 0) {
-//                        output.write(buffer, 0, read);
-//                        output.flush();
-//                    } else {
-//                        output.write(buffer, 0, (int) toRead + read);
-//                        output.flush();
-//                        break;
-//                    }
-//                }
-//            }
-//        }
+        var bfh = (RemotingBigFileHandler<Object>) handler;
+        var file = bfh.getFile(rq, context);
+        PartialDownloadHelper.processPartialDownload(context.getHttpRequest(), response, file);
     }
 
 
@@ -171,16 +138,16 @@ public class RemotingHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         var pathInfo = req.getPathInfo();
         var sc = scHandlersCache.get(pathInfo);
-        if(sc != null){
-            processServerCall(req,resp, sc);
+        if (sc != null) {
+            processServerCall(req, resp, sc);
             return;
         }
         var parts = pathInfo.split("/");
         var remoting = RemotingMetaRegistry.get().getRemotings().get(parts[1]);
         var group = remoting.getGroups().get(parts[2]);
         var serverCall = group.getServerCalls().get(parts[3]);
-        if(serverCall != null){
-            var pair = new Pair(ReflectionFactory.get().newInstance( serverCall.getAttributes().get("handler-class-name")), new Pair<>(remoting, serverCall));
+        if (serverCall != null) {
+            var pair = new Pair(ReflectionFactory.get().newInstance(serverCall.getAttributes().get("handler-class-name")), new Pair<>(remoting, serverCall));
             scHandlersCache.put(pathInfo, pair);
             processServerCall(req, resp, pair);
             return;
@@ -195,24 +162,24 @@ public class RemotingHttpServlet extends HttpServlet {
         context.setHttpResponse(resp);
         context.setParameter(StandardRemotingParameters.REMOTING_DESCRIPTION, sc.value().key());
         context.setParameter(StandardRemotingParameters.SERVER_CALL_DESCRIPTION, sc.value().value());
-        ExceptionUtils.wrapException(() ->processServerCall(context, (RemotingServerCallHandler<Object, Object>) sc.key(), RemotingRegistry.get().getAdvices(), 0));
+        ExceptionUtils.wrapException(() -> processServerCall(context, (RemotingServerCallHandler<Object, Object>) sc.key(), RemotingRegistry.get().getAdvices(), 0));
     }
 
     private void processServerCall(RemotingCallContext context, RemotingServerCallHandler<Object, Object> handler, List<RemotingAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            processServerCallInternal(context,handler);
+            processServerCallInternal(context, handler);
             return;
         }
         RemotingRegistry.get().getAdvices().get(idx).onServerCall(context, (context2) ->
-                processServerCall(context2, handler,  RemotingRegistry.get().getAdvices(), idx + 1)
+                processServerCall(context2, handler, RemotingRegistry.get().getAdvices(), idx + 1)
         );
     }
 
-    private void processServerCallInternal(RemotingCallContext context, RemotingServerCallHandler<Object, Object> handler) throws Exception{
+    private void processServerCallInternal(RemotingCallContext context, RemotingServerCallHandler<Object, Object> handler) throws Exception {
         try {
             RemotingServerCallDescription scd = context.getParameter(StandardRemotingParameters.SERVER_CALL_DESCRIPTION);
             Object rq = null;
-            if(scd.getRequestClassName() != null){
+            if (scd.getRequestClassName() != null) {
                 try (var is = context.getHttpRequest().getInputStream()) {
                     rq = JsonUnmarshaller.get().unmarshal(Class.forName(scd.getRequestClassName()), is, serializationParameters);
                 }

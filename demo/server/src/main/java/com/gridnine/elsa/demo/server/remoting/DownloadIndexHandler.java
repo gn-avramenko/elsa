@@ -6,7 +6,6 @@
 package com.gridnine.elsa.demo.server.remoting;
 
 import com.gridnine.elsa.demo.model.remoting.DownloadIndexRequest;
-import com.gridnine.elsa.server.remoting.ContentTypes;
 import com.gridnine.elsa.server.remoting.DownloadableResourceWrapper;
 import com.gridnine.elsa.server.remoting.RemotingCallContext;
 import com.gridnine.elsa.server.remoting.RemotingDownloadHandler;
@@ -21,7 +20,6 @@ public class DownloadIndexHandler implements RemotingDownloadHandler<DownloadInd
         var result =new DownloadableResourceWrapper();
         var file = new File("data/index.html");
         result.setContentLength(file.length());
-        result.setContentType(ContentTypes.HTML);
         result.setFileName("index.html");
         result.setInputStream(new FileInputStream(file));
         return result;
