@@ -16,4 +16,8 @@ public interface RemotingAdvice extends HasPriority {
     default void onDownload(RemotingCallContext context, RunnableWithExceptionAndArgument<RemotingCallContext> callback) throws Exception {
         callback.run(context);
     }
+
+    default void onUpload(RemotingCallContext context, RunnableWithExceptionAndArgument<RemotingCallContext> callback) throws Exception {
+        callback.run(context);
+    }
 }

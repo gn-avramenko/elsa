@@ -13,6 +13,7 @@ import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
+import com.gridnine.elsa.meta.remoting.RemotingUploadDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
 import java.io.File;
@@ -72,7 +73,20 @@ public class RemotingMetadataParser {
                     if(parameterElm != null){
                         scd.setRequestClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), parameterElm, pr.localizations()));
                     }
+                }for(BuildXmlNode serverCallElm:groupElm.getChildren("upload")){
+                    String scid = CommonParserUtils.getIdAttribute(serverCallElm);
+                    var scd = rgd.getUploads().computeIfAbsent(scid, (s)->{
+                        var sgds = new RemotingUploadDescription();
+                        sgds.setId(s);
+                        return sgds;
+                    });
+                    CommonParserUtils.updateBaseElement(scd, serverCallElm, "%s.%s.%s".formatted(id, gid, scid), pr.localizations());
+                    BuildXmlNode parameterElm = serverCallElm.getFirstChild("request");
+                    if(parameterElm != null){
+                        scd.setRequestClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), parameterElm, pr.localizations()));
+                    }
                 }
+
             }
         }
     }

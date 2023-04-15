@@ -31,6 +31,9 @@ public class RemotingTypesParser {
         for(BuildXmlNode child : node.getChildren("download-attribute")){
             CommonParserUtils.addAttribute(registry.getDownloadAttributes(), child);
         }
+        for(BuildXmlNode child : node.getChildren("upload-attribute")){
+            CommonParserUtils.addAttribute(registry.getUploadAttributes(), child);
+        }
         for(BuildXmlNode child : node.getChildren("entity-tag")){
             CommonParserUtils.addTag(registry.getEntityTags(), child);
         }

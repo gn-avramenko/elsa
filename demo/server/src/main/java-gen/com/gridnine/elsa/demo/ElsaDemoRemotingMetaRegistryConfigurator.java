@@ -11,6 +11,7 @@ import com.gridnine.elsa.meta.remoting.RemotingDescription;
 import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
+import com.gridnine.elsa.meta.remoting.RemotingUploadDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
 public class ElsaDemoRemotingMetaRegistryConfigurator{
@@ -29,6 +30,16 @@ public class ElsaDemoRemotingMetaRegistryConfigurator{
 			rmr.getEntitiesIds().add("com.gridnine.elsa.demo.model.remoting.DownloadIndexRequest");
 		}
 		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.demo.model.remoting.UploadFileRequest");
+			{
+				var propertyDescription = new PropertyDescription("fileId");
+				propertyDescription.setTagName("string-property");
+				entityDescription.getProperties().put("fileId", propertyDescription);
+			}
+			smr.getEntities().put("com.gridnine.elsa.demo.model.remoting.UploadFileRequest", entityDescription);
+			rmr.getEntitiesIds().add("com.gridnine.elsa.demo.model.remoting.UploadFileRequest");
+		}
+		{
 			var remotingDescription = new RemotingDescription("elsa-demo-remoting");
 			remotingDescription.getAttributes().put("xmlns", "http://gridnine.com/elsa/meta-remoting");
 			rmr.getRemotings().put("elsa-demo-remoting", remotingDescription);
@@ -43,8 +54,15 @@ public class ElsaDemoRemotingMetaRegistryConfigurator{
 				}
 				{
 					var downloadDescription = new RemotingDownloadDescription("download-video");
+					downloadDescription.getAttributes().put("big-file", "true");
 					downloadDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.demo.server.remoting.DownloadVideoHandler");
 					groupDescription.getDownloads().put("download-video", downloadDescription);
+				}
+				{
+					var uploadDescription = new RemotingUploadDescription("upload-file");
+					uploadDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.demo.server.remoting.UploadFileHandler");
+					uploadDescription.setRequestClassName("com.gridnine.elsa.demo.model.remoting.UploadFileRequest");
+					groupDescription.getUploads().put("upload-file", uploadDescription);
 				}
 			}
 		}

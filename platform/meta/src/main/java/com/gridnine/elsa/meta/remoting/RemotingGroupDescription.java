@@ -14,6 +14,8 @@ public class RemotingGroupDescription extends BaseElement {
     private final Map<String, RemotingServerCallDescription> serverCalls = new LinkedHashMap<>();
     private final Map<String, RemotingDownloadDescription> downloads = new LinkedHashMap<>();
 
+    private final Map<String, RemotingUploadDescription> uploads = new LinkedHashMap<>();
+
     public RemotingGroupDescription() {
     }
 
@@ -27,5 +29,9 @@ public class RemotingGroupDescription extends BaseElement {
 
     public Map<String, RemotingDownloadDescription> getDownloads() {
         return downloads;
+    }
+
+    public Map<String, RemotingUploadDescription> getUploads() {
+        return uploads;
     }
 }

@@ -12,6 +12,7 @@ import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
+import com.gridnine.elsa.meta.remoting.RemotingUploadDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
 import java.io.File;
@@ -75,6 +76,18 @@ public class RemotingJavaMetaRegistryConfiguratorCodeGenerator {
                                         gen.printLine("groupDescription.getDownloads().put(\"%s\", downloadDescription);".formatted(download.getId()));
                                     });
                                 }
+                                for(RemotingUploadDescription upload: group.getUploads().values()){
+                                    gen.wrapWithBlock("", () -> {
+                                        gen.addImport("com.gridnine.elsa.meta.remoting.RemotingUploadDescription");
+                                        gen.printLine("var uploadDescription = new RemotingUploadDescription(\"%s\");".formatted(upload.getId()));
+                                        JavaCodeGeneratorUtils.generateBaseElementMetaRegistryConfiguratorCode(upload, "uploadDescription", gen);
+                                        if(upload.getRequestClassName() != null){
+                                            gen.printLine("uploadDescription.setRequestClassName(\"%s\");".formatted(upload.getRequestClassName()));
+                                        }
+                                        gen.printLine("groupDescription.getUploads().put(\"%s\", uploadDescription);".formatted(upload.getId()));
+                                    });
+                                }
+
                             });
                         }
                     });

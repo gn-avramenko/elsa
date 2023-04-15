@@ -6,5 +6,10 @@
             </request>
         </download>
         <download id="download-video" handler-class-name="com.gridnine.elsa.demo.server.remoting.DownloadVideoHandler" big-file="true"/>
+        <upload id="upload-file" handler-class-name="com.gridnine.elsa.demo.server.remoting.UploadFileHandler">
+            <request id="com.gridnine.elsa.demo.model.remoting.UploadFileRequest">
+                <string-property id="fileId"/>
+            </request>
+        </upload>
     </group>
 </remoting>

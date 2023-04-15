@@ -57,6 +57,18 @@
 												</complexContent>
 											</complexType>
 										</element>
+										<element name="upload">
+											<complexType>
+												<complexContent>
+													<extension base="tns:IdWithParametersType">
+														<sequence>
+															<element name="request" type="tns:EntityType" minOccurs="0"/>
+														</sequence>
+														<attribute name="handler-class-name" type="string"/>
+													</extension>
+												</complexContent>
+											</complexType>
+										</element>
 									</choice>
 								</sequence>
 							</extension>

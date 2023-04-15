@@ -23,6 +23,8 @@ import com.gridnine.elsa.meta.remoting.RemotingDescription;
 import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
+import com.gridnine.elsa.meta.remoting.RemotingUploadDescription;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,7 +46,7 @@ public class RemotingHttpServlet extends HttpServlet {
     private final Map<String, Pair<RemotingServerCallHandler<?, ?>, Pair<RemotingDescription, RemotingServerCallDescription>>> scHandlersCache = new ConcurrentHashMap<>();
 
     private final Map<String, Pair<Object, Pair<RemotingDescription, RemotingDownloadDescription>>> downloadHandlersCache = new ConcurrentHashMap<>();
-
+    private final Map<String, Pair<RemotingUploadHandler<?>, Pair<RemotingDescription, RemotingUploadDescription>>> uploadHandlersCache = new ConcurrentHashMap<>();
 
     private final Map<String, Object> serializationParameters = new HashMap<>();
 
@@ -55,6 +57,27 @@ public class RemotingHttpServlet extends HttpServlet {
         StandardSerializationParameters.setEnumSerializationStrategy(StandardSerializationParameters.EnumSerializationStrategy.NAME, serializationParameters);
         StandardSerializationParameters.setEntityReferenceCaptionSerializationStrategy(StandardSerializationParameters.EntityReferenceCaptionSerializationStrategy.ALL, serializationParameters);
         StandardSerializationParameters.setPrettyPrint(false, serializationParameters);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        var pathInfo = req.getPathInfo();
+        var dh = uploadHandlersCache.get(pathInfo);
+        if (dh != null) {
+            processUploadCall(req, resp, dh);
+            return;
+        }
+        var parts = pathInfo.split("/");
+        var remoting = RemotingMetaRegistry.get().getRemotings().get(parts[1]);
+        var group = remoting.getGroups().get(parts[2]);
+        var uploadCall = group.getDownloads().get(parts[3]);
+        if (uploadCall != null) {
+            var pair = new Pair(ReflectionFactory.get().newInstance(uploadCall.getAttributes().get("handler-class-name")), new Pair<>(remoting, uploadCall));
+            uploadHandlersCache.put(pathInfo, pair);
+            processUploadCall(req, resp, pair);
+            return;
+        }
+        throw new IllegalArgumentException("unable to map %s".formatted(pathInfo));
     }
 
     @Override
@@ -78,6 +101,37 @@ public class RemotingHttpServlet extends HttpServlet {
         throw new IllegalArgumentException("unable to map %s".formatted(pathInfo));
     }
 
+    private void processUploadCall(HttpServletRequest req, HttpServletResponse resp, Pair<RemotingUploadHandler<?>, Pair<RemotingDescription, RemotingUploadDescription>> sc) {
+        var rid = sc.value().key().getId();
+        var context = new RemotingCallContext();
+        context.setHttpRequest(req);
+        context.setHttpResponse(resp);
+        context.setParameter(StandardRemotingParameters.REMOTING_DESCRIPTION, sc.value().key());
+        context.setParameter(StandardRemotingParameters.UPLOAD_DESCRIPTION, sc.value().value());
+        ExceptionUtils.wrapException(() -> processUploadCall(context, sc.key(), RemotingRegistry.get().getAdvices(), 0));
+    }
+
+
+    private void processUploadCall(RemotingCallContext context, RemotingUploadHandler<?> handler, List<RemotingAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            processUploadCallInternal(context, handler);
+            return;
+        }
+        RemotingRegistry.get().getAdvices().get(idx).onUpload(context, (context2) ->
+                processUploadCall(context2, handler, RemotingRegistry.get().getAdvices(), idx + 1)
+        );
+    }
+    private void processUploadCallInternal(RemotingCallContext context, RemotingUploadHandler<?> handler) throws Exception {
+        var scd = context.getParameter(StandardRemotingParameters.UPLOAD_DESCRIPTION);
+        Object rq = null;
+        if (scd.getRequestClassName() != null) {
+            try (var is = context.getHttpRequest().getInputStream()) {
+                rq = StringUnmarshaller.get().unmarshal(scd.getRequestClassName(), context.getHttpRequest().getQueryString(), serializationParameters);
+            }
+        }
+        HttpServletResponse response = context.getHttpResponse();
+        //TODO implement
+    }
     private void processDownloadCall(HttpServletRequest req, HttpServletResponse resp, Pair<Object, Pair<RemotingDescription, RemotingDownloadDescription>> sc) {
         var rid = sc.value().key().getId();
         var context = new RemotingCallContext();
