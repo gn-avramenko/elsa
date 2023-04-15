@@ -34,7 +34,7 @@ public class JmsTest extends JmsTestBase{
     }
 
     @Test
-    public void testTransaction() {
+    public void testTransaction() throws InterruptedException {
         AuthContext.setCurrentUser("system");
         var topicId = "test-topic";
         JMSFacade.get().registerTopic(new JMSTopicConfiguration().setId(topicId).setPersistent(true)
@@ -53,6 +53,7 @@ public class JmsTest extends JmsTestBase{
                 throw new Exception("test");
             });
         } catch (Throwable e) {
+            Thread.sleep(1000L);
             Assertions.assertEquals(docsSize, Storage.get().searchDocuments(TestDomainDocumentProjection.class, new SearchQuery()).size());
             Assertions.assertNull(str.get());
         }
