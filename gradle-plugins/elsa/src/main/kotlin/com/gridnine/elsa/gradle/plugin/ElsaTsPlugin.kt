@@ -26,5 +26,4 @@ open class ElsaTsPlugin : Plugin<Project> {
 }
 fun Project.elsaTS(configure: ElsaTsExtension.() -> Unit): Unit {
     (this as ExtensionAware).extensions.configure("elsa-ts-extension", configure)
-    this.tasks.create("eCodeGen", ElsaCodeGenTask::class.java)
 }

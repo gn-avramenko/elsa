@@ -35,7 +35,9 @@ import com.gridnine.elsa.gradle.parser.l10n.L10nTypesParser;
 import com.gridnine.elsa.gradle.parser.remoting.RemotingMetadataParser;
 import com.gridnine.elsa.gradle.parser.remoting.RemotingTypesParser;
 import com.gridnine.elsa.gradle.parser.serializable.SerializableTypesParser;
+import com.gridnine.elsa.gradle.plugin.ElsaCodeGenTsExtension;
 import com.gridnine.elsa.gradle.plugin.ElsaJavaExtension;
+import com.gridnine.elsa.gradle.plugin.ElsaTsExtension;
 import com.gridnine.elsa.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.meta.custom.CustomTypesRegistry;
 import com.gridnine.elsa.meta.domain.DomainMetaRegistry;
@@ -183,7 +185,26 @@ public class ElsaCodeGenTask extends DefaultTask {
                 new L10nXsdCodeGen().generate(totalL10nTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
                 new RemotingXsdCodeGen().generate(totalRemotingTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
             }
+            var tsExt = getProject().getExtensions().findByType(ElsaTsExtension.class);
+            if(tsExt != null){
+                ElsaCodeGenTsExtension tsCdExt = tsExt.getCodeGenExtension();
+                for (var projectData : tsExt.getCodeGenExtension().getData().items){
+                    for(var folderData: projectData.folders){
+                        Set<File> files = new LinkedHashSet<>();
+                        for (var record : folderData.remotingCodeGenRecords) {
+                            var registry = new RemotingTypesRegistry();
+                            for (File file : record.getSources()) {
+                                rtp.updateRegistry(registry, file);
+                            }
+                            System.out.println("creating %s".formatted(folderData.folder));
+                        }
+                        cleanupDir(folderData.folder, files);
+                    }
+                }
+            }
+
         }
+
     }
 
     private boolean isDepends(Project proj1, Project proj2) {

@@ -8,6 +8,8 @@ annotation class ElsaTsConfigMarker
 @ElsaTsConfigMarker
 open class ElsaTsExtension(project: Project, codeGenData: ElsaCodeGenTsExtensionData) {
 
+    lateinit var packageName:String;
+
     val codeGenExtension = ElsaCodeGenTsExtension(project, codeGenData)
 
     fun codegen(configure: ElsaCodeGenTsExtension.() -> Unit) {

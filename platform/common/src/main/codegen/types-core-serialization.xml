@@ -10,7 +10,7 @@
     <type id="BIG-DECIMAL" java-qualified-name="java.math.BigDecimal" ts-qualified-name="number"/>
     <type id="ENTITY-REFERENCE" java-qualified-name="com.gridnine.elsa.common.model.domain.EntityReference"
           readonly-java-qualified-name="com.gridnine.elsa.common.model.domain._CachedEntityReference"
-          ts-qualified-name="elsa-core:EntityReference"  >
+          ts-qualified-name="elsa-core:src/ts/EntityReference"  >
         <generics>
             <generic id="class-name"/>
         </generics>

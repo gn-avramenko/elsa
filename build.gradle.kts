@@ -1,4 +1,5 @@
 import com.gridnine.elsa.gradle.plugin.elsa
+import com.gridnine.elsa.gradle.plugin.elsaTS
 
 plugins {
     java
@@ -15,8 +16,11 @@ buildscript {
 }
 
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
-
+apply<com.gridnine.elsa.gradle.plugin.ElsaTsPlugin>()
 elsa{
+
+}
+elsaTS {
 
 }
 

@@ -8,14 +8,14 @@ package com.gridnine.elsa.gradle.config;
 import java.io.File;
 
 public class ElsaTsRemotingCodeGenRecord extends BaseElsaCodeGenRecord {
-    private File modelsFile;
+    private File module;
 
-    public File getModelsFile() {
-        return modelsFile;
+    public File getModule() {
+        return module;
     }
 
-    public void setModelsFile(File modelsFile) {
-        this.modelsFile = modelsFile;
+    public void setModule(File module) {
+        this.module = module;
     }
 
     @Override
