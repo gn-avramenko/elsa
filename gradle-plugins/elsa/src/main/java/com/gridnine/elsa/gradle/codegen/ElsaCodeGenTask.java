@@ -5,19 +5,14 @@
 
 package com.gridnine.elsa.gradle.codegen;
 
-import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGen;
+import com.gridnine.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
+import com.gridnine.elsa.gradle.codegen.domain.*;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nFactoryGenerator;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingJavaCodeGen;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingJavaMetaRegistryConfiguratorCodeGenerator;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingTypesConfiguratorCodeGen;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingXsdCodeGen;
+import com.gridnine.elsa.gradle.codegen.remoting.*;
 import com.gridnine.elsa.gradle.codegen.serializable.SerializableTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomXsdCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.JavaCustomMetaRegistryConfiguratorCodeGenerator;
-import com.gridnine.elsa.gradle.codegen.domain.DomainTypesConfiguratorCodeGen;
-import com.gridnine.elsa.gradle.codegen.domain.DomainXsdCodeGen;
-import com.gridnine.elsa.gradle.codegen.domain.JavaDomainMetaRegistryConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nMetaRegistryConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nXsdCodeGen;
@@ -48,6 +43,7 @@ import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingTypesRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableTypesRegistry;
+import kotlin.Pair;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ProjectDependency;
@@ -55,11 +51,7 @@ import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class ElsaCodeGenTask extends DefaultTask {
     public ElsaCodeGenTask() {
@@ -188,15 +180,32 @@ public class ElsaCodeGenTask extends DefaultTask {
             var tsExt = getProject().getExtensions().findByType(ElsaTsExtension.class);
             if(tsExt != null){
                 ElsaCodeGenTsExtension tsCdExt = tsExt.getCodeGenExtension();
+                var associations = new HashMap<String, Pair<String,File>>();
+                var tsmr = new SerializableMetaRegistry();
                 for (var projectData : tsExt.getCodeGenExtension().getData().items){
+                    String packageName = projectData.getPackageName();
                     for(var folderData: projectData.folders){
                         Set<File> files = new LinkedHashSet<>();
+
                         for (var record : folderData.remotingCodeGenRecords) {
-                            var registry = new RemotingTypesRegistry();
-                            for (File file : record.getSources()) {
-                                rtp.updateRegistry(registry, file);
-                            }
-                            System.out.println("creating %s".formatted(folderData.folder));
+                            File module = record.getModule();
+                            var registry = new RemotingMetaRegistry();
+                            rmp.updateRegistry(registry, tsmr, record.getSources());
+                            registry.getEntitiesIds().forEach((id) ->{
+                                associations.put(id, new Pair<>(packageName, module));
+                            });
+                            var cg = new TSRemotingCodeGen();
+                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, module, files, packageName, associations);
+                        }
+                        for (var record : folderData.domainCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new DomainMetaRegistry();
+                            dmp.updateRegistry(registry, tsmr, record.getSources());
+                            registry.getEntitiesIds().forEach((id) ->{
+                                associations.put(id, new Pair<>(packageName, module));
+                            });
+                            var cg = new TSDomainCodeGen();
+                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalDomainTypesRegistry, module, files, packageName, associations);
                         }
                         cleanupDir(folderData.folder, files);
                     }

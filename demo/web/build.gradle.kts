@@ -15,9 +15,9 @@ apply<ElsaTsPlugin>()
 
 elsaTS {
     codegen {
-        packageName("elsa-web-common")
+        packageName("elsa-demo-web")
         folder("src-gen"){
-            remoting("core-remoting", "../common/src/main/codegen/elsa-core-remoting.xml")
+            domain("demo-domain", "../server/src/main/codegen/elsa-demo-common-domain.xml")
         }
     }
 }

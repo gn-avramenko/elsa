@@ -23,9 +23,31 @@ package com.gridnine.elsa.gradle.codegen.common;
 
 
 import com.gridnine.elsa.gradle.utils.BuildRunnableWithException;
+import kotlin.Pair;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class TypeScriptCodeGenerator {
     private final StringBuffer buf = new StringBuffer();
+
+    private final String packageName;
+
+    private final File module;
+
+    private Set<String> javaImports = new HashSet<>();
+
+    private Set<String> tsImports = new HashSet<>();
+
+    private final Map<String, Pair<String, File>> assotiations;
+
+    public TypeScriptCodeGenerator(String packageName, File module, Map<String, Pair<String, File>> assotiations) {
+        this.packageName = packageName;
+        this.module = module;
+        this.assotiations = assotiations;
+    }
 
     private int indent;
     public void print(String line){
@@ -67,5 +89,13 @@ public class TypeScriptCodeGenerator {
                  
                  """;
         return sb + buf;
+    }
+
+    public Set<String> getJavaImports() {
+        return javaImports;
+    }
+
+    public Set<String> getTsImports() {
+        return tsImports;
     }
 }

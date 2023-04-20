@@ -46,6 +46,7 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("id");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("id", propertyDescription);
 			}
 			{
@@ -62,6 +63,7 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("id");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("id", propertyDescription);
 			}
 			{
@@ -78,11 +80,13 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("id");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("id", propertyDescription);
 			}
 			{
 				var propertyDescription = new PropertyDescription("type");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("type", propertyDescription);
 			}
 			{
@@ -104,11 +108,13 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("tagName");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("tagName", propertyDescription);
 			}
 			{
 				var propertyDescription = new PropertyDescription("type");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("type", propertyDescription);
 			}
 			{
@@ -125,6 +131,7 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("name");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("name", propertyDescription);
 			}
 			{
@@ -140,11 +147,13 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("id");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("id", propertyDescription);
 			}
 			{
 				var propertyDescription = new PropertyDescription("tagName");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("tagName", propertyDescription);
 			}
 			{
@@ -161,6 +170,7 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("id");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("id", propertyDescription);
 			}
 			{
@@ -183,16 +193,19 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("remotingId");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("remotingId", propertyDescription);
 			}
 			{
 				var propertyDescription = new PropertyDescription("groupId");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("groupId", propertyDescription);
 			}
 			{
 				var propertyDescription = new PropertyDescription("methodId");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("methodId", propertyDescription);
 			}
 			smr.getEntities().put("com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionRequest", entityDescription);
@@ -259,6 +272,7 @@ public class CoreRemotingMetaRegistryConfigurator{
 			{
 				var propertyDescription = new PropertyDescription("entityId");
 				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("entityId", propertyDescription);
 			}
 			smr.getEntities().put("com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionRequest", entityDescription);
@@ -270,12 +284,14 @@ public class CoreRemotingMetaRegistryConfigurator{
 				var propertyDescription = new PropertyDescription("type");
 				propertyDescription.setTagName("enum-property");
 				propertyDescription.getAttributes().put("class-name", "com.gridnine.elsa.common.model.remoting.REntityType");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("type", propertyDescription);
 			}
 			{
 				var propertyDescription = new PropertyDescription("description");
 				propertyDescription.setTagName("entity-property");
 				propertyDescription.getAttributes().put("class-name", "com.gridnine.elsa.common.model.remoting.REntityDescription");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("description", propertyDescription);
 			}
 			smr.getEntities().put("com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionResponse", entityDescription);

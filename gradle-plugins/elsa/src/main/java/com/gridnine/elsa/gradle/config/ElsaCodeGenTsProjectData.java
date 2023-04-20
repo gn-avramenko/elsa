@@ -14,6 +14,16 @@ public class ElsaCodeGenTsProjectData {
 
     public Project project;
 
+    private String packageName;
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
     public final List<ElsaCodeGenTsFolderData> folders = new ArrayList<>();
 
 }

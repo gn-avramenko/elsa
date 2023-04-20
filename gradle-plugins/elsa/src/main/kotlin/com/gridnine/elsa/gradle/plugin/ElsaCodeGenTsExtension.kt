@@ -8,6 +8,15 @@ import org.gradle.api.Project
 @ElsaTsConfigMarker
 open class ElsaCodeGenTsExtension(private val project: Project, val data: ElsaCodeGenTsExtensionData) {
 
+    fun packageName(name: String){
+        var item = data.items.find { it.project == project}
+        if (item == null) {
+            item = ElsaCodeGenTsProjectData()
+            item.project = project
+            data.items.add(item)
+        }
+        item.packageName = name
+    }
 
     fun folder(folder:String, configure: ElsaCodeGenTsFolderExtension.()->Unit){
         var item = data.items.find { it.project == project}

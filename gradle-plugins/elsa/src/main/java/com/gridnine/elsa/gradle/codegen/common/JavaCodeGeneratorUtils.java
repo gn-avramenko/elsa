@@ -404,6 +404,7 @@ public class JavaCodeGeneratorUtils {
                 td.setType("ENTITY");
                 td.setTagName(prop.getTagName());
             }
+            gpd.setNonNullable(prop.isNonNullable());
             gpd.setTagDescription(td);
             gpd.setId(prop.getId());
             gpd.setTagName(prop.getTagName());

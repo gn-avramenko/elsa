@@ -14,4 +14,6 @@ public class ElsaCodeGenTsFolderData {
     public File folder;
 
     public final List<ElsaTsRemotingCodeGenRecord> remotingCodeGenRecords = new ArrayList<>();
+    public final List<ElsaTsDomainCodeGenRecord> domainCodeGenRecords = new ArrayList<>();
+
 }
