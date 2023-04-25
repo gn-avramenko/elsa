@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         mavenCentral()
@@ -6,7 +7,7 @@ buildscript {
 
 plugins {
     kotlin("jvm")  version "1.8.10"
-    `java-gradle-plugin`
+//    `java-gradle-plugin`
     `maven-publish`
 }
 
@@ -14,13 +15,18 @@ repositories{
     mavenCentral()
 }
 
-gradlePlugin {
-    plugins {
-        create("elsa-internal") {
-            id = "elsa-internal"
-            implementationClass = "com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin"
-        }
-    }
+//gradlePlugin {
+//    plugins {
+//        create("elsa-internal") {
+//            id = "elsa-internal"
+//            version = "0.0.1"
+//            implementationClass = "com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin"
+//        }
+//    }
+//}
+
+dependencies{
+    implementation(gradleApi())
 }
 
 publishing {

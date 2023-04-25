@@ -1,0 +1,89 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.gridnine",
+    "module": "elsa-meta",
+    "version": "0.0.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "elsa-meta-0.0.1.jar",
+          "url": "elsa-meta-0.0.1.jar",
+          "size": 31550,
+          "sha512": "8d7bd9689a29609185c551b5d0ce941fd574da3f597fe65347f5e31ddc846e1c3d83a744dbc36076079dde9e4597275bad74f1ee3e2164c03607484f338ecca4",
+          "sha256": "ee4eb4428977eeba7636f0fdc04ab3b4d193e2961950164ac1132d16e59bbdc8",
+          "sha1": "73afba772f566b67683eb1708e03240e1e7a60ce",
+          "md5": "fa98114b8f334de380f032e5ca487e9f"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2+"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "elsa-meta-0.0.1.jar",
+          "url": "elsa-meta-0.0.1.jar",
+          "size": 31550,
+          "sha512": "8d7bd9689a29609185c551b5d0ce941fd574da3f597fe65347f5e31ddc846e1c3d83a744dbc36076079dde9e4597275bad74f1ee3e2164c03607484f338ecca4",
+          "sha256": "ee4eb4428977eeba7636f0fdc04ab3b4d193e2961950164ac1132d16e59bbdc8",
+          "sha1": "73afba772f566b67683eb1708e03240e1e7a60ce",
+          "md5": "fa98114b8f334de380f032e5ca487e9f"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "elsa-meta-0.0.1-sources.jar",
+          "url": "elsa-meta-0.0.1-sources.jar",
+          "size": 21506,
+          "sha512": "f26a2557c16cd3114a0d296c9c468b007fca2dfb5028d049489a9f63ae62b90b3111747a0ed5d4466149c849b724bf94c668dbed3eec5d4b5a030d1d29288820",
+          "sha256": "c8e4c6f31760bf740658e618fd57f72741eec61237ae438e532a775c7b8df95d",
+          "sha1": "0e09b8b13efc3a6c90fe66b49a9cceeff95f6765",
+          "md5": "4371224c40882bda22c449794e2f3c1a"
+        }
+      ]
+    }
+  ]
+}

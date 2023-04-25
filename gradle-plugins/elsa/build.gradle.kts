@@ -10,25 +10,28 @@ buildscript {
 }
 
 plugins {
-    `java-gradle-plugin`
+//    `java-gradle-plugin`
     kotlin("jvm")  version "1.8.10"
 }
 
 
-gradlePlugin {
-    plugins {
-        create("elsa-java") {
-            id = "elsa-java-configuration"
-            implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin"
-        }
-        create("elsa-java-decoration") {
-            id = "elsa-java-decoration"
-            implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaDecorationPlugin"
-        }
-    }
-}
+//gradlePlugin {
+//    plugins {
+//        create("elsa") {
+//            id = "elsa"
+//            version = "0.0.1"
+//            implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin"
+//        }
+//    }
+//}
+
 repositories{
     mavenLocal()
+    mavenCentral()
+}
+
+dependencies{
+    implementation(gradleApi())
 }
 
 apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
