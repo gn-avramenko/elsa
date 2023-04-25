@@ -1,5 +1,7 @@
 sjl:
   applicationClass: com.gridnine.elsa.sjl.ElsaApplication
+tomcat:
+  port: 8086
 repository:
    type: POSTGRESQL
    postgresql:

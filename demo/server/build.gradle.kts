@@ -1,4 +1,5 @@
 import com.gridnine.elsa.gradle.plugin.elsa
+import com.gridnine.elsa.gradle.plugin.elsaTS
 
 buildscript {
     repositories{

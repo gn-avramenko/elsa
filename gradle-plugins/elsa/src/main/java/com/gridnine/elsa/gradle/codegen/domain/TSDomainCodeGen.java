@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class TSDomainCodeGen {
-    public void generate(DomainMetaRegistry registry, SerializableMetaRegistry sRegistry, SerializableTypesRegistry stRegistry, DomainTypesRegistry rtr, File module, Set<File> generatedFiles, String packageName, Map<String, Pair<String,File>> associations) throws Exception {
-        var gen = new TypeScriptCodeGenerator(packageName, module, associations);
+    public void generate(DomainMetaRegistry registry, SerializableMetaRegistry sRegistry, SerializableTypesRegistry stRegistry, DomainTypesRegistry rtr, File module, Set<File> generatedFiles, String packageName, File projectFolder, Map<String, Pair<String,String>> associations) throws Exception {
+        var gen = new TypeScriptCodeGenerator(packageName, module, projectFolder, associations);
         for(String id: registry.getEnumsIds()){
             TsCodeGeneratorUtils.generateWebEnumCode(sRegistry.getEnums().get(id), gen);
         }
@@ -32,14 +32,23 @@ public class TSDomainCodeGen {
         }
         for(String id: registry.getAssetsIds()){
             var ged = JavaCodeGeneratorUtils.buildGenEntityDescription(id, sRegistry,rtr.getEntityTags());
+            if(ged.getExtendsId() == null){
+                ged.setExtendsId("com.gridnine.elsa.common.model.domain.BaseAsset");
+            }
             TsCodeGeneratorUtils.generateWebEntityCode(ged, stRegistry, gen);
         }
         for(String id: registry.getDocumentsIds()){
             var ged = JavaCodeGeneratorUtils.buildGenEntityDescription(id, sRegistry,rtr.getEntityTags());
+            if(ged.getExtendsId() == null){
+                ged.setExtendsId("com.gridnine.elsa.common.model.domain.BaseDocument");
+            }
             TsCodeGeneratorUtils.generateWebEntityCode(ged, stRegistry, gen);
         }
         for(String id: registry.getProjectionsIds()){
             var ged = JavaCodeGeneratorUtils.buildGenEntityDescription(id, sRegistry,rtr.getEntityTags());
+            if(ged.getExtendsId() == null){
+                ged.setExtendsId("com.gridnine.elsa.common.model.domain.BaseProjection");
+            }
             TsCodeGeneratorUtils.generateWebEntityCode(ged, stRegistry, gen);
         }
         var file =TsCodeGeneratorUtils.saveIfDiffers(gen.toString(), module);

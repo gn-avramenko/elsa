@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class TSRemotingCodeGen {
-    public void generate(RemotingMetaRegistry registry, SerializableMetaRegistry sRegistry, SerializableTypesRegistry stRegistry, RemotingTypesRegistry rtr, File module, Set<File> generatedFiles, String packageName, Map<String, Pair<String,File>> associations) throws Exception {
-        var gen = new TypeScriptCodeGenerator(packageName, module, associations);
+    public void generate(RemotingMetaRegistry registry, SerializableMetaRegistry sRegistry, SerializableTypesRegistry stRegistry, RemotingTypesRegistry rtr, File module, Set<File> generatedFiles, String packageName, File projectFolder, Map<String, Pair<String,String>> associations) throws Exception {
+        var gen = new TypeScriptCodeGenerator(packageName, module, projectFolder, associations);
         for(String id: registry.getEnumsIds()){
             TsCodeGeneratorUtils.generateWebEnumCode(sRegistry.getEnums().get(id), gen);
         }

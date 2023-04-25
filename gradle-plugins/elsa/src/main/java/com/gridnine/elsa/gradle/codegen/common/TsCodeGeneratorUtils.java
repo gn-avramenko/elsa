@@ -62,7 +62,11 @@ public class TsCodeGeneratorUtils {
     }
 
     public static void generateWebEntityCode(GenEntityDescription ed,  SerializableTypesRegistry sRegistry, TypeScriptCodeGenerator gen) throws Exception {
-        gen.wrapWithBlock("export type %s=".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())), () ->{
+        if(ed.getExtendsId() != null){
+            gen.getJavaImports().add(ed.getExtendsId());
+        }
+        var ext = ed.getExtendsId() == null? "": "%s & ".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getExtendsId()));
+        gen.wrapWithBlock("export type %s = %s".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId()), ext), () ->{
             for(var pd: ed.getProperties().values()){
                 gen.printLine("%s%s: %s,".formatted(pd.getId(), isNullable(pd, sRegistry)? "?": "", calculateDeclarationType(pd, sRegistry, gen)));
             }
@@ -113,7 +117,7 @@ public class TsCodeGeneratorUtils {
                 idx = className.lastIndexOf(":");
             }
             return className.substring(idx+1);
-        } else {
+        } else if(className.contains(".")){
             gen.getJavaImports().add(className);
         }
         var idx = className.lastIndexOf(".");

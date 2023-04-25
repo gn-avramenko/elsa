@@ -23,6 +23,7 @@
     <entity id="com.gridnine.elsa.common.model.remoting.RTagDescription">
         <string-property id="tagName"  non-nullable="true"/>
         <string-property id="type"  non-nullable="true"/>
+        <string-property id="objectIdAttributeName"/>
         <entity-list id="generics" element-class-name="com.gridnine.elsa.common.model.remoting.RGenericDescription"/>
     </entity>
     <entity id="com.gridnine.elsa.common.model.remoting.RAttribute">
@@ -52,7 +53,7 @@
             </response>
         </server-call>
         <server-call id="get-types-metadata" handler-class-name="com.gridnine.elsa.server.remoting.standard.TypesMetadataRemotingHandler">
-            <response id="com.gridnine.elsa.common.model.remoting.TypesMetadata">
+            <response id="com.gridnine.elsa.common.model.remoting.RTypesMetadata">
                 <entity-list id="serializableTypes" element-class-name="com.gridnine.elsa.common.model.remoting.RSerializableType"/>
                 <entity-list id="domainEntityTags" element-class-name="com.gridnine.elsa.common.model.remoting.RTagDescription"/>
                 <entity-list id="domainDatabaseTags" element-class-name="com.gridnine.elsa.common.model.remoting.RTagDescription"/>

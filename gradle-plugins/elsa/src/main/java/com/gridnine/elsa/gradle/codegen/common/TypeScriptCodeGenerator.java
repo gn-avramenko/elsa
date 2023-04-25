@@ -26,7 +26,11 @@ import com.gridnine.elsa.gradle.utils.BuildRunnableWithException;
 import kotlin.Pair;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,12 +45,15 @@ public class TypeScriptCodeGenerator {
 
     private Set<String> tsImports = new HashSet<>();
 
-    private final Map<String, Pair<String, File>> assotiations;
+    private final Map<String, Pair<String, String>> associations;
 
-    public TypeScriptCodeGenerator(String packageName, File module, Map<String, Pair<String, File>> assotiations) {
+    private final File projectFolder;
+
+    public TypeScriptCodeGenerator(String packageName, File module, File projectFolder, Map<String, Pair<String, String>> associations) {
         this.packageName = packageName;
         this.module = module;
-        this.assotiations = assotiations;
+        this.associations = associations;
+        this.projectFolder = projectFolder;
     }
 
     private int indent;
@@ -82,12 +89,73 @@ public class TypeScriptCodeGenerator {
     }
 
     public String toString(){
+        var imports = new HashMap<String, Map<String, List<String>>>();
+        var str = projectFolder.toPath().relativize(module.toPath()).toString();
+        var thisLocalModuleName = str.substring(0, str.lastIndexOf('.'));
+        tsImports.forEach(imp ->{
+            var idx = imp.indexOf(":");
+            var pack = imp.substring(0, idx);
+            var moduleAndClass = imp.substring(idx+1);
+            var localModuleName = "";
+            var className = moduleAndClass;
+            int idx2 = moduleAndClass.lastIndexOf("/");
+            if(idx2 != -1){
+                localModuleName = !packageName.equals(pack)? "" : moduleAndClass.substring(0, idx2);
+                className = moduleAndClass.substring(idx2+1);
+            }
+            if(packageName.equals(pack) && localModuleName.equals(thisLocalModuleName)){
+                return;
+            }
+            List<String> classes = imports.computeIfAbsent(pack, (p) -> new HashMap<>()).computeIfAbsent(localModuleName, (m) -> new ArrayList<>());
+            if(!classes.contains(className)){
+                classes.add(className);
+            }
+        });
+        javaImports.forEach(imp ->{
+            var association = associations.get(imp);
+            if(association != null){
+                if(packageName.equals(association.getFirst()) && association.getSecond().equals(thisLocalModuleName)){
+                    return;
+                }
+                var localModuleName = association.getSecond();
+                if(!packageName.equals(association.getFirst())){
+                    localModuleName = "";
+                }
+                imports.computeIfAbsent(association.getFirst(), (p) -> new HashMap<>()).computeIfAbsent(localModuleName, (m)-> new ArrayList<>()).add(JavaCodeGeneratorUtils.getSimpleName(imp));
+            }
+        });
+        var ikeys = new ArrayList<>(imports.keySet());
+        Collections.sort(ikeys);
+        var importBuilder = new StringBuilder();
+        for(var pack : ikeys){
+            var modules = new ArrayList<>(imports.get(pack).keySet());
+            Collections.sort(modules);
+            for(var mod: modules){
+                var classes = new ArrayList<>(imports.get(pack).get(mod));
+                Collections.sort(classes);
+                var from = pack;
+                if(pack.equals("") || pack.equals(packageName)){
+                    var fromModule = new File(projectFolder, mod+".ts");
+                    from = module.toPath().relativize(fromModule.toPath()).toString();
+                    from = from.substring(0, from.lastIndexOf('.'));
+                    if(from.startsWith("../")){
+                        from = from.substring(1);
+                    }
+                }
+                importBuilder.append("""
+                       import {
+                         %s,
+                       } from '%s';
+                        """.formatted(String.join(",\n ", classes), from));
+            }
+        }
         String sb = """
                 /* ****************************************************************
                  * This is generated code, don't modify it manually
                  **************************************************************** */
                  
-                 """;
+                %s
+                """.formatted(importBuilder.toString().stripIndent()).stripIndent();
         return sb + buf;
     }
 

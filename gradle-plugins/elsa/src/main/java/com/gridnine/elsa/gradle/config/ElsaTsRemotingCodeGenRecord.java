@@ -18,10 +18,4 @@ public class ElsaTsRemotingCodeGenRecord extends BaseElsaCodeGenRecord {
         this.module = module;
     }
 
-    @Override
-    public ElsaGeneratorType getGeneratorType() {
-        return ElsaGeneratorType.TS_REMOTING;
-    }
-
-
 }

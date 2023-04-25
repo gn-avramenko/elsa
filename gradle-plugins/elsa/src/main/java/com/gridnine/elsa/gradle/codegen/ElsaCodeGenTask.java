@@ -5,7 +5,6 @@
 
 package com.gridnine.elsa.gradle.codegen;
 
-import com.gridnine.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.elsa.gradle.codegen.domain.*;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nFactoryGenerator;
 import com.gridnine.elsa.gradle.codegen.remoting.*;
@@ -16,7 +15,7 @@ import com.gridnine.elsa.gradle.codegen.custom.JavaCustomMetaRegistryConfigurato
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nMetaRegistryConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nXsdCodeGen;
-import com.gridnine.elsa.gradle.config.ElsaCodeGenProjectData;
+import com.gridnine.elsa.gradle.config.ElsaCodeGenTsProjectData;
 import com.gridnine.elsa.gradle.config.ElsaJavaCustomCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaDomainCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaL10nCodeGenRecord;
@@ -180,40 +179,81 @@ public class ElsaCodeGenTask extends DefaultTask {
             var tsExt = getProject().getExtensions().findByType(ElsaTsExtension.class);
             if(tsExt != null){
                 ElsaCodeGenTsExtension tsCdExt = tsExt.getCodeGenExtension();
-                var associations = new HashMap<String, Pair<String,File>>();
+                var associations = new HashMap<String, Pair<String,String>>();
                 var tsmr = new SerializableMetaRegistry();
-                for (var projectData : tsExt.getCodeGenExtension().getData().items){
+                var tsProjets = new ArrayList<>(tsExt.getCodeGenExtension().getData().items);
+                tsProjets.sort(Comparator.comparingDouble(ElsaCodeGenTsProjectData::getPriority));
+                for (var projectData : tsProjets){
                     String packageName = projectData.getPackageName();
+                    File projectDir = projectData.project.getProjectDir();
                     for(var folderData: projectData.folders){
                         Set<File> files = new LinkedHashSet<>();
-
-                        for (var record : folderData.remotingCodeGenRecords) {
-                            File module = record.getModule();
-                            var registry = new RemotingMetaRegistry();
-                            rmp.updateRegistry(registry, tsmr, record.getSources());
-                            registry.getEntitiesIds().forEach((id) ->{
-                                associations.put(id, new Pair<>(packageName, module));
+                        for (var record : folderData.customCodeGenRecords) {
+                            var cmr = new CustomMetaRegistry();
+                            cmp.updateRegistry(cmr, totalSerializableMetaRegistry, record.getSources());
+                            cmr.getEntitiesIds().forEach((ett) ->{
+                                associations.put(ett, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
                             });
-                            var cg = new TSRemotingCodeGen();
-                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, module, files, packageName, associations);
+                            cmr.getEnumsIds().forEach((ett) ->{
+                                associations.put(ett, new Pair<>(packageName,  getLocalModuleName(record.getModule(), projectDir)));
+                            });
                         }
                         for (var record : folderData.domainCodeGenRecords) {
                             File module = record.getModule();
                             var registry = new DomainMetaRegistry();
                             dmp.updateRegistry(registry, tsmr, record.getSources());
                             registry.getEntitiesIds().forEach((id) ->{
-                                associations.put(id, new Pair<>(packageName, module));
+                                associations.put(id, new Pair<>(packageName,  getLocalModuleName(record.getModule(), projectDir)));
                             });
-                            var cg = new TSDomainCodeGen();
-                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalDomainTypesRegistry, module, files, packageName, associations);
+                            registry.getDocumentsIds().forEach((id) ->{
+                                associations.put(id, new Pair<>(packageName,  getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            registry.getProjectionsIds().forEach((id) ->{
+                                associations.put(id, new Pair<>(packageName,  getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            registry.getEnumsIds().forEach((id) ->{
+                                associations.put(id, new Pair<>(packageName,  getLocalModuleName(record.getModule(), projectDir)));
+                            });
                         }
-                        cleanupDir(folderData.folder, files);
+                        for (var record : folderData.remotingCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new RemotingMetaRegistry();
+                            rmp.updateRegistry(registry, tsmr, record.getSources());
+                            registry.getEntitiesIds().forEach((id) ->{
+                                associations.put(id, new Pair<>(packageName,  getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            registry.getEnumsIds().forEach((id) ->{
+                                associations.put(id, new Pair<>(packageName,  getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                        }
+                        for (var record : folderData.domainCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new DomainMetaRegistry();
+                            dmp.updateRegistry(registry, tsmr, record.getSources());
+                            var cg = new TSDomainCodeGen();
+                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalDomainTypesRegistry, module, files, packageName, projectDir,  associations);
+                        }
+                        for (var record : folderData.remotingCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new RemotingMetaRegistry();
+                            rmp.updateRegistry(registry, tsmr, record.getSources());
+                            var cg = new TSRemotingCodeGen();
+                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, module, files, packageName, projectDir, associations);
+                        }
+                        if(!folderData.isDontCleanup()){
+                            cleanupDir(folderData.folder, files);
+                        }
                     }
                 }
             }
 
         }
 
+    }
+
+    private String getLocalModuleName(File moduleFile, File projectDir){
+        var str = projectDir.toPath().relativize(moduleFile.toPath()).toString();
+        return str.substring(0, str.lastIndexOf('.'));
     }
 
     private boolean isDepends(Project proj1, Project proj2) {

@@ -8,28 +8,34 @@ import org.gradle.api.Project
 @ElsaTsConfigMarker
 open class ElsaCodeGenTsExtension(private val project: Project, val data: ElsaCodeGenTsExtensionData) {
 
-    fun packageName(name: String){
+    private fun getOrCreateProject():ElsaCodeGenTsProjectData{
         var item = data.items.find { it.project == project}
         if (item == null) {
             item = ElsaCodeGenTsProjectData()
             item.project = project
             data.items.add(item)
         }
-        item.packageName = name
+        return item;
+    }
+    fun packageName(name: String){
+        getOrCreateProject().packageName = name
     }
 
-    fun folder(folder:String, configure: ElsaCodeGenTsFolderExtension.()->Unit){
-        var item = data.items.find { it.project == project}
-        if (item == null) {
-            item = ElsaCodeGenTsProjectData()
-            item.project = project
-            data.items.add(item)
-        }
+    fun priority(value: Double){
+        getOrCreateProject().priority = value
+    }
+
+    fun folder(folder:String,  configure: ElsaCodeGenTsFolderExtension.()->Unit){
+        folder(folder, false, configure);
+    }
+    fun folder(folder:String, dontCleanup:Boolean, configure: ElsaCodeGenTsFolderExtension.()->Unit){
+        var item = getOrCreateProject()
         val dir = project.file(folder);
         var fd = item.folders.find { it.folder == dir }
         if(fd == null){
             fd = ElsaCodeGenTsFolderData()
             fd.folder = dir
+            fd.dontCleanup = dontCleanup;
             item.folders.add(fd)
         }
         ElsaCodeGenTsFolderExtension(project, fd).configure()

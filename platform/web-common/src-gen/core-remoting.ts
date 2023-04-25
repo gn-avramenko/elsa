@@ -2,64 +2,66 @@
  * This is generated code, don't modify it manually
  **************************************************************** */
 
+
 export type REntityType=
 'DOMAIN_ENTITY'
 | 'DOMAIN_DATABASE_ENTITY'
 | 'CUSTOM'
 | 'REMOTING';
 
-export type RGenericDeclaration={
+export type RGenericDeclaration = {
   id: string,
   nestedGenerics: RGenericDeclaration[],
 };
 
-export type RSerializableType={
+export type RSerializableType = {
   id: string,
   generics: RGenericDeclaration[],
 };
 
-export type RGenericDescription={
+export type RGenericDescription = {
   id: string,
   type: string,
   objectIdAttributeName?: string,
   nestedGenerics: RGenericDescription[],
 };
 
-export type RTagDescription={
+export type RTagDescription = {
   tagName: string,
   type: string,
+  objectIdAttributeName?: string,
   generics: RGenericDescription[],
 };
 
-export type RAttribute={
+export type RAttribute = {
   name: string,
   value?: string,
 };
 
-export type RPropertyDescription={
+export type RPropertyDescription = {
   id: string,
   tagName: string,
   attributes: RAttribute[],
 };
 
-export type REntityDescription={
+export type REntityDescription = {
   id: string,
   properties: RPropertyDescription[],
   attributes: RAttribute[],
 };
 
-export type GetServerCallDescriptionRequest={
+export type GetServerCallDescriptionRequest = {
   remotingId: string,
   groupId: string,
   methodId: string,
 };
 
-export type GetServerCallDescriptionResponse={
+export type GetServerCallDescriptionResponse = {
   requestClassName?: string,
   responseClassName?: string,
 };
 
-export type TypesMetadata={
+export type RTypesMetadata = {
   serializableTypes: RSerializableType[],
   domainEntityTags: RTagDescription[],
   domainDatabaseTags: RTagDescription[],
@@ -68,11 +70,11 @@ export type TypesMetadata={
   remotingEntityTags: RTagDescription[],
 };
 
-export type GetRemotingEntityDescriptionRequest={
+export type GetRemotingEntityDescriptionRequest = {
   entityId: string,
 };
 
-export type GetRemotingEntityDescriptionResponse={
+export type GetRemotingEntityDescriptionResponse = {
   type: REntityType,
   description: REntityDescription,
 };

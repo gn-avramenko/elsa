@@ -118,6 +118,11 @@ public class CoreRemotingMetaRegistryConfigurator{
 				entityDescription.getProperties().put("type", propertyDescription);
 			}
 			{
+				var propertyDescription = new PropertyDescription("objectIdAttributeName");
+				propertyDescription.setTagName("string-property");
+				entityDescription.getProperties().put("objectIdAttributeName", propertyDescription);
+			}
+			{
 				var propertyDescription = new PropertyDescription("generics");
 				propertyDescription.setTagName("entity-list");
 				propertyDescription.getAttributes().put("element-class-name", "com.gridnine.elsa.common.model.remoting.RGenericDescription");
@@ -227,7 +232,7 @@ public class CoreRemotingMetaRegistryConfigurator{
 			rmr.getEntitiesIds().add("com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionResponse");
 		}
 		{
-			var entityDescription = new EntityDescription("com.gridnine.elsa.common.model.remoting.TypesMetadata");
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.model.remoting.RTypesMetadata");
 			{
 				var propertyDescription = new PropertyDescription("serializableTypes");
 				propertyDescription.setTagName("entity-list");
@@ -264,8 +269,8 @@ public class CoreRemotingMetaRegistryConfigurator{
 				propertyDescription.getAttributes().put("element-class-name", "com.gridnine.elsa.common.model.remoting.RTagDescription");
 				entityDescription.getProperties().put("remotingEntityTags", propertyDescription);
 			}
-			smr.getEntities().put("com.gridnine.elsa.common.model.remoting.TypesMetadata", entityDescription);
-			rmr.getEntitiesIds().add("com.gridnine.elsa.common.model.remoting.TypesMetadata");
+			smr.getEntities().put("com.gridnine.elsa.common.model.remoting.RTypesMetadata", entityDescription);
+			rmr.getEntitiesIds().add("com.gridnine.elsa.common.model.remoting.RTypesMetadata");
 		}
 		{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionRequest");
@@ -314,7 +319,7 @@ public class CoreRemotingMetaRegistryConfigurator{
 				{
 					var serverCallDescription = new RemotingServerCallDescription("get-types-metadata");
 					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.server.remoting.standard.TypesMetadataRemotingHandler");
-					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.TypesMetadata");
+					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.RTypesMetadata");
 					groupDescription.getServerCalls().put("get-types-metadata", serverCallDescription);
 				}
 				{

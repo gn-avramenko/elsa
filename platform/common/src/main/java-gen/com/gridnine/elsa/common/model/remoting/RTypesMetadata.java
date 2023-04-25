@@ -7,7 +7,7 @@ package com.gridnine.elsa.common.model.remoting;
 import com.gridnine.elsa.common.model.common.BaseIntrospectableObject;
 import java.util.ArrayList;
 
-public class TypesMetadata extends BaseIntrospectableObject{
+public class RTypesMetadata extends BaseIntrospectableObject{
 
 	private final ArrayList<RSerializableType> serializableTypes = new ArrayList<>();
 

@@ -16,12 +16,22 @@ public class ElsaCodeGenTsProjectData {
 
     private String packageName;
 
+    private double priority;
+
     public String getPackageName() {
         return packageName;
     }
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public double getPriority() {
+        return priority;
+    }
+
+    public void setPriority(double priority) {
+        this.priority = priority;
     }
 
     public final List<ElsaCodeGenTsFolderData> folders = new ArrayList<>();

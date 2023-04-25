@@ -89,6 +89,7 @@ public class CommonActivator implements Activator {
         SerializationHandlersRegistry.get().register(new LocalDateSerializationHandler());
         SerializationHandlersRegistry.get().register(new LocalDateTimeSerializationHandler());
         SerializationHandlersRegistry.get().register(new LongSerializationHandler());
+        SerializationHandlersRegistry.get().register(new ByteArraySerializationHandler());
 
     }
 

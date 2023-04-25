@@ -93,16 +93,16 @@ public class DemoServerActivator implements Activator {
             doc.setLongProperty(n %2 == 0? 100: 200);
             doc.setDateProperty(LocalDate.now());
             doc.setDateTimeProperty(LocalDateTime.now());
-            if(ref1 == null) {
-                ref1 = new EntityReference<>(doc);
-            } else if (ref2 == null){
-                ref2 = new EntityReference<>(doc);
-            }
             Storage.get().saveDocument(doc);
             var asset = new DemoDomainAsset();
             asset.setDateTimeProperty(LocalDateTime.now());
             asset.setStringProperty("string %s".formatted(n));
             Storage.get().saveAsset(asset);
+            if(ref1 == null) {
+                ref1 = new EntityReference<>(doc);
+            } else if (ref2 == null){
+                ref2 = new EntityReference<>(doc);
+            }
         }
     }
 }

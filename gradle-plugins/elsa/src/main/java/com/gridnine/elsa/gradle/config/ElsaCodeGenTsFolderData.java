@@ -13,7 +13,18 @@ public class ElsaCodeGenTsFolderData {
 
     public File folder;
 
+    public boolean dontCleanup;
+
     public final List<ElsaTsRemotingCodeGenRecord> remotingCodeGenRecords = new ArrayList<>();
     public final List<ElsaTsDomainCodeGenRecord> domainCodeGenRecords = new ArrayList<>();
 
+    public final List<ElsaTsCustomCodeGenRecord> customCodeGenRecords = new ArrayList<>();
+
+    public boolean isDontCleanup() {
+        return dontCleanup;
+    }
+
+    public void setDontCleanup(boolean dontCleanup) {
+        this.dontCleanup = dontCleanup;
+    }
 }

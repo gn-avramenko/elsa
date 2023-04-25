@@ -2,17 +2,23 @@
  * This is generated code, don't modify it manually
  **************************************************************** */
 
+import {
+  BaseAsset,
+ BaseProjection,
+ EntityReference,
+} from 'elsa-core';
+
 export type DemoEnum=
 'ITEM1'
 | 'ITEM2'
 | 'ITEM3';
 
-export type DemoDomainAsset={
+export type DemoDomainAsset = BaseAsset & {
   stringProperty?: string,
   dateTimeProperty?: Date,
 };
 
-export type DemoDomainDocumentProjection={
+export type DemoDomainDocumentProjection = BaseProjection & {
   stringProperty?: string,
   getAllProperty?: string,
   stringCollection: string[],
