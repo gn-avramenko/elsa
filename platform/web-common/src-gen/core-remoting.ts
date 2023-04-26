@@ -2,6 +2,10 @@
  * This is generated code, don't modify it manually
  **************************************************************** */
 
+import {
+  ServerCallOptions,
+  serverCall,
+} from './../';
 
 export type REntityType=
 'DOMAIN_ENTITY'

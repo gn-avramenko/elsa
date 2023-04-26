@@ -4,8 +4,8 @@
 
 import {
   BaseAsset,
- BaseProjection,
- EntityReference,
+  BaseProjection,
+  EntityReference,
 } from 'elsa-core';
 
 export type DemoEnum=

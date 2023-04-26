@@ -4,6 +4,8 @@
 
 import {
   EntityReference,
+  ServerCallOptions,
+  serverCall,
 } from 'elsa-core';
 import {
   DemoDomainDocumentProjection,
@@ -23,4 +25,9 @@ export type DownloadIndexRequest = {
 
 export type UploadFileRequest = {
   fileId?: string,
+};
+
+export const remotingClient = {
+
+  elsa_demo_remoting_test_getIndexes: (request:GetIndexesRequest, options?:ServerCallOptions) => serverCall<GetIndexesRequest, GetIndexesRequest>('elsa-demo-remoting', 'test', 'getIndexes', request, options),
 };

@@ -146,7 +146,7 @@ public class TypeScriptCodeGenerator {
                        import {
                          %s,
                        } from '%s';
-                        """.formatted(String.join(",\n ", classes), from));
+                        """.formatted(String.join(",\n  ", classes), from));
             }
         }
         String sb = """

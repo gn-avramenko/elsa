@@ -29,6 +29,7 @@ public class TSRemotingCodeGen {
     public void generate(RemotingMetaRegistry registry, SerializableMetaRegistry sRegistry, SerializableTypesRegistry stRegistry, RemotingTypesRegistry rtr, File module, Set<File> generatedFiles, String packageName, File projectFolder, boolean skipClientGeneration, Map<String, Pair<String,String>> associations) throws Exception {
         var gen = new TypeScriptCodeGenerator(packageName, module, projectFolder, associations);
         gen.getTsImports().add("elsa-core:ServerCallOptions");
+        gen.getTsImports().add("elsa-core:serverCall");
         for(String id: registry.getEnumsIds()){
             TsCodeGeneratorUtils.generateWebEnumCode(sRegistry.getEnums().get(id), gen);
         }
@@ -59,6 +60,7 @@ public class TSRemotingCodeGen {
                     }
                 }
             });
+            gen.print(";\n");
         }
         var file =TsCodeGeneratorUtils.saveIfDiffers(gen.toString(), module);
         generatedFiles.add(file);
