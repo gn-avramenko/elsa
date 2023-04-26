@@ -16,12 +16,16 @@ apply<ElsaTsPlugin>()
 elsaTS {
     codegen {
         packageName("elsa-core")
-        priority(0.0);
+        priority(0.0)
         folder("src", true){
             custom("core-model-entities", "../common/src/main/codegen/elsa-core-custom.xml")
         }
         folder("src-gen"){
-            remoting("core-remoting", "../common/src/main/codegen/elsa-core-remoting.xml")
+            remoting {
+                module("core-remoting")
+                skipClientGeneration(true)
+                sources("../common/src/main/codegen/elsa-core-remoting.xml")
+            }
         }
     }
 }

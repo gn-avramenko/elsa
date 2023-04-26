@@ -41,7 +41,9 @@ public class RemotingTypesConfiguratorCodeGen {
                 for(AttributeDescription attr: registry.getUploadAttributes().values()){
                     JavaCodeGeneratorUtils.generateAttributeDescription(gen, attr, "registry.getUploadAttributes()");
                 }
-
+                for(AttributeDescription attr: registry.getSubscriptionAttributes().values()){
+                    JavaCodeGeneratorUtils.generateAttributeDescription(gen, attr, "registry.getSubscriptionAttributes()");
+                }
                 for(TagDescription tag: registry.getEntityTags().values()){
                     JavaCodeGeneratorUtils.generateTagDescription(gen, tag, "registry.getEntityTags()");
                 }

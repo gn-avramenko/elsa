@@ -22,19 +22,25 @@ type ClientResponse = {
 
 const serverCallDescriptions = new Map<string, ServerCallDescription>();
 
+export type RemotingCallOptions = {
+  preloaderHandler?: PreloaderHandler| boolean,
+  operationId?:string|null,
+}
+
+export type ServerCallOptions = RemotingCallOptions;
 // eslint-disable-next-line import/prefer-default-export
 export async function serverCall<RQ, RP>(
   remotingId: string,
   groupId: string,
   methodId: string,
   request: RQ,
-  preloaderHandler: PreloaderHandler| boolean,
-  operationId:string|null,
+  options?: ServerCallOptions,
 ) {
   const fullId = `${remotingId}:${groupId}:${methodId}`;
   // eslint-disable-next-line no-nested-ternary,max-len
-  const ph = preloaderHandler === false ? null : (preloaderHandler === true
-    ? (remotingConfiguration.globalPreloaderHandler || null) : preloaderHandler);
+  const ph = options?.preloaderHandler === false ? null : (options?.preloaderHandler === true
+    ? (remotingConfiguration.globalPreloaderHandler || null) : options?.preloaderHandler) || null;
+  const operationId = options?.operationId || null;
   if (!serverCallDescriptions.has(fullId)) {
     const description = await performServerCall(remotingConfiguration.clientId, 'core', 'meta', 'get-server-call-description', {
       remotingId,

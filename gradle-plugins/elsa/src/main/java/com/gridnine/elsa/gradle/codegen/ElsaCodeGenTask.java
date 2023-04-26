@@ -238,7 +238,7 @@ public class ElsaCodeGenTask extends DefaultTask {
                             var registry = new RemotingMetaRegistry();
                             rmp.updateRegistry(registry, tsmr, record.getSources());
                             var cg = new TSRemotingCodeGen();
-                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, module, files, packageName, projectDir, associations);
+                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, module, files, packageName, projectDir, record.isSkipClientGeneration(), associations);
                         }
                         if(!folderData.isDontCleanup()){
                             cleanupDir(folderData.folder, files);

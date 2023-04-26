@@ -3,6 +3,7 @@
     <server-call-attribute name="handler-class-name" type="STRING"/>
     <download-attribute name="handler-class-name" type="STRING" />
     <download-attribute name="big-file" type="BOOLEAN" />
+    <subscription-attribute name="handler-class-name" type="STRING" />
     <upload-attribute name="handler-class-name" type="STRING" />
     <entity-tag tag-name="string-property" type="STRING"/>
     <entity-tag tag-name="local-date-time-property" type="LOCAL-DATE-TIME"/>

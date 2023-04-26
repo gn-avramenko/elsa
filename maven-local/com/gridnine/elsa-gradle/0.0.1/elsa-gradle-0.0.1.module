@@ -38,11 +38,11 @@
         {
           "name": "elsa-gradle-0.0.1.jar",
           "url": "elsa-gradle-0.0.1.jar",
-          "size": 157507,
-          "sha512": "f20579ac9a3c8fb5f7b75ae8a3fa4a13b2aac08793c883725d8cb0c9c5822c1ff9e2a39fca26250b3e34208b6fc99dbf4b1d397a9013d40be4645f3f7b08bc70",
-          "sha256": "946564e30d94c49bdb84eea9e6598ac1dd719c9f9d864ff87562ee3a06f43d65",
-          "sha1": "95ec82d0782758242abbefafc2845a0295530663",
-          "md5": "72d0c164021d7bfb04c8985a7c1add8c"
+          "size": 161938,
+          "sha512": "7f70fbc84f0389df3c25163232f284265285a55d7dcf19dcd76862739cb5e611fdca08470ce95c1c9c92cf3afe9e88e6c4e6f023725b7e6973dba870d931a370",
+          "sha256": "0648942932a1b23401f8e8115576141c2f41529ea4f8eeec1272310c874a71d2",
+          "sha1": "6d2b3ad8952ef2bdf5495484b5626d7d984e4ab0",
+          "md5": "8a9831bd0b1d798a54bd788449ed3a38"
         }
       ]
     },
@@ -77,11 +77,11 @@
         {
           "name": "elsa-gradle-0.0.1.jar",
           "url": "elsa-gradle-0.0.1.jar",
-          "size": 157507,
-          "sha512": "f20579ac9a3c8fb5f7b75ae8a3fa4a13b2aac08793c883725d8cb0c9c5822c1ff9e2a39fca26250b3e34208b6fc99dbf4b1d397a9013d40be4645f3f7b08bc70",
-          "sha256": "946564e30d94c49bdb84eea9e6598ac1dd719c9f9d864ff87562ee3a06f43d65",
-          "sha1": "95ec82d0782758242abbefafc2845a0295530663",
-          "md5": "72d0c164021d7bfb04c8985a7c1add8c"
+          "size": 161938,
+          "sha512": "7f70fbc84f0389df3c25163232f284265285a55d7dcf19dcd76862739cb5e611fdca08470ce95c1c9c92cf3afe9e88e6c4e6f023725b7e6973dba870d931a370",
+          "sha256": "0648942932a1b23401f8e8115576141c2f41529ea4f8eeec1272310c874a71d2",
+          "sha1": "6d2b3ad8952ef2bdf5495484b5626d7d984e4ab0",
+          "md5": "8a9831bd0b1d798a54bd788449ed3a38"
         }
       ]
     },
@@ -97,20 +97,20 @@
         {
           "name": "elsa-gradle-0.0.1-sources.jar",
           "url": "elsa-gradle-0.0.1-sources.jar",
-          "size": 66128,
-          "sha512": "a6d3a55404784a5004f6bb7c9338285214446882e47288f965075e2698dd18c888f0f62416f6476267ba80d16ed3555a5bcd45cc30671fbd289aa558998314d2",
-          "sha256": "67e303397ea388b8d7018e1fdf6ee9fb956b75714445694c899c15eb20b827f1",
-          "sha1": "4756054886eda1daf33853740bcd27095a42ea95",
-          "md5": "b4024cb3ef29d46b40e7da43d62b6e84"
+          "size": 67494,
+          "sha512": "673661749e127799183781e017c6b4ebafe53efcdff6e8cb97a192f1ec4340baec963834e7e711e3ccc63f76b7411f7a766b79e71b83a2a5693f6d12a3ff461d",
+          "sha256": "33f7918ac802f0a53aa4bb901dfae60e3e6b9dc8bb5beb66a612dc6a8e963879",
+          "sha1": "0507f2e1246f5082fac31159d60c2fccf05368b4",
+          "md5": "bfdedf3ddcbe650576fc5a88023eb9e0"
         },
         {
           "name": "elsa-gradle-0.0.1-sources.jar",
           "url": "elsa-gradle-0.0.1-sources.jar",
-          "size": 66128,
-          "sha512": "a6d3a55404784a5004f6bb7c9338285214446882e47288f965075e2698dd18c888f0f62416f6476267ba80d16ed3555a5bcd45cc30671fbd289aa558998314d2",
-          "sha256": "67e303397ea388b8d7018e1fdf6ee9fb956b75714445694c899c15eb20b827f1",
-          "sha1": "4756054886eda1daf33853740bcd27095a42ea95",
-          "md5": "b4024cb3ef29d46b40e7da43d62b6e84"
+          "size": 67494,
+          "sha512": "673661749e127799183781e017c6b4ebafe53efcdff6e8cb97a192f1ec4340baec963834e7e711e3ccc63f76b7411f7a766b79e71b83a2a5693f6d12a3ff461d",
+          "sha256": "33f7918ac802f0a53aa4bb901dfae60e3e6b9dc8bb5beb66a612dc6a8e963879",
+          "sha1": "0507f2e1246f5082fac31159d60c2fccf05368b4",
+          "md5": "bfdedf3ddcbe650576fc5a88023eb9e0"
         }
       ]
     }

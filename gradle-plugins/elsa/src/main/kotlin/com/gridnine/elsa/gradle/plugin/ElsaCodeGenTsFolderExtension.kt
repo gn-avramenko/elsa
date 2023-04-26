@@ -19,6 +19,12 @@ open class ElsaCodeGenTsFolderExtension(private val project:Project, private val
         folderData.remotingCodeGenRecords.add(record)
     }
 
+    fun remoting(configure:ElsaCodeGenTsRemotingExtension.() -> Unit) {
+        val record = ElsaTsRemotingCodeGenRecord()
+        ElsaCodeGenTsRemotingExtension(project, folderData, record).configure()
+        folderData.remotingCodeGenRecords.add(record)
+    }
+
     fun domain(module: String, vararg sources: String) {
         val record = ElsaTsDomainCodeGenRecord()
         record.module = File(folderData.folder, "$module.ts")

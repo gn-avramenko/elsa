@@ -9,4 +9,5 @@ export {
 } from './src/core-model-entities';
 export {
   serverCall,
+  ServerCallOptions,
 } from './src/core-remoting';
