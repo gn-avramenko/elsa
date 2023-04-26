@@ -1,7 +1,7 @@
 import com.gridnine.elsa.gradle.plugin.elsa
 import com.gridnine.elsa.gradle.plugin.elsaTS
 
-System.setProperty("maven.repo.local", project.file("maven-local").absolutePath)
+//System.setProperty("maven.repo.local", project.file("maven-local").absolutePath)
 
 plugins {
     java
