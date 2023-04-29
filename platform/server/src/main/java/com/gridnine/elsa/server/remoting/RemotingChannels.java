@@ -62,6 +62,7 @@ public class RemotingChannels {
                             }
                             var message = new RemotingMessage();
                             message.setType(RemotingMessageType.SUBSCRIPTION);
+                            message.setCallId(entry.getKey());
                             message.setRemotingId(remotingId);
                             message.setGroupId(groupId);
                             message.setMethodId(subscriptionId);
