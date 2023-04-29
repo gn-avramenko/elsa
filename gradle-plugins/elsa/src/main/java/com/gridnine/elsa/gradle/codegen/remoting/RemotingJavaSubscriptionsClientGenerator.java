@@ -30,8 +30,7 @@ public class RemotingJavaSubscriptionsClientGenerator {
                 for(var group: remoting.getGroups().values()){
                     for(var subscription: group.getSubscriptions().values()){
                         gen.blankLine();
-                        gen.wrapWithBlock("public void %s_%s_%s_send_event(%s event)".formatted(prepareName(remoting.getId()),
-                                prepareName(group.getId()), prepareName(subscription.getId()), JavaCodeGeneratorUtils.getSimpleName(subscription.getEventClassName())), ()->{
+                        gen.wrapWithBlock("public void %s_%s_send_event(%s event)".formatted(prepareName(group.getId()), prepareName(subscription.getId()), JavaCodeGeneratorUtils.getSimpleName(subscription.getEventClassName())), ()->{
                             gen.printLine("RemotingChannels.get().sendSubscriptionEvent(\"%s\",\"%s\",\"%s\", event);".formatted(
                                     remoting.getId(), group.getId(), subscription.getId()
                             ));
