@@ -46,28 +46,32 @@ public class RemotingChannels {
 
     public<T extends BaseIntrospectableObject> void sendSubscriptionEvent(String remotingId, String groupId, String subscriptionId, T event) {
         ExceptionUtils.wrapException(() -> {
-            String content = null;
+            String eventContent = null;
             for (var channelData : channels.values()) {
                 for (Map.Entry<String, SubscriptionData> entry : channelData.subscriptions.entrySet()) {
                     SubscriptionData data = entry.getValue();
                     if(data.remoting.getId().equals(remotingId) && data.group.getId().equals(groupId)
                             && data.subscription.getId().equals(subscriptionId)
                     &&( (RemotingSubscriptionHandler<Object,Object>) data.handler).isApplicable(event, data.param)){
-                        if(content == null){
+                        if(eventContent == null ){
+                            String content = null;
+                            if(event != null){
+                                var baos = new ByteArrayOutputStream();
+                                JsonMarshaller.get().marshal(event, baos, false, serializationParameters);
+                                content = baos.toString(StandardCharsets.UTF_8);
+                            }
+                            var message = new RemotingMessage();
+                            message.setType(RemotingMessageType.SUBSCRIPTION);
+                            message.setRemotingId(remotingId);
+                            message.setGroupId(groupId);
+                            message.setMethodId(subscriptionId);
+                            message.setData(content);
                             var baos = new ByteArrayOutputStream();
-                            JsonMarshaller.get().marshal(event, baos, false, serializationParameters);
-                            content = baos.toString(StandardCharsets.UTF_8);
+                            JsonMarshaller.get().marshal(message, baos, false, serializationParameters);
+                            eventContent = baos.toString(StandardCharsets.UTF_8);
                         }
-                        var message = new RemotingMessage();
-                        message.setType(RemotingMessageType.SUBSCRIPTION);
-                        message.setRemotingId(remotingId);
-                        message.setGroupId(groupId);
-                        message.setMethodId(subscriptionId);
-                        message.setData(content);
-                        var baos = new ByteArrayOutputStream();
-                        JsonMarshaller.get().marshal(message, baos, false, serializationParameters);
                         var writer = channelData.ctx.getResponse().getWriter();
-                        writer.write(baos.toString(StandardCharsets.UTF_8));
+                        writer.write(eventContent);
                         writer.flush();
                     }
                 }
