@@ -12,6 +12,7 @@ import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
+import com.gridnine.elsa.meta.remoting.RemotingSubscriptionDescription;
 import com.gridnine.elsa.meta.remoting.RemotingUploadDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
@@ -63,6 +64,17 @@ public class ElsaDemoRemotingMetaRegistryConfigurator{
 			rmr.getEntitiesIds().add("com.gridnine.elsa.demo.model.remoting.UploadFileRequest");
 		}
 		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.demo.model.remoting.DemoDocumentChangedEvent");
+			{
+				var propertyDescription = new PropertyDescription("document");
+				propertyDescription.setTagName("entity-reference-property");
+				propertyDescription.getAttributes().put("class-name", "com.gridnine.elsa.demo.model.domain.DemoDomainDocument");
+				entityDescription.getProperties().put("document", propertyDescription);
+			}
+			smr.getEntities().put("com.gridnine.elsa.demo.model.remoting.DemoDocumentChangedEvent", entityDescription);
+			rmr.getEntitiesIds().add("com.gridnine.elsa.demo.model.remoting.DemoDocumentChangedEvent");
+		}
+		{
 			var remotingDescription = new RemotingDescription("elsa-demo-remoting");
 			remotingDescription.getAttributes().put("xmlns", "http://gridnine.com/elsa/meta-remoting");
 			rmr.getRemotings().put("elsa-demo-remoting", remotingDescription);
@@ -75,6 +87,12 @@ public class ElsaDemoRemotingMetaRegistryConfigurator{
 					serverCallDescription.setRequestClassName("com.gridnine.elsa.demo.model.remoting.GetIndexesRequest");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.demo.model.remoting.GetIndexesResponse");
 					groupDescription.getServerCalls().put("getIndexes", serverCallDescription);
+				}
+				{
+					var subscriptionDescription = new RemotingSubscriptionDescription("demo-document-changed-subscription");
+					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.demo.server.remoting.IndexChangeSubscriptionHandler");
+					subscriptionDescription.setEventClassName("com.gridnine.elsa.demo.model.remoting.DemoDocumentChangedEvent");
+					groupDescription.getSubscriptions().put("demo-document-changed-subscription", subscriptionDescription);
 				}
 				{
 					var downloadDescription = new RemotingDownloadDescription("download-index");

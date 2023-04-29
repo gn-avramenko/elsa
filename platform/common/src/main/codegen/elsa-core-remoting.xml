@@ -40,6 +40,18 @@
         <entity-list id="properties" element-class-name="com.gridnine.elsa.common.model.remoting.RPropertyDescription"/>
         <entity-list id="attributes" element-class-name="com.gridnine.elsa.common.model.remoting.RAttribute"/>
     </entity>
+    <enum id="com.gridnine.elsa.common.model.remoting.RemotingMessageType">
+        <enum-item id="PING"/>
+        <enum-item id="SUBSCRIPTION"/>
+    </enum>
+    <entity id="com.gridnine.elsa.common.model.remoting.RemotingMessage">
+        <enum-property id="type"  class-name="com.gridnine.elsa.common.model.remoting.RemotingMessageType" non-nullable="true"/>
+        <string-property id="callId" non-nullable="true"/>
+        <string-property id="methodId" non-nullable="true"/>
+        <string-property id="groupId" non-nullable="true"/>
+        <string-property id="remotingId" non-nullable="true"/>
+        <string-property id="data" non-nullable="true"/>
+    </entity>
     <group id="meta">
         <server-call id="get-server-call-description"  handler-class-name="com.gridnine.elsa.server.remoting.standard.ServerCallDescriptionHandler">
             <request id="com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionRequest">

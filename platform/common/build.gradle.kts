@@ -37,7 +37,7 @@ elsa{
             l10nTypes("src/main/codegen/types-core-l10n.xml")
             customMeta("src/main/codegen/elsa-core-custom.xml")
             remotingTypes("src/main/codegen/types-core-remoting.xml")
-            remotingMeta("src/main/codegen/elsa-core-remoting.xml")
+            remotingMeta( "src/main/codegen/elsa-core-remoting.xml")
         }
         folder("src/testFixtures/java-gen"){
             domainMetaRegistryConfigurator("com.gridnine.elsa.common.test.ElsaCommonTestDomainMetaRegistryConfigurator")

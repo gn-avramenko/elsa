@@ -13,6 +13,10 @@ export type REntityType=
 | 'CUSTOM'
 | 'REMOTING';
 
+export type RemotingMessageType=
+'PING'
+| 'SUBSCRIPTION';
+
 export type RGenericDeclaration = {
   id: string,
   nestedGenerics: RGenericDeclaration[],
@@ -52,6 +56,15 @@ export type REntityDescription = {
   id: string,
   properties: RPropertyDescription[],
   attributes: RAttribute[],
+};
+
+export type RemotingMessage = {
+  type: RemotingMessageType,
+  callId: string,
+  methodId: string,
+  groupId: string,
+  remotingId: string,
+  data: string,
 };
 
 export type GetServerCallDescriptionRequest = {

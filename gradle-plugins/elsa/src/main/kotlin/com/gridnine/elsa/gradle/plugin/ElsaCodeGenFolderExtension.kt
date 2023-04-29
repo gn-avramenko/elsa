@@ -92,11 +92,12 @@ open class ElsaCodeGenFolderExtension(private val project:Project, private val f
         folderData.customCodeGenRecords.add(record)
     }
 
-    fun remotingMeta(vararg sources: String) {
-        val record = ElsaJavaRemotingCodeGenRecord();
+    fun remotingMeta(vararg sources: String, configure: ElsaJavaRemotingCodeGenRecord.() -> Unit = {}  ) {
+        val record = ElsaJavaRemotingCodeGenRecord()
         sources.forEach {
             record.sources.add(project.file(it))
         }
+        record.configure()
         folderData.remotingCodeGenRecords.add(record)
     }
 

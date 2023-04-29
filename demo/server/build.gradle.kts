@@ -38,7 +38,9 @@ elsa {
             remotingMetaRegistryConfigurator("com.gridnine.elsa.demo.ElsaDemoRemotingMetaRegistryConfigurator")
             domainMeta("src/main/codegen/elsa-demo-common-domain.xml",
                 "src/main/codegen/elsa-demo-server-domain.xml")
-            remotingMeta("src/main/codegen/elsa-demo-server-remoting.xml")
+            remotingMeta("src/main/codegen/elsa-demo-server-remoting.xml"){
+                subscriptionClientClassName = "com.gridnine.elsa.demo.model.remoting.ElsaDemoSubscriptionClient"
+            }
         }
     }
 }
