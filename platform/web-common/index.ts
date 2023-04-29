@@ -10,4 +10,8 @@ export {
 export {
   serverCall,
   ServerCallOptions,
+  SubscriptionOptions,
+  UnsubscriptionOptions,
+  subscribe,
+  unsubscribe,
 } from './src/core-remoting';

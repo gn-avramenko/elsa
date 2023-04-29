@@ -2,10 +2,6 @@
  * This is generated code, don't modify it manually
  **************************************************************** */
 
-import {
-  ServerCallOptions,
-  serverCall,
-} from './../';
 
 export type REntityType=
 'DOMAIN_ENTITY'
@@ -76,6 +72,17 @@ export type GetServerCallDescriptionRequest = {
 export type GetServerCallDescriptionResponse = {
   requestClassName?: string,
   responseClassName?: string,
+};
+
+export type GetSubscriptionDescriptionRequest = {
+  remotingId: string,
+  groupId: string,
+  subscriptionId: string,
+};
+
+export type GetSubscriptionDescriptionResponse = {
+  parameterClassName?: string,
+  eventClassName?: string,
 };
 
 export type RTypesMetadata = {

@@ -87,9 +87,18 @@ public class RemotingHttpServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         var pathInfo = req.getPathInfo();
+        var idx = pathInfo.indexOf("?");
+        if(idx > -1){
+            pathInfo = pathInfo.substring(0, idx);
+        }
         var dh = downloadHandlersCache.get(pathInfo);
         if (dh != null) {
             processDownloadCall(req, resp, dh);
+            return;
+        }
+        var sub = subHandlersCache.get(pathInfo);
+        if (sub != null) {
+            processSubscription(req, resp, sub);
             return;
         }
         var parts = pathInfo.split("/");
@@ -101,6 +110,30 @@ public class RemotingHttpServlet extends HttpServlet {
             downloadHandlersCache.put(pathInfo, pair);
             processDownloadCall(req, resp, pair);
             return;
+        }
+        var subscription = group.getSubscriptions().get(parts[3]);
+        if (subscription != null) {
+            if (parts[4].equals("connect")) {
+                doConnect(req, resp);
+                return;
+            }
+            if (parts[4].equals("subscribe")) {
+                var pair = new Pair(ReflectionFactory.get().newInstance(subscription.getAttributes().get("handler-class-name")), new Pair<>(remoting, subscription));
+                subHandlersCache.put(pathInfo, pair);
+                processSubscription(req, resp, pair);
+                return;
+            }
+            if (parts[4].equals("unsubscribe")) {
+                var subscriptionUuid = parts[5];
+                String clientId = Objects.requireNonNull(req.getHeader("clientId"));
+                RemotingChannels.RemotingChannel remotingChannel = RemotingChannels.get().getChannels().get(clientId);
+                if(remotingChannel != null){
+                    remotingChannel.subscriptions().remove(subscriptionUuid);
+                }
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return;
+            }
+            throw new IllegalArgumentException("unsupported subscirption command %s to map %s".formatted(parts[4], pathInfo));
         }
         throw new IllegalArgumentException("unable to map %s".formatted(pathInfo));
     }
@@ -202,11 +235,6 @@ public class RemotingHttpServlet extends HttpServlet {
             processServerCall(req, resp, sc);
             return;
         }
-        var sub = subHandlersCache.get(pathInfo);
-        if (sub != null) {
-            processSubscription(req, resp, sub);
-            return;
-        }
         var parts = pathInfo.split("/");
         var remoting = RemotingMetaRegistry.get().getRemotings().get(parts[1]);
         var group = remoting.getGroups().get(parts[2]);
@@ -216,30 +244,6 @@ public class RemotingHttpServlet extends HttpServlet {
             scHandlersCache.put(pathInfo, pair);
             processServerCall(req, resp, pair);
             return;
-        }
-        var subscription = group.getSubscriptions().get(parts[3]);
-        if (subscription != null) {
-            if (parts[4].equals("connect")) {
-                doConnect(req, resp);
-                return;
-            }
-            if (parts[4].equals("subscribe")) {
-                var pair = new Pair(ReflectionFactory.get().newInstance(subscription.getAttributes().get("handler-class-name")), new Pair<>(remoting, subscription));
-                subHandlersCache.put(pathInfo, pair);
-                processSubscription(req, resp, pair);
-                return;
-            }
-            if (parts[4].equals("unsubscribe")) {
-                var subscriptionUuid = parts[5];
-                String clientId = Objects.requireNonNull(req.getHeader("clientId"));
-                RemotingChannels.RemotingChannel remotingChannel = RemotingChannels.get().getChannels().get(clientId);
-                if(remotingChannel != null){
-                    remotingChannel.subscriptions().remove(subscriptionUuid);
-                }
-                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                return;
-            }
-            throw new IllegalArgumentException("unsupported subscirption command %s to map %s".formatted(parts[4], pathInfo));
         }
         throw new IllegalArgumentException("unable to map %s".formatted(pathInfo));
     }
@@ -290,7 +294,7 @@ public class RemotingHttpServlet extends HttpServlet {
     }
 
     private void doConnect(HttpServletRequest req, HttpServletResponse resp) {
-        String clientId = Objects.requireNonNull(req.getHeader("clientId"));
+        String clientId = Objects.requireNonNull(req.getParameter("clientId"));
         AsyncContext ctx = req.startAsync();
         ctx.addListener(new AsyncListener() {
             void cleanupChannel(){

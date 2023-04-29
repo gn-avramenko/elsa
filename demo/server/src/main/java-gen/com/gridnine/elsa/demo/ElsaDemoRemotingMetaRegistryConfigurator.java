@@ -69,6 +69,7 @@ public class ElsaDemoRemotingMetaRegistryConfigurator{
 				var propertyDescription = new PropertyDescription("document");
 				propertyDescription.setTagName("entity-reference-property");
 				propertyDescription.getAttributes().put("class-name", "com.gridnine.elsa.demo.model.domain.DemoDomainDocument");
+				propertyDescription.getAttributes().put("non-nullable", "true");
 				entityDescription.getProperties().put("document", propertyDescription);
 			}
 			smr.getEntities().put("com.gridnine.elsa.demo.model.remoting.DemoDocumentChangedEvent", entityDescription);

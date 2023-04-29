@@ -287,6 +287,44 @@ public class CoreRemotingMetaRegistryConfigurator{
 			rmr.getEntitiesIds().add("com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionResponse");
 		}
 		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionRequest");
+			{
+				var propertyDescription = new PropertyDescription("remotingId");
+				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
+				entityDescription.getProperties().put("remotingId", propertyDescription);
+			}
+			{
+				var propertyDescription = new PropertyDescription("groupId");
+				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
+				entityDescription.getProperties().put("groupId", propertyDescription);
+			}
+			{
+				var propertyDescription = new PropertyDescription("subscriptionId");
+				propertyDescription.setTagName("string-property");
+				propertyDescription.getAttributes().put("non-nullable", "true");
+				entityDescription.getProperties().put("subscriptionId", propertyDescription);
+			}
+			smr.getEntities().put("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionRequest", entityDescription);
+			rmr.getEntitiesIds().add("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionRequest");
+		}
+		{
+			var entityDescription = new EntityDescription("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionResponse");
+			{
+				var propertyDescription = new PropertyDescription("parameterClassName");
+				propertyDescription.setTagName("string-property");
+				entityDescription.getProperties().put("parameterClassName", propertyDescription);
+			}
+			{
+				var propertyDescription = new PropertyDescription("eventClassName");
+				propertyDescription.setTagName("string-property");
+				entityDescription.getProperties().put("eventClassName", propertyDescription);
+			}
+			smr.getEntities().put("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionResponse", entityDescription);
+			rmr.getEntitiesIds().add("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionResponse");
+		}
+		{
 			var entityDescription = new EntityDescription("com.gridnine.elsa.common.model.remoting.RTypesMetadata");
 			{
 				var propertyDescription = new PropertyDescription("serializableTypes");
@@ -370,6 +408,13 @@ public class CoreRemotingMetaRegistryConfigurator{
 					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionRequest");
 					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.GetServerCallDescriptionResponse");
 					groupDescription.getServerCalls().put("get-server-call-description", serverCallDescription);
+				}
+				{
+					var serverCallDescription = new RemotingServerCallDescription("get-subscription-description");
+					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.server.remoting.standard.GetSubscriptionDescriptionHandler");
+					serverCallDescription.setRequestClassName("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionRequest");
+					serverCallDescription.setResponseClassName("com.gridnine.elsa.common.model.remoting.GetSubscriptionDescriptionResponse");
+					groupDescription.getServerCalls().put("get-subscription-description", serverCallDescription);
 				}
 				{
 					var serverCallDescription = new RemotingServerCallDescription("get-types-metadata");

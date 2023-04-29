@@ -21,7 +21,7 @@
         </server-call>
         <subscription id="demo-document-changed-subscription" handler-class-name="com.gridnine.elsa.demo.server.remoting.IndexChangeSubscriptionHandler">
             <event id="com.gridnine.elsa.demo.model.remoting.DemoDocumentChangedEvent">
-                <entity-reference-property id="document" class-name="com.gridnine.elsa.demo.model.domain.DemoDomainDocument"/>
+                <entity-reference-property id="document" class-name="com.gridnine.elsa.demo.model.domain.DemoDomainDocument" non-nullable="true"/>
             </event>
         </subscription>
     </group>
