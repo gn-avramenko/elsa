@@ -8,12 +8,9 @@ plugins {
 }
 
 buildscript {
-    repositories{
-        mavenLocal()
-        mavenCentral()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle:0+")
+        classpath(files(project.file("gradle/elsa-meta.jar")))
+        classpath(files(project.file("gradle/elsa-gradle.jar")))
     }
 }
 
@@ -26,13 +23,6 @@ elsaTS {
 
 }
 
-task("publishToMavenLocal"){
-    group = "other"
-}
-task("publishInternalGradlePluginToLocalMavenRepository"){
-    group = "elsa"
-}
-
-task("publishGradlePluginToLocalMavenRepository"){
+task("publishLocalArtifacts"){
     group = "elsa"
 }

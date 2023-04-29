@@ -1,1 +1,1 @@
-rootProject.name ="java-meta"
+rootProject.name ="elsa-meta"

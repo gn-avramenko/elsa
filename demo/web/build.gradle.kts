@@ -2,14 +2,12 @@ import com.gridnine.elsa.gradle.plugin.ElsaTsPlugin
 import com.gridnine.elsa.gradle.plugin.elsaTS
 
 buildscript {
-    repositories{
-        mavenLocal()
-        mavenCentral()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle:0+")
+        classpath(files(project.file("../../gradle/elsa-gradle-internal.jar")))
+        classpath(files(project.file("../../gradle/elsa-gradle.jar")))
     }
 }
+
 
 apply<ElsaTsPlugin>()
 

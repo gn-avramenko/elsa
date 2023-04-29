@@ -53,8 +53,10 @@ tasks.withType<Jar>{
     archiveBaseName.set(jarArchiveName)
 }
 
-task("publishInternalGradlePluginToLocalMavenRepository"){
+task("publishLocalArtifacts"){
+    dependsOn("jar")
     group = "elsa"
-    dependsOn("publishToMavenLocal")
+    doLast {
+        project.file("build/libs/elsa-gradle-internal.jar").copyTo(project.file("../../gradle/elsa-gradle-internal.jar"), overwrite = true)
+    }
 }
-

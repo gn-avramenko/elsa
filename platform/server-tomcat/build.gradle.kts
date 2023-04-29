@@ -4,14 +4,12 @@ plugins {
     java
 }
 buildscript {
-    repositories{
-        mavenLocal()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle-internal:0+")
-        classpath("com.gridnine:elsa-gradle:0+")
+        classpath(files(project.file("../../gradle/elsa-gradle-internal.jar")))
+        classpath(files(project.file("../../gradle/elsa-gradle.jar")))
     }
 }
+
 
 apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
 
