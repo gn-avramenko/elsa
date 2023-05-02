@@ -1,32 +1,27 @@
 import com.gridnine.elsa.gradle.plugin.elsa
+import com.gridnine.elsa.gradle.plugin.elsaTS
+
 
 plugins {
     java
 }
 
 buildscript {
-    repositories{
-        mavenLocal()
-        mavenCentral()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle:0+")
+        classpath(files(project.file("gradle/elsa-meta.jar")))
+        classpath(files(project.file("gradle/elsa-gradle.jar")))
     }
 }
 
 apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
-
+apply<com.gridnine.elsa.gradle.plugin.ElsaTsPlugin>()
 elsa{
 
 }
+elsaTS {
 
-task("publishToMavenLocal"){
-    group = "other"
-}
-task("publishInternalGradlePluginToLocalMavenRepository"){
-    group = "elsa"
 }
 
-task("publishGradlePluginToLocalMavenRepository"){
+task("publishLocalArtifacts"){
     group = "elsa"
 }

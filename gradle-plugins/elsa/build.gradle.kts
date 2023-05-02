@@ -1,34 +1,33 @@
 import com.gridnine.elsa.gradle.internal.elsaInternal
 
 buildscript {
-    repositories{
-        mavenLocal()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle-internal:0+")
+        classpath(files(project.file("../../gradle/elsa-gradle-internal.jar")))
     }
 }
 
 plugins {
-    `java-gradle-plugin`
     kotlin("jvm")  version "1.8.10"
 }
 
 
-gradlePlugin {
-    plugins {
-        create("elsa-java") {
-            id = "elsa-java-configuration"
-            implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaConfigurationPlugin"
-        }
-        create("elsa-java-decoration") {
-            id = "elsa-java-decoration"
-            implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaDecorationPlugin"
-        }
-    }
-}
+//gradlePlugin {
+//    plugins {
+//        create("elsa") {
+//            id = "elsa"
+//            version = "0.0.1"
+//            implementationClass = "com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin"
+//        }
+//    }
+//}
+
 repositories{
     mavenLocal()
+    mavenCentral()
+}
+
+dependencies{
+    implementation(gradleApi())
 }
 
 apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
@@ -50,8 +49,12 @@ tasks.withType<Jar>{
     archiveBaseName.set(jarArchiveName)
 }
 
-task("publishGradlePluginToLocalMavenRepository"){
-    dependsOn("publishToMavenLocal")
+task("publishLocalArtifacts"){
+    dependsOn("jar")
     group = "elsa"
+    doLast {
+        project.file("build/libs/elsa-gradle-${project.property("version")}.jar").copyTo(project.file("../../gradle/elsa-gradle.jar"), overwrite = true)
+    }
 }
+
 

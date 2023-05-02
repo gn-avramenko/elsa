@@ -1,13 +1,12 @@
 import com.gridnine.elsa.gradle.plugin.elsa
 
 buildscript {
-    repositories{
-        mavenLocal()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle:0+")
+        classpath(files(project.file("../../gradle/elsa-gradle-internal.jar")))
+        classpath(files(project.file("../../gradle/elsa-gradle.jar")))
     }
 }
+
 
 repositories {
     mavenCentral()
@@ -39,7 +38,9 @@ elsa {
             remotingMetaRegistryConfigurator("com.gridnine.elsa.demo.ElsaDemoRemotingMetaRegistryConfigurator")
             domainMeta("src/main/codegen/elsa-demo-common-domain.xml",
                 "src/main/codegen/elsa-demo-server-domain.xml")
-            remotingMeta("src/main/codegen/elsa-demo-server-remoting.xml")
+            remotingMeta("src/main/codegen/elsa-demo-server-remoting.xml"){
+                subscriptionClientClassName = "com.gridnine.elsa.demo.model.remoting.ElsaDemoSubscriptionClient"
+            }
         }
     }
 }

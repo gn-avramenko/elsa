@@ -6,9 +6,16 @@
 package com.gridnine.elsa.gradle.config;
 
 public class ElsaJavaRemotingCodeGenRecord extends BaseElsaCodeGenRecord {
-    @Override
-    public ElsaGeneratorType getGeneratorType() {
-        return ElsaGeneratorType.JAVA_REMOTING;
+
+    private String subscriptionClientClassName;
+
+    public String getSubscriptionClientClassName() {
+        return subscriptionClientClassName;
     }
+
+    public void setSubscriptionClientClassName(String subscriptionClientClassName) {
+        this.subscriptionClientClassName = subscriptionClientClassName;
+    }
+
 
 }

@@ -20,6 +20,7 @@ import com.gridnine.elsa.server.lock.LockManager;
 import com.gridnine.elsa.server.lock.standard.StandardLockManager;
 import com.gridnine.elsa.server.remoting.RemotingHttpServlet;
 import com.gridnine.elsa.server.remoting.RemotingRegistry;
+import com.gridnine.elsa.server.remoting.RemotingChannels;
 import com.gridnine.elsa.server.storage.Storage;
 import com.gridnine.elsa.server.storage.StorageRegistry;
 import com.gridnine.elsa.server.storage.repository.Repository;
@@ -53,6 +54,7 @@ public class ServerActivator implements Activator {
         Environment.publish(CacheManager.class, new EhCacheManager());
         Environment.publish(new DesCodec());
         Environment.publish(new JdbcRegistry());
+        Environment.publish(new RemotingChannels());
         new ServerL10nMessagesRegistryConfigurator().configure();
         JdbcRegistry.get().register(SqlTypeBigDecimalHandler.type, new SqlTypeBigDecimalHandler());
         JdbcRegistry.get().register(SqlTypeBlobHandler.type, new SqlTypeBlobHandler());
@@ -92,7 +94,7 @@ public class ServerActivator implements Activator {
         StorageRegistry.get().register(new IdUpdaterInterceptor());
 
         Environment.publish(new WebConfiguration());
-        WebConfiguration.get().register(new VirtualWebApplication("/remoting", new HttpServletDescription<>(RemotingHttpServlet.class, "/*")));
+        WebConfiguration.get().register(new VirtualWebApplication("/remoting", new HttpServletDescription<>(RemotingHttpServlet.class, "/*", true)));
 
         Environment.publish(new RemotingRegistry());
     }

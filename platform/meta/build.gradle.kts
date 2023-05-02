@@ -4,11 +4,8 @@ plugins {
     java
 }
 buildscript {
-    repositories{
-        mavenLocal()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle-internal:0+")
+            classpath(files(project.file("../../gradle/elsa-gradle-internal.jar")))
     }
 }
 
@@ -25,9 +22,13 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2+")
 }
 
-task("publishJavaMetaToLocalMavenRepository"){
-    group="elsa"
-    dependsOn("publishToMavenLocal")
+task("publishLocalArtifacts"){
+    dependsOn("jar")
+    group = "elsa"
+    doLast {
+        project.file("build/libs/meta-${project.property("version")}.jar").copyTo(project.file("../../gradle/elsa-meta.jar"), overwrite = true)
+    }
 }
+
 
 

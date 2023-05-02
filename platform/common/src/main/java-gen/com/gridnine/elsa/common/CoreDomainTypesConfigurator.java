@@ -432,7 +432,7 @@ public class CoreDomainTypesConfigurator{
 			{
 				var generic_1 = new GenericDescription();
 				generic_1.setId("element-class-name");
-				generic_1.setType("ENTITY");
+				generic_1.setType("ENUM");
 				generic_1.setObjectIdAttributeName("element-class-name");
 				generics_0.add(generic_1);
 			}

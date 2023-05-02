@@ -9,5 +9,7 @@ include("platform:server-atomikos")
 include("platform:server-file-storage")
 include("platform:server-jms")
 include("platform:sjl")
+include("platform:web-common")
 include("demo:server")
+include("demo:web")
 rootProject.name ="elsa"

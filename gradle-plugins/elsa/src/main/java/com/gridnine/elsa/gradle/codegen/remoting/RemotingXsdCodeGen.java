@@ -78,7 +78,19 @@ public class RemotingXsdCodeGen {
                                                     });
                                                 });
                                             });
-
+                                            gen.wrapWithBlock("element", gen.attributes("name", "subscription"), ()->{
+                                                gen.wrapWithBlock("complexType", gen.attributes(), ()->{
+                                                    gen.wrapWithBlock("complexContent", gen.attributes(), ()->{
+                                                        gen.wrapWithBlock("extension", gen.attributes("base", "tns:IdWithParametersType"), ()->{
+                                                            gen.wrapWithBlock("sequence", gen.attributes(), ()->{
+                                                                gen.addTag("element", "name", "parameter", "type", "tns:EntityType", "minOccurs", "0");
+                                                                gen.addTag("element", "name", "event", "type", "tns:EntityType", "minOccurs", "0");
+                                                            });
+                                                            XsdGeneratorUtils.genCustomAttributes(registry.getServerCallAttributes(), "subscription", gen);
+                                                        });
+                                                    });
+                                                });
+                                            });
                                         });
                                     });
                                 });

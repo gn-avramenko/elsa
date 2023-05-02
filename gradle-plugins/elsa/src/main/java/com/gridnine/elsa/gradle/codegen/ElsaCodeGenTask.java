@@ -5,23 +5,17 @@
 
 package com.gridnine.elsa.gradle.codegen;
 
-import com.gridnine.elsa.gradle.codegen.domain.JavaDomainCodeGen;
+import com.gridnine.elsa.gradle.codegen.domain.*;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nFactoryGenerator;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingJavaCodeGen;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingJavaMetaRegistryConfiguratorCodeGenerator;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingTypesConfiguratorCodeGen;
-import com.gridnine.elsa.gradle.codegen.remoting.RemotingXsdCodeGen;
+import com.gridnine.elsa.gradle.codegen.remoting.*;
 import com.gridnine.elsa.gradle.codegen.serializable.SerializableTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomXsdCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.JavaCustomMetaRegistryConfiguratorCodeGenerator;
-import com.gridnine.elsa.gradle.codegen.domain.DomainTypesConfiguratorCodeGen;
-import com.gridnine.elsa.gradle.codegen.domain.DomainXsdCodeGen;
-import com.gridnine.elsa.gradle.codegen.domain.JavaDomainMetaRegistryConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nMetaRegistryConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.l10n.L10nXsdCodeGen;
-import com.gridnine.elsa.gradle.config.ElsaCodeGenProjectData;
+import com.gridnine.elsa.gradle.config.ElsaCodeGenTsProjectData;
 import com.gridnine.elsa.gradle.config.ElsaJavaCustomCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaDomainCodeGenRecord;
 import com.gridnine.elsa.gradle.config.ElsaJavaL10nCodeGenRecord;
@@ -35,7 +29,9 @@ import com.gridnine.elsa.gradle.parser.l10n.L10nTypesParser;
 import com.gridnine.elsa.gradle.parser.remoting.RemotingMetadataParser;
 import com.gridnine.elsa.gradle.parser.remoting.RemotingTypesParser;
 import com.gridnine.elsa.gradle.parser.serializable.SerializableTypesParser;
+import com.gridnine.elsa.gradle.plugin.ElsaCodeGenTsExtension;
 import com.gridnine.elsa.gradle.plugin.ElsaJavaExtension;
+import com.gridnine.elsa.gradle.plugin.ElsaTsExtension;
 import com.gridnine.elsa.meta.custom.CustomMetaRegistry;
 import com.gridnine.elsa.meta.custom.CustomTypesRegistry;
 import com.gridnine.elsa.meta.domain.DomainMetaRegistry;
@@ -46,6 +42,7 @@ import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingTypesRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 import com.gridnine.elsa.meta.serialization.SerializableTypesRegistry;
+import kotlin.Pair;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ProjectDependency;
@@ -53,11 +50,7 @@ import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class ElsaCodeGenTask extends DefaultTask {
     public ElsaCodeGenTask() {
@@ -92,6 +85,7 @@ public class ElsaCodeGenTask extends DefaultTask {
             var cmg = new JavaCustomMetaRegistryConfiguratorCodeGenerator();
             var dmg = new JavaDomainMetaRegistryConfiguratorCodeGen();
             var rmg = new RemotingJavaMetaRegistryConfiguratorCodeGenerator();
+            var rcg = new RemotingJavaSubscriptionsClientGenerator();
             var l10nmg = new JavaL10nMetaRegistryConfiguratorCodeGen();
             var l10nfg = new JavaL10nFactoryGenerator();
             var dcg = new JavaDomainCodeGen();
@@ -174,6 +168,13 @@ public class ElsaCodeGenTask extends DefaultTask {
                         rcd.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, folderData.folder, files);
                         rmg.generate(registry, totalSerializableMetaRegistry, folderData.remotingMetaRegistryConfigurator, folderData.folder, files);
                     }
+                    for (ElsaJavaRemotingCodeGenRecord record : folderData.remotingCodeGenRecords) {
+                        if (record.getSubscriptionClientClassName() != null) {
+                            var reg2 = new RemotingMetaRegistry();
+                            rmp.updateRegistry(reg2, totalSerializableMetaRegistry, record.getSources());
+                            rcg.generate(reg2, totalSerializableMetaRegistry, record.getSubscriptionClientClassName(), folderData.folder, files);
+                        }
+                    }
                     cleanupDir(folderData.folder, files);
                 }
             }
@@ -183,7 +184,84 @@ public class ElsaCodeGenTask extends DefaultTask {
                 new L10nXsdCodeGen().generate(totalL10nTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
                 new RemotingXsdCodeGen().generate(totalRemotingTypesRegistry, totalSerializableTypesRegistry, javaExt.getData().xsdsLocation, javaExt.getData().xsdsCustomizationSuffix);
             }
+            var tsExt = getProject().getExtensions().findByType(ElsaTsExtension.class);
+            if (tsExt != null) {
+                ElsaCodeGenTsExtension tsCdExt = tsExt.getCodeGenExtension();
+                var associations = new HashMap<String, Pair<String, String>>();
+                var tsmr = new SerializableMetaRegistry();
+                var tsProjets = new ArrayList<>(tsExt.getCodeGenExtension().getData().items);
+                tsProjets.sort(Comparator.comparingDouble(ElsaCodeGenTsProjectData::getPriority));
+                for (var projectData : tsProjets) {
+                    String packageName = projectData.getPackageName();
+                    File projectDir = projectData.project.getProjectDir();
+                    for (var folderData : projectData.folders) {
+                        Set<File> files = new LinkedHashSet<>();
+                        for (var record : folderData.customCodeGenRecords) {
+                            var cmr = new CustomMetaRegistry();
+                            cmp.updateRegistry(cmr, totalSerializableMetaRegistry, record.getSources());
+                            cmr.getEntitiesIds().forEach((ett) -> {
+                                associations.put(ett, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            cmr.getEnumsIds().forEach((ett) -> {
+                                associations.put(ett, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                        }
+                        for (var record : folderData.domainCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new DomainMetaRegistry();
+                            dmp.updateRegistry(registry, tsmr, record.getSources());
+                            registry.getEntitiesIds().forEach((id) -> {
+                                associations.put(id, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            registry.getDocumentsIds().forEach((id) -> {
+                                associations.put(id, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            registry.getProjectionsIds().forEach((id) -> {
+                                associations.put(id, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            registry.getEnumsIds().forEach((id) -> {
+                                associations.put(id, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                        }
+                        for (var record : folderData.remotingCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new RemotingMetaRegistry();
+                            rmp.updateRegistry(registry, tsmr, record.getSources());
+                            registry.getEntitiesIds().forEach((id) -> {
+                                associations.put(id, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                            registry.getEnumsIds().forEach((id) -> {
+                                associations.put(id, new Pair<>(packageName, getLocalModuleName(record.getModule(), projectDir)));
+                            });
+                        }
+                        for (var record : folderData.domainCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new DomainMetaRegistry();
+                            dmp.updateRegistry(registry, tsmr, record.getSources());
+                            var cg = new TSDomainCodeGen();
+                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalDomainTypesRegistry, module, files, packageName, projectDir, associations);
+                        }
+                        for (var record : folderData.remotingCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new RemotingMetaRegistry();
+                            rmp.updateRegistry(registry, tsmr, record.getSources());
+                            var cg = new TSRemotingCodeGen();
+                            cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, module, files, packageName, projectDir, record.isSkipClientGeneration(), associations);
+                        }
+                        if (!folderData.isDontCleanup()) {
+                            cleanupDir(folderData.folder, files);
+                        }
+                    }
+                }
+            }
+
         }
+
+    }
+
+    private String getLocalModuleName(File moduleFile, File projectDir) {
+        var str = projectDir.toPath().relativize(moduleFile.toPath()).toString();
+        return str.substring(0, str.lastIndexOf('.'));
     }
 
     private boolean isDepends(Project proj1, Project proj2) {

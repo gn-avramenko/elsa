@@ -19,6 +19,8 @@ public class RemotingTypesRegistry {
     private final Map<String, AttributeDescription> downloadAttributes = new LinkedHashMap<>();
     private final Map<String, AttributeDescription> uploadAttributes = new LinkedHashMap<>();
 
+    private final Map<String, AttributeDescription> subscriptionAttributes = new LinkedHashMap<>();
+
     private final  Map<String, TagDescription> entityTags = new LinkedHashMap<>();
 
     public Map<String, AttributeDescription> getRemotingAttributes() {
@@ -49,4 +51,7 @@ public class RemotingTypesRegistry {
         return Environment.getPublished(RemotingTypesRegistry.class);
     }
 
+    public Map<String, AttributeDescription> getSubscriptionAttributes() {
+        return subscriptionAttributes;
+    }
 }

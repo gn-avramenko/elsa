@@ -16,5 +16,4 @@ public abstract class BaseElsaCodeGenRecord {
         return sources;
     }
 
-    public abstract ElsaGeneratorType getGeneratorType();
 }

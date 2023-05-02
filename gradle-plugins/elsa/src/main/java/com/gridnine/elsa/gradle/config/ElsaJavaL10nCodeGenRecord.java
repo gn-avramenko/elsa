@@ -9,11 +9,6 @@ public class ElsaJavaL10nCodeGenRecord extends BaseElsaCodeGenRecord {
 
     private String factory;
 
-    @Override
-    public ElsaGeneratorType getGeneratorType() {
-        return ElsaGeneratorType.JAVA_L10N;
-    }
-
     public String getFactory() {
         return factory;
     }

@@ -13,6 +13,8 @@ public class RTagDescription extends BaseIntrospectableObject{
 
 	private String type;
 
+	private String objectIdAttributeName;
+
 	private final ArrayList<RGenericDescription> generics = new ArrayList<>();
 
 	public String getTagName(){
@@ -31,6 +33,14 @@ public class RTagDescription extends BaseIntrospectableObject{
 		this.type = value;
 	}
 
+	public String getObjectIdAttributeName(){
+		return objectIdAttributeName;
+	}
+
+	public void setObjectIdAttributeName(String value){
+		this.objectIdAttributeName = value;
+	}
+
 	public ArrayList<RGenericDescription> getGenerics(){
 		return generics;
 	}
@@ -44,6 +54,10 @@ public class RTagDescription extends BaseIntrospectableObject{
 
 		if("type".equals(propertyName)){
 			return type;
+		}
+
+		if("objectIdAttributeName".equals(propertyName)){
+			return objectIdAttributeName;
 		}
 
 		if("generics".equals(propertyName)){
@@ -63,6 +77,11 @@ public class RTagDescription extends BaseIntrospectableObject{
 
 		if("type".equals(propertyName)){
 			this.type = (String) value;
+			return;
+		}
+
+		if("objectIdAttributeName".equals(propertyName)){
+			this.objectIdAttributeName = (String) value;
 			return;
 		}
 

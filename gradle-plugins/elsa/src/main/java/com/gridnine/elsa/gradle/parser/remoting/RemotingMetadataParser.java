@@ -13,6 +13,7 @@ import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
+import com.gridnine.elsa.meta.remoting.RemotingSubscriptionDescription;
 import com.gridnine.elsa.meta.remoting.RemotingUploadDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
@@ -73,7 +74,8 @@ public class RemotingMetadataParser {
                     if(parameterElm != null){
                         scd.setRequestClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), parameterElm, pr.localizations()));
                     }
-                }for(BuildXmlNode serverCallElm:groupElm.getChildren("upload")){
+                }
+                for(BuildXmlNode serverCallElm:groupElm.getChildren("upload")){
                     String scid = CommonParserUtils.getIdAttribute(serverCallElm);
                     var scd = rgd.getUploads().computeIfAbsent(scid, (s)->{
                         var sgds = new RemotingUploadDescription();
@@ -84,6 +86,23 @@ public class RemotingMetadataParser {
                     BuildXmlNode parameterElm = serverCallElm.getFirstChild("request");
                     if(parameterElm != null){
                         scd.setRequestClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), parameterElm, pr.localizations()));
+                    }
+                }
+                for(BuildXmlNode subscriptionElm:groupElm.getChildren("subscription")){
+                    String scid = CommonParserUtils.getIdAttribute(subscriptionElm);
+                    var scd = rgd.getSubscriptions().computeIfAbsent(scid, (s)->{
+                        var sgds = new RemotingSubscriptionDescription();
+                        sgds.setId(s);
+                        return sgds;
+                    });
+                    CommonParserUtils.updateBaseElement(scd, subscriptionElm, "%s.%s.%s".formatted(id, gid, scid), pr.localizations());
+                    BuildXmlNode eventElm = subscriptionElm.getFirstChild("event");
+                    if(eventElm != null) {
+                        scd.setEventClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), eventElm, pr.localizations()));
+                    }
+                    BuildXmlNode parameterElm = subscriptionElm.getFirstChild("parameter");
+                    if(parameterElm != null){
+                        scd.setParameterClassName(CommonParserUtils.updateEntity(registry.getEntitiesIds(), serializableMetaRegistry.getEntities(), parameterElm, pr.localizations()));
                     }
                 }
 

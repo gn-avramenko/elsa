@@ -72,7 +72,7 @@
         <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
     </database-tag>
     <database-tag tag-name="enum-list" type="ARRAY-LIST" has-collection-support="true" search-query-argument-type="ENUM">
-        <generic id="element-class-name" type="ENTITY" object-id-attribute-name="element-class-name"/>
+        <generic id="element-class-name" type="ENUM" object-id-attribute-name="element-class-name"/>
         <attribute name="use-in-text-search" type="BOOLEAN" default-value="false"/>
     </database-tag>
     <database-tag tag-name="string-list" type="ARRAY-LIST" has-collection-support="true" search-query-argument-type="STRING">

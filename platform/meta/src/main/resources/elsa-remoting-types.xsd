@@ -11,6 +11,7 @@
                     <element name="server-call-attribute" type="cns:AttributeDescription"/>
                     <element name="download-attribute" type="cns:AttributeDescription"/>
                     <element name="upload-attribute" type="cns:AttributeDescription"/>
+                    <element name="subscription-attribute" type="cns:AttributeDescription"/>
                     <element name="entity-tag" type="cns:TagDescription"/>
                 </choice>
             </sequence>

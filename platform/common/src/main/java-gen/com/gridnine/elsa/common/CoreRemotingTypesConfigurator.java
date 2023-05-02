@@ -41,6 +41,12 @@ public class CoreRemotingTypesConfigurator{
 			registry.getUploadAttributes().put("handler-class-name", attr);
 		}
 		{
+			var attr = new AttributeDescription();
+			attr.setName("handler-class-name");
+			attr.setType(AttributeType.STRING);
+			registry.getSubscriptionAttributes().put("handler-class-name", attr);
+		}
+		{
 			var tag = new TagDescription();
 			tag.setTagName("string-property");
 			tag.setType("STRING");

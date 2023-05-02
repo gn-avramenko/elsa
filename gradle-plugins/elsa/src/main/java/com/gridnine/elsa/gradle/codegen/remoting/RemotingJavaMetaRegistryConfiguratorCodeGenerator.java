@@ -12,6 +12,7 @@ import com.gridnine.elsa.meta.remoting.RemotingDownloadDescription;
 import com.gridnine.elsa.meta.remoting.RemotingGroupDescription;
 import com.gridnine.elsa.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.elsa.meta.remoting.RemotingServerCallDescription;
+import com.gridnine.elsa.meta.remoting.RemotingSubscriptionDescription;
 import com.gridnine.elsa.meta.remoting.RemotingUploadDescription;
 import com.gridnine.elsa.meta.serialization.SerializableMetaRegistry;
 
@@ -63,6 +64,20 @@ public class RemotingJavaMetaRegistryConfiguratorCodeGenerator {
                                             gen.printLine("serverCallDescription.setResponseClassName(\"%s\");".formatted(serverCall.getResponseClassName()));
                                         }
                                         gen.printLine("groupDescription.getServerCalls().put(\"%s\", serverCallDescription);".formatted(serverCall.getId()));
+                                    });
+                                }
+                                for(RemotingSubscriptionDescription subscription: group.getSubscriptions().values()){
+                                    gen.wrapWithBlock("", () -> {
+                                        gen.addImport("com.gridnine.elsa.meta.remoting.RemotingSubscriptionDescription");
+                                        gen.printLine("var subscriptionDescription = new RemotingSubscriptionDescription(\"%s\");".formatted(subscription.getId()));
+                                        JavaCodeGeneratorUtils.generateBaseElementMetaRegistryConfiguratorCode(subscription, "subscriptionDescription", gen);
+                                        if(subscription.getEventClassName() != null){
+                                            gen.printLine("subscriptionDescription.setEventClassName(\"%s\");".formatted(subscription.getEventClassName()));
+                                        }
+                                        if(subscription.getParameterClassName() != null){
+                                            gen.printLine("subscriptionDescription.setParameterClassName(\"%s\");".formatted(subscription.getParameterClassName()));
+                                        }
+                                        gen.printLine("groupDescription.getSubscriptions().put(\"%s\", subscriptionDescription);".formatted(subscription.getId()));
                                     });
                                 }
                                 for(RemotingDownloadDescription download: group.getDownloads().values()){

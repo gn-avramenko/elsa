@@ -13,6 +13,10 @@ public interface RemotingAdvice extends HasPriority {
         callback.run(context);
     }
 
+    default void onSubscription(RemotingCallContext context, RunnableWithExceptionAndArgument<RemotingCallContext> callback) throws Exception {
+        callback.run(context);
+    }
+
     default void onDownload(RemotingCallContext context, RunnableWithExceptionAndArgument<RemotingCallContext> callback) throws Exception {
         callback.run(context);
     }

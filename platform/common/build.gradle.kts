@@ -6,12 +6,9 @@ plugins {
     id("java-test-fixtures")
 }
 buildscript {
-    repositories{
-        mavenLocal()
-    }
     dependencies{
-        classpath("com.gridnine:elsa-gradle-internal:0+")
-        classpath("com.gridnine:elsa-gradle:0+")
+        classpath(files(project.file("../../gradle/elsa-gradle-internal.jar")))
+        classpath(files(project.file("../../gradle/elsa-gradle.jar")))
     }
 }
 
@@ -40,7 +37,7 @@ elsa{
             l10nTypes("src/main/codegen/types-core-l10n.xml")
             customMeta("src/main/codegen/elsa-core-custom.xml")
             remotingTypes("src/main/codegen/types-core-remoting.xml")
-            remotingMeta("src/main/codegen/elsa-core-remoting.xml")
+            remotingMeta( "src/main/codegen/elsa-core-remoting.xml")
         }
         folder("src/testFixtures/java-gen"){
             domainMetaRegistryConfigurator("com.gridnine.elsa.common.test.ElsaCommonTestDomainMetaRegistryConfigurator")
