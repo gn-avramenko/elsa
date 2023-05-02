@@ -24,9 +24,13 @@ public class DemoEventSource implements Disposable {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                var event = new DemoDocumentChangedEvent();
-                event.setDocument(Storage.get().searchDocuments(DemoDomainDocumentProjection.class, new SearchQueryBuilder().limit(1).build()).get(0).getDocument());
-                ElsaDemoSubscriptionClient.test_demo_document_changed_subscription_send_event(event);
+                try {
+                    var event = new DemoDocumentChangedEvent();
+                    event.setDocument(Storage.get().searchDocuments(DemoDomainDocumentProjection.class, new SearchQueryBuilder().limit(1).build()).get(0).getDocument());
+                    ElsaDemoSubscriptionClient.test_demo_document_changed_subscription_send_event(event);
+                }catch (Throwable e){
+                    //noops
+                }
             }
         }, 5000, 5000);
     }

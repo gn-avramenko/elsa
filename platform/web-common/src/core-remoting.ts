@@ -35,7 +35,6 @@ export type ServerCallOptions = RemotingCallOptions;
 export type SubscriptionOptions = RemotingCallOptions;
 export type UnsubscriptionOptions = RemotingCallOptions;
 
-
 // eslint-disable-next-line import/prefer-default-export
 export async function serverCall<RQ, RP>(
   remotingId: string,

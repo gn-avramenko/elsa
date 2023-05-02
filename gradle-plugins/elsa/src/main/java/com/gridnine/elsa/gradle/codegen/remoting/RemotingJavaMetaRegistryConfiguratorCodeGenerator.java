@@ -70,7 +70,7 @@ public class RemotingJavaMetaRegistryConfiguratorCodeGenerator {
                                     gen.wrapWithBlock("", () -> {
                                         gen.addImport("com.gridnine.elsa.meta.remoting.RemotingSubscriptionDescription");
                                         gen.printLine("var subscriptionDescription = new RemotingSubscriptionDescription(\"%s\");".formatted(subscription.getId()));
-                                        JavaCodeGeneratorUtils.generateBaseElementMetaRegistryConfiguratorCode(subscription, "serverCallDescription", gen);
+                                        JavaCodeGeneratorUtils.generateBaseElementMetaRegistryConfiguratorCode(subscription, "subscriptionDescription", gen);
                                         if(subscription.getEventClassName() != null){
                                             gen.printLine("subscriptionDescription.setEventClassName(\"%s\");".formatted(subscription.getEventClassName()));
                                         }

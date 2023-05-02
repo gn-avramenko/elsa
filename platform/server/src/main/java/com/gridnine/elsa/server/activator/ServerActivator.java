@@ -94,7 +94,7 @@ public class ServerActivator implements Activator {
         StorageRegistry.get().register(new IdUpdaterInterceptor());
 
         Environment.publish(new WebConfiguration());
-        WebConfiguration.get().register(new VirtualWebApplication("/remoting", new HttpServletDescription<>(RemotingHttpServlet.class, "/*")));
+        WebConfiguration.get().register(new VirtualWebApplication("/remoting", new HttpServletDescription<>(RemotingHttpServlet.class, "/*", true)));
 
         Environment.publish(new RemotingRegistry());
     }

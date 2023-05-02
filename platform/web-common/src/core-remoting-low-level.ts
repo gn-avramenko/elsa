@@ -157,7 +157,7 @@ export async function performUnsubscription(
 async function createChannel(clientId: string, remotingId: string, groupId: string, subscriptionId: string, ph: PreloaderHandler | null, operationId: string | null) {
   channel = { awaitingRequests: [] };
   return new Promise<void>((resolve, reject) => {
-    const source = new EventSource(`/remoting/${remotingId}/${groupId}/${subscriptionId}/subscribe?clientId=${clientId}`);
+    const source = new EventSource(`/remoting/${remotingId}/${groupId}/${subscriptionId}/connect?clientId=${clientId}`);
     if (!channel) {
       reject();
       return;
@@ -177,17 +177,16 @@ async function createChannel(clientId: string, remotingId: string, groupId: stri
     // eslint-disable-next-line func-names
     source.onerror = function () {
       // eslint-disable-next-line no-console
-      console.error('on error');
-      if (source.readyState === EventSource.CLOSED) {
-        const error = new Error('unable to subscribe to server events');
-        reject(error);
-        if (channel) {
-          channel!!.awaitingRequests.forEach((s) => {
-            s.reject(error);
-          });
-          channel = null;
-        }
+      console.debug('disconnecting');
+      const error = source.readyState === EventSource.CLOSED ? new Error('unable to subscribe to server events') : new Error('timeout occured');
+      reject(error);
+      if (channel) {
+        channel!!.awaitingRequests.forEach((s) => {
+          s.reject(error);
+        });
+        channel = null;
       }
+      this.close();
     };
     source.onmessage = async (ev) => {
       const message = JSON.parse(ev.data) as RemotingMessage;
@@ -195,13 +194,13 @@ async function createChannel(clientId: string, remotingId: string, groupId: stri
       switch (message.type) {
         case 'PING': {
           // eslint-disable-next-line no-console
-          console.debug(`successfully connected to ${remotingId}`);
+          console.debug('successfully connected to server');
           break;
         }
         case 'SUBSCRIPTION': {
           // eslint-disable-next-line no-unused-vars,max-len
-          const handler = subscriptions.get(message.methodId!!) as ((data: string) => void) | null;
-          if (handler === null) {
+          const handler = subscriptions.get(message.callId!!) as ((data: string) => void) | null;
+          if (!handler) {
             // eslint-disable-next-line max-len
             await performUnsubscription(remotingConfiguration.clientId, remotingId, subscriptionId, message.callId, ph, operationId);
             return;
@@ -254,12 +253,10 @@ export async function performSubscription(
   return wrapWithLoader(preloaderHandler, operationId, async () => {
     // eslint-disable-next-line max-len
     await ensureChannel(remotingConfiguration.clientId, remotingId, groupId, subscriptionId, preloaderHandler, operationId);
-    const result = await fetch(`/remoting/${remotingId}/subscribe`, {
+    const result = await fetch(`/remoting/${remotingId}/${groupId}/${subscriptionId}/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        groupId,
-        subscriptionId,
         clientId: remotingConfiguration.clientId,
       },
       body: request,

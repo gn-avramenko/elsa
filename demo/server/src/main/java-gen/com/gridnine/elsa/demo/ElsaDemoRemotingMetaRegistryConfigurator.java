@@ -91,7 +91,7 @@ public class ElsaDemoRemotingMetaRegistryConfigurator{
 				}
 				{
 					var subscriptionDescription = new RemotingSubscriptionDescription("demo-document-changed-subscription");
-					serverCallDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.demo.server.remoting.IndexChangeSubscriptionHandler");
+					subscriptionDescription.getAttributes().put("handler-class-name", "com.gridnine.elsa.demo.server.remoting.IndexChangeSubscriptionHandler");
 					subscriptionDescription.setEventClassName("com.gridnine.elsa.demo.model.remoting.DemoDocumentChangedEvent");
 					groupDescription.getSubscriptions().put("demo-document-changed-subscription", subscriptionDescription);
 				}

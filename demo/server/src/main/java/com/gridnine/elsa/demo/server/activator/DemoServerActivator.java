@@ -16,7 +16,9 @@ import com.gridnine.elsa.demo.model.domain.DemoDomainDocumentProjection;
 import com.gridnine.elsa.demo.model.domain.DemoDomainNestedDocumentImpl;
 import com.gridnine.elsa.demo.model.domain.DemoEnum;
 import com.gridnine.elsa.demo.model.domain.DemoGroup;
+import com.gridnine.elsa.demo.server.remoting.DemoEventSource;
 import com.gridnine.elsa.demo.server.storage.DemoDomainDocumentProjectionHandler;
+import com.gridnine.elsa.meta.config.Environment;
 import com.gridnine.elsa.server.auth.AuthContext;
 import com.gridnine.elsa.server.storage.Storage;
 import com.gridnine.elsa.server.storage.StorageRegistry;
@@ -42,6 +44,7 @@ public class DemoServerActivator implements Activator {
     @Override
     public void activate() throws Exception {
         AuthContext.setCurrentUser("admin");
+        Environment.publish(new DemoEventSource());
         if(Storage.get().searchDocuments(DemoDomainDocumentProjection.class, new SearchQuery()).size() != 0){
             return;
         }

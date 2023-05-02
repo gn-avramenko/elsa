@@ -72,7 +72,7 @@ public class RemotingChannels {
                             eventContent = baos.toString(StandardCharsets.UTF_8);
                         }
                         var writer = channelData.ctx.getResponse().getWriter();
-                        writer.write("data: %s\r\n".formatted(eventContent));
+                        writer.write("data: %s\n\n".formatted(eventContent));
                         writer.flush();
                     }
                 }

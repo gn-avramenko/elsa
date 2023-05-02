@@ -54,12 +54,13 @@ public class TomcatWebServer implements Disposable {
                         <servlet>
                                 <servlet-name>%s</servlet-name>
                                 <servlet-class>%s</servlet-class>
+                                <async-supported>%s</async-supported>
                             </servlet>
                             <servlet-mapping>
                                 <servlet-name>%s</servlet-name>
                                 <url-pattern>%s</url-pattern>
                             </servlet-mapping>
-                        """.formatted(servlet.servletClass().getSimpleName(), servlet.servletClass().getName(),
+                        """.formatted(servlet.servletClass().getSimpleName(), servlet.servletClass().getName(), servlet.asyncSupported(),
                         servlet.servletClass().getSimpleName(), servlet.path()));
             }
             var content = """
