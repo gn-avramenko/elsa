@@ -79,6 +79,10 @@ public class TomcatWebServer implements Disposable {
             }
             addContext(webApp.path(), appDir);
         }
+        for(var webApp: WebConfiguration.get().getWebApplications()){
+            addContext(webApp.path(), webApp.warOrDir());
+        }
+
         tomcat.init();
         tomcat.start();
     }
