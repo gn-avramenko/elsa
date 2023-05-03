@@ -5,6 +5,7 @@
         <enum-item id="DOMAIN_DATABASE_ENTITY"/>
         <enum-item id="CUSTOM"/>
         <enum-item id="REMOTING"/>
+        <enum-item id="L10N"/>
     </enum>
     <entity id="com.gridnine.elsa.common.model.remoting.RGenericDeclaration">
         <string-property id="id" non-nullable="true"/>
@@ -39,6 +40,11 @@
         <string-property id="id" non-nullable="true"/>
         <entity-list id="properties" element-class-name="com.gridnine.elsa.common.model.remoting.RPropertyDescription"/>
         <entity-list id="attributes" element-class-name="com.gridnine.elsa.common.model.remoting.RAttribute"/>
+    </entity>
+    <entity id="com.gridnine.elsa.common.model.remoting.RL10nMessageDescription">
+        <string-property id="id" non-nullable="true"/>
+        <string-property id="displayName" non-nullable="true"/>
+        <entity-list id="parameters" element-class-name="com.gridnine.elsa.common.model.remoting.RPropertyDescription"/>
     </entity>
     <enum id="com.gridnine.elsa.common.model.remoting.RemotingMessageType">
         <enum-item id="PING"/>
@@ -92,6 +98,14 @@
             <response id="com.gridnine.elsa.common.model.remoting.GetRemotingEntityDescriptionResponse">
                 <enum-property id="type" class-name="com.gridnine.elsa.common.model.remoting.REntityType" non-nullable="true"/>
                 <entity-property id="description" class-name="com.gridnine.elsa.common.model.remoting.REntityDescription" non-nullable="true"/>
+            </response>
+        </server-call>
+        <server-call id="get-l10n-bundle-description" handler-class-name="com.gridnine.elsa.server.remoting.standard.L10nBundleDescriptionRemotingHandler">
+            <request id="com.gridnine.elsa.common.model.remoting.GetL10nBundleDescriptionRequest">
+                <string-property id="bundleId" non-nullable="true"/>
+            </request>
+            <response id="com.gridnine.elsa.common.model.remoting.GetL10nBundleDescriptionResponse">
+               <entity-list id="messages" element-class-name="com.gridnine.elsa.common.model.remoting.RL10nMessageDescription"/>
             </response>
         </server-call>
     </group>

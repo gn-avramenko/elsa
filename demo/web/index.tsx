@@ -1,3 +1,4 @@
+import { serverCall } from 'elsa-core';
 import { remotingClient } from './src-gen/demo-remoting';
 
 (window as any).testRest = async () => {
@@ -8,6 +9,8 @@ import { remotingClient } from './src-gen/demo-remoting';
       caption: 'test',
     },
   });
+  const sc = serverCall;
+  console.log(sc);
   console.log(result);
 };
 let subId: string| null;

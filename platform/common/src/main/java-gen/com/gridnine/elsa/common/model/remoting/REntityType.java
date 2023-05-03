@@ -12,5 +12,7 @@ public enum REntityType{
 
 	CUSTOM,
 
-	REMOTING
+	REMOTING,
+
+	L10N
 }

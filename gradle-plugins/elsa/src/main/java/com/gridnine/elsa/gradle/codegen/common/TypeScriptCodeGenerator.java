@@ -153,7 +153,6 @@ public class TypeScriptCodeGenerator {
                 /* ****************************************************************
                  * This is generated code, don't modify it manually
                  **************************************************************** */
-                 
                 %s
                 """.formatted(importBuilder.toString().stripIndent()).stripIndent();
         return sb + buf;

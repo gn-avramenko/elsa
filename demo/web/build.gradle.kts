@@ -18,6 +18,7 @@ elsaTS {
         folder("src-gen"){
             domain("demo-domain", "../server/src/main/codegen/elsa-demo-common-domain.xml")
             remoting("demo-remoting","../server/src/main/codegen/elsa-demo-server-remoting.xml")
+            l10n("demo-l10n", "../server/src/main/codegen/elsa-demo-l10n.xml")
         }
     }
 }
