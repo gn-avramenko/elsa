@@ -8,7 +8,7 @@ import {
   RL10nMessageDescription,
 } from '../src-gen/core-remoting';
 import { performServerCall, PreloaderHandler, remotingConfiguration } from './core-remoting-low-level';
-import { getTagDescription } from './core-serialization';
+import { getTagDescription, initializeTypesMetadata } from './core-serialization';
 import { RemotingCallOptions } from './core-remoting';
 
 export type L10nCallOptions = RemotingCallOptions;
@@ -25,6 +25,7 @@ export const ensureBundleLoaded = async (
   const ph = options?.preloaderHandler === false ? null : (options?.preloaderHandler === true
     ? (remotingConfiguration.globalPreloaderHandler || null) : options?.preloaderHandler) || null;
   const operationId = options?.operationId || null;
+  await initializeTypesMetadata(ph, operationId);
   const result = (await performServerCall(
     remotingConfiguration.clientId,
     'core',
@@ -58,7 +59,7 @@ const defaultLocalizer = {
 const replace = (str: string, index: number, type: string, param: any|null) => {
   const localizer = typesLocalizers.get(type) ?? defaultLocalizer;
   const strValue = (param === null || param === undefined) ? '???' : localizer.localize(param);
-  return str.replace(`{${index}`, strValue);
+  return str.replace(`{${index}}`, strValue);
 };
 
 export const getMessage = (bundleId: string, messageId: string, ...params: any|null) => {

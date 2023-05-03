@@ -25,7 +25,7 @@ public class ElsaDemoL10nMetaRegistryConfigurator{
 					parameterDescription.setTagName("string-property");
 					messageDescription.getParameters().put("param", parameterDescription);
 				}
-				messageDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Тестовое сообщение с параметром "{0}"");
+				messageDescription.getDisplayNames().put(LocaleUtils.getLocale("ru"), "Тестовое сообщение с параметром \"{0}\"");
 				bundleDescription.getMessages().put(messageDescription.getId(), messageDescription);
 			}
 		}

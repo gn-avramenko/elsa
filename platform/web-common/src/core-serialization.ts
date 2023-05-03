@@ -400,7 +400,7 @@ class EnumSerializationHandler extends BaseSerializationHandler<String> {
 const enumSerializationHandler = new EnumSerializationHandler();
 registry.register(enumSerializationHandler);
 
-const initializeTypesMetadata = async (
+export const initializeTypesMetadata = async (
   ph: PreloaderHandler | null,
   operationId: string | null,
 ) => {

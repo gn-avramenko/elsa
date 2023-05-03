@@ -30,7 +30,7 @@ public class L10nMetadataParser {
                         L10nMessageDescription::new);
                 node.getAttributes().forEach((key, value) -> {
                     if ("caption".equals(key)) {
-                        message.getDisplayNames().put(Locale.ROOT, value);
+                        message.getDisplayNames().put(Locale.ROOT, CommonParserUtils.prepareDisplayName(value));
                         return;
                     }
                     message.getAttributes().put(key, value);
@@ -41,7 +41,7 @@ public class L10nMetadataParser {
                     var locs = localizations.get(fullId);
                     if (locs != null) {
                         locs.forEach((locale, name) -> {
-                            message.getDisplayNames().put(locale, name);
+                            message.getDisplayNames().put(locale, CommonParserUtils.prepareDisplayName(name));
                         });
                     }
                 }
