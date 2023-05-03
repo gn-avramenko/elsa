@@ -1,7 +1,6 @@
 /* ****************************************************************
  * This is generated code, don't modify it manually
  **************************************************************** */
-
 import {
   BaseAsset,
   BaseProjection,

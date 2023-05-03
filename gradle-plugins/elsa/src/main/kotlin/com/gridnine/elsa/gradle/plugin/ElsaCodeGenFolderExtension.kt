@@ -68,7 +68,7 @@ open class ElsaCodeGenFolderExtension(private val project:Project, private val f
         })
     }
 
-    fun l10nMeta(factory:String, vararg sources: String) {
+    fun l10nMeta(factory:String?, vararg sources: String) {
         val record = ElsaJavaL10nCodeGenRecord();
         record.factory = factory
         sources.forEach {

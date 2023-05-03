@@ -70,7 +70,7 @@ public final class CommonParserUtils {
     public static void updateBaseElement(BaseElement elm, BuildXmlNode node, String fullId, Map<String, Map<Locale, String>> localization) {
         node.getAttributes().forEach((key, value) -> {
             if ("caption".equals(key)) {
-                elm.getDisplayNames().put(Locale.ROOT, value);
+                elm.getDisplayNames().put(Locale.ROOT, prepareDisplayName(value));
                 return;
             }
             if("id".equals(key)){
@@ -86,10 +86,14 @@ public final class CommonParserUtils {
             var locs = localization.get(key);
             if (locs != null) {
                 locs.forEach((locale, name) -> {
-                    elm.getDisplayNames().put(locale, name);
+                    elm.getDisplayNames().put(locale, prepareDisplayName(name));
                 });
             }
         }
+    }
+
+    public static String prepareDisplayName(String value) {
+        return value == null? null: value.replace("\"", "\\\"");
     }
 
     public static void updateEnum(Set<String> enumIds, Map<String, EnumDescription> enums, BuildXmlNode node, Map<String, Map<Locale, String>> localizations) {

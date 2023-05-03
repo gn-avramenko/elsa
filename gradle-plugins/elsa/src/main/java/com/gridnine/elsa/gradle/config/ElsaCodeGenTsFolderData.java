@@ -18,6 +18,8 @@ public class ElsaCodeGenTsFolderData {
     public final List<ElsaTsRemotingCodeGenRecord> remotingCodeGenRecords = new ArrayList<>();
     public final List<ElsaTsDomainCodeGenRecord> domainCodeGenRecords = new ArrayList<>();
 
+    public final List<ElsaTsL10nCodeGenRecord> l10nCodeGenRecords = new ArrayList<>();
+
     public final List<ElsaTsCustomCodeGenRecord> customCodeGenRecords = new ArrayList<>();
 
     public boolean isDontCleanup() {

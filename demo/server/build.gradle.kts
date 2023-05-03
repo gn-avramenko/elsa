@@ -36,11 +36,13 @@ elsa {
         folder("src/main/java-gen"){
             domainMetaRegistryConfigurator("com.gridnine.elsa.demo.ElsaDemoDomainMetaRegistryConfigurator")
             remotingMetaRegistryConfigurator("com.gridnine.elsa.demo.ElsaDemoRemotingMetaRegistryConfigurator")
+            l10nMetaRegistryConfigurator("com.gridnine.elsa.demo.ElsaDemoL10nMetaRegistryConfigurator")
             domainMeta("src/main/codegen/elsa-demo-common-domain.xml",
                 "src/main/codegen/elsa-demo-server-domain.xml")
             remotingMeta("src/main/codegen/elsa-demo-server-remoting.xml"){
                 subscriptionClientClassName = "com.gridnine.elsa.demo.model.remoting.ElsaDemoSubscriptionClient"
             }
+            l10nMeta(null, "src/main/codegen/elsa-demo-l10n.xml")
         }
     }
 }

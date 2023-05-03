@@ -7,6 +7,7 @@ package com.gridnine.elsa.gradle.codegen;
 
 import com.gridnine.elsa.gradle.codegen.domain.*;
 import com.gridnine.elsa.gradle.codegen.l10n.JavaL10nFactoryGenerator;
+import com.gridnine.elsa.gradle.codegen.l10n.TSL10nCodeGen;
 import com.gridnine.elsa.gradle.codegen.remoting.*;
 import com.gridnine.elsa.gradle.codegen.serializable.SerializableTypesConfiguratorCodeGen;
 import com.gridnine.elsa.gradle.codegen.custom.CustomTypesConfiguratorCodeGen;
@@ -148,7 +149,9 @@ public class ElsaCodeGenTask extends DefaultTask {
                             var reg2 = new L10nMetaRegistry();
                             l10nmp.updateMetaRegistry(registry, record.getSources());
                             l10nmp.updateMetaRegistry(reg2, record.getSources());
-                            l10nfg.generate(record.getFactory(), reg2, totalSerializableTypesRegistry, totalL10nTypesRegistry, folderData.folder, files);
+                            if(record.getFactory() != null) {
+                                l10nfg.generate(record.getFactory(), reg2, totalSerializableTypesRegistry, totalL10nTypesRegistry, folderData.folder, files);
+                            }
                         }
                         l10nmg.generate(registry, folderData.l10nMetaRegistryConfigurator, folderData.folder, files);
                     }
@@ -247,6 +250,13 @@ public class ElsaCodeGenTask extends DefaultTask {
                             rmp.updateRegistry(registry, tsmr, record.getSources());
                             var cg = new TSRemotingCodeGen();
                             cg.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalRemotingTypesRegistry, module, files, packageName, projectDir, record.isSkipClientGeneration(), associations);
+                        }
+                        for (var record : folderData.l10nCodeGenRecords) {
+                            File module = record.getModule();
+                            var registry = new L10nMetaRegistry();
+                            l10nmp.updateMetaRegistry(registry, record.getSources());
+                            var tsl10nCodeGen = new TSL10nCodeGen();
+                            tsl10nCodeGen.generate(registry, totalSerializableMetaRegistry, totalSerializableTypesRegistry, totalL10nTypesRegistry, module, files, packageName, projectDir,  associations);
                         }
                         if (!folderData.isDontCleanup()) {
                             cleanupDir(folderData.folder, files);

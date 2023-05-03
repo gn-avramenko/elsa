@@ -15,3 +15,8 @@ export {
   subscribe,
   unsubscribe,
 } from './src/core-remoting';
+export {
+  ensureBundleLoaded,
+  getMessage,
+  L10nCallOptions,
+} from './src/core-l10n';

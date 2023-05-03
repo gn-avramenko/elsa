@@ -46,7 +46,7 @@ const getEntityMetadata = async (
   return result;
 };
 
-const getTagDescription = (entityType:REntityType, tagName:string) : RTagDescription => {
+export const getTagDescription = (entityType:REntityType, tagName:string) : RTagDescription => {
   switch (entityType) {
     case 'DOMAIN_ENTITY':
       return typesMetadata!!.domainEntityTags.get(tagName)!!;
@@ -56,6 +56,8 @@ const getTagDescription = (entityType:REntityType, tagName:string) : RTagDescrip
       return typesMetadata!!.customEntityTags.get(tagName)!!;
     case 'REMOTING':
       return typesMetadata!!.remotingEntityTags.get(tagName)!!;
+    case 'L10N':
+      return typesMetadata!!.l10nParameterTypeTags.get(tagName)!!;
     default:
       throw new Error(`unsupported ${entityType} ${tagName}`);
   }
@@ -398,7 +400,7 @@ class EnumSerializationHandler extends BaseSerializationHandler<String> {
 const enumSerializationHandler = new EnumSerializationHandler();
 registry.register(enumSerializationHandler);
 
-const initializeTypesMetadata = async (
+export const initializeTypesMetadata = async (
   ph: PreloaderHandler | null,
   operationId: string | null,
 ) => {

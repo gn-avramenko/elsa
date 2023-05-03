@@ -2,12 +2,12 @@
  * This is generated code, don't modify it manually
  **************************************************************** */
 
-
 export type REntityType=
 'DOMAIN_ENTITY'
 | 'DOMAIN_DATABASE_ENTITY'
 | 'CUSTOM'
-| 'REMOTING';
+| 'REMOTING'
+| 'L10N';
 
 export type RemotingMessageType=
 'PING'
@@ -52,6 +52,12 @@ export type REntityDescription = {
   id: string,
   properties: RPropertyDescription[],
   attributes: RAttribute[],
+};
+
+export type RL10nMessageDescription = {
+  id: string,
+  displayName: string,
+  parameters: RPropertyDescription[],
 };
 
 export type RemotingMessage = {
@@ -101,4 +107,12 @@ export type GetRemotingEntityDescriptionRequest = {
 export type GetRemotingEntityDescriptionResponse = {
   type: REntityType,
   description: REntityDescription,
+};
+
+export type GetL10nBundleDescriptionRequest = {
+  bundleId: string,
+};
+
+export type GetL10nBundleDescriptionResponse = {
+  messages: RL10nMessageDescription[],
 };
