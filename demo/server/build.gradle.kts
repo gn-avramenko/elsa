@@ -7,10 +7,6 @@ plugins {
 group = "com.gridnine.elsa.demo"
 version = ""
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-}
-
 springBoot {
     mainClass.set("com.gridnine.elsa.demo.app.AdminUiServer")
 }
