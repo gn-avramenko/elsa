@@ -6,7 +6,7 @@ elsa:
     type: STANDARD
     databaseType: SIMPLE
     adapter: postgres
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:elsa-demo}?loginTimeout=10
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:demo}?loginTimeout=10
     poolSize: 20
     login: ${DB_USER:admin}
     password: ${DB_PASSWORD:password}

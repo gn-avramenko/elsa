@@ -31,7 +31,9 @@ import com.gridnine.platform.elsa.core.remoting.standard.GetRemotingEntityDescri
 import com.gridnine.platform.elsa.core.remoting.standard.GetServiceDescriptionHandler;
 import com.gridnine.platform.elsa.core.remoting.standard.GetSubscriptionDescriptionHandler;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,6 +41,10 @@ import org.springframework.context.annotation.Configuration;
 public class ElsaServerCoreRemotingConfiguration {
 
     private final RemotingMetaRegistry remotingRegistry;
+
+    @Value("${elsa.remoting.apiPrefix:api}")
+    private String apiPrefix;
+
 
     @Autowired
     public ElsaServerCoreRemotingConfiguration(RemotingMetaRegistry remotingRegistry) {
@@ -61,9 +67,11 @@ public class ElsaServerCoreRemotingConfiguration {
         return new GetSubscriptionDescriptionHandler();
     }
 
-    @Bean(autowireCandidate = false, name = "OpenAPI")
+    @Bean(name = "OpenAPI")
     public OpenAPI getCustomOpenApi(){
-        return new MetadataBasedOpenApiFactory(remotingRegistry).createOpenApi();
+        var api = new MetadataBasedOpenApiFactory(remotingRegistry).createOpenApi();
+        api.addServersItem(new Server().url("/"+apiPrefix));
+        return api;
     }
 
     @Bean

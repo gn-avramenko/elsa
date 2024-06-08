@@ -26,7 +26,6 @@ import com.gridnine.platform.elsa.common.core.model.common.EnumMapper;
 import com.gridnine.platform.elsa.common.core.model.domain.CaptionProvider;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.core.storage.StorageFactory;
-import com.gridnine.platform.elsa.core.storage.standard.JdbcCaptionProviderImpl;
 import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.AbstractBeanFactory;
@@ -40,15 +39,9 @@ import java.util.List;
 @Configuration
 public class ElsaServerCoreStorageConfiguration {
 
-    private StorageFactory storageFactory;
-
-    private List<StorageFactory> storageFactories;
-
-    private AbstractBeanFactory beanFactory;
+    private final StorageFactory storageFactory;
 
     public ElsaServerCoreStorageConfiguration(@Autowired List<StorageFactory> storageFactories, @Autowired AbstractBeanFactory beanFactory) throws Exception {
-        this.storageFactories = storageFactories;
-        this.beanFactory = beanFactory;
         String storageType = beanFactory.resolveEmbeddedValue("${elsa.storage.type:STANDARD}");
         storageFactory = storageFactories.stream().filter(it -> it.getId().equals(storageType)).findFirst().orElseThrow();
         var customParameters = new HashMap<String,Object>();

@@ -7,10 +7,6 @@ plugins {
 group = "com.gridnine.elsa.demo"
 version = ""
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-}
-
 springBoot {
     mainClass.set("com.gridnine.elsa.demo.app.AdminUiServer")
 }
@@ -22,10 +18,12 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
     implementation(project(":platform:common-core"))
     implementation(project(":platform:common-meta"))
     implementation(project(":platform:server-core"))
     implementation(project(":platform:server-postgres"))
+    implementation(project(":platform:server-admin"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
