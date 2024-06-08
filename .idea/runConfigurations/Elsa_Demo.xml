@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Elsa Demo" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.gridnine.elsa.demo.app.AdminUiServer" />
+    <module name="elsa.demo.server.main" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/demo/local-dev" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
