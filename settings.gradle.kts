@@ -1,4 +1,4 @@
-rootProject.name = "ldocs"
+rootProject.name = "elsa"
 include(":platform:common-meta")
 include(":platform:gradle-plugin")
 include(":platform:common-core")
@@ -7,12 +7,3 @@ include(":platform:server-atomikos")
 include(":platform:server-file-storage")
 include(":platform:server-postgres")
 include(":platform:server-mongo")
-include(":server:modules:ldocs-core")
-include(":server:modules:ldocs-rgd")
-include(":server:modules:sete")
-include(":server:modules:xdisk")
-include(":server:projects:sete")
-include(":server:projects:xdisk")
-includeBuild("frontend-rgd")
-includeBuild("frontend-xdisk")
-includeBuild("agent")

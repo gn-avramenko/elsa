@@ -4,20 +4,11 @@ plugins {
 java.testResultsDir.set(layout.buildDirectory.dir("junit-xml"))
 
 task("updateLocalGradlePlugins") {
-    group = "ldocs"
+    group = "elsa"
 }
 
 task("eCodeGen") {
-    group = "ldocs"
+    group = "elsa"
 }
 
-tasks.register("showDirs") {
-    val rootDir = project.rootDir
-    val reportsDir = project.reporting.baseDirectory
-    val testResultsDir = project.java.testResultsDir
 
-    doLast {
-        logger.quiet(rootDir.toPath().relativize(reportsDir.get().asFile.toPath()).toString())
-        logger.quiet(rootDir.toPath().relativize(testResultsDir.get().asFile.toPath()).toString())
-    }
-}
