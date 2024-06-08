@@ -1,1 +1,1 @@
-rootProject.name ="server-atomikos"
+rootProject.name = "server-atomikos"

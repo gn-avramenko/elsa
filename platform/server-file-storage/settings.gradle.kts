@@ -1,1 +1,1 @@
-rootProject.name ="server-file-storage"
+rootProject.name = "server-file-storage"

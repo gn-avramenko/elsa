@@ -4,30 +4,58 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/frontend-rgd" name="frontend-rgd">
+                <projects>
+                  <project path="$PROJECT_DIR$/frontend-rgd" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/frontend-xdisk" name="frontend-xdisk">
+                <projects>
+                  <project path="$PROJECT_DIR$/frontend-xdisk" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/agent" name="agent">
+                <projects>
+                  <project path="$PROJECT_DIR$/agent" />
+                  <project path="$PROJECT_DIR$/agent/libs" />
+                  <project path="$PROJECT_DIR$/agent/libs/openapi-client" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="delegatedBuild" value="false" />
         <option name="testRunner" value="PLATFORM" />
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/demo" />
-            <option value="$PROJECT_DIR$/demo/server" />
-            <option value="$PROJECT_DIR$/demo/web" />
-            <option value="$PROJECT_DIR$/gradle-plugins" />
-            <option value="$PROJECT_DIR$/gradle-plugins/elsa" />
-            <option value="$PROJECT_DIR$/gradle-plugins/internal" />
+            <option value="$PROJECT_DIR$/agent" />
+            <option value="$PROJECT_DIR$/agent/libs" />
+            <option value="$PROJECT_DIR$/agent/libs/openapi-client" />
+            <option value="$PROJECT_DIR$/frontend-rgd" />
+            <option value="$PROJECT_DIR$/frontend-xdisk" />
             <option value="$PROJECT_DIR$/platform" />
-            <option value="$PROJECT_DIR$/platform/common" />
-            <option value="$PROJECT_DIR$/platform/meta" />
-            <option value="$PROJECT_DIR$/platform/server" />
+            <option value="$PROJECT_DIR$/platform/common-core" />
+            <option value="$PROJECT_DIR$/platform/common-meta" />
+            <option value="$PROJECT_DIR$/platform/gradle-plugin" />
             <option value="$PROJECT_DIR$/platform/server-atomikos" />
+            <option value="$PROJECT_DIR$/platform/server-core" />
             <option value="$PROJECT_DIR$/platform/server-file-storage" />
-            <option value="$PROJECT_DIR$/platform/server-jms" />
+            <option value="$PROJECT_DIR$/platform/server-mongo" />
             <option value="$PROJECT_DIR$/platform/server-postgres" />
-            <option value="$PROJECT_DIR$/platform/server-tomcat" />
-            <option value="$PROJECT_DIR$/platform/sjl" />
-            <option value="$PROJECT_DIR$/platform/web-common" />
+            <option value="$PROJECT_DIR$/server" />
+            <option value="$PROJECT_DIR$/server/modules" />
+            <option value="$PROJECT_DIR$/server/modules/ldocs-core" />
+            <option value="$PROJECT_DIR$/server/modules/ldocs-rgd" />
+            <option value="$PROJECT_DIR$/server/modules/sete" />
+            <option value="$PROJECT_DIR$/server/modules/xdisk" />
+            <option value="$PROJECT_DIR$/server/projects" />
+            <option value="$PROJECT_DIR$/server/projects/sete" />
+            <option value="$PROJECT_DIR$/server/projects/xdisk" />
           </set>
         </option>
       </GradleProjectSettings>

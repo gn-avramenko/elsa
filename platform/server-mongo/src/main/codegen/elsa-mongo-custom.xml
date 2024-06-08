@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<custom xmlns="http://vga.com/elsa/meta-custom">
+    <entity id="com.gridnine.platform.elsa.common.mongo.model.domain.BaseMongoAsset" abstract="true"
+            extends="com.gridnine.platform.elsa.common.core.model.domain.BaseAsset">
+        <property id="_id" type="STRING"/>
+    </entity>
+    <entity id="com.gridnine.platform.elsa.common.mongo.model.domain.BaseMongoSearchableProjection" abstract="true"
+            extends="com.gridnine.platform.elsa.common.core.model.domain.BaseSearchableProjection">
+        <property id="_id" type="STRING"/>
+    </entity>
+    <entity id="com.gridnine.platform.elsa.common.mongo.model.domain.BaseMongoDocument" abstract="true"
+            extends="com.gridnine.platform.elsa.common.core.model.domain.BaseDocument">
+        <property id="_id" type="STRING"/>
+    </entity>
+</custom>

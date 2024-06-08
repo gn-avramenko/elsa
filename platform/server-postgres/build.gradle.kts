@@ -1,29 +1,23 @@
-import com.gridnine.elsa.gradle.internal.elsaInternal
-
 plugins {
     java
 }
 buildscript {
-    dependencies{
-        classpath(files(project.file("../../gradle/elsa-gradle-internal.jar")))
-        classpath(files(project.file("../../gradle/elsa-gradle.jar")))
+    dependencies {
+        classpath(files(File(projectDir.parentFile.parentFile, "gradle/gradle-plugin.jar")))
     }
 }
-
-
-apply<com.gridnine.elsa.gradle.internal.ElsaInternalJavaPlugin>()
-
-elsaInternal {
-    artefactId = "elsa-server-postgres"
+repositories {
+    mavenCentral()
 }
 
-apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
+apply<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaPlugin>()
+tasks.compileJava.get().dependsOn(tasks.getByName("eCodeGen"))
 
 dependencies {
-    implementation("org.postgresql:postgresql:42.2.18")
-    implementation("javax.servlet:javax.servlet-api:4+")
+    implementation("org.postgresql:postgresql:42.3.7")
     implementation("com.mchange:c3p0:0.9.5.5")
-    implementation(project(":platform:meta"))
-    implementation(project(":platform:common"))
-    implementation(project(":platform:server"))
+    implementation("org.springframework:spring-jdbc:6.0.11")
+    implementation("org.springframework:spring-context:6.0.11")
+    implementation(project(":platform:server-core"))
+    implementation(project(":platform:common-core"))
 }

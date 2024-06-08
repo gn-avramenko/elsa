@@ -1,9 +1,0 @@
-sjl:
-  applicationClass: com.gridnine.elsa.sjl.ElsaApplication
-tomcat:
-  port: 8086
-repository:
-   type: POSTGRESQL
-   postgresql:
-     url: jdbc:postgresql://localhost:15437/elsa-db?loginTimeout=10
-     login: elsa-user

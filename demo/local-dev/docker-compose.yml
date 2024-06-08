@@ -1,0 +1,29 @@
+name: xdisk
+services:
+
+  db:
+    image: postgres:15.3
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d xdisk" ]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 100
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "5432:5432"
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB_URL=jdbc:postgresql://db:5432/keycloak
+      - KC_DB_USERNAME=admin
+      - KC_DB=postgres
+    ports:
+      - "8888:8080"

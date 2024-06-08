@@ -1,1 +1,1 @@
-rootProject.name ="server-postgres"
+rootProject.name = "server-postgres"

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain xmlns="http://vga.com/elsa/meta-domain">
+    <enum id="com.gridnine.platform.elsa.server.mongo.test.model.domain.TestMongoEnum">
+        <enum-item id="ITEM1"/>
+        <enum-item id="ITEM2"/>
+        <enum-item id="ITEM3"/>
+    </enum>
+    <asset id="com.gridnine.platform.elsa.server.mongo.test.model.domain.TestMongoDomainAsset" extends="com.gridnine.platform.elsa.common.mongo.model.domain.BaseMongoAsset" cache-resolve="true">
+        <property type="STRING" id="stringProperty" cache-find="true" use-in-text-search="true"/>
+        <property id="booleanProperty" type="BOOLEAN"/>
+        <property id="dateProperty" type="LOCAL_DATE_TIME"/>
+        <property id="bigDecimalProperty" type="BIG_DECIMAL"/>
+        <property id="longProperty" type="LONG"/>
+        <caption-expression>stringProperty</caption-expression>
+    </asset>
+</domain>

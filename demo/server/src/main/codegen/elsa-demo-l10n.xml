@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<messages-bundle xmlns="http://gridnine.com/elsa/meta-l10n" id ="demo" >
-    <message id="Message_with_string_param">
-        <string-property id="param"/>
-    </message>
-</messages-bundle>

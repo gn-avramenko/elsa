@@ -1,27 +1,23 @@
-import com.gridnine.elsa.gradle.plugin.elsa
-import com.gridnine.elsa.gradle.plugin.elsaTS
-
-
 plugins {
     java
 }
+java.testResultsDir.set(layout.buildDirectory.dir("junit-xml"))
 
-buildscript {
-    dependencies{
-        classpath(files(project.file("gradle/elsa-meta.jar")))
-        classpath(files(project.file("gradle/elsa-gradle.jar")))
+task("updateLocalGradlePlugins") {
+    group = "ldocs"
+}
+
+task("eCodeGen") {
+    group = "ldocs"
+}
+
+tasks.register("showDirs") {
+    val rootDir = project.rootDir
+    val reportsDir = project.reporting.baseDirectory
+    val testResultsDir = project.java.testResultsDir
+
+    doLast {
+        logger.quiet(rootDir.toPath().relativize(reportsDir.get().asFile.toPath()).toString())
+        logger.quiet(rootDir.toPath().relativize(testResultsDir.get().asFile.toPath()).toString())
     }
-}
-
-apply<com.gridnine.elsa.gradle.plugin.ElsaJavaPlugin>()
-apply<com.gridnine.elsa.gradle.plugin.ElsaTsPlugin>()
-elsa{
-
-}
-elsaTS {
-
-}
-
-task("publishLocalArtifacts"){
-    group = "elsa"
 }
