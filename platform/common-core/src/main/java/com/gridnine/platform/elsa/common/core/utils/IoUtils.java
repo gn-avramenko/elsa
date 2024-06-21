@@ -22,6 +22,10 @@
 package com.gridnine.platform.elsa.common.core.utils;
 
 import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -69,4 +73,35 @@ public class IoUtils {
             closeable.close();
         } catch (IOException ignored) {}
     }
+    public static String readText(final URL url){
+        return ExceptionUtils.wrapException(() ->{
+            var baos = new ByteArrayOutputStream();
+            try (var is = url.openStream()){
+                copy(is, baos);
+            }
+            return baos.toString(StandardCharsets.UTF_8);
+        });
+
+    }
+
+    public static byte[] readBytes(final URL url){
+        return ExceptionUtils.wrapException(() ->{
+            var baos = new ByteArrayOutputStream();
+            try (var is = url.openStream()){
+                copy(is, baos);
+            }
+            return baos.toByteArray();
+        });
+
+    }
+
+    public static String getMd5Hash(final byte[] content){
+        return ExceptionUtils.wrapException(() -> {
+            var md = MessageDigest.getInstance("MD5");
+            md.update(content);
+            byte[] digest = md.digest();
+            return  Base64.getEncoder().encodeToString(digest);
+        });
+    }
+
 }

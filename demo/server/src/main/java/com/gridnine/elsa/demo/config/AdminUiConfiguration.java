@@ -5,7 +5,7 @@
 
 package com.gridnine.elsa.demo.config;
 
-import com.gridnine.platform.elsa.admin.AdminUiServlet;
+import com.gridnine.elsa.demo.web.AdminUiServlet;
 import com.gridnine.platform.elsa.core.remoting.RemotingHttpServlet;
 import jakarta.servlet.MultipartConfigElement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +23,6 @@ public class AdminUiConfiguration {
     @Autowired
     private RemotingHttpServlet remotingHttpServlet;
 
-    @Autowired
-    private AdminUiServlet adminUiServlet;
-
     @Bean
     public ServletRegistrationBean<RemotingHttpServlet> createRestServicesServlet() {
         ServletRegistrationBean<RemotingHttpServlet> result = new ServletRegistrationBean<>(
@@ -38,8 +35,13 @@ public class AdminUiConfiguration {
     @Bean
     public ServletRegistrationBean<AdminUiServlet> createAdminUiServlet() {
         ServletRegistrationBean<AdminUiServlet> result = new ServletRegistrationBean<>(
-                adminUiServlet, "","/admin/*");
+                adminUiServlet(), "/admin/*");
         result.setLoadOnStartup(2);
         return result;
+    }
+
+    @Bean
+    public AdminUiServlet adminUiServlet(){
+        return new AdminUiServlet();
     }
 }
