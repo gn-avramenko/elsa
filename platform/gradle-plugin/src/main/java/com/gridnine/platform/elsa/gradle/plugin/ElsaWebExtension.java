@@ -26,9 +26,7 @@ import org.gradle.api.Action;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ElsaWebExtension {
 
@@ -36,10 +34,9 @@ public class ElsaWebExtension {
 
     private File projectDir;
 
-    private final Map<String, File> imports = new LinkedHashMap<>();
 
     public void codegen(Action<ElsaWebCodeGenExtension> action) {
-        var ext = new ElsaWebCodeGenExtension(codegenRecords, projectDir, imports);
+        var ext = new ElsaWebCodeGenExtension(codegenRecords, projectDir);
         action.execute(ext);
     }
 
@@ -51,7 +48,4 @@ public class ElsaWebExtension {
         this.projectDir = projectDir;
     }
 
-    public Map<String, File> getImports() {
-        return imports;
-    }
 }

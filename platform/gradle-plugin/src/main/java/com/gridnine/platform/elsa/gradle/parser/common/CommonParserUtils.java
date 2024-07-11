@@ -92,12 +92,6 @@ public final class CommonParserUtils {
         updateLocalizations(description.getDisplayNames(), localizations, id);
     }
 
-    private static void updateTsId(BaseModelElementDescription md, XmlNode node, String attName) {
-        var tsClassName = node.getAttribute(attName);
-        if (tsClassName != null) {
-            md.getParameters().put(attName, tsClassName);
-        }
-    }
 
     public static void fillEntityDescription(XmlNode elm, EntityDescription description) {
         description.setAbstract("true".equals(elm.getAttribute("abstract")));
@@ -107,14 +101,12 @@ public final class CommonParserUtils {
             pd.setClassName(prop.getAttribute("class-name"));
             pd.setNonNullable("true".equals(prop.getAttribute("non-nullable")));
             pd.setType(StandardValueType.valueOf(prop.getAttribute("type")));
-            updateTsId(pd, prop, "ts-class-name");
         });
         elm.getChildren("collection").forEach(coll -> {
             var cd = description.getCollections().computeIfAbsent(getIdAttribute(coll), StandardCollectionDescription::new);
             cd.setElementClassName(coll.getAttribute("element-class-name"));
             cd.setElementType(StandardValueType.valueOf(coll.getAttribute("element-type")));
             cd.setUnique("true".equals(coll.getAttribute("unique")));
-            updateTsId(cd, coll, "ts-element-class-name");
         });
         elm.getChildren("map").forEach(map -> {
             var md = description.getMaps().computeIfAbsent(getIdAttribute(map), StandardMapDescription::new);
@@ -122,8 +114,6 @@ public final class CommonParserUtils {
             md.setKeyType(StandardValueType.valueOf(map.getAttribute("key-type")));
             md.setValueClassName(map.getAttribute("value-class-name"));
             md.setValueType(StandardValueType.valueOf(map.getAttribute("key-type")));
-            updateTsId(md, map, "ts-key-class-name");
-            updateTsId(md, map, "ts-value-class-name");
         });
         updateParameters(elm, description);
 

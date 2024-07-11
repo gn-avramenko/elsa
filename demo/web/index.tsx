@@ -1,6 +1,6 @@
-import DemoApi from './src/demo-api';
 import { Configuration } from '../../platform/web-core';
 import { PreloaderMiddleware } from '../../platform/web-core/src/core-remoting';
+import DemoMainApi from './src/generated/api/DemoMainApi';
 
 const preloader = new PreloaderMiddleware(
   {
@@ -11,7 +11,7 @@ const preloader = new PreloaderMiddleware(
     delay: 1000,
   },
 );
-const demoApi = new DemoApi(new Configuration({
+const demoApi = new DemoMainApi(new Configuration({
   basePath: '/api',
   middleware: [preloader],
 }));

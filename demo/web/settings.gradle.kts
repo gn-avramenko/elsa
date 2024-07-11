@@ -1,1 +1,1 @@
-rootProject.name ="web-demo"
+rootProject.name ="demo-web"
