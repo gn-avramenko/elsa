@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+elsa:
+  storage:
+    type: STANDARD
+    databaseType: SIMPLE
+    adapter: postgres
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:demo}?loginTimeout=10
+    poolSize: 20
+    login: ${DB_USER:admin}
+    password: ${DB_PASSWORD:password}
+
+logging:
+  level:
+    root: INFO
+    com.gridnine: DEBUG
+    com.atomikos.datasource.xa.XATransactionalResource: ERROR

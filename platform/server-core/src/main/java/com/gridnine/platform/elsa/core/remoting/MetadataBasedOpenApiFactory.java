@@ -23,6 +23,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.servers.Server;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,7 @@ public class MetadataBasedOpenApiFactory {
                         .termsOfService("https://swagger.io/terms/")
                         .license(new License().name("Apache 2.0").url("https://springdoc.org")))
                 .components(new Components());
+        api.addServersItem(new Server().url("http://localhost:8080/api"));
         TypeNameResolver.std.setUseFqn(true); // Use fully-qualified names.
         api = generateRemotingsDefinitions(api);
         return resolveRecursiveSchemas(api);

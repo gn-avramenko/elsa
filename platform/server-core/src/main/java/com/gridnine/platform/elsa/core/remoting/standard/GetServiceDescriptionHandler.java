@@ -23,13 +23,14 @@ package com.gridnine.platform.elsa.core.remoting.standard;
 
 import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.common.rest.core.GetServiceDescriptionRequest;
-import com.gridnine.platform.elsa.common.rest.core.GetServiceDescriptionResponse;
+import com.gridnine.platform.elsa.common.rest.core.RHttpMethod;
+import com.gridnine.platform.elsa.common.rest.core.RServiceDescription;
 import com.gridnine.platform.elsa.core.remoting.RemotingCallContext;
 import com.gridnine.platform.elsa.core.remoting.RestHandler;
 import com.gridnine.platform.elsa.server.core.CoreRemotingConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class GetServiceDescriptionHandler implements RestHandler<GetServiceDescriptionRequest, GetServiceDescriptionResponse> {
+public class GetServiceDescriptionHandler implements RestHandler<GetServiceDescriptionRequest, RServiceDescription> {
 
     @Autowired
     private RemotingMetaRegistry remotingMetaRegistry;
@@ -40,11 +41,14 @@ public class GetServiceDescriptionHandler implements RestHandler<GetServiceDescr
     }
 
     @Override
-    public GetServiceDescriptionResponse service(GetServiceDescriptionRequest request, RemotingCallContext context) {
-        var serverCall = remotingMetaRegistry.getRemotings().get(request.getRemotingId()).getGroups().get(request.getGroupId()).getServices().get(request.getMethodId());
-        var result = new GetServiceDescriptionResponse();
-        result.setRequestClassName(serverCall.getRequestClassName());
-        result.setResponseClassName(serverCall.getResponseClassName());
+    public RServiceDescription service(GetServiceDescriptionRequest request, RemotingCallContext context) {
+        var serviceDescription = remotingMetaRegistry.getRemotings().get(request.getRemotingId()).getGroups().get(request.getGroupId()).getServices().get(request.getServiceId());
+        var result = new RServiceDescription();
+        result.setRequestClassName(serviceDescription.getRequestClassName());
+        result.setResponseClassName(serviceDescription.getResponseClassName());
+        result.setPath(serviceDescription.getPath());
+        result.setMultipartRequest(serviceDescription.isMultipartRequest());
+        result.setMethod(serviceDescription.getMethod() == null? RHttpMethod.POST: RHttpMethod.valueOf(serviceDescription.getMethod().name()));
         return result;
     }
 }
