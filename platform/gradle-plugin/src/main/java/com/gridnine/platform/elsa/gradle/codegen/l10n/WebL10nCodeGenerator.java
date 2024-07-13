@@ -46,15 +46,18 @@ public class WebL10nCodeGenerator implements CodeGenerator<WebL10nCodeGenRecord>
         var parser = new L10nMetaRegistryParser();
         var reg = new L10nMetaRegistry();
         record.getSources().forEach(it -> BuildExceptionUtils.wrapException(() -> parser.updateMetaRegistry(reg, it)));
-        if (!reg.getBundles().isEmpty()) {
-            var bundle = reg.getBundles().values().iterator().next();
-            generateL10n(record.getL10nFileName(), record.getTsClassName(), bundle, destDir, generatedFiles);
-        }
+        var bundle = reg.getBundles().values().iterator().next();
+        generateL10n(bundle, destDir, generatedFiles);
     }
 
-    private void generateL10n(String fileName, String tsClassName, L10nMessagesBundleDescription bundle, File destDir, Set<File> generatedFiles) throws Exception {
+    private void generateL10n(L10nMessagesBundleDescription bundle, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new TypeScriptCodeGenerator();
+        var apiDir = new File(destDir, "api");
+        if(!apiDir.exists()){
+            apiDir.mkdirs();
+        }
         var commonImports = new ArrayList<String>();
+        commonImports.add("Configuration");
         for (L10nMessageDescription message : bundle.getMessages().values()) {
             for (L10nMessageParameterDescription param : message.getParameters().values()) {
                 if (param.getType() == StandardValueType.ENTITY_REFERENCE && !commonImports.contains("EntityReference")) {
@@ -64,17 +67,14 @@ public class WebL10nCodeGenerator implements CodeGenerator<WebL10nCodeGenRecord>
         }
         gen.printLine("/* eslint-disable camelcase */");
         gen.blankLine();
-        gen.printLine("import { BaseL10nBundle%s } from 'elsa-web-core';".formatted(commonImports.isEmpty() ? "" : ", " + BuildTextUtils.joinToString(commonImports, ", ")));
+        gen.printLine("import { BaseL10nApi%s } from 'elsa-web-core';".formatted(commonImports.isEmpty() ? "" : ", " + BuildTextUtils.joinToString(commonImports, ", ")));
         gen.blankLine();
-        gen.wrapWithBlock("class %s extends BaseL10nBundle ".formatted(tsClassName), () -> {
-            for (L10nMessageDescription message : bundle.getMessages().values()) {
-                if (message.getParameters().isEmpty()) {
-                    gen.printLine("%s = '???';".formatted(message.getId()));
-                    gen.blankLine();
-                }
-            }
-            gen.wrapWithBlock("constructor() ", () -> gen.printLine("super('%s');".formatted(bundle.getId())));
-            for (L10nMessageDescription message : bundle.getMessages().values()) {
+        var apiName = JavaCodeGeneratorUtils.toCamelCased("_%sL10nApi".formatted(bundle.getId()));
+        gen.wrapWithBlock("export default class %s extends BaseL10nApi ".formatted(apiName), () -> {
+            gen.wrapWithBlock("constructor(configuration:Configuration) ", ()->{
+                gen.printLine("super(configuration, '%s');".formatted(bundle.getId()));
+            });
+           for (L10nMessageDescription message : bundle.getMessages().values()) {
                 if (!message.getParameters().isEmpty()) {
                     gen.blankLine();
                     var sb1 = new StringBuilder();
@@ -92,10 +92,7 @@ public class WebL10nCodeGenerator implements CodeGenerator<WebL10nCodeGenRecord>
             }
         });
         gen.blankLine();
-        gen.printLine("// eslint-disable-next-line import/prefer-default-export");
-        gen.printLine("export const %s = new %s();".formatted(tsClassName.substring(0, 1).toLowerCase(Locale.ROOT) + tsClassName.substring(1), tsClassName));
-        gen.blankLine();
-        var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), fileName, destDir);
+        var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), "%s.ts".formatted(apiName), apiDir);
         generatedFiles.add(file);
     }
 }

@@ -47,11 +47,9 @@ public class ElsaWebCodeGenExtension {
         codegenRecords.add(record);
     }
 
-    public void l10n(String destDir, String l10nFileName, String tsClassName, List<String> sourcesFileNames) {
+    public void l10n(String destDir, String sourcesFileName) {
         var record = new WebL10nCodeGenRecord();
-        record.setTsClassName(tsClassName);
-        record.setL10nFileName(l10nFileName);
-        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.getSources().add(new File(projectDir, sourcesFileName));
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }

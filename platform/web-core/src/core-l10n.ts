@@ -11,6 +11,8 @@ export class BaseL10nApi extends BaseAPI{
 
   private loaded = false
 
+  private lang: string = "";
+
   constructor(protected configuration: Configuration, protected bundleId: string) {
     super(configuration, {
       remotingId: 'core',
@@ -18,12 +20,14 @@ export class BaseL10nApi extends BaseAPI{
     })
   }
 
-  public async ensureBundleLoaded(){
-    if (this.loaded) {
+  public async ensureBundleLoaded(lang:string){
+    if (this.loaded || this.lang !== lang) {
       return;
     }
+    this.loaded = false
+    this.lang = lang
     const response = (await this.request({
-      request: {bundleId: this.bundleId},
+      request: {bundleId: this.bundleId, language: lang},
       serviceId: 'get-l10n-bundle-description'
     })).response as L10nMessagesBundleDescription
     response.messages.forEach((msg) => {

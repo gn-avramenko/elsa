@@ -26,28 +26,9 @@ import com.gridnine.platform.elsa.gradle.codegen.common.GeneratorType;
 
 public class WebL10nCodeGenRecord extends BaseCodeGenRecord {
 
-    private String l10nFileName;
-
-    private String tsClassName;
-
     @Override
     public GeneratorType getGeneratorType() {
         return GeneratorType.WEB_L10N;
     }
 
-    public String getL10nFileName() {
-        return l10nFileName;
-    }
-
-    public void setL10nFileName(String l10nFileName) {
-        this.l10nFileName = l10nFileName;
-    }
-
-    public String getTsClassName() {
-        return tsClassName;
-    }
-
-    public void setTsClassName(String tsClassName) {
-        this.tsClassName = tsClassName;
-    }
 }
