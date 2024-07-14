@@ -75,8 +75,23 @@ public class RemotingMetaRegistryParser {
                 groupChild.getChildren("subscription").forEach(item -> {
                     var sc = groupDescr.getSubscriptions().computeIfAbsent(CommonParserUtils.getIdAttribute(item),
                             RemotingSubscriptionDescription::new);
-                    sc.setParameterClassName(parseEntity(registry, item.getChildren("parameter").get(0)));
-                    sc.setEventClassName(parseEntity(registry, item.getChildren("event").get(0)));
+                    var requestChildren = item.getChildren("parameter");
+                    if (requestChildren.size() == 1) {
+                        XmlNode requestElm = requestChildren.get(0);
+                        sc.setParameterClassName(parseEntity(registry, requestElm));
+                    }
+                    var requestRefChildren = item.getChildren("parameter-ref");
+                    if (requestRefChildren.size() == 1) {
+                        sc.setParameterClassName(CommonParserUtils.getIdAttribute(requestRefChildren.get(0)));
+                    }
+                    var responseChildren = item.getChildren("event");
+                    if (responseChildren.size() == 1) {
+                        sc.setEventClassName(parseEntity(registry, responseChildren.get(0)));
+                    }
+                    var responseRefChildren = item.getChildren("event-ref");
+                    if (responseRefChildren.size() == 1) {
+                        sc.setEventClassName(CommonParserUtils.getIdAttribute(responseRefChildren.get(0)));
+                    }
                 });
             });
         }));

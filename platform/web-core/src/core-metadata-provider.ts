@@ -25,6 +25,12 @@ export type ServiceDescription = {
     path?: string;
     multipartRequest: boolean
 }
+
+export type SubscriptionDescription = {
+    parameterClassName?: string;
+    eventClassName?: string
+}
+
 export type EntityPropertyDescription = BaseElementWithId &{
     type: StandardValueType,
     className?: string
@@ -59,6 +65,7 @@ export type L10nMessagesBundleDescription = BaseElementWithId & {
 
 const services = new Map<string, ServiceDescription>()
 const entities = new Map<string, EntityDescription>()
+const subscriptions = new Map<string, SubscriptionDescription>()
 
 const request = async (configuration: Configuration, relativeUrl: string) => {
     const headers = Object.assign({}, configuration.headers || {});
@@ -81,6 +88,16 @@ export async function getServiceDescription(configuration: Configuration, remoti
     return description!!
 }
 
+
+export async function getSubscriptionDescription(configuration: Configuration, remotingId:string, groupId:string, subscriptionId:string) {
+    const id = `${remotingId}_${groupId}_${subscriptionId}`
+    if(subscriptions.has(id)){
+        return subscriptions.get(id)!!
+    }
+    const description = (await request(configuration, `core/meta/subscription-description?remotingId=${remotingId}&groupId=${groupId}&subscriptionId=${subscriptionId}`)) as SubscriptionDescription
+    subscriptions.set(id, description)
+    return description!!
+}
 
 export async function getEntityDescription(configuration: Configuration, entityId:string) {
     if(entities.has(entityId)){

@@ -8,5 +8,13 @@
                 <property id="testData" type="STRING" non-nullable="true"/>
             </response>
         </service>
+        <subscription id="test-subscription">
+            <event id="com.gridnine.platform.elsa.demo.TestEvent">
+                <property id="testData" type="STRING"/>
+            </event>
+            <parameter id="com.gridnine.platform.elsa.demo.TestSubscriptionParam">
+                <property id="testParam" type="STRING"/>
+            </parameter>
+        </subscription>
     </group>
 </remoting>
