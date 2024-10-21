@@ -13,6 +13,10 @@ repositories {
 apply<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaPlugin>()
 tasks.compileJava.get().dependsOn(tasks.getByName("eCodeGen"))
 
+
+group ="com.gridnine.elsa"
+version ="1.0"
+
 dependencies {
     implementation("org.postgresql:postgresql:42.3.7")
     implementation("com.mchange:c3p0:0.9.5.5")

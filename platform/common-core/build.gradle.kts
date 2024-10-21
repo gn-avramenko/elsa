@@ -65,3 +65,6 @@ tasks.test {
     maxParallelForks = 1
     failFast = true
 }
+
+group ="com.gridnine.elsa"
+version ="1.0"

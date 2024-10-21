@@ -60,6 +60,9 @@ sourceSets.testFixtures {
     java.srcDirs("src/testFixtures/java-gen")
 }
 
+group ="com.gridnine.elsa"
+version ="1.0"
+
 tasks.test {
     useJUnitPlatform()
     maxParallelForks = 1

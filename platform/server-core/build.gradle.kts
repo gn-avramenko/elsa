@@ -64,6 +64,8 @@ sourceSets.main {
     java.srcDirs("src/main/java", "src/main/java-gen")
 }
 
+group ="com.gridnine.elsa"
+version ="1.0"
 tasks.test {
     useJUnitPlatform()
     maxParallelForks = 1
