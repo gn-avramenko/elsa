@@ -33,35 +33,23 @@ public class ElsaWebCodeGenExtension {
 
     private final List<BaseCodeGenRecord> codegenRecords;
 
-    private final Map<String, File> imports;
-
     private final File projectDir;
 
-    public ElsaWebCodeGenExtension(List<BaseCodeGenRecord> codegenRecords, File projectDir, Map<String, File> imports) {
+    public ElsaWebCodeGenExtension(List<BaseCodeGenRecord> codegenRecords, File projectDir) {
         this.codegenRecords = codegenRecords;
         this.projectDir = projectDir;
-        this.imports = imports;
     }
 
-    public void remoting(String destDir, String facade, List<String> sourcesFileNames) {
+    public void remoting(String destDir,  List<String> sourcesFileNames) {
         var record = new WebRemotingCodeGenRecord();
-        record.setRemotingFacade(facade);
         sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }
 
-    public void declareImport(String path, String... widgets) {
-        for (String widget : widgets) {
-            imports.put(widget, new File(projectDir, path));
-        }
-    }
-
-    public void l10n(String destDir, String l10nFileName, String tsClassName, List<String> sourcesFileNames) {
+    public void l10n(String destDir, String sourcesFileName) {
         var record = new WebL10nCodeGenRecord();
-        record.setTsClassName(tsClassName);
-        record.setL10nFileName(l10nFileName);
-        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.getSources().add(new File(projectDir, sourcesFileName));
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }

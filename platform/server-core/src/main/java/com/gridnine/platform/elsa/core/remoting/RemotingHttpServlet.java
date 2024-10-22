@@ -22,12 +22,7 @@ import com.gridnine.platform.elsa.common.core.utils.IoUtils;
 import com.gridnine.platform.elsa.common.core.utils.Pair;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
 import com.gridnine.platform.elsa.common.meta.remoting.*;
-import com.gridnine.platform.elsa.common.rest.core.RemotingMessage;
-import com.gridnine.platform.elsa.common.rest.core.RemotingMessageType;
 import com.gridnine.platform.elsa.core.remoting.standard.BinaryData;
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.AsyncEvent;
-import jakarta.servlet.AsyncListener;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,10 +34,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 
 import javax.annotation.PostConstruct;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -81,9 +73,6 @@ public class RemotingHttpServlet extends HttpServlet {
 
     @Autowired
     private JsonMarshaller jsonMarshaller;
-
-    @Autowired
-    private RemotingChannels remotingChannels;
 
     @Autowired
     private JsonUnmarshaller jsonUnmarshaller;
@@ -157,7 +146,7 @@ public class RemotingHttpServlet extends HttpServlet {
         res.setHeader("Access-Control-Max-Age", "60");
     }
 
-    private void doHandle(final HttpServletRequest req, final HttpServletResponse res) throws IOException {
+    private void doHandle(final HttpServletRequest req, final HttpServletResponse res) {
         var pathInfo = getPathInfo(req);
         var method = HttpMethod.valueOf(req.getMethod());
         if(scHandlersCache.containsKey(pathInfo)){
@@ -169,147 +158,30 @@ public class RemotingHttpServlet extends HttpServlet {
             processServiceRequest(req, res, Pair.of(pair.getLeft().getObject(), pair.getRight()));
             return;
         }
-        if(subHandlersCache.containsKey(pathInfo)){
-            if(pathInfo.endsWith("/subscribe") && method == HttpMethod.POST){
-                var pair = subHandlersCache.get(pathInfo);
-                if(pair == null){
-                    res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    return;
-                }
-                processSubscription(req, res, Pair.of(pair.getLeft().getObject(), pair.getRight()));
-                return;
-            }
-            if(pathInfo.endsWith("/connect") && method == HttpMethod.GET){
-                doConnect(req, res);
-                return;
-            }
-            if(pathInfo.endsWith("/unsubscribe") && method == HttpMethod.POST){
-                String clientId = Objects.requireNonNull(req.getHeader("clientId"));
-                String subscriptionUuid = Objects.requireNonNull(req.getHeader("subscriptionUuid"));
-                RemotingChannels.RemotingChannel remotingChannel = remotingChannels.getChannels().get(clientId);
-                if (remotingChannel != null) {
-                    remotingChannel.subscriptions().remove(subscriptionUuid);
-                }
-                res.setStatus(HttpServletResponse.SC_OK);
-                return;
-            }
-            res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         doHandle(req,resp);
     }
 
-    private void processSubscription(HttpServletRequest req, HttpServletResponse resp, Pair<SubscriptionHandler<Object, Object>, SubscriptionParams> sc) {
-        var context = new RemotingCallContext();
-        context.setHttpRequest(req);
-        context.setHttpResponse(resp);
-        context.setParameter(StandardRemotingParameters.REMOTING_DESCRIPTION, sc.getRight().remoting());
-        context.setParameter(StandardRemotingParameters.GROUP_DESCRIPTION, sc.getRight().group());
-        context.setParameter(StandardRemotingParameters.SUBSCRIPTION_DESCRIPTION, sc.getRight().subscription());
-        ExceptionUtils.wrapException(() -> processSubscription(context, sc.getLeft(), handlersRegistry.getAdvices(), 0));
-    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         doHandle(req,resp);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         doHandle(req,resp);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
         doHandle(req,resp);
     }
 
-    private void processSubscription(RemotingCallContext context, SubscriptionHandler<?, ?> handler, List<RemotingAdvice> advices, int idx) throws Exception {
-        if (idx == advices.size()) {
-            processSubscriptionInternal(context, handler);
-            return;
-        }
-        handlersRegistry.getAdvices().get(idx).onSubscription(context, (context2) ->
-                processSubscription(context2, handler, handlersRegistry.getAdvices(), idx + 1)
-        );
-    }
-
-    private void processSubscriptionInternal(RemotingCallContext context, SubscriptionHandler<?, ?> handler) throws Exception {
-        String clientId = Objects.requireNonNull(context.getHttpRequest().getHeader("clientId"));
-        var channel = remotingChannels.getChannels().get(clientId);
-        if (channel == null) {
-            throw Xeption.forDeveloper("channel does not exist");
-        }
-        Object param = null;
-        var paramClassName = context.getParameter(StandardRemotingParameters.SUBSCRIPTION_DESCRIPTION).getParameterClassName();
-        if (paramClassName != null) {
-            try (var is = context.getHttpRequest().getInputStream()) {
-                param = jsonUnmarshaller.unmarshal(reflectionFactory.getClass(paramClassName), is, serializationParameters);
-            }
-        }
-        var uuid = TextUtils.generateUUID();
-        channel.subscriptions().put(uuid, new RemotingChannels.SubscriptionData(context.getParameter(StandardRemotingParameters.REMOTING_DESCRIPTION),
-                context.getParameter(StandardRemotingParameters.GROUP_DESCRIPTION),
-                context.getParameter(StandardRemotingParameters.SUBSCRIPTION_DESCRIPTION),
-                param, handler));
-        context.getHttpResponse().setStatus(HttpServletResponse.SC_OK);
-        context.getHttpResponse().setContentType("plain/text");
-        Writer writer = context.getHttpResponse().getWriter();
-        writer.write(uuid);
-        writer.flush();
-    }
-
-    private void doConnect(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String clientId = Objects.requireNonNull(req.getParameter("clientId"));
-        AsyncContext ctx = req.startAsync(req, resp);
-        ctx.addListener(new AsyncListener() {
-            void cleanupChannel() {
-                remotingChannels.getChannels().remove(clientId);
-            }
-
-            @Override
-            public void onComplete(AsyncEvent event)  {
-                cleanupChannel();
-            }
-
-            @Override
-            public void onTimeout(AsyncEvent event) {
-                cleanupChannel();
-                ctx.complete();
-            }
-
-            @Override
-            public void onError(AsyncEvent event)  {
-                cleanupChannel();
-                ctx.complete();
-            }
-
-            @Override
-            public void onStartAsync(AsyncEvent event) {
-                //noops
-            }
-        });
-        ctx.setTimeout(30_000);
-        remotingChannels.getChannels().put(clientId, new RemotingChannels.RemotingChannel(clientId, ctx));
-        resp.setContentType("text/event-stream");
-        resp.setHeader("Cache-Control", "no-cache");
-        resp.setCharacterEncoding("UTF-8");
-        var message = new RemotingMessage();
-        message.setType(RemotingMessageType.PING);
-        message.setData(null);
-        var baos = new ByteArrayOutputStream();
-        jsonMarshaller.marshal(message, baos, false, serializationParameters);
-        var eventContent = baos.toString(StandardCharsets.UTF_8);
-        var writer = ctx.getResponse().getWriter();
-        writer.write("data: %s\n\n".formatted(eventContent));
-        writer.flush();
-
-    }
 
     private void processServiceRequest(HttpServletRequest req, HttpServletResponse resp, Pair<RestHandler<Object, Object>, ServiceParams> sc) {
         var context = new RemotingCallContext();

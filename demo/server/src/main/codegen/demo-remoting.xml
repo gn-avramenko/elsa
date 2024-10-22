@@ -1,0 +1,20 @@
+<remoting xmlns="http://vga.com/elsa/meta-remoting" id="demo">
+    <group id="main">
+        <service id="test-request" method="GET">
+            <request id="com.gridnine.platform.elsa.demo.TestRequest">
+                <property id="testParam" type="STRING" non-nullable="true"/>
+            </request>
+            <response id="com.gridnine.platform.elsa.demo.TestResponse">
+                <property id="testData" type="STRING" non-nullable="true"/>
+            </response>
+        </service>
+        <subscription id="test-subscription">
+            <event id="com.gridnine.platform.elsa.demo.TestEvent">
+                <property id="testData" type="STRING"/>
+            </event>
+            <parameter id="com.gridnine.platform.elsa.demo.TestSubscriptionParam">
+                <property id="testParam" type="STRING"/>
+            </parameter>
+        </subscription>
+    </group>
+</remoting>

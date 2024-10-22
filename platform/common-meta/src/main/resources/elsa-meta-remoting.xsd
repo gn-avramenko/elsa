@@ -68,9 +68,16 @@
                                                             <complexContent>
                                                                 <extension base="common:MetaElementType">
                                                                     <sequence>
-                                                                        <element name="parameter"
-                                                                                 type="tns:EntityType"/>
-                                                                        <element name="event" type="tns:EntityType"/>
+                                                                        <choice minOccurs="0">
+                                                                            <element name="parameter" type="tns:EntityType" />
+                                                                            <element name="parameter-ref"
+                                                                                     type="common:MetaElementType"/>
+                                                                        </choice>
+                                                                        <choice minOccurs="0">
+                                                                            <element name="event" type="tns:EntityType" />
+                                                                            <element name="event-ref"
+                                                                                     type="common:MetaElementType"/>
+                                                                        </choice>
                                                                     </sequence>
                                                                 </extension>
                                                             </complexContent>

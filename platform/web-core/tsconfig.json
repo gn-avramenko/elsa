@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es2016",            // Compatible with older browsers
+    "module": "commonjs",            // Compatible with both Node.js and browser
+    "sourceMap": true,          // Creates *.js.map files
+    "strict": true,             // Strict types, eg. prohibits `var x=0; x=null`
+    "alwaysStrict": true,        // Enable JavaScript's "use strict" mode
+    "allowJs": true
+  },
+  "include": ["src/feature/*.ts","**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+
