@@ -11,11 +11,11 @@ const preloader = new PreloaderMiddleware(
     delay: 1000,
   },
 );
+
 const demoApi = new DemoMainApi(new Configuration({
   basePath: '/api',
   middleware: [preloader],
 }));
-
 async function test() {
   const result = await demoApi.testRequest({
     testParam: 'hello world',

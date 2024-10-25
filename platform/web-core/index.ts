@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/prefer-default-export
-export {
+export type {
     EntityReference,
     BaseDocument,
     BaseIdentity,
@@ -8,10 +8,13 @@ export {
     BaseProjection,
 } from './src/core-model-entities';
 export {
-    BaseAPI, ServiceData, ConfigurationParameters, Configuration, Middleware
-    , FetchError, ResponseError, HTTPRequestInit, InitOverrideFunction, HTTPBody
+    BaseAPI, FetchError, ResponseError
 } from './src/core-remoting'
-export {
+export type {
+    ServiceData, ConfigurationParameters, Configuration, Middleware,
+    HTTPRequestInit, InitOverrideFunction, HTTPBody
+} from './src/core-remoting'
+export type {
     HTTPMethod
 } from './src/core-metadata-provider'
 export {
@@ -21,5 +24,10 @@ export {
     isNull, isNotNull, isNotBlank, isBlank, bytes2Str, str2Bytes, formatDigit, generateUUID
 } from './src/core-utils'
 export {
-    registry, RegistryItem, RegistryItemType
+    registry
 } from './src/core-registry'
+export type {
+    RegistryItem, RegistryItemType
+} from './src/core-registry'
+export { WebSocketFacade, SubsequentSubscriptionsManager} from './src/core-websocket'
+export type {WebSocketParams, SubscriptionParams } from './src/core-websocket'

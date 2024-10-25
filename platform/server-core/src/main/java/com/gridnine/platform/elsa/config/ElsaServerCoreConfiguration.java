@@ -21,12 +21,13 @@
 
 package com.gridnine.platform.elsa.config;
 
-import com.gridnine.platform.elsa.common.core.model.domain.CaptionProvider;
+import com.gridnine.platform.elsa.common.core.lock.LockManager;
 import com.gridnine.platform.elsa.core.cache.CacheManager;
 import com.gridnine.platform.elsa.core.cache.CacheMetadataProvider;
 import com.gridnine.platform.elsa.core.cache.ehCache.EhCacheManager;
 import com.gridnine.platform.elsa.core.codec.DesCodec;
 import com.gridnine.platform.elsa.core.remoting.standard.GetL10nBundleHandler;
+import com.gridnine.platform.elsa.core.scheduling.ScheduledTasksService;
 import com.gridnine.platform.elsa.core.storage.StorageFactory;
 import com.gridnine.platform.elsa.core.storage.database.DatabaseFactory;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.SimpleJdbcDatabaseFactory;
@@ -34,15 +35,22 @@ import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcDatabaseM
 import com.gridnine.platform.elsa.core.storage.standard.CacheStorageAdvice;
 import com.gridnine.platform.elsa.core.storage.standard.InvalidateCacheStorageInterceptor;
 import com.gridnine.platform.elsa.core.storage.standard.StandardStorageFactory;
-import com.gridnine.platform.elsa.core.storage.standard.JdbcCaptionProviderImpl;
 import com.gridnine.platform.elsa.server.core.CoreL10nMessagesRegistryConfigurator;
 import com.gridnine.platform.elsa.server.core.CoreL10nMessagesRegistryFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
 public class ElsaServerCoreConfiguration {
+
+    @Autowired
+    private LockManager lockManager;
+
+    @Autowired
+    private ListableBeanFactory listableBeanFactory;
 
     @Bean
     public DesCodec desCodec() {
@@ -99,5 +107,14 @@ public class ElsaServerCoreConfiguration {
     @Bean
     public CoreL10nMessagesRegistryConfigurator coreL10nMessagesRegistryConfigurator() {
         return new CoreL10nMessagesRegistryConfigurator();
+    }
+
+    @Bean
+    public ScheduledTasksService scheduledTasksService() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(8);
+        scheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+        scheduler.initialize();
+        return new ScheduledTasksService(scheduler, listableBeanFactory, lockManager);
     }
 }

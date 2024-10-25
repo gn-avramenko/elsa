@@ -154,7 +154,7 @@ export class BaseAPI {
         method: serviceDescription.method,
         headers,
       } as HTTPRequestInit
-      let url = isNotBlank(serviceDescription.path)? `${this.configuration.basePath}/${serviceDescription.path}` : `${this.configuration.basePath}/${this.group.remotingId}/${this.group.groupId}/${request.serviceId}`;
+      let url = isNotBlank(serviceDescription.path)? `${this.configuration.basePath}/${this.group.remotingId}/${this.group.groupId}/${serviceDescription.path}` : `${this.configuration.basePath}/${this.group.remotingId}/${this.group.groupId}/${request.serviceId}`;
       if(request.request && serviceDescription.requestClassName && serviceDescription.method !== 'GET'){
         httpRequestInit.body = await serializeToJson(this.configuration, request.request, serviceDescription.requestClassName)
       } else if(request.request && serviceDescription.requestClassName && serviceDescription.method === 'GET'){

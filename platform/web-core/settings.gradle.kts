@@ -1,1 +1,1 @@
-rootProject.name ="web-common"
+rootProject.name ="web-core"

@@ -33,6 +33,7 @@ configure<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaExtension> {
 dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("jakarta.transaction:jakarta.transaction-api:2.0.1")
+    implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
     implementation("org.springframework:spring-webmvc:6.0.11")
     implementation("org.springframework:spring-context:6.0.11")
     implementation("ch.qos.logback:logback-classic:1.4.12")
