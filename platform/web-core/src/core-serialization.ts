@@ -66,6 +66,8 @@ async function toJsonValue(configuration: Configuration, propValue: any | null |
     }
     switch (type) {
         case "ENTITY_REFERENCE":
+        case "INT":
+        case "LONG":
             return propValue
         case 'ENTITY': {
             return await toObject(configuration, propValue, className!!)
@@ -116,6 +118,7 @@ async function toObject(configuration: Configuration, object: any, className: st
             }
         }
     }
+    return result
 }
 
 

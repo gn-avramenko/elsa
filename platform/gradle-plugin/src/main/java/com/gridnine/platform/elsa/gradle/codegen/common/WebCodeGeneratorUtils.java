@@ -45,7 +45,36 @@ public class WebCodeGeneratorUtils {
     }
 
     public static void generateWebEntityCode(EntityDescription ed, TypeScriptCodeGenerator gen) throws Exception {
-        gen.wrapWithBlock("export type %s=".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())), () -> {
+        var imports = new HashSet<>();
+        for (var pd : ed.getProperties().values()) {
+            if(pd.getType() == StandardValueType.ENTITY || pd.getType() == StandardValueType.ENUM){
+                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getClassName()));
+            }
+        }
+        for (var pd : ed.getCollections().values()) {
+            if(pd.getElementType() == StandardValueType.ENTITY|| pd.getElementType() == StandardValueType.ENUM){
+                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getElementClassName()));
+            }
+        }
+        for (var pd : ed.getMaps().values()) {
+            if(pd.getKeyType() == StandardValueType.ENTITY|| pd.getKeyType() == StandardValueType.ENUM){
+                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getKeyClassName()));
+            }
+            if(pd.getValueType() == StandardValueType.ENTITY|| pd.getValueType() == StandardValueType.ENUM){
+                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getValueClassName()));
+            }
+        }
+        if(ed.getExtendsId() != null){
+            imports.add(JavaCodeGeneratorUtils.getSimpleName(ed.getExtendsId()));
+        }
+        if(!imports.isEmpty()){
+            imports.stream().sorted().forEach(it ->{
+                gen.printLine("import { %s } from '%s';".formatted(it, it));
+            });
+            gen.blankLine();
+        }
+        gen.wrapWithBlock("export type %s=%s".formatted(
+                JavaCodeGeneratorUtils.getSimpleName(ed.getId()), ed.getExtendsId()!= null? "%s & ".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getExtendsId())): ""), () -> {
             for (var pd : ed.getProperties().values()) {
                 gen.printLine("%s%s: %s,".formatted(pd.getId(), isNullable(pd) ? "?" : "", getType(pd.getType(), pd.getClassName())));
             }
