@@ -3,6 +3,7 @@ export type {
     EntityReference,
     BaseDocument,
     BaseIdentity,
+    HasClassName,
     VersionInfo,
     BaseAsset,
     BaseProjection,

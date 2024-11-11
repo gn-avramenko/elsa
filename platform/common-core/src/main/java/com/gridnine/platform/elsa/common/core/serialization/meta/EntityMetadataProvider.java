@@ -70,6 +70,9 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
         if (className == null) {
             return false;
         }
+        if("Object".equals(className)){
+            return true;
+        }
         var domainDocument = dr.getDocuments().get(className);
         if (domainDocument != null) {
             return domainDocument.isAbstract();

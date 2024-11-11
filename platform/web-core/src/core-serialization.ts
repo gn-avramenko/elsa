@@ -87,7 +87,7 @@ async function toObject(configuration: Configuration, object: any, className: st
         for (let prop of ed.properties) {
             const propValue = object[prop.id]
             if (isNotNull(propValue)) {
-                result[prop.id] = await toJsonValue(configuration, propValue, prop.type, prop.className)
+                result[prop.id] = await toJsonValue(configuration, propValue, prop.type, propValue._cn??prop.className)
             }
         }
     }
@@ -162,7 +162,7 @@ async function updateObject(configuration: Configuration, obj: any, className: s
         for (let prop of ed.properties) {
             const propValue = obj[prop.id]
             if (isNotNull(propValue)) {
-                obj[prop.id] = await fromJsonValue(configuration, propValue, prop.type, prop.className)
+                obj[prop.id] = await fromJsonValue(configuration, propValue, prop.type, propValue._cn??prop.className)
             }
         }
     }

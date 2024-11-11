@@ -26,6 +26,7 @@ import com.gridnine.platform.elsa.common.meta.l10n.L10nMessageDescription;
 import com.gridnine.platform.elsa.common.meta.l10n.L10nMessageParameterDescription;
 import com.gridnine.platform.elsa.common.meta.l10n.L10nMessagesBundleDescription;
 import com.gridnine.platform.elsa.common.meta.l10n.L10nMetaRegistry;
+import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
@@ -36,7 +37,6 @@ import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -84,7 +84,7 @@ public class WebL10nCodeGenerator implements CodeGenerator<WebL10nCodeGenRecord>
                             sb1.append(", ");
                             sb2.append(", ");
                         }
-                        sb1.append("%s: %s".formatted(param.getId(), WebCodeGeneratorUtils.getType(param.getType(), param.getClassName())));
+                        sb1.append("%s: %s".formatted(param.getId(), WebCodeGeneratorUtils.getType(param.getType(), new RemotingMetaRegistry(), param.getClassName())));
                         sb2.append(param.getId());
                     }
                     gen.wrapWithBlock("%s(%s) ".formatted(message.getId(), sb1), () -> gen.printLine("return this.getMessage('%s', %s);".formatted(message.getId(), sb2)));

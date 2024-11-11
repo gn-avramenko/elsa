@@ -25,6 +25,7 @@ import com.gridnine.platform.elsa.common.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.common.meta.common.EnumDescription;
 import com.gridnine.platform.elsa.common.meta.common.StandardPropertyDescription;
 import com.gridnine.platform.elsa.common.meta.common.StandardValueType;
+import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 
 import java.io.File;
 import java.util.*;
@@ -44,8 +45,8 @@ public class WebCodeGeneratorUtils {
         gen.print(";\n");
     }
 
-    public static void generateWebEntityCode(EntityDescription ed, TypeScriptCodeGenerator gen) throws Exception {
-        var imports = new HashSet<>();
+    public static void generateWebEntityCode(EntityDescription ed, RemotingMetaRegistry metaRegistry, TypeScriptCodeGenerator gen) throws Exception {
+        var imports = new HashSet<String>();
         for (var pd : ed.getProperties().values()) {
             if(pd.getType() == StandardValueType.ENTITY || pd.getType() == StandardValueType.ENUM){
                 imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getClassName()));
@@ -53,48 +54,71 @@ public class WebCodeGeneratorUtils {
         }
         for (var pd : ed.getCollections().values()) {
             if(pd.getElementType() == StandardValueType.ENTITY|| pd.getElementType() == StandardValueType.ENUM){
-                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getElementClassName()));
+                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getElementClassName()));
             }
         }
         for (var pd : ed.getMaps().values()) {
             if(pd.getKeyType() == StandardValueType.ENTITY|| pd.getKeyType() == StandardValueType.ENUM){
-                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getKeyClassName()));
+                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getKeyClassName()));
             }
             if(pd.getValueType() == StandardValueType.ENTITY|| pd.getValueType() == StandardValueType.ENUM){
-                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getValueClassName()));
+                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getValueClassName()));
             }
         }
         if(ed.getExtendsId() != null){
             imports.add(JavaCodeGeneratorUtils.getSimpleName(ed.getExtendsId()));
         }
         if(!imports.isEmpty()){
+            if(imports.stream().anyMatch(it -> isAbstract(it, metaRegistry))){
+                gen.printLine("import { HasClassName } from 'elsa-web-core'");
+            }
             imports.stream().sorted().forEach(it ->{
-                gen.printLine("import { %s } from '%s';".formatted(it, it));
+                if(!"Object".equals(it)) {
+                    gen.printLine("import { %s } from '%s';".formatted(it, it));
+                }
             });
             gen.blankLine();
         }
+
         gen.wrapWithBlock("export type %s=%s".formatted(
                 JavaCodeGeneratorUtils.getSimpleName(ed.getId()), ed.getExtendsId()!= null? "%s & ".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getExtendsId())): ""), () -> {
             for (var pd : ed.getProperties().values()) {
-                gen.printLine("%s%s: %s,".formatted(pd.getId(), isNullable(pd) ? "?" : "", getType(pd.getType(), pd.getClassName())));
+                gen.printLine("%s%s: %s,".formatted(pd.getId(), isNullable(pd) ? "?" : "", getType(pd.getType(), metaRegistry, pd.getClassName())));
             }
             for (var cd : ed.getCollections().values()) {
-                gen.printLine("%s: %s[],".formatted(cd.getId(), getType(cd.getElementType(), cd.getElementClassName())));
+                gen.printLine("%s: %s[],".formatted(cd.getId(), getType(cd.getElementType(), metaRegistry, cd.getElementClassName())));
             }
             for (var md : ed.getMaps().values()) {
-                gen.printLine("%s: Map<%s, %s>,".formatted(md.getId(), getType(md.getKeyType(), md.getKeyClassName()),
-                        getType(md.getValueType(), md.getValueClassName())));
+                gen.printLine("%s: Map<%s, %s>,".formatted(md.getId(), getType(md.getKeyType(), metaRegistry, md.getKeyClassName()),
+                        getType(md.getValueType(), metaRegistry, md.getValueClassName())));
             }
         });
         gen.print(";\n");
     }
 
-    public static String getType(StandardValueType vt, String className) {
+    private static boolean isAbstract(String it, RemotingMetaRegistry metaRegistry) {
+        if("Object".equals(it)){
+            return true;
+        }
+        var ett = metaRegistry.getEntities().get(it);
+        return ett != null && ett.isAbstract();
+    }
+
+    public static String getType(StandardValueType vt, RemotingMetaRegistry metaRegistry, String className) {
         return switch (vt) {
             case LONG, INT, BIG_DECIMAL -> "number";
             case UUID, STRING, CLASS -> "string";
             case LOCAL_DATE, INSTANT, LOCAL_DATE_TIME -> "Date";
-            case ENTITY, ENUM -> JavaCodeGeneratorUtils.getSimpleName(className);
+            case ENUM -> JavaCodeGeneratorUtils.getSimpleName(className);
+            case ENTITY -> {
+                if("Object".equals(className)){
+                    yield  "HasClassName";
+                }
+                if(isAbstract(className, metaRegistry)){
+                    yield  "%s & HasClassName".formatted(JavaCodeGeneratorUtils.getSimpleName(className));
+                }
+                yield JavaCodeGeneratorUtils.getSimpleName(className);
+            }
             case BOOLEAN -> "boolean";
             case BYTE_ARRAY -> "Uint8Array";
             case ENTITY_REFERENCE -> "EntityReference";

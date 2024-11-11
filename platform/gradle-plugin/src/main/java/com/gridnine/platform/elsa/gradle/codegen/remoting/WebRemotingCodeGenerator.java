@@ -30,8 +30,6 @@ import com.gridnine.platform.elsa.gradle.parser.remoting.RemotingMetaRegistryPar
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,7 +52,7 @@ public class WebRemotingCodeGenerator implements CodeGenerator<WebRemotingCodeGe
                 }
                 for (var ett : metaRegistry.getEntities().values()) {
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(ett, gen);
+                    WebCodeGeneratorUtils.generateWebEntityCode(ett, metaRegistry, gen);
                     var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), "%s.ts".formatted(JavaCodeGeneratorUtils.getSimpleName(ett.getId())), modelsDir);
                     generatedFiles.add(file);
                 }
@@ -62,7 +60,6 @@ public class WebRemotingCodeGenerator implements CodeGenerator<WebRemotingCodeGe
                     for(var group: remoting.getGroups().values()){
                         var gen = new TypeScriptCodeGenerator();
                         gen.printLine("import { BaseAPI, Configuration } from 'elsa-web-core';");
-                        var models = new HashSet<String>();
                         for(var service: group.getServices().values()){
                             if(service.getRequestClassName() != null){
                                gen.printLine("import { %s } from '../models/%s';".formatted(

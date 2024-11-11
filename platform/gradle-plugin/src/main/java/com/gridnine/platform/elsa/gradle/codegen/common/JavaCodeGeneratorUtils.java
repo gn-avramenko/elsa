@@ -41,12 +41,12 @@ public class JavaCodeGeneratorUtils {
 
     public static String getPackage(String className) {
         var idx = className.lastIndexOf(".");
-        return className.substring(0, idx);
+        return idx == -1? "java.lang": className.substring(0, idx);
     }
 
     public static String getSimpleName(String className) {
         var idx = className.lastIndexOf(".");
-        return className.substring(idx + 1);
+        return idx == -1? className: className.substring(idx + 1);
     }
 
     public static File saveIfDiffers(String content, String fileName, File destDir) throws IOException {
@@ -217,7 +217,7 @@ public class JavaCodeGeneratorUtils {
         var packageName = JavaCodeGeneratorUtils.getPackage(ed.getId());
         gen.setPackageName(packageName);
         var extendsId = ed.getExtendsId();
-        if (extendsId == null) {
+        if (extendsId == null || "Object".equals(extendsId)) {
             extendsId = "com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject";
         }
         var extId1 = extendsId;
@@ -463,7 +463,7 @@ public class JavaCodeGeneratorUtils {
             case BYTE_ARRAY -> "byte[]";
             case ENUM, ENTITY -> {
                 var pk = getPackage(className);
-                if (!gen.getPackageName().equals(pk)) {
+                if (!gen.getPackageName().equals(pk) && !"Object".equals(className)) {
                     gen.addImport(className);
                 }
                 yield getSimpleName(className);
