@@ -78,16 +78,18 @@ async function toJsonValue(configuration: Configuration, propValue: any | null |
 }
 
 async function toObject(configuration: Configuration, object: any, className: string) {
-    const ed = await getEntityDescription(configuration, className)
+    let ed = await getEntityDescription(configuration, className)
     const result = {} as any
-    if (ed.isAbstract) {
-        result._cn = className
+    const isAbstract = ed.isAbstract
+    if (isAbstract) {
+        result['_cn'] = object._cn
+        ed = await getEntityDescription(configuration, object._cn)
     }
     if (ed.properties) {
         for (let prop of ed.properties) {
             const propValue = object[prop.id]
             if (isNotNull(propValue)) {
-                result[prop.id] = await toJsonValue(configuration, propValue, prop.type, propValue._cn??prop.className)
+                result[prop.id] = await toJsonValue(configuration, propValue, prop.type, prop.className)
             }
         }
     }
@@ -162,7 +164,7 @@ async function updateObject(configuration: Configuration, obj: any, className: s
         for (let prop of ed.properties) {
             const propValue = obj[prop.id]
             if (isNotNull(propValue)) {
-                obj[prop.id] = await fromJsonValue(configuration, propValue, prop.type, propValue._cn??prop.className)
+                obj[prop.id] = await fromJsonValue(configuration, propValue, prop.type, prop.className)
             }
         }
     }

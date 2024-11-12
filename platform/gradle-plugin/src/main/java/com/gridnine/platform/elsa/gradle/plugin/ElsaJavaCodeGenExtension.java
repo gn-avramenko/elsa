@@ -31,6 +31,7 @@ import com.gridnine.platform.elsa.gradle.codegen.remoting.OpenApiCodeGenRecord;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ElsaJavaCodeGenExtension {
@@ -68,12 +69,14 @@ public class ElsaJavaCodeGenExtension {
         codegenRecords.add(record);
     }
 
-    public void domainInjection(String destDir,  List<String> sourcesFileNames) throws IOException {
+    public void domainInjection(String destDir,  List<String> sourcesFileNames) throws Exception {
         List<File> files = sourcesFileNames.stream().map(it -> new File(projectDir, it)).toList();
         if(globalData.getCurrentDomainRecord() != null) {
             globalData.getCurrentDomainRecord().getLocalInjections().addAll(files);
         }
-        globalData.getDomainRecords().get(new File(projectDir, destDir).getCanonicalPath()).getExternalInjections().addAll(files);
+        Object record = globalData.getDomainRecords().get(new File(projectDir, destDir).getCanonicalPath());
+        var extensions = record.getClass().getMethod("getExternalInjections").invoke(record);
+        extensions.getClass().getMethod("addAll", Collection.class).invoke(extensions, files);
     }
 
     public void custom(String destDir, String configurator, List<String> sourcesFileNames) {
