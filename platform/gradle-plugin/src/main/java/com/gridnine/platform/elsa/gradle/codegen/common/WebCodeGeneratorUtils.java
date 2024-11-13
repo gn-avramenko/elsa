@@ -74,7 +74,7 @@ public class WebCodeGeneratorUtils {
             }
             imports.stream().sorted().forEach(it ->{
                 if(!"Object".equals(it)) {
-                    gen.printLine("import { %s } from '%s';".formatted(it, it));
+                    gen.printLine("import { %s } from './%s';".formatted(it, it));
                 }
             });
             gen.blankLine();
