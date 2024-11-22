@@ -68,6 +68,7 @@ async function toJsonValue(configuration: Configuration, propValue: any | null |
         case "ENTITY_REFERENCE":
         case "INT":
         case "LONG":
+        case "BOOLEAN":
             return propValue
         case 'ENTITY': {
             return await toObject(configuration, propValue, className!!)

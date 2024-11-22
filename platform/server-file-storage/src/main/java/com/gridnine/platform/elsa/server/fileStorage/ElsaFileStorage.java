@@ -26,10 +26,12 @@ import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAndArgument;
+import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FileSystemUtils;
+import org.xadisk.additional.XAFileInputStreamWrapper;
 import org.xadisk.bridge.proxies.interfaces.XAFileOutputStream;
 import org.xadisk.bridge.proxies.interfaces.XAFileSystem;
 import org.xadisk.bridge.proxies.interfaces.XAFileSystemProxy;
@@ -56,7 +58,7 @@ public class ElsaFileStorage {
     @PostConstruct
     public void init() throws InterruptedException {
         File dir = new File("temp/xa-disk");
-        if(dir.exists()){
+        if (dir.exists()) {
             FileSystemUtils.deleteRecursively(dir);
         }
         var configuration = new StandaloneFileSystemConfiguration(dir.getAbsolutePath(), "1");
@@ -65,8 +67,8 @@ public class ElsaFileStorage {
         Configuration.addResource(new XATransactionalResource("file-storage") {
             @Override
             protected XAResource refreshXAConnection() throws ResourceException {
-                var context =  transactionManager.getCurrentContext();
-                if(context == null){
+                var context = transactionManager.getCurrentContext();
+                if (context == null) {
                     return null;
                 }
                 XAResource xarXADisk = (XAResource) context.getAttributes().get("xa-disk-resource");
@@ -81,8 +83,8 @@ public class ElsaFileStorage {
         });
     }
 
-    public void write(File file, InputStream is) {
-        withTransaction((session) -> {
+    public long write(File file, InputStream is) {
+        return withTransaction((session) -> {
             if (!session.fileExists(file)) {
                 String[] dirs = file.getPath().split(Pattern.quote(File.separator));
                 var dir = new File("");
@@ -96,7 +98,7 @@ public class ElsaFileStorage {
             }
             var os = session.createXAFileOutputStream(file, true);
             copyStream(is, os, standardInputStreamHanlder, xaFileOutputStreamHandler);
-            return null;
+            return session.getFileLength(file);
         });
     }
 
@@ -108,16 +110,17 @@ public class ElsaFileStorage {
         });
     }
 
-//    public void read(File file, RunnableWithExceptionAndArgument<InputStream> handler) {
-//        withTransaction((session) -> {
-//            try (InputStream is = new XAFileInputStreamWrapper(session.createXAFileInputStream(file))) {
-//                handler.run(is);
-//            }
-//            return null;
-//        });
-//    }
+    public void read(File file, RunnableWithExceptionAndArgument<InputStream> handler) {
+        withTransaction((session) -> {
+            try (InputStream is = new XAFileInputStreamWrapper(session.createXAFileInputStream(file))) {
+                handler.run(is);
+            }
+            return null;
+        });
+    }
 
-    private void deleteFileInternal(XASession session, File file) throws LockingFailedException, NoTransactionAssociatedException, FileNotExistsException, DirectoryNotEmptyException, InterruptedException, FileUnderUseException, InsufficientPermissionOnFileException {
+    private void deleteFileInternal(XASession session, File file) throws LockingFailedException, NoTransactionAssociatedException,
+            FileNotExistsException, DirectoryNotEmptyException, InterruptedException, FileUnderUseException, InsufficientPermissionOnFileException {
         if (file.isDirectory()) {
             for (File item : file.listFiles()) {
                 deleteFileInternal(session, item);
@@ -151,8 +154,8 @@ public class ElsaFileStorage {
                 xarXADisk = xaSession.getXAResource();
                 transactionManager.getCurrentContext().getAttributes().put("xa-disk-resource", xarXADisk);
                 transactionManager.getCurrentContext().getAttributes().put("xa-disk-session", xaSession);
+                Objects.requireNonNull(TransactionManagerImp.getTransactionManager()).getTransaction().enlistResource(xarXADisk);
             }
-            Objects.requireNonNull(TransactionManagerImp.getTransactionManager()).getTransaction().enlistResource(xarXADisk);
             return func.call(xaSession);
         });
     }
