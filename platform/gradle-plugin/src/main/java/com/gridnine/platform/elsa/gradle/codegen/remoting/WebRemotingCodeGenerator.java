@@ -30,6 +30,7 @@ import com.gridnine.platform.elsa.gradle.parser.remoting.RemotingMetaRegistryPar
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,17 +60,20 @@ public class WebRemotingCodeGenerator implements CodeGenerator<WebRemotingCodeGe
                 for(var remoting: metaRegistry.getRemotings().values()){
                     for(var group: remoting.getGroups().values()){
                         var gen = new TypeScriptCodeGenerator();
+                        var imported = new HashSet<String>();
                         gen.printLine("import { BaseAPI, Configuration } from 'elsa-web-core';");
                         for(var service: group.getServices().values()){
-                            if(service.getRequestClassName() != null){
+                            if(service.getRequestClassName() != null && !imported.contains(service.getRequestClassName())){
                                gen.printLine("import { %s } from '../models/%s';".formatted(
                                        JavaCodeGeneratorUtils.getSimpleName(service.getRequestClassName()),
                                        JavaCodeGeneratorUtils.getSimpleName(service.getRequestClassName())));
+                               imported.add(service.getRequestClassName());
                             }
-                            if(service.getResponseClassName() != null){
+                            if(service.getResponseClassName() != null && !imported.contains(service.getResponseClassName())){
                                 gen.printLine("import { %s } from '../models/%s';".formatted(
                                         JavaCodeGeneratorUtils.getSimpleName(service.getResponseClassName()),
                                         JavaCodeGeneratorUtils.getSimpleName(service.getResponseClassName())));
+                                imported.add(service.getResponseClassName());
                             }
                         }
                         gen.blankLine();

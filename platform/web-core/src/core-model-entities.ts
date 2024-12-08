@@ -28,6 +28,9 @@ export type EntityReference = {
     caption?: string
 }
 
+export type BinaryData = {
+}
+
 export type BaseProjection = {
     document: EntityReference,
     navigationKey?: number

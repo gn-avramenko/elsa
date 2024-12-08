@@ -73,7 +73,9 @@ public class WebCodeGeneratorUtils {
                 gen.printLine("import { HasClassName } from 'elsa-web-core'");
             }
             imports.stream().sorted().forEach(it ->{
-                if(!"Object".equals(it)) {
+                if("BinaryData".equals(it)){
+                    gen.printLine("import { BinaryData }  from 'elsa-web-core';");
+                } else if(!"Object".equals(it)) {
                     gen.printLine("import { %s } from './%s';".formatted(it, it));
                 }
             });
