@@ -240,15 +240,19 @@ public class RemotingHttpServlet extends HttpServlet {
             if (BinaryData.class.getName().equals(scd.getResponseClassName())){
                 var bd = (BinaryData) rp;
                 context.getHttpResponse().setStatus(HttpServletResponse.SC_OK);
-                context.getHttpResponse().setContentType("application/octet-stream");
-                context.getHttpResponse().setContentLengthLong(bd.getContentLength());
-                if (context.getHttpResponse().getHeader(HttpHeaders.CONTENT_DISPOSITION) == null) {
+                String range = context.getHttpRequest().getHeader("Range");
+                if(TextUtils.isNotBlank(range)){//partial download
+                    context.getHttpResponse().setHeader("Content-Length", String.valueOf(bd.getContentLength()));
+                    PartialDownloadHelper.processPartialDownload(context.getHttpRequest(), context.getHttpResponse(), bd);
+                } else {
+                    context.getHttpResponse().setContentType(bd.getMimeType() != null? bd.getMimeType(): "application/octet-stream");
+                    context.getHttpResponse().setContentLengthLong(bd.getContentLength());
                     context.getHttpResponse().setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''"
                             + URLEncoder.encode(bd.getName(), StandardCharsets.UTF_8));
-                }
-                try (var os = context.getHttpResponse().getOutputStream()) {
-                    bd.getInputStream().transferTo(os);
-                    os.flush();
+                    try (var os = context.getHttpResponse().getOutputStream()) {
+                        bd.getInputStream().transferTo(os);
+                        os.flush();
+                    }
                 }
             } else if (scd.getResponseClassName() != null) {
                 context.getHttpResponse().setStatus(HttpServletResponse.SC_OK);

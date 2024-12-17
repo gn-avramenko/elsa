@@ -98,7 +98,7 @@ public class JdbcDatabase implements Database {
     public <A extends BaseAsset> DatabaseAssetWrapper<A> loadAssetWrapper(Class<A> aClass, UUID id) {
         var description = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(aClass.getName()));
         Objects.requireNonNull(description);
-        var columnNames = getColumnNames(description, Collections.emptySet(), Collections.emptySet());
+        var columnNames = getColumnNames(description, false, Collections.emptySet(), Collections.emptySet());
         var sql = "select %s from %s where %s = ?".formatted(TextUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.idName);
         var result = template.query(sql, ps -> ps.setObject(1, id), rs -> {
             if (!rs.next()) {
@@ -263,7 +263,7 @@ public class JdbcDatabase implements Database {
     public <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id) {
         var description = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
         Objects.requireNonNull(description);
-        var columnNames = getColumnNames(description, Collections.emptySet(), Collections.singleton(DatabaseAssetWrapper.Fields.aggregatedData));
+        var columnNames = getColumnNames(description, false, Collections.emptySet(), Collections.singleton(DatabaseAssetWrapper.Fields.aggregatedData));
         var sql = "select %s from %s where %s = ?".formatted(TextUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.idName);
         var result = template.query(sql, ps -> ps.setObject(1, id), rs -> {
             if (!rs.next()) {
@@ -337,7 +337,7 @@ public class JdbcDatabase implements Database {
             return;
         }
         var selectSql = "select %s from %s where document = ?".formatted(
-                TextUtils.join(getColumnNames(descr, Collections.emptySet(), Collections.emptySet()), ", "),
+                TextUtils.join(getColumnNames(descr, false, Collections.emptySet(), Collections.emptySet()), ", "),
                 descr.getName());
         var existingProjections = template.query(selectSql, (ps) -> ps.setObject(1, id), (rs, idx) -> ExceptionUtils.wrapException(() -> {
             var res = new DatabaseSearchableProjectionWrapper<>(reflectionFactory.newInstance(projectionClass), domainMetaRegistry, null);
@@ -747,11 +747,16 @@ public class JdbcDatabase implements Database {
     }
 
 
-    private Set<String> getColumnNames(JdbcTableDescription description, Set<String> includedProperties, Set<String> excludedProperties) {
+    private Set<String> getColumnNames(JdbcTableDescription description, boolean hasJoin, Set<String> includedProperties, Set<String> excludedProperties) {
         var result = new LinkedHashSet<String>();
         description.getFields().forEach((id, handler) -> {
             if (isIncluded(id, includedProperties, excludedProperties)) {
-                result.addAll(handler.getColumns().keySet());
+                result.addAll(handler.getColumns().keySet().stream().map(it -> {
+                    if(it.equals("id")){
+                        return "%s.id".formatted(description.getName());
+                    }
+                    return it;
+                }).toList());
             }
         });
         return result;
@@ -771,7 +776,7 @@ public class JdbcDatabase implements Database {
         var joinPart = prepareJoinPart(query.getOrders(), cls);
         var orderPart = prepareOrderPart(query.getOrders(), cls);
         var limitPart = prepareLimitPart(query);
-        var selectSql = "select %s from %s ".formatted(TextUtils.join(getColumnNames(descr, properties, excludedProperties), ", ")
+        var selectSql = "select %s from %s ".formatted(TextUtils.join(getColumnNames(descr, TextUtils.isNotBlank(joinPart), properties, excludedProperties), ", ")
                 , JdbcUtils.getTableName(cls.getName())) +
                 joinPart +
                 wherePart.sql +
@@ -893,7 +898,7 @@ public class JdbcDatabase implements Database {
         var sql = new StringBuilder();
         var indexOfSQL = new AtomicReference<>(0);
         prepareWherePartInternal(sql, values, indexOfSQL, criterions, descr, vad);
-        return new WherePartData(values, "where %s".formatted(sql));
+        return new WherePartData(values, " where %s".formatted(sql));
     }
 
     private String makeAndToken(int currentSQLIndex) {

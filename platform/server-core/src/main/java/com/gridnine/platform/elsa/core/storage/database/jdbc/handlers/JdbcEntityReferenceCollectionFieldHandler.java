@@ -136,7 +136,7 @@ public class JdbcEntityReferenceCollectionFieldHandler implements JdbcFieldHandl
 
     @Override
     public Pair<Object, JdbcFieldType> getSqlQueryValue(Object value, EnumMapper enumMapper, ClassMapper classMapper, ReflectionFactory factory) throws Exception {
-        return Pair.of(value == null ? null : ((EntityReference<?>) value).getId(), JdbcFieldType.LONG);
+        return Pair.of(value instanceof Collection? ((Collection<EntityReference>) value).stream().map(it -> it.getId()).toList():  ((EntityReference<?>) value).getId(), value instanceof Collection? JdbcFieldType.UUID_ARRAY: JdbcFieldType.UUID);
     }
 
 }
