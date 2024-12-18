@@ -63,16 +63,25 @@ public class WebRemotingCodeGenerator implements CodeGenerator<WebRemotingCodeGe
                         var imported = new HashSet<String>();
                         gen.printLine("import { BaseAPI, Configuration } from 'elsa-web-core';");
                         for(var service: group.getServices().values()){
+
                             if(service.getRequestClassName() != null && !imported.contains(service.getRequestClassName())){
-                               gen.printLine("import { %s } from '../models/%s';".formatted(
-                                       JavaCodeGeneratorUtils.getSimpleName(service.getRequestClassName()),
-                                       JavaCodeGeneratorUtils.getSimpleName(service.getRequestClassName())));
+                                if("com.gridnine.platform.elsa.core.remoting.standard.BinaryData".equals(service.getRequestClassName())){
+                                    gen.printLine("import { BinaryData }  from 'elsa-web-core';");
+                                } else  {
+                                    gen.printLine("import { %s } from '../models/%s';".formatted(
+                                            JavaCodeGeneratorUtils.getSimpleName(service.getRequestClassName()),
+                                            JavaCodeGeneratorUtils.getSimpleName(service.getRequestClassName())));
+                                }
                                imported.add(service.getRequestClassName());
                             }
                             if(service.getResponseClassName() != null && !imported.contains(service.getResponseClassName())){
-                                gen.printLine("import { %s } from '../models/%s';".formatted(
-                                        JavaCodeGeneratorUtils.getSimpleName(service.getResponseClassName()),
-                                        JavaCodeGeneratorUtils.getSimpleName(service.getResponseClassName())));
+                                if("com.gridnine.platform.elsa.core.remoting.standard.BinaryData".equals(service.getResponseClassName())){
+                                    gen.printLine("import { BinaryData }  from 'elsa-web-core';");
+                                } else  {
+                                    gen.printLine("import { %s } from '../models/%s';".formatted(
+                                            JavaCodeGeneratorUtils.getSimpleName(service.getResponseClassName()),
+                                            JavaCodeGeneratorUtils.getSimpleName(service.getResponseClassName())));
+                                }
                                 imported.add(service.getResponseClassName());
                             }
                         }

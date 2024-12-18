@@ -105,7 +105,6 @@ public class ElsaFileStorage {
     public void delete(File file) {
         withTransaction((session) -> {
             deleteFileInternal(session, file);
-            session.deleteFile(file);
             return null;
         });
     }
