@@ -186,4 +186,20 @@ public class StorageTest extends ServerCoreTestBase {
         Assertions.assertEquals(joinedAsset.getJoinedProperty(), item.getJoinedProperty());
 
     }
+
+    @Test
+    public void testVirtualAssetsAggregationQuery() {
+        var joinedAsset = new TestDomainJoinedAsset();
+        joinedAsset.setJoinedProperty("joined value");
+        storage.saveAsset(joinedAsset, "init");
+        var baseAsset = new TestDomainAsset();
+        baseAsset.setStringProperty("test");
+        baseAsset.setDateProperty(LocalDateTime.now());
+        baseAsset.setLocalJoinedField(joinedAsset.getId());
+        storage.saveAsset(baseAsset, "init");
+        var vas = storage.searchVirtualAssets(TestDomainVirtualAsset.class,
+                new AggregationQueryBuilder().where(SearchCriterion.eq(TestDomainVirtualAssetFields.joinedProperty, "joined value")).count().build());
+        Assertions.assertEquals(1, vas.size());
+        Assertions.assertEquals(1, ((Number) vas.get(0).get(0)).intValue());
+    }
 }

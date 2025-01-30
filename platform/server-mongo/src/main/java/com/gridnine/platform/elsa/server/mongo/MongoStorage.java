@@ -226,6 +226,11 @@ public class MongoStorage implements Storage {
     }
 
     @Override
+    public <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery query) {
+        throw Xeption.forDeveloper("virtual assets are not supported");
+    }
+
+    @Override
     public <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query) {
         init();
         return searchAssets(cls, query, false);

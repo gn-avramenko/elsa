@@ -47,6 +47,8 @@ public interface Storage {
 
     <VA extends BaseVirtualAsset> List<VA> searchVirtualAssets(Class<VA> cls, SearchQuery query);
 
+    <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery query);
+
     <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query);
 
     <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version);

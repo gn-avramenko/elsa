@@ -186,6 +186,20 @@ public class StandardStorage implements Storage {
         return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchVirtualAssets(cls, query, advices, 0), true));
     }
 
+    @Override
+    public <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery query) {
+        init();
+        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchVirtualAssets(cls, query, advices, 0), true));
+    }
+
+    private <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery query, List<StorageAdvice> advices, int idx) throws Exception {
+        if (idx == advices.size()) {
+            return database.searchVirtualAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+        }
+        return advices.get(idx).onSearchVirtualAssets(cls, query,  (cls2, query2)
+                -> searchVirtualAssets(cls2, query2, advices, idx + 1));
+    }
+
     private <VA extends BaseVirtualAsset> List<VA> searchVirtualAssets(Class<VA> cls, SearchQuery query, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             var result = database.searchVirtualAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));

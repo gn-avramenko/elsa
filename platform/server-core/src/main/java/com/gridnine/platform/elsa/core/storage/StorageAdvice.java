@@ -116,5 +116,9 @@ public interface StorageAdvice extends HasPriority {
 
     default <VA extends BaseVirtualAsset> List<VA> onSearchVirtualAssets(Class<VA> cls, SearchQuery query, CallableWithExceptionAnd2Arguments<List<VA>, Class<VA>, SearchQuery> callback) throws Exception{
       return callback.call(cls, query);
-    };
+    }
+
+    default <VA extends BaseVirtualAsset> List<List<Object>> onSearchVirtualAssets(Class<VA> cls, AggregationQuery query, CallableWithExceptionAnd2Arguments<List<List<Object>>, Class<VA>, AggregationQuery> callback) throws Exception{
+        return callback.call(cls, query);
+    }
 }

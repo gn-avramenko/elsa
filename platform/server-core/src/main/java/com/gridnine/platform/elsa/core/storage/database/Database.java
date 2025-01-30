@@ -78,4 +78,6 @@ public interface Database {
     <I extends BaseIdentity> String getCaption(Class<I> type, UUID id) throws Exception;
 
     <VA extends BaseVirtualAsset> List<VA> searchVirtualAssets(Class<VA> cls, SearchQuery updateQuery) throws Exception;
+
+    <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery updateQuery) throws Exception;
 }

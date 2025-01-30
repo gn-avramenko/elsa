@@ -557,6 +557,34 @@ public class JdbcDatabase implements Database {
         }));
     }
 
+    @Override
+    public <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery query) throws Exception {
+        var vad = domainMetaRegistry.getVirtualAssets().get(cls.getName());
+        var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
+        var wherePart = prepareWherePart(query.getCriterions(), query.getFreeText(), descr, vad);
+        var joinPartSb = new StringBuilder(prepareJoinPart(query.getOrders(), cls));
+        var baseAssetTableName = JdbcUtils.getTableName(vad.getBaseAsset());
+        vad.getJoins().forEach(join ->{
+            if(!joinPartSb.isEmpty()){
+                joinPartSb.append(" ");
+            }
+            joinPartSb.append("left join %s on %s=%1$s.%s".formatted(JdbcUtils.getTableName(join.getJoinedEntity()), join.getForeignKey(), join.getPrimaryKey()));
+        });
+
+        var selectPart = prepareProjectionSelectPart(query);
+        var groupByPart = prepareProjectionGroupByPart(query);
+        var orderPart = prepareOrderPart(query.getOrders(), cls);
+        var selectSql = "select %s from %s %s %s %s%s".formatted(selectPart, baseAssetTableName, joinPartSb, wherePart.sql, groupByPart, orderPart);
+        var searchStatement = createPreparedStatementSetter(wherePart);
+        return template.query(selectSql, searchStatement, (rs, idx) -> {
+            var result = new ArrayList<>();
+            for (int n = 0; n < query.getAggregations().size(); n++) {
+                result.add(rs.getObject(n + 1));
+            }
+            return result;
+        });
+    }
+
     private <E extends BaseIntrospectableObject> List<List<Object>> aggregationSearchObjects(
             Class<E> cls, AggregationQuery query) throws Exception {
         var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
