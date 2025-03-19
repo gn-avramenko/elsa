@@ -26,6 +26,7 @@ import com.gridnine.platform.elsa.core.cache.CacheManager;
 import com.gridnine.platform.elsa.core.cache.CacheMetadataProvider;
 import com.gridnine.platform.elsa.core.cache.ehCache.EhCacheManager;
 import com.gridnine.platform.elsa.core.codec.DesCodec;
+import com.gridnine.platform.elsa.core.migration.MigrationProcessor;
 import com.gridnine.platform.elsa.core.remoting.standard.GetL10nBundleHandler;
 import com.gridnine.platform.elsa.core.scheduling.ScheduledTasksService;
 import com.gridnine.platform.elsa.core.storage.StorageFactory;
@@ -35,6 +36,7 @@ import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcDatabaseM
 import com.gridnine.platform.elsa.core.storage.standard.CacheStorageAdvice;
 import com.gridnine.platform.elsa.core.storage.standard.InvalidateCacheStorageInterceptor;
 import com.gridnine.platform.elsa.core.storage.standard.StandardStorageFactory;
+import com.gridnine.platform.elsa.server.core.CoreDomainConfigurator;
 import com.gridnine.platform.elsa.server.core.CoreL10nMessagesRegistryConfigurator;
 import com.gridnine.platform.elsa.server.core.CoreL10nMessagesRegistryFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -116,5 +118,15 @@ public class ElsaServerCoreConfiguration {
         scheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         scheduler.initialize();
         return new ScheduledTasksService(scheduler, listableBeanFactory, lockManager);
+    }
+
+    @Bean
+    public CoreDomainConfigurator coreDomainConfigurator(){
+        return new CoreDomainConfigurator();
+    }
+
+    @Bean
+    public MigrationProcessor migrationProcessor(){
+        return new MigrationProcessor();
     }
 }

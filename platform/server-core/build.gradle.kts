@@ -22,6 +22,10 @@ configure<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaExtension> {
             "com.gridnine.platform.elsa.server.core.CoreL10nMessagesRegistryFactory",
             arrayListOf("src/main/codegen/core-server-l10n-messages.xml")
         )
+        domain(
+                "src/main/java-gen", "com.gridnine.platform.elsa.server.core.CoreDomainConfigurator",
+           arrayListOf("src/main/codegen/core-server-domain.xml")
+        )
         remoting(
             "src/main/java-gen", null,
             "com.gridnine.platform.elsa.server.core.CoreRemotingConstants", true,
