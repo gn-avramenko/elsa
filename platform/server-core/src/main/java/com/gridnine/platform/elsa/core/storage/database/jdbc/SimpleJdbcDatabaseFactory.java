@@ -37,6 +37,7 @@ import com.gridnine.platform.elsa.core.storage.database.DatabaseFactory;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.adapter.JdbcDataSourceProvider;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.adapter.JdbcDialect;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcDatabaseMetadataProvider;
+import com.gridnine.platform.elsa.core.storage.database.jdbc.structureUpdater.JdbcStructureManualUpdateHandler;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.structureUpdater.JdbcStructureUpdater;
 import com.gridnine.platform.elsa.core.storage.standard.JdbcCaptionProviderImpl;
 import com.gridnine.platform.elsa.core.storage.transaction.DefaultElsaTransactionManager;
@@ -91,6 +92,9 @@ public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
 
     @Autowired
     private CacheManager cacheManager;
+
+    @Autowired(required = false)
+    private List<JdbcStructureManualUpdateHandler> manualUpdateHandlers;
 
     private ClassMapper classMapper;
 
@@ -177,7 +181,7 @@ public class SimpleJdbcDatabaseFactory implements DatabaseFactory {
             }
         };
         var storageTemplate = new JdbcTemplate(noAutoCommitDataSource);
-        JdbcStructureUpdater.updateStructure(autoCommitTemplate, dialect, jdbcDatabaseMetadataProvider, customParameters, (JdbcDatabaseCustomizer) customParameters.get(JdbcDatabaseCustomizer.KEY));
+        JdbcStructureUpdater.updateStructure(autoCommitTemplate, dialect, jdbcDatabaseMetadataProvider, manualUpdateHandlers, customParameters, (JdbcDatabaseCustomizer) customParameters.get(JdbcDatabaseCustomizer.KEY));
         classMapper = new JdbcClassMapperImpl(domainMetaRegistry, customMetaRegistry, autoCommitTemplate, dialect);
         enumMapper = new JdbcEnumMapperImpl(domainMetaRegistry, autoCommitTemplate, supportedLocalesProvider, dialect);
         captionProvider = new JdbcCaptionProviderImpl(env, cacheMetadataProvider, new Lazy<>(() ->database), cacheManager, supportedLocalesProvider);

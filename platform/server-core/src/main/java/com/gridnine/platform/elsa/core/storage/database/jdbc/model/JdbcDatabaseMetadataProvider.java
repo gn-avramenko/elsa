@@ -105,6 +105,12 @@ public class JdbcDatabaseMetadataProvider {
             });
             descriptionsMap.put(enumTable.getName(), enumTable);
         }
+        {
+            var structureUpdatesTable = new JdbcTableDescription("structureupdates");
+            structureUpdatesTable.getFields().put("id", new JdbcStringFieldHandler("id", true));
+            structureUpdatesTable.getFields().put("date", new JdbcInstantFieldHandler("date", false));
+            descriptionsMap.put(structureUpdatesTable.getName(), structureUpdatesTable);
+        }
         metaRegistry.getDocuments().values().forEach(doc -> {
             if (!doc.isAbstract()) {
                 {

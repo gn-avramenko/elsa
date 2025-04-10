@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.core.storage.database.jdbc.structureUpdater;
 
+import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.JdbcDatabaseCustomizer;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.adapter.JdbcDialect;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,8 +39,25 @@ public final class JdbcStructureUpdater {
     private static final Logger log = LoggerFactory.getLogger(JdbcStructureUpdater.class);
 
 
-    public static void updateStructure(JdbcTemplate template, JdbcDialect dialect, JdbcDatabaseMetadataProvider metadataProvider, Map<String, Object> customParameters, JdbcDatabaseCustomizer customizer) {
+    public static void updateStructure(JdbcTemplate template, JdbcDialect dialect, JdbcDatabaseMetadataProvider metadataProvider, List<JdbcStructureManualUpdateHandler> manualUpdateHandlers, Map<String, Object> customParameters, JdbcDatabaseCustomizer customizer) {
         long start = System.currentTimeMillis();
+        if(manualUpdateHandlers != null){
+            if(!dialect.getTableNames().contains("structureupdates")){
+                template.execute("create table structureupdates(id %s, date %s)".formatted(dialect.getSqlType(JdbcFieldType.STRING), dialect.getSqlType(JdbcFieldType.INSTANT)));
+            }
+            var result = template.query("SELECT id FROM structureupdates", (rs, num) -> rs.getString("id"));
+            List<JdbcStructureManualUpdateHandler> toExecute = manualUpdateHandlers.stream().filter(it -> !result.contains(it.getId())).toList();
+            toExecute.forEach(h ->{
+                log.info("executing manual update for handler {}", h.getId());
+                ExceptionUtils.wrapException(()->{
+                    h.execute(template, dialect);
+                    template.update("INSERT INTO structureupdates(id,date) values (?,?)", (ps ->{
+                        ps.setString(1, h.getId());
+                        ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+                    }));
+                });
+            });
+        }
         final JdbcDatabaseStructureAnalysisResult analysisResult = analyze(metadataProvider, dialect, customizer);
         log.debug("Database analysis was completed in %s ms. Result:\n%s".formatted(System.currentTimeMillis() - start, analysisResult));
         if (analysisResult.tablesToCreate().isEmpty() && analysisResult.tablesToUpdate().isEmpty() && analysisResult.tablesToDelete().isEmpty()) {

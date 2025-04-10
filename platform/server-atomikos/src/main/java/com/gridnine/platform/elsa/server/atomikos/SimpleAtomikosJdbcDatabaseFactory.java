@@ -43,6 +43,7 @@ import com.gridnine.platform.elsa.core.storage.database.jdbc.JdbcDatabaseCustomi
 import com.gridnine.platform.elsa.core.storage.database.jdbc.JdbcEnumMapperImpl;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.adapter.JdbcDataSourceProvider;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcDatabaseMetadataProvider;
+import com.gridnine.platform.elsa.core.storage.database.jdbc.structureUpdater.JdbcStructureManualUpdateHandler;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.structureUpdater.JdbcStructureUpdater;
 import com.gridnine.platform.elsa.core.storage.standard.JdbcCaptionProviderImpl;
 import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionManager;
@@ -95,6 +96,9 @@ public class SimpleAtomikosJdbcDatabaseFactory implements DatabaseFactory {
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired(required = false)
+    private List<JdbcStructureManualUpdateHandler> manualUpdateHandlers;
+
     private ClassMapper classMapper;
 
     private EnumMapper enumMapper;
@@ -143,7 +147,7 @@ public class SimpleAtomikosJdbcDatabaseFactory implements DatabaseFactory {
         noAutoCommitDataSource.init();
         var dialect = adapter.createDialect(ds);
         var storageTemplate = new JdbcTemplate(noAutoCommitDataSource);
-        JdbcStructureUpdater.updateStructure(autoCommitTemplate, dialect, jdbcDatabaseMetadataProvider, customParameters,(JdbcDatabaseCustomizer) customParameters.get(JdbcDatabaseCustomizer.KEY));
+        JdbcStructureUpdater.updateStructure(autoCommitTemplate, dialect, jdbcDatabaseMetadataProvider, manualUpdateHandlers, customParameters,(JdbcDatabaseCustomizer) customParameters.get(JdbcDatabaseCustomizer.KEY));
         classMapper = new JdbcClassMapperImpl(domainMetaRegistry, customMetaRegistry, autoCommitTemplate, dialect);
         enumMapper = new JdbcEnumMapperImpl(domainMetaRegistry, autoCommitTemplate, supportedLocalesProvider, dialect);
         captionProvider = new JdbcCaptionProviderImpl(env, cacheMetadataProvider, new Lazy<>(()-> database), cacheManager, supportedLocalesProvider);
