@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es2016",            // Compatible with older browsers
-    "module": "commonjs",            // Compatible with both Node.js and browser
-    "sourceMap": true,          // Creates *.js.map files
-    "strict": true,             // Strict types, eg. prohibits `var x=0; x=null`
-    "alwaysStrict": true,        // Enable JavaScript's "use strict" mode
-    "allowJs": true
+    "declaration": true,                // Генерировать .d.ts
+    "emitDeclarationOnly": true,        // Только типы, без JS
+    "outDir": "./dist/types",          // Куда положить .d.ts
+    "rootDir": "./src",                 // Откуда брать исходники
+    "module": "ESNext",                 // Поддержка ES-модулей
+    "target": "ESNext",
+    "moduleResolution": "node",         // Важно для Vite
+    "esModuleInterop": true,            // Совместимость с CommonJS
+    "strict": true                      // Строгая проверка типов
   },
-  "include": ["src/feature/*.ts","**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts"],           // Какие файлы компилировать
+  "exclude": ["node_modules"],
 }
-

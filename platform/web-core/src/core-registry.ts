@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/prefer-default-export,max-classes-per-file,no-unused-vars
+// @ts-ignore
 export class RegistryItemType<T> {
   id: string;
 

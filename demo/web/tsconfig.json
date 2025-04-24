@@ -1,13 +1,36 @@
 {
   "compilerOptions": {
-    "target": "es2016",            // Compatible with older browsers
-    "module": "commonjs",            // Compatible with both Node.js and browser
-    "sourceMap": true,          // Creates *.js.map files
-    "strict": true,             // Strict types, eg. prohibits `var x=0; x=null`
-    "alwaysStrict": true,        // Enable JavaScript's "use strict" mode
-    "allowJs": true
-  },
-  "include": ["src/feature/*.ts","**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
-}
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "useDefineForClassFields": true,
+//    "lib": ["ES2020", "DOM", "DOM.Iterable"],
 
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+    "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
+    "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
+    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
+    "forceConsistentCasingInFileNames": true,    
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src"],
+}

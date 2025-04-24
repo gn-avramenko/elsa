@@ -35,4 +35,3 @@ export type BaseProjection = {
     document: EntityReference,
     navigationKey?: number
 }
-

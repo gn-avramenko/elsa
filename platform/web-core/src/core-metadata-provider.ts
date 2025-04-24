@@ -1,14 +1,15 @@
+import { HTTPRequestInit } from './core-remoting';
+
 export type HTTPHeaders = { [key: string]: string };
 export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'HEAD';
 
 export type Configuration = {
     basePath?: string; // override base path
-    headers?: HTTPHeaders; //header params we want to use on every request
+    headers?: HTTPHeaders; // header params we want to use on every request
 }
 export type BaseElementWithId = {
     id: string
 }
-
 
 export type StandardValueType = 'STRING' | 'LOCAL_DATE' | 'LOCAL_DATE_TIME' | 'ENUM'
     | 'BOOLEAN' | 'ENTITY_REFERENCE' | 'LONG' | 'INT' | 'BIG_DECIMAL' | 'INSTANT' | 'UUID'|'ENTITY';
@@ -63,47 +64,47 @@ export type L10nMessagesBundleDescription = BaseElementWithId & {
     messages: Map<String, L10nMessageDescription>
 }
 
-const services = new Map<string, ServiceDescription>()
-const entities = new Map<string, EntityDescription>()
-const subscriptions = new Map<string, SubscriptionDescription>()
+const services = new Map<string, ServiceDescription>();
+const entities = new Map<string, EntityDescription>();
+const subscriptions = new Map<string, SubscriptionDescription>();
 
 const request = async (configuration: Configuration, relativeUrl: string) => {
-    const headers = Object.assign({}, configuration.headers || {});
-    const initParams = {
-        method: 'GET',
-        headers
-    } as RequestInit;
-    const url = `${configuration.basePath}/${relativeUrl}`
-    const response = await fetch(url, initParams)
-    return await response.json()
-}
+  const headers = { ...configuration.headers || {} };
+  const initParams = {
+    method: 'GET',
+    headers,
+  } as HTTPRequestInit;
+  const url = `${configuration.basePath}/${relativeUrl}`;
+  const response = await fetch(url, initParams);
+  const result = await response.json();
+  return result;
+};
 
 export async function getServiceDescription(configuration: Configuration, remotingId: string, groupId: string, serviceId: string) {
-    const id = `${remotingId}/${groupId}/${serviceId}`
-    if(services.has(id)){
-        return services.get(id)!!
-    }
-    const description = (await request(configuration, `core/meta/service-description?remotingId=${remotingId}&groupId=${groupId}&serviceId=${serviceId}`)) as ServiceDescription
-    services.set(id, description)
-    return description!!
+  const id = `${remotingId}/${groupId}/${serviceId}`;
+  if (services.has(id)) {
+    return services.get(id)!!;
+  }
+  const description = (await request(configuration, `core/meta/service-description?remotingId=${remotingId}&groupId=${groupId}&serviceId=${serviceId}`)) as ServiceDescription;
+  services.set(id, description);
+  return description!!;
 }
 
-
 export async function getSubscriptionDescription(configuration: Configuration, remotingId:string, groupId:string, subscriptionId:string) {
-    const id = `${remotingId}_${groupId}_${subscriptionId}`
-    if(subscriptions.has(id)){
-        return subscriptions.get(id)!!
-    }
-    const description = (await request(configuration, `core/meta/subscription-description?remotingId=${remotingId}&groupId=${groupId}&subscriptionId=${subscriptionId}`)) as SubscriptionDescription
-    subscriptions.set(id, description)
-    return description!!
+  const id = `${remotingId}_${groupId}_${subscriptionId}`;
+  if (subscriptions.has(id)) {
+    return subscriptions.get(id)!!;
+  }
+  const description = (await request(configuration, `core/meta/subscription-description?remotingId=${remotingId}&groupId=${groupId}&subscriptionId=${subscriptionId}`)) as SubscriptionDescription;
+  subscriptions.set(id, description);
+  return description!!;
 }
 
 export async function getEntityDescription(configuration: Configuration, entityId:string) {
-    if(entities.has(entityId)){
-        return entities.get(entityId)!!
-    }
-    const description = (await request(configuration, `core/meta/entity-description?entityId=${entityId}`)) as EntityDescription
-    entities.set(entityId, description)
-    return description!!
+  if (entities.has(entityId)) {
+    return entities.get(entityId)!!;
+  }
+  const description = (await request(configuration, `core/meta/entity-description?entityId=${entityId}`)) as EntityDescription;
+  entities.set(entityId, description);
+  return description!!;
 }
