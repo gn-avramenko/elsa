@@ -21,12 +21,12 @@
 
 package com.gridnine.platform.elsa.gradle.parser.l10n;
 
-import com.gridnine.platform.elsa.common.meta.common.StandardValueType;
-import com.gridnine.platform.elsa.common.meta.common.XmlNode;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMessageDescription;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMessageParameterDescription;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMessagesBundleDescription;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
+import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMessageDescription;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMessageParameterDescription;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMessagesBundleDescription;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.platform.elsa.gradle.parser.common.MetaDataParsingResult;
 

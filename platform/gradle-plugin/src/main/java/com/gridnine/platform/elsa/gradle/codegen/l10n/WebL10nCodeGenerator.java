@@ -21,16 +21,16 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.l10n;
 
-import com.gridnine.platform.elsa.common.meta.common.StandardValueType;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMessageDescription;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMessageParameterDescription;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMessagesBundleDescription;
-import com.gridnine.platform.elsa.common.meta.l10n.L10nMetaRegistry;
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMessageDescription;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMessageParameterDescription;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMessagesBundleDescription;
+import com.gridnine.platform.elsa.gradle.meta.l10n.L10nMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.l10n.L10nMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;

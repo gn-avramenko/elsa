@@ -21,8 +21,8 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.domain;
 
-import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
+import com.gridnine.platform.elsa.gradle.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.domain.DomainMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 

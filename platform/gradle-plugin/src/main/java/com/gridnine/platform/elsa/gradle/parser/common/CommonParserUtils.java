@@ -21,7 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.parser.common;
 
-import com.gridnine.platform.elsa.common.meta.common.*;
+import com.gridnine.platform.elsa.gradle.meta.common.*;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.ByteArrayInputStream;

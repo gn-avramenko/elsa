@@ -21,7 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.parser.common;
 
-import com.gridnine.platform.elsa.common.meta.common.XmlNode;
+import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
 
 import java.util.Locale;
 import java.util.Map;

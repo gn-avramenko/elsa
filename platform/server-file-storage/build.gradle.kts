@@ -2,18 +2,9 @@ plugins {
     java
     id("java-test-fixtures")
 }
-buildscript {
-    dependencies {
-        classpath(files(File(projectDir.parentFile.parentFile, "gradle/gradle-plugin.jar")))
-    }
-}
-
 repositories {
     mavenCentral()
 }
-apply<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaPlugin>()
-tasks.compileJava.get().dependsOn(tasks.getByName("eCodeGen"))
-
 
 dependencies {
     implementation(group = "net.java.xadisk", name = "xadisk", version = "1.2.2", ext = "jar")

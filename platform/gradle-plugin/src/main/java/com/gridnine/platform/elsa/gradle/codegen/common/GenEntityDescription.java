@@ -22,7 +22,7 @@
 package com.gridnine.platform.elsa.gradle.codegen.common;
 
 
-import com.gridnine.platform.elsa.common.meta.common.EntityDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 
 public class GenEntityDescription extends EntityDescription {
     private String toStringExpression;

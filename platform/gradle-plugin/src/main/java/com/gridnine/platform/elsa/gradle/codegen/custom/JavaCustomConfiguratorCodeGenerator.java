@@ -21,17 +21,15 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.custom;
 
-import com.gridnine.platform.elsa.common.meta.common.EntityDescription;
-import com.gridnine.platform.elsa.common.meta.common.EnumDescription;
-import com.gridnine.platform.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 
 import java.io.File;
 import java.util.Set;
 
 public class JavaCustomConfiguratorCodeGenerator {
-    public static void generate(CustomMetaRegistry registry, String configurator, File destDir, Set<File> generatedFiles) throws Exception {
+    public static void generate(com.gridnine.platform.elsa.gradle.meta.custom.CustomMetaRegistry registry, String configurator, File destDir, Set<File> generatedFiles) throws Exception {
         var gen = new JavaCodeGenerator();
         gen.setPackageName(JavaCodeGeneratorUtils.getPackage(configurator));
         gen.addImport("com.gridnine.platform.elsa.common.meta.custom.CustomMetaRegistryConfigurator");
@@ -40,7 +38,7 @@ public class JavaCustomConfiguratorCodeGenerator {
             gen.blankLine();
             gen.printLine("@Override");
             gen.wrapWithBlock("public void updateMetaRegistry(CustomMetaRegistry registry)", () -> {
-                for (EnumDescription ed : registry.getEnums().values()) {
+                for (com.gridnine.platform.elsa.gradle.meta.common.EnumDescription ed : registry.getEnums().values()) {
                     JavaCodeGeneratorUtils.generateJavaEnumConfiguratorCode(ed, gen);
                 }
                 for (EntityDescription ed : registry.getEntities().values()) {

@@ -21,8 +21,8 @@
 
 package com.gridnine.platform.elsa.gradle.parser.remoting;
 
-import com.gridnine.platform.elsa.common.meta.common.XmlNode;
-import com.gridnine.platform.elsa.common.meta.remoting.*;
+import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
+import com.gridnine.platform.elsa.gradle.meta.remoting.*;
 import com.gridnine.platform.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.platform.elsa.gradle.parser.common.MetaDataParsingResult;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;

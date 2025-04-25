@@ -21,8 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.parser.custom;
 
-import com.gridnine.platform.elsa.common.meta.common.XmlNode;
-import com.gridnine.platform.elsa.common.meta.custom.CustomMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
 import com.gridnine.platform.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.platform.elsa.gradle.parser.common.MetaDataParsingResult;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
@@ -32,7 +31,7 @@ import java.util.List;
 
 public class CustomMetaRegistryParser {
 
-    public void updateMetaRegistry(CustomMetaRegistry registry, List<File> sources) {
+    public void updateMetaRegistry(com.gridnine.platform.elsa.gradle.meta.custom.CustomMetaRegistry registry, List<File> sources) {
         sources.forEach(it -> BuildExceptionUtils.wrapException(() -> {
             MetaDataParsingResult pr = CommonParserUtils.parse(it);
             XmlNode node = pr.node();

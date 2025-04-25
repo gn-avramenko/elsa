@@ -2,17 +2,10 @@ plugins {
     java
     id("java-test-fixtures")
 }
-buildscript {
-    dependencies {
-        classpath(files(File(projectDir.parentFile.parentFile, "gradle/gradle-plugin.jar")))
-    }
-}
 
 repositories {
     mavenCentral()
 }
-apply<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaPlugin>()
-tasks.compileJava.get().dependsOn(tasks.getByName("eCodeGen"))
 
 
 dependencies {

@@ -2,19 +2,16 @@ plugins {
     java
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.5"
+    id("elsa-java")
 }
-buildscript {
-    dependencies {
-        classpath(files(File(projectDir.parentFile.parentFile, "gradle/gradle-plugin.jar")))
-    }
-}
+
 repositories {
     mavenCentral()
 }
 
 apply<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaPlugin>()
 
-configure<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaExtension> {
+elsa {
     codegen {
         remoting(
             "src/main/java-gen",

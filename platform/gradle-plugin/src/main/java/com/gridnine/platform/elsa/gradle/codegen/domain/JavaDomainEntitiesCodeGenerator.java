@@ -21,10 +21,10 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.domain;
 
-import com.gridnine.platform.elsa.common.meta.common.*;
-import com.gridnine.platform.elsa.common.meta.domain.*;
 import com.gridnine.platform.elsa.gradle.codegen.common.GenEntityDescription;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.common.*;
+import com.gridnine.platform.elsa.gradle.meta.domain.*;
 
 import java.io.File;
 import java.util.Map;

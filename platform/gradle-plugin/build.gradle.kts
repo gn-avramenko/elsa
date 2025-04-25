@@ -1,33 +1,40 @@
 plugins {
     java
+    id("com.gradle.plugin-publish") version "1.1.0"
 }
 
 repositories {
     mavenCentral()
 }
 dependencies {
-    implementation(project(":platform:common-meta"))
     implementation(gradleApi())
 }
 
-java {
-    withSourcesJar()
-}
+group = "com.gridnine.elsa"
+val elsaVersion = "0.0.1"
+version = elsaVersion
 
-val jarArchiveName = "gradle-plugin"
-
-tasks.withType<Jar> {
-    dependsOn(":platform:common-meta:compileJava")
-    archiveBaseName.set(jarArchiveName)
-    from(files(project.file("../common-meta/build/classes/java/main")))
-}
-
-task("updateLocalGradlePlugins") {
-    dependsOn("build")
-    group = "other"
-    doLast {
-        val gradleDir = File(projectDir.parentFile.parentFile, "gradle")
-        project.file("build/libs/${jarArchiveName}.jar").copyTo(File(gradleDir, "${jarArchiveName}.jar"), true)
+gradlePlugin {
+    website.set("http://gridnine.com")
+    vcsUrl.set("https://github.com/gn-avramenko/elsa")
+    plugins {
+        create("elsa-java") {
+            id = "elsa-java"
+            displayName = "Elsa java plugin"
+            version = elsaVersion
+            description = "Apply Elsa Framework"
+            tags.set(listOf("java", "elsa"))
+            implementationClass = "com.gridnine.platform.elsa.gradle.plugin.ElsaJavaPlugin"
+        }
+        create("elsa-web") {
+            id = "elsa-web"
+            displayName = "Elsa web plugin"
+            version = elsaVersion
+            description = "Apply Elsa Framework to web projects"
+            tags.set(listOf("elsa"))
+            implementationClass = "com.gridnine.platform.elsa.gradle.plugin.ElsaWebPlugin"
+        }
     }
 }
+
 

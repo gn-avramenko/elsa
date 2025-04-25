@@ -1,1 +1,1 @@
-rootProject.name = "elsa-gradle"
+rootProject.name = "gradle-plugin"

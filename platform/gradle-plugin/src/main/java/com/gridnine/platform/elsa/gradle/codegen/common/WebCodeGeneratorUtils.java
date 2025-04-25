@@ -21,11 +21,12 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.common;
 
-import com.gridnine.platform.elsa.common.meta.common.EntityDescription;
-import com.gridnine.platform.elsa.common.meta.common.EnumDescription;
-import com.gridnine.platform.elsa.common.meta.common.StandardPropertyDescription;
-import com.gridnine.platform.elsa.common.meta.common.StandardValueType;
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
+
+import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.StandardPropertyDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 
 import java.io.File;
 import java.util.*;

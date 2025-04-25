@@ -40,7 +40,7 @@ public class ElsaJavaPlugin implements Plugin<Project> {
             props.set(globalPropertyName, map);
         }
         var globalData = new ElsaGlobalData(map);
-        var ext = target.getExtensions().create("elsa-java-configuration", ElsaJavaExtension.class);
+        var ext = target.getExtensions().create("elsa", ElsaJavaExtension.class);
         ext.setProjectDir(target.getProjectDir());
         ext.setGlobalData(globalData);
         target.getTasks().create("eCodeGen", ElsaCodeGenTask.class);

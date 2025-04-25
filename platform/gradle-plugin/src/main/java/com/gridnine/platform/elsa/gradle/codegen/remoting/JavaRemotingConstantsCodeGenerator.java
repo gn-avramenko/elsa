@@ -21,10 +21,10 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.remoting;
 
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingDescription;
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingDescription;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 
 import java.io.File;
 import java.util.Locale;

@@ -21,13 +21,13 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.remoting;
 
-import com.gridnine.platform.elsa.common.meta.common.EntityDescription;
-import com.gridnine.platform.elsa.common.meta.common.EnumDescription;
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingDescription;
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingGroupDescription;
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingDescription;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingGroupDescription;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 
 import java.io.File;

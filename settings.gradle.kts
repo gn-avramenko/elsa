@@ -1,6 +1,6 @@
 rootProject.name = "elsa"
+includeBuild("platform/gradle-plugin")
 include(":platform:common-meta")
-include(":platform:gradle-plugin")
 include(":platform:common-core")
 include(":platform:server-core")
 include(":platform:server-atomikos")

@@ -21,7 +21,6 @@
 
 package com.gridnine.platform.elsa.gradle.plugin;
 
-import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.BaseCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.GeneratorType;
@@ -34,6 +33,7 @@ import com.gridnine.platform.elsa.gradle.codegen.remoting.JavaRemotingCodeGenera
 import com.gridnine.platform.elsa.gradle.codegen.remoting.OpenApiCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.remoting.OpenapiRemotingCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.remoting.WebRemotingCodeGenerator;
+import com.gridnine.platform.elsa.gradle.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.domain.DomainMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 import org.gradle.api.DefaultTask;

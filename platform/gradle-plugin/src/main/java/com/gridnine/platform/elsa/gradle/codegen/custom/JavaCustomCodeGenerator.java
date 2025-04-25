@@ -21,8 +21,8 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.custom;
 
-import com.gridnine.platform.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
+import com.gridnine.platform.elsa.gradle.meta.custom.CustomMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.custom.CustomMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 

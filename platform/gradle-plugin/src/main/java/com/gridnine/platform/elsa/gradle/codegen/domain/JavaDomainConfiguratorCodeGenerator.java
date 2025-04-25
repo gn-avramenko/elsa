@@ -21,11 +21,11 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.domain;
 
-import com.gridnine.platform.elsa.common.meta.common.EntityDescription;
-import com.gridnine.platform.elsa.common.meta.common.EnumDescription;
-import com.gridnine.platform.elsa.common.meta.domain.*;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
+import com.gridnine.platform.elsa.gradle.meta.domain.*;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.File;

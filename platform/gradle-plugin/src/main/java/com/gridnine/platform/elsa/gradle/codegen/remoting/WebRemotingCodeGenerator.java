@@ -21,11 +21,11 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.remoting;
 
-import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.remoting.RemotingMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 

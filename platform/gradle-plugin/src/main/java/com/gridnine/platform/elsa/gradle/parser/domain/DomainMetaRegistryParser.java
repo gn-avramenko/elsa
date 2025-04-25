@@ -21,8 +21,8 @@
 
 package com.gridnine.platform.elsa.gradle.parser.domain;
 
-import com.gridnine.platform.elsa.common.meta.common.XmlNode;
-import com.gridnine.platform.elsa.common.meta.domain.*;
+import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
+import com.gridnine.platform.elsa.gradle.meta.domain.*;
 import com.gridnine.platform.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.platform.elsa.gradle.parser.common.MetaDataParsingResult;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;

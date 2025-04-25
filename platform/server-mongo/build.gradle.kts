@@ -1,17 +1,13 @@
 plugins {
     java
     id("java-test-fixtures")
+    id("elsa-java")
 }
-buildscript {
-    dependencies {
-        classpath(files(File(projectDir.parentFile.parentFile, "gradle/gradle-plugin.jar")))
-    }
-}
+
 
 repositories {
     mavenCentral()
 }
-apply<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaPlugin>()
 tasks.compileJava.get().dependsOn(tasks.getByName("eCodeGen"))
 
 dependencies {
@@ -37,7 +33,7 @@ dependencies {
     testFixturesImplementation("de.bwaldvogel:mongo-java-server:1.44.0")
 }
 
-configure<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaExtension> {
+elsa {
     codegen {
         domain(
             "src/testFixtures/java-gen",
