@@ -22,11 +22,23 @@
 package com.gridnine.platform.elsa.server.atomikos;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.atomikos.jdbc.internal.AtomikosSQLException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class AtomikosDataSourceProxy extends AtomikosDataSourceBean {
+
+    private volatile boolean inited = false;
+
+    @Override
+    public synchronized void init() throws AtomikosSQLException {
+        if(inited) {
+            return;
+        }
+        super.init();
+        inited = true;
+    }
 
     @Override
     public Connection getConnection() throws SQLException {
