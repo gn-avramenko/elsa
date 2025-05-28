@@ -25,8 +25,10 @@ import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
+import com.gridnine.platform.elsa.common.core.lock.LockManager;
 import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAndArgument;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument;
+import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,9 @@ public class ElsaFileStorage {
 
     @Autowired
     private ElsaTransactionManager transactionManager;
+
+    @Autowired
+    private LockManager lockManager;
 
     @PostConstruct
     public void init() throws InterruptedException {
@@ -85,15 +90,8 @@ public class ElsaFileStorage {
 
     public long write(File file, InputStream is) {
         return withTransaction((session) -> {
+            ensureParentDirectoryExists(file);
             if (!session.fileExists(file)) {
-                String[] dirs = file.getPath().split(Pattern.quote(File.separator));
-                var dir = new File("");
-                for (int i = 0; i < dirs.length - 1; ++i) {
-                    dir = new File(dir.getAbsolutePath() + File.separator + dirs[i]);
-                    if (!session.fileExists(dir)) {
-                        session.createFile(dir, true);
-                    }
-                }
                 session.createFile(file, false);
             }
             var os = session.createXAFileOutputStream(file, true);
@@ -102,9 +100,28 @@ public class ElsaFileStorage {
         });
     }
 
+    private void ensureParentDirectoryExists(File file) {
+        if(file.getParentFile().exists()){
+            return;
+        }
+        var parentDir = file.getParentFile();
+        while (!parentDir.exists()) {
+            parentDir = parentDir.getParentFile();
+        }
+        lockManager.withLock("xa-disk-%s".formatted(parentDir.getAbsolutePath()), ()->{
+            if(file.getParentFile().exists()){
+                return;
+            }
+            if(!file.getParentFile().mkdirs()){
+                throw Xeption.forDeveloper("unable to create directories for %s".formatted(file.getParentFile().getAbsolutePath()));
+            }
+        });
+    }
+
     public void delete(File file) {
         withTransaction((session) -> {
             deleteFileInternal(session, file);
+            session.deleteFile(file);
             return null;
         });
     }
