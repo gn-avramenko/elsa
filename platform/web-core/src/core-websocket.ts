@@ -10,253 +10,266 @@ export type SubscriptionParams = {
     handler: (event: any | undefined) => Promise<void> | void
 }
 
-// eslint-disable-next-line no-shadow
-enum QueueItemType {
-    SUBSCRIBE,
-    UNSUBSCRIBE
-}
-
-type QueueItem = {
-    type: QueueItemType
-    callId: number,
-    subscriptionParams?: SubscriptionParams,
-    subscriptionId?: number
-    resolve?: (result: any | undefined) => void
-    reject?: (error: any | undefined) => void
+type CallData = {
+    subscribe: boolean,
+    subscriptionId?: number,
+    handler?: (event: any | undefined) => Promise<void> | void,
+    resolve: (result: any | undefined) => void
+    reject: (error: any | undefined) => void
 }
 
 export class WebSocketFacade {
+
     private params: WebSocketParams;
 
     private socket: WebSocket | null = null;
 
     private openingSocket = false;
 
-    private processingQueue = false;
-
-    private queue: QueueItem[] = [];
-
     private callId: number = 0;
 
-    private currentCallId = -1;
-
-    private currentResolve: ((result: any | undefined) => void) | null = null;
-
-    private currentReject: ((result: any | undefined) => void) | null = null;
+    private calls: Map<number, CallData> = new Map();
 
     private subscriptions: Map<number, (event: any | undefined) => Promise<void> | void> = new Map();
 
+    private isDebugEnabled(){
+        return (window as any).webSocketDebug??false;
+    }
+
     constructor(params: WebSocketParams) {
-      this.params = params;
+        this.params = params;
+        (window as any).webSocketDebug = window.localStorage.getItem("webSocketDebug") === "true"
     }
 
     private cleanupQueue(reason: string) {
-      try {
-        if (this.currentReject) {
-          this.currentReject(reason);
+        try {
+            this.openingSocket = false
+            this.subscriptions.clear()
+            this.calls.forEach(value => value.reject &&value.reject(reason))
+            this.calls.clear();
+        } catch (e) {
+            //noop
         }
-        this.currentReject = null;
-        this.currentResolve = null;
-        this.openingSocket = false;
-        this.subscriptions.clear();
-        this.queue.forEach((it) => it.reject && it.reject(reason));
-      } catch (e) {
-        // noop
-      }
-      this.queue = [];
     }
 
-    private async processQueue() {
-      if (this.processingQueue) {
-        return;
-      }
-      if (!this.socket) {
+    private openSocketPromise: Promise<void>| null = null;
+
+    private async ensureSocketOpen(){
+        if(this.socket){
+            return;
+        }
+        if(this.openSocketPromise){
+            await this.openSocketPromise
+            return;
+        }
         this.openingSocket = true;
-        await new Promise<void>((resolve, reject) => {
-          this.socket = new WebSocket(this.params.connectUrl);
-          this.socket.onopen = () => {
-            console.log('[ws open]');
-            resolve();
-          };
-          this.socket.onclose = (event) => {
-            console.log(`[ws close] code =${event.code} reason=${event.reason}`);
-            this.cleanupQueue('closing socket');
-            this.socket = null;
-          };
-          this.socket.onmessage = (event) => {
-            const content = event.data as string;
-            const data = JSON.parse(content);
-            if (data.callId) {
-              if (data.callId !== this.currentCallId) {
-                this.cleanupQueue('wrong call id');
-                return;
-              }
-              if (data.subscriptionId) {
-                            this.currentResolve!!(data.subscriptionId);
-                            return;
-              }
-                        this.currentResolve!!(undefined);
+        this.openSocketPromise = new Promise<void>((resolve, reject) => {
+            this.socket = new WebSocket(this.params.connectUrl)
+            this.socket.onopen = () => {
+                if(this.isDebugEnabled()) {
+                    console.debug("[ws open]")
+                }
+                resolve()
+            }
+            this.socket.onclose = (event) => {
+                if(this.isDebugEnabled()) {
+                    console.error(`[ws close] code =${event.code} reason=${event.reason}`)
+                }
+                this.cleanupQueue("closing socket")
+                this.socket = null
+                reject()
+            }
+            this.socket.onmessage = (event) => {
+                const content = event.data as string
+                const data = JSON.parse(content)
+                if (data.callId) {
+                    if(this.isDebugEnabled()){
+                        console.debug("got message for call", data.callId);
+                    }
+                    const call = this.calls.get(data.callId)
+                    if(!call){
+                        if(this.isDebugEnabled()){
+                            console.error("unable to find appropriate call");
+                        }
                         return;
+                    }
+                    this.calls.delete(data.callId);
+                    if(call.subscribe){
+                        if(!data.subscriptionId){
+                            if(this.isDebugEnabled()){
+                                console.error("wrong subscription id", data.subscriptionId);
+                            }
+                            call.reject("no subscription id")
+                            return;
+                        }
+                        if(this.isDebugEnabled()){
+                            console.log("added subscription with id", data.subscriptionId)
+                        }
+                        this.subscriptions.set(data.subscriptionId, call.handler!)
+                        call.resolve(data.subscriptionId)
+                        return;
+                    }
+                    if(call.subscriptionId) {
+                        this.subscriptions.delete(call.subscriptionId)
+                    }
+                    if(this.isDebugEnabled()){
+                        console.log("successfully unsubscribed from ", call.subscriptionId)
+                    }
+                    call.resolve(undefined)
+                    return;
+                }
+                const handler = this.subscriptions.get(data.subscriptionId)
+                if(!handler){
+                    if(this.isDebugEnabled()){
+                        console.error("no subscription found for id " + data.subscriptionId)
+                    }
+                    return;
+                }
+                if(this.isDebugEnabled()){
+                    console.debug("processing message for subscription", data.subscriptionId)
+                }
+                handler(data.event)
             }
-            const handler = this.subscriptions.get(data.subscriptionId);
-            if (handler) {
-              handler(data.event);
-              return;
+            this.socket.onerror = (error) => {
+                if(this.isDebugEnabled()) {
+                    console.error('[ws error]', error)
+                }
+                if (this.openingSocket) {
+                    reject(error)
+                }
+                this.cleanupQueue("socket error")
             }
-            this.callId += 1;
-            this.queue.push({
-              type: QueueItemType.UNSUBSCRIBE,
-              subscriptionId: data.subscriptionId,
-              callId: this.callId,
-            });
-            this.processQueue();
-          };
-          this.socket.onerror = (error) => {
-            console.error('[ws error]', error);
-            if (this.openingSocket) {
-              reject(error);
-            }
-            this.cleanupQueue('socket error');
-          };
-        });
-      }
-      const items = [...this.queue];
-      for (const item of items) {
-        if (!this.queue.length) {
-          return;
-        }
-        this.currentCallId = item.callId;
-        try {
-          if (item.type === QueueItemType.UNSUBSCRIBE) {
-            await new Promise<void>((resolve, reject) => {
-              this.currentReject = reject;
-              this.currentResolve = resolve;
-              if (this.socket) {
-                this.socket.send(JSON.stringify({
-                  operation: 'unsubscribe',
-                  callId: item.callId,
-                  subscriptionId: item.subscriptionId,
-                }));
-              } else {
-                reject(new Error('socket is closed'));
-                this.currentReject = null;
-                this.currentResolve = null;
-              }
-            });
-            if (item.resolve) {
-              item.resolve(null);
-            }
-            continue;
-          }
-          const subId = await new Promise<number>((resolve, reject) => {
-            this.currentReject = reject;
-            this.currentResolve = resolve;
-            if (this.socket) {
-              this.socket.send(JSON.stringify({
-                operation: 'subscribe',
-                callId: item.callId,
-                remoting: item.subscriptionParams!!.remoting,
-                group: item.subscriptionParams!!.group,
-                subscription: item.subscriptionParams!!.subscription,
-                parameter: item.subscriptionParams,
-              }));
-            } else {
-              reject(new Error('socket is closed'));
-              this.currentReject = null;
-              this.currentResolve = null;
-            }
-          });
-          this.subscriptions.set(subId, item.subscriptionParams!!.handler);
-          if (item.resolve) {
-            item.resolve(subId);
-          }
-        } catch (e) {
-          if (item.reject) {
-            item.reject(e);
-          }
-        } finally {
-          const idx = this.queue.indexOf(item);
-          this.queue.splice(idx, 1);
-        }
-      }
-      if (this.queue.length) {
-        this.processingQueue = false;
-        await this.processQueue();
-      }
+        })
+        await this.openSocketPromise
     }
 
     async subscribe(params: SubscriptionParams): Promise<number> {
-      // eslint-disable-next-line no-async-promise-executor
-      return await new Promise<number>(async (resolve, reject) => {
-        this.callId += 1;
-        this.queue.push({
-          type: QueueItemType.SUBSCRIBE,
-          callId: this.callId,
-          reject,
-          resolve,
-          subscriptionParams: params,
-        });
-        await this.processQueue();
-      });
+        await this.ensureSocketOpen()
+        return await new Promise<number>((resolve, reject) => {
+            if (this.socket) {
+                this.callId++;
+                const callId = this.callId;
+                const callData: CallData = {
+                    subscribe: true,
+                    handler: params.handler,
+                    reject,
+                    resolve
+                }
+                this.calls.set(callId, callData)
+                this.socket.send(JSON.stringify({
+                    operation: "subscribe",
+                    callId,
+                    remoting: params.remoting,
+                    group: params.group,
+                    subscription: params.subscription,
+                    parameter: params.parameter
+                }))
+                if(this.isDebugEnabled()){
+                    console.log("subscription request sent", callId)
+                }
+                return;
+            }
+            reject(new Error("socket is closed"));
+        })
     }
 
     async unsubscribe(subscriptionId: number): Promise<void> {
-      // eslint-disable-next-line no-async-promise-executor
-      return await new Promise<void>(async (resolve, reject) => {
-        this.callId += 1;
-        this.queue.push({
-          type: QueueItemType.UNSUBSCRIBE,
-          callId: this.callId,
-          reject,
-          resolve,
-          subscriptionId,
-        });
-        await this.processQueue();
-      });
+        this.subscriptions.delete(subscriptionId)
+        if(!this.socket){
+            if(this.isDebugEnabled()){
+                console.warn("unable to unsubscribe because socket is closed")
+            }
+            return;
+        }
+        return await new Promise<void>((resolve, reject) => {
+            if (this.socket) {
+                this.callId++;
+                const callId = this.callId;
+                const callData: CallData = {
+                    subscriptionId,
+                    subscribe: false,
+                    reject,
+                    resolve
+                }
+                this.calls.set(callId, callData)
+                this.socket.send(JSON.stringify({
+                    operation: "unsubscribe",
+                    callId,
+                    subscriptionId: subscriptionId,
+                }))
+                if(this.isDebugEnabled()){
+                    console.log(`unsubscribe request sent: callId=${callId} subscriptionId=${subscriptionId}`)
+                }
+                return;
+            }
+            if(this.isDebugEnabled()){
+                console.warn("unable to unsubscribe because socket is closed")
+            }
+            resolve();
+            return;
+        })
     }
+
 }
 
 export class SubsequentSubscriptionsManager {
+
     private delegate: WebSocketFacade;
 
     private subscriptions: Map<string, number> = new Map<string, number>();
 
+    private currentPromise: Promise<void>| null = null;
+
     constructor(facade: WebSocketFacade) {
-      this.delegate = facade;
+        this.delegate = facade
     }
 
     private toKey(remoting: string, group: string, subscription: string): string {
-      return `${remoting}:${group}:${subscription}`;
+        return `${remoting}:${group}:${subscription}`
     }
 
     async subscribe(params: SubscriptionParams): Promise<void> {
-      const key = this.toKey(params.remoting, params.group, params.subscription);
-      let subscriptionId = this.subscriptions.get(key);
-      if (subscriptionId) {
-        this.subscriptions.delete(key);
-        await this.delegate.unsubscribe(subscriptionId);
-      }
-      subscriptionId = await this.delegate.subscribe(params);
-      if (this.subscriptions.has(key)) {
-        await this.delegate.unsubscribe(subscriptionId);
-        return;
-      }
-      this.subscriptions.set(key, subscriptionId);
+        if(this.currentPromise){
+            await this.currentPromise
+        }
+        const key = this.toKey(params.remoting, params.group, params.subscription)
+        this.currentPromise = new Promise<void>(async (resolve, reject) =>{
+            try {
+                let subscriptionId = this.subscriptions.get(key);
+                if (subscriptionId) {
+                    await this.delegate.unsubscribe(subscriptionId)
+                    this.subscriptions.delete(key);
+                }
+                subscriptionId = await this.delegate.subscribe(params)
+                this.subscriptions.set(key, subscriptionId)
+                this.currentPromise = null
+                resolve()
+            } catch (e) {
+                reject(e)
+            }
+        })
+        await this.currentPromise
     }
 
     async unsubscribe(remoting: string, group: string, subscription: string) : Promise<void> {
-      const key = this.toKey(remoting, group, subscription);
-      const subscriptionId = this.subscriptions.get(key);
-      if (subscriptionId) {
-        await this.delegate.unsubscribe(subscriptionId);
-      }
-      const sub2 = this.subscriptions.get(key);
-      if (sub2 && subscriptionId && sub2 !== subscriptionId) {
-        await this.unsubscribe(remoting, group, subscription);
-        return;
-      }
-      if (subscriptionId) {
-        this.subscriptions.delete(key);
-      }
+        if(this.currentPromise){
+            await this.currentPromise
+        }
+        const  key = this.toKey(remoting, group, subscription);
+        this.currentPromise = new Promise<void>(async (resolve, reject) =>{
+            try {
+                let subscriptionId = this.subscriptions.get(key);
+                if (subscriptionId) {
+                    await this.delegate.unsubscribe(subscriptionId)
+                }
+                this.subscriptions.delete(key)
+                this.currentPromise = null
+                resolve()
+            } catch (e) {
+                reject(e)
+            }
+        })
+        await this.currentPromise
     }
+
 }
