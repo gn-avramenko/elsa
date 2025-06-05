@@ -524,10 +524,7 @@ public class JdbcDatabase implements Database {
         var joinPartSb = new StringBuilder(prepareJoinPart(query.getOrders(), cls));
         var baseAssetTableName = JdbcUtils.getTableName(vad.getBaseAsset());
         vad.getJoins().forEach(join ->{
-            if(!joinPartSb.isEmpty()){
-                joinPartSb.append(" ");
-            }
-            joinPartSb.append("left join %s on %s=%1$s.%s".formatted(JdbcUtils.getTableName(join.getJoinedEntity()), join.getForeignKey(), join.getPrimaryKey()));
+            joinPartSb.insert(0, "left join %s on %s=%1$s.%s%s".formatted(JdbcUtils.getTableName(join.getJoinedEntity()), join.getForeignKey(), join.getPrimaryKey(), joinPartSb.isEmpty()? "": " "));
         });
         var excludedProperties = Collections.singleton(DatabaseAssetWrapper.Fields.aggregatedData);
         Set<String> properties = new LinkedHashSet<>();
@@ -847,7 +844,7 @@ public class JdbcDatabase implements Database {
                 } else {
                     sb.append(", ");
                 }
-                sb.append("%sjoin.%sname".formatted(key.toLowerCase(), LocaleUtils.getCurrentLocale().getLanguage()));
+                sb.append("%sjoin.%sname %s".formatted(key.toLowerCase(), LocaleUtils.getCurrentLocale().getLanguage(),  orders.get(key) == SortOrder.ASC ? "asc" : "desc"));
                 continue;
             }
             if (prop != null && prop.getType() == DatabasePropertyType.ENTITY_REFERENCE) {
@@ -890,19 +887,28 @@ public class JdbcDatabase implements Database {
         var sb = new StringBuilder();
         for (var key : orders.keySet()) {
             var prop = descr.getProperties().get(key);
+            var joinKey = key.toLowerCase();
+            if(domainMetaRegistry.getVirtualAssets().containsKey(cls.getName())){
+                var join = domainMetaRegistry.getVirtualAssets().get(cls.getName()).getJoins().stream().filter(it ->
+                        domainMetaRegistry.getAssets().get(it.getJoinedEntity()).getProperties().containsKey(prop.getId()) &&
+                                JdbcUtils.isFieldIncluded(prop.getId(), it.getIncludedFields(), it.getExcludedFields())).findFirst().orElse(null);
+                if(join != null){
+                    joinKey = "%s.%s".formatted(JdbcUtils.getTableName(join.getJoinedEntity()).toLowerCase(), key.toLowerCase());
+                }
+            }
             if (prop != null && prop.getType() == DatabasePropertyType.ENUM) {
                 if (!sb.isEmpty()) {
                     sb.append(" ");
                 }
                 sb.append("left join enummapping as %s on %s = %1$s.id".formatted(
-                        "%sjoin".formatted(key.toLowerCase()), key.toLowerCase()));
+                        "%sjoin".formatted(key.toLowerCase()), joinKey));
             }
             if (prop != null && prop.getType() == DatabasePropertyType.ENTITY_REFERENCE) {
                 if (!sb.isEmpty()) {
                     sb.append(" ");
                 }
                 sb.append("left join %s as %s on %s = %2$s.id".formatted(JdbcUtils.getCaptionTableName(prop.getClassName()),
-                        "%sjoin".formatted(key.toLowerCase()), key.toLowerCase()));
+                        "%sjoin".formatted(key.toLowerCase()), joinKey));
             }
         }
 
