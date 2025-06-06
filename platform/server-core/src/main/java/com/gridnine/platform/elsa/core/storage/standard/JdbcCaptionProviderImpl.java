@@ -72,7 +72,7 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
     public String getCaption(EntityReference<?> ref) {
         return ExceptionUtils.wrapException(() ->{
             if (cacheMetadataProvider.isCacheCaption(ref.getType())) {
-                var cache = getOrCreateCaptionCache(captionsCache, String.class);
+                var cache = getOrCreateCaptionCache(captionsCache, ref.getType(), String.class);
                 var oldValue = cache.get(ref.getId());
                 if (oldValue != null && oldValue.value() != null) {
                     return oldValue.value().equals(nullString) ? null : oldValue.value();
@@ -83,7 +83,7 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
                 return Objects.equals(newValue.value(), nullString) ? null : newValue.value();
             }
             if (cacheMetadataProvider.isCacheLocalizedCaption(ref.getType())) {
-                var cache = getOrCreateCaptionCache((Map) localizedCaptionsCache, Map.class);
+                var cache = getOrCreateCaptionCache((Map) localizedCaptionsCache, ref.getType(), Map.class);
                 var oldValue = (CachedValue<Map<Locale, String>>) cache.get(ref.getId());
                 if (oldValue != null && oldValue.value() != null) {
                     return oldValue.value().get(LocaleUtils.getCurrentLocale());
@@ -106,18 +106,18 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
     @SuppressWarnings({"unchecked", "rawtypes"})
     <I extends BaseIdentity> void invalidateCaptionsCache(Class<I> cls, UUID id) {
         if (cacheMetadataProvider.isCacheCaption(cls)) {
-            getOrCreateCaptionCache(captionsCache, String.class).put(id, new CachedValue<>(System.nanoTime(), null));
+            getOrCreateCaptionCache(captionsCache, cls, String.class).put(id, new CachedValue<>(System.nanoTime(), null));
             return;
         }
         if (cacheMetadataProvider.isCacheLocalizedCaption(cls)) {
-            getOrCreateCaptionCache((Map) localizedCaptionsCache, Map.class).put(id, new CachedValue<>(System.nanoTime(), null));
+            getOrCreateCaptionCache((Map) localizedCaptionsCache, cls, Map.class).put(id, new CachedValue<>(System.nanoTime(), null));
         }
     }
 
-    private <D> KeyValueCache<UUID, D> getOrCreateCaptionCache(Map<String, KeyValueCache<UUID, D>> caches, Class<D> cls) {
-        var cache = caches.get(cls.getName());
+    private <D> KeyValueCache<UUID, D> getOrCreateCaptionCache(Map<String, KeyValueCache<UUID, D>> caches, Class<?> objectClass, Class<D> cacheClass) {
+        var className = objectClass.getName();
+        var cache = caches.get(className);
         if (cache == null) {
-            var className = cls.getName();
             var capacityStr = env.getProperty("cache.caption.capacity.%s".formatted(className));
             if (capacityStr == null) {
                 capacityStr = env.getProperty("cache.caption.capacity.default", "10000");
@@ -128,7 +128,7 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
                 expirationInSecondsStr = env.getProperty("cache.caption.expiration.default", "3600");
             }
             var expirationInSeconds = Integer.parseInt(expirationInSecondsStr);
-            cache = cacheManager.createKeyValueCache(UUID.class, cls, "caption_%s".formatted(className), capacity, expirationInSeconds);
+            cache = cacheManager.createKeyValueCache(UUID.class, cacheClass, "caption_%s".formatted(className), capacity, expirationInSeconds);
             caches.put(className, cache);
         }
         return cache;
