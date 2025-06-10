@@ -21,46 +21,61 @@
 
 package com.gridnine.platform.elsa.core.remoting;
 
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
 public class RemotingHandlersRegistry {
 
-    private final Map<String, RestHandler<?, ?>> serviceHandlersMap = new HashMap<>();
+    private volatile Map<String, RestHandler<?, ?>> serviceHandlersMap;
 
-    private final Map<String, SubscriptionHandler<?, ?>> subscriptionHandlersMap = new HashMap<>();
+    private volatile Map<String, SubscriptionHandler<?, ?>> subscriptionHandlersMap;
 
-    private final List<RemotingAdvice> advices = new ArrayList<>();
+    private volatile List<RemotingAdvice> advices;
+
+    private volatile boolean initialized;
+    @Autowired
+    private ListableBeanFactory factory;
 
     public List<RemotingAdvice> getAdvices() {
+        init();
         return advices;
     }
+    private List<SubscriptionAdvice> subscriptionAdvices;
 
-    @Autowired(required = false)
-    private void setHandlers(List<RestHandler<?, ?>> handlers) {
-        handlers.forEach(h -> serviceHandlersMap.put(h.getId(), h));
+    public List<SubscriptionAdvice> getSubscriptionAdvices() {
+        init();
+        return subscriptionAdvices;
     }
 
-    @Autowired(required = false)
-    private void setSubscriptionHandlers(List<SubscriptionHandler<?, ?>> handlers) {
-        handlers.forEach(h -> subscriptionHandlersMap.put(h.getId(), h));
-    }
-
-    @Autowired(required = false)
-    private void setAdvices(List<RemotingAdvice> advices) {
-        this.advices.clear();
-        this.advices.addAll(advices);
-        this.advices.sort(Comparator.comparingDouble(RemotingAdvice::getPriority));
+    private void init(){
+        if(!initialized){
+            synchronized (this) {
+                if(!initialized){
+                    serviceHandlersMap = new HashMap<>();
+                    subscriptionAdvices = new ArrayList<>();
+                    advices = new ArrayList<>();
+                    subscriptionHandlersMap = new HashMap<>();
+                    factory.getBeansOfType(RestHandler.class).values().forEach(h -> serviceHandlersMap.put(h.getId(), h));
+                    factory.getBeansOfType(SubscriptionHandler.class).values().forEach(h -> subscriptionHandlersMap.put(h.getId(), h));
+                    factory.getBeansOfType(RemotingAdvice.class).values().stream().sorted(Comparator.comparingDouble(RemotingAdvice::getPriority)).forEach(a -> advices.add(a));
+                    factory.getBeansOfType(SubscriptionAdvice.class).values().stream().sorted(Comparator.comparingDouble(SubscriptionAdvice::getPriority)).forEach(a -> subscriptionAdvices.add(a));
+                    initialized = true;
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
     public <RQ, RS> RestHandler<RQ, RS> getServiceHandler(String id) {
+        init();
         return (RestHandler<RQ, RS>) serviceHandlersMap.get(id);
     }
 
     @SuppressWarnings("unchecked")
     public <RP, RE> SubscriptionHandler<RP, RE> getSubscriptionHandler(String id) {
+        init();
         return (SubscriptionHandler<RP, RE>) subscriptionHandlersMap.get(id);
     }
 }
