@@ -207,7 +207,7 @@ public class CacheStorageAdvice implements StorageAdvice {
         return newValue.value() == nullValue ? null : newValue.value();
     }
 
-    <I extends BaseIdentity> void invalidateResolveCache(Class<I> cls, UUID id) {
+    public <I extends BaseIdentity> void invalidateResolveCache(Class<I> cls, UUID id) {
         getOrCreateResolveCache(cls).put(id, new CachedValue<>(System.nanoTime(), null));
     }
 
@@ -283,11 +283,11 @@ public class CacheStorageAdvice implements StorageAdvice {
         return (KeyValueCache) cache;
     }
 
-    void invalidateFindCache(Class<?> cls, String propertyName, Object value) {
+    public void invalidateFindCache(Class<?> cls, String propertyName, Object value) {
         getOrCreateFindCache(cls, propertyName).put(toString(value), new CachedValue<>(System.nanoTime(), null));
     }
 
-    void invalidateGetAllCache(Class<?> cls, String propertyName, Object value) {
+    public void invalidateGetAllCache(Class<?> cls, String propertyName, Object value) {
         getOrCreateGetAllCache(cls, propertyName).put(toString(value), new CachedValue<>(System.nanoTime(), null));
     }
 

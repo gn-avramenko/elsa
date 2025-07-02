@@ -22,6 +22,7 @@
 package com.gridnine.platform.elsa.core.storage.transaction;
 
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithException;
+import com.gridnine.platform.elsa.common.core.utils.TypedParameterId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,5 +41,14 @@ public class ElsaTransactionContext {
 
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    public <T> T getAttribute(final TypedParameterId<T> attributeId) {
+        //noinspection unchecked
+        return (T) attributes.get(attributeId.getId());
+    }
+
+    public <T> void setAttribute(final TypedParameterId<T> attributeId, final T value) {
+        attributes.put(attributeId.getId(), value);
     }
 }

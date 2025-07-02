@@ -921,6 +921,12 @@ public class StandardStorage implements Storage {
         return false;
     }
 
+    @Override
+    public <RP> RP performNativeOperation(CallableWithExceptionAndArgument<RP, ElsaTransactionContext> operation) {
+        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction(tx ->
+                database.performNativeOperation(operation, tx), false));
+    }
+
     public CaptionProvider getCaptionProvider() {
         return captionProvider;
     }
@@ -936,6 +942,7 @@ public class StandardStorage implements Storage {
     public ElsaTransactionManager getTransactionManager() {
         return this.transactionManager;
     }
+
 
     private record UpdateAssetContext<A extends BaseAsset>(DatabaseAssetWrapper<A> oldAsset,
                                                            OperationContext<A> operationContext) {

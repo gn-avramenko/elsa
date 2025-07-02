@@ -22,9 +22,11 @@
 package com.gridnine.platform.elsa.core.storage.database;
 
 import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
+import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAndArgument;
 import com.gridnine.platform.elsa.common.core.model.domain.*;
 import com.gridnine.platform.elsa.common.core.search.AggregationQuery;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
+import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionContext;
 
 import java.util.*;
 
@@ -80,4 +82,6 @@ public interface Database {
     <VA extends BaseVirtualAsset> List<VA> searchVirtualAssets(Class<VA> cls, SearchQuery updateQuery) throws Exception;
 
     <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery updateQuery) throws Exception;
+
+    <RP> RP performNativeOperation(CallableWithExceptionAndArgument<RP, ElsaTransactionContext> operation, ElsaTransactionContext ctx) throws Exception;
 }

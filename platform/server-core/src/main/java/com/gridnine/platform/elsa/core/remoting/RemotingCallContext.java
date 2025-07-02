@@ -5,6 +5,7 @@
 
 package com.gridnine.platform.elsa.core.remoting;
 
+import com.gridnine.platform.elsa.common.core.utils.TypedParameterId;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -23,11 +24,11 @@ public class RemotingCallContext {
         return httpRequest;
     }
 
-    public <V> void setParameter(ContextParameterId<V> id, V value) {
+    public <V> void setParameter(TypedParameterId<V> id, V value) {
         parameters.put(id.getId(), value);
     }
 
-    public <V> V getParameter(ContextParameterId<V> id) {
+    public <V> V getParameter(TypedParameterId<V> id) {
         return (V) parameters.get(id.getId());
     }
 

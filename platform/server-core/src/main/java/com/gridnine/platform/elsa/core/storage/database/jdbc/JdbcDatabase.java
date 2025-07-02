@@ -25,10 +25,7 @@ import com.gridnine.platform.elsa.common.core.model.common.*;
 import com.gridnine.platform.elsa.common.core.model.domain.*;
 import com.gridnine.platform.elsa.common.core.reflection.ReflectionFactory;
 import com.gridnine.platform.elsa.common.core.search.*;
-import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
-import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
-import com.gridnine.platform.elsa.common.core.utils.Pair;
-import com.gridnine.platform.elsa.common.core.utils.TextUtils;
+import com.gridnine.platform.elsa.common.core.utils.*;
 import com.gridnine.platform.elsa.common.meta.domain.*;
 import com.gridnine.platform.elsa.core.storage.database.*;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.adapter.JdbcDialect;
@@ -37,6 +34,7 @@ import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcDatabaseM
 import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcFieldType;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcTableDescription;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcUtils;
+import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -52,6 +50,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 public class JdbcDatabase implements Database {
+    public final static TypedParameterId<JdbcTemplate> JDBC_TEMPLATE_PARAM = () -> "JDBC_TEMPLATE_PARAM";
+    public final static TypedParameterId<JdbcDialect> JDBC_DIALECT = () -> "JDBC_DIALECT";
+    public final static TypedParameterId<EnumMapper> ENUM_MAPPER = () -> "ENUM_MAPPER";
+
+
     private final JdbcTemplate template;
 
     private final JdbcDatabaseMetadataProvider dbMetadataProvider;
@@ -581,6 +584,15 @@ public class JdbcDatabase implements Database {
             return result;
         });
     }
+
+    @Override
+    public <RP> RP performNativeOperation(CallableWithExceptionAndArgument<RP, ElsaTransactionContext> operation, ElsaTransactionContext ctx) throws Exception {
+        ctx.setAttribute(JDBC_TEMPLATE_PARAM, template);
+        ctx.setAttribute(JDBC_DIALECT, dialect);
+        ctx.setAttribute(ENUM_MAPPER, enumMapper);
+        return operation.call(ctx);
+    }
+
 
     private <E extends BaseIntrospectableObject> List<List<Object>> aggregationSearchObjects(
             Class<E> cls, AggregationQuery query) throws Exception {
@@ -1324,6 +1336,7 @@ public class JdbcDatabase implements Database {
             return info.getValue(propertyName);
         }
     }
+
 
 
     record WherePartData(List<Pair<Object, JdbcFieldType>> values, String sql) {

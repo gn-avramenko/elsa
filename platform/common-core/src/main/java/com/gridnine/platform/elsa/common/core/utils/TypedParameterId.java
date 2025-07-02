@@ -3,8 +3,8 @@
  * Project: Elsa
  *****************************************************************/
 
-package com.gridnine.platform.elsa.core.remoting;
+package com.gridnine.platform.elsa.common.core.utils;
 
-public interface ContextParameterId<V> {
+public interface TypedParameterId<V> {
     String getId();
 }

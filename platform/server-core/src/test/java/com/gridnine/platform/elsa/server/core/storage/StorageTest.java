@@ -27,13 +27,17 @@ import com.gridnine.platform.elsa.common.core.search.*;
 import com.gridnine.platform.elsa.common.core.test.model.domain.*;
 import com.gridnine.platform.elsa.core.auth.AuthContext;
 import com.gridnine.platform.elsa.core.storage.Storage;
+import com.gridnine.platform.elsa.core.storage.database.jdbc.JdbcDatabase;
 import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionManager;
 import com.gridnine.platform.elsa.server.core.common.ServerCoreTestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -201,5 +205,21 @@ public class StorageTest extends ServerCoreTestBase {
                 new AggregationQueryBuilder().where(SearchCriterion.eq(TestDomainVirtualAssetFields.joinedProperty, "joined value")).count().build());
         Assertions.assertEquals(1, vas.size());
         Assertions.assertEquals(1, ((Number) vas.get(0).get(0)).intValue());
+    }
+
+    @Test
+    public void testNativeOperation(){
+        var asset = new TestDomainAsset();
+        asset.setStringProperty("test");
+        asset.setDateProperty(LocalDateTime.now());
+        storage.saveAsset(asset, "init");
+        var res = storage.performNativeOperation(ctx ->{
+            var template = ctx.getAttribute(JdbcDatabase.JDBC_TEMPLATE_PARAM);
+            var result = template.query("select * from testdomainasset where stringproperty = ?", ps -> {
+                ps.setString(1, "test");
+            }, (rs, rowNum) -> rs.getString("stringproperty"));
+            return result.get(0);
+        });
+        Assertions.assertEquals("test", res);
     }
 }

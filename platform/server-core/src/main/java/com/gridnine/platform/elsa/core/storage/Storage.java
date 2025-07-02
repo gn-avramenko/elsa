@@ -22,8 +22,10 @@
 package com.gridnine.platform.elsa.core.storage;
 
 import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
+import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAndArgument;
 import com.gridnine.platform.elsa.common.core.model.domain.*;
 import com.gridnine.platform.elsa.common.core.search.*;
+import com.gridnine.platform.elsa.core.storage.transaction.ElsaTransactionContext;
 
 import java.util.List;
 import java.util.Locale;
@@ -109,4 +111,6 @@ public interface Storage {
     <T, A extends BaseAsset, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>> Set<A> getAllAssets(Class<A> cls, E property, T propertyValue, boolean forModification);
 
     <I extends BaseIdentity> String getCaption(Class<I> type, UUID id, Locale currentLocale);
+
+    <RP> RP performNativeOperation(CallableWithExceptionAndArgument<RP, ElsaTransactionContext> operation);
 }

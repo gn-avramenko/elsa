@@ -785,6 +785,11 @@ public class MongoStorage implements Storage {
         return null;
     }
 
+    @Override
+    public <RP> RP performNativeOperation(CallableWithExceptionAndArgument<RP, ElsaTransactionContext> operation) {
+        throw Xeption.forDeveloper("unsupported operation");
+    }
+
     public ClassMapper getClassMapper() {
         return classMapper;
     }
