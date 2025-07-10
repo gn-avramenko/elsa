@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -45,29 +46,36 @@ public class MigrationProcessor {
     private Storage storage;
 
     @PostConstruct
-    public void processMigrations(){
+    public void processMigrations() {
+        if ("true".equals(System.getProperty("elsa.testing"))) {
+            logger.info("skipping migration in testing mode");
+            return;
+        }
         logger.info("starting migrations");
-        if(handlers == null){
+        if (handlers == null) {
             logger.info("no migration handlers found");
             return;
         }
-        handlers.sort((a,b) ->{
-            if(depends(a,b)){
-                return 1;
+
+        for (int i = 0; i < handlers.size(); i++) {
+            for (int j = i + 1; j < handlers.size(); j++) {
+                var a = handlers.get(i);
+                var b = handlers.get(j);
+                if (depends(a, b)) {
+                    Collections.swap(handlers, i, j);
+                    i = -1;
+                    break;
+                }
             }
-            if(depends(b,a)){
-                return -1;
-            }
-            return a.getId().compareTo(b.getId());
-        });
+        }
         var executors = Executors.newCachedThreadPool();
-        try{
+        try {
             var processedIds = storage.searchAssets(MigrationRecord.class, new SearchQuery()).stream().map(MigrationRecord::getMigrationId).collect(Collectors.toSet());
             handlers.forEach(handler -> {
                 if (processedIds.contains(handler.getId())) {
                     return;
                 }
-                if(handler.isAsync()) {
+                if (handler.isAsync()) {
                     executors.execute(() -> {
                         try {
                             processMigration(handler);
@@ -83,15 +91,15 @@ public class MigrationProcessor {
                     logger.error("unable to process migration", e);
                     throw new RuntimeException(e);
                 }
-             });
+            });
             logger.info("migrations completed");
-        }finally {
+        } finally {
             executors.shutdown();
         }
     }
 
     private void processMigration(MigrationHandler handler) throws Exception {
-        logger.info("processing async migration {}", handler.getId());
+        logger.info("processing {} migration {}", handler.isAsync() ? "async" : "sync", handler.getId());
         handler.processMigration();
         addMigrationRecord(handler.getId());
         logger.info("processed migration {}", handler.getId());
@@ -101,7 +109,7 @@ public class MigrationProcessor {
         var migrationRecord = new MigrationRecord();
         migrationRecord.setMigrationId(id);
         migrationRecord.setDate(Instant.now());
-        storage.saveAsset(migrationRecord, "migration " + id);
+        storage.saveAsset(migrationRecord, false, "migration " + id);
     }
 
     private boolean depends(MigrationHandler a, MigrationHandler b) {
