@@ -41,6 +41,7 @@ public final class JdbcStructureUpdater {
 
     public static void updateStructure(JdbcTemplate template, JdbcDialect dialect, JdbcDatabaseMetadataProvider metadataProvider, List<JdbcStructureManualUpdateHandler> manualUpdateHandlers, Map<String, Object> customParameters, JdbcDatabaseCustomizer customizer) {
         long start = System.currentTimeMillis();
+        manualUpdateOfStructure(manualUpdateHandlers, template, dialect, false);
         final JdbcDatabaseStructureAnalysisResult analysisResult = analyze(metadataProvider, dialect, customizer);
         log.debug("Database analysis was completed in %s ms. Result:\n%s".formatted(System.currentTimeMillis() - start, analysisResult));
         if (analysisResult.tablesToCreate().isEmpty() && analysisResult.tablesToUpdate().isEmpty() && analysisResult.tablesToDelete().isEmpty()) {
@@ -87,6 +88,10 @@ public final class JdbcStructureUpdater {
     }
 
     private static void manualUpdateOfStructure(List<JdbcStructureManualUpdateHandler> manualUpdateHandlers, JdbcTemplate template, JdbcDialect dialect, boolean afterAutoUpdate){
+        if ("true".equals(System.getProperty("elsa.testing"))) {
+            log.info("skipping migration in testing mode");
+            return;
+        }
         if(manualUpdateHandlers != null){
             Set<String> tableNames = dialect.getTableNames();
             if(!tableNames.contains("structureupdates")){
