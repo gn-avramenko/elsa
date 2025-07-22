@@ -7,4 +7,6 @@ public interface JdbcStructureManualUpdateHandler {
     String getId();
 
     void execute(JdbcTemplate template, JdbcDialect dialect) throws Exception;
+
+    default boolean executeAfterAutoStructureUpdate(){return false;};
 }

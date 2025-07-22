@@ -41,26 +41,10 @@ public final class JdbcStructureUpdater {
 
     public static void updateStructure(JdbcTemplate template, JdbcDialect dialect, JdbcDatabaseMetadataProvider metadataProvider, List<JdbcStructureManualUpdateHandler> manualUpdateHandlers, Map<String, Object> customParameters, JdbcDatabaseCustomizer customizer) {
         long start = System.currentTimeMillis();
-        if(manualUpdateHandlers != null){
-            if(!dialect.getTableNames().contains("structureupdates")){
-                template.execute("create table structureupdates(id %s, date %s)".formatted(dialect.getSqlType(JdbcFieldType.STRING), dialect.getSqlType(JdbcFieldType.INSTANT)));
-            }
-            var result = template.query("SELECT id FROM structureupdates", (rs, num) -> rs.getString("id"));
-            List<JdbcStructureManualUpdateHandler> toExecute = manualUpdateHandlers.stream().filter(it -> !result.contains(it.getId())).toList();
-            toExecute.forEach(h ->{
-                log.info("executing manual update for handler {}", h.getId());
-                ExceptionUtils.wrapException(()->{
-                    h.execute(template, dialect);
-                    template.update("INSERT INTO structureupdates(id,date) values (?,?)", (ps ->{
-                        ps.setString(1, h.getId());
-                        ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
-                    }));
-                });
-            });
-        }
         final JdbcDatabaseStructureAnalysisResult analysisResult = analyze(metadataProvider, dialect, customizer);
         log.debug("Database analysis was completed in %s ms. Result:\n%s".formatted(System.currentTimeMillis() - start, analysisResult));
         if (analysisResult.tablesToCreate().isEmpty() && analysisResult.tablesToUpdate().isEmpty() && analysisResult.tablesToDelete().isEmpty()) {
+            manualUpdateOfStructure(manualUpdateHandlers, template, dialect, true);
             return;
         }
         start = System.currentTimeMillis();
@@ -99,8 +83,32 @@ public final class JdbcStructureUpdater {
             log.info("sequence %s of type %s was created".formatted(sequence.sequenceName(), sequence.type()));
         }
         log.debug("Database structure was updated in %s ms".formatted(System.currentTimeMillis() - start));
+        manualUpdateOfStructure(manualUpdateHandlers, template, dialect, true);
     }
 
+    private static void manualUpdateOfStructure(List<JdbcStructureManualUpdateHandler> manualUpdateHandlers, JdbcTemplate template, JdbcDialect dialect, boolean afterAutoUpdate){
+        if(manualUpdateHandlers != null){
+            Set<String> tableNames = dialect.getTableNames();
+            if(!tableNames.contains("structureupdates")){
+                template.execute("create table structureupdates(id %s, date %s)".formatted(dialect.getSqlType(JdbcFieldType.STRING), dialect.getSqlType(JdbcFieldType.INSTANT)));
+            }
+            var result = template.query("SELECT id FROM structureupdates", (rs, num) -> rs.getString("id"));
+            List<JdbcStructureManualUpdateHandler> toExecute = manualUpdateHandlers.stream().filter(it -> it.executeAfterAutoStructureUpdate() == afterAutoUpdate && !result.contains(it.getId())).toList();
+            toExecute.forEach(h ->{
+                log.info("executing manual update for handler {}", h.getId());
+                ExceptionUtils.wrapException(()->{
+                    if(!tableNames.isEmpty()) { //не стадия инициализации базы
+                        h.execute(template, dialect);
+                    }
+                    template.update("INSERT INTO structureupdates(id,date) values (?,?)", (ps ->{
+                        ps.setString(1, h.getId());
+                        ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+                    }));
+
+                });
+            });
+        }
+    }
 
     private static void createIndexes(String tableName, Map<String, JdbcIndexDescription> indexes, JdbcTemplate template, JdbcDialect dialect) {
         indexes.forEach((key, value) -> {

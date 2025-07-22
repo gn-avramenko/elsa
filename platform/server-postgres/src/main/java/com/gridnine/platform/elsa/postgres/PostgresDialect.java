@@ -160,7 +160,7 @@ public class PostgresDialect implements JdbcDialect {
     public String getCreateIndexSql(String tableName, String indexName, JdbcIndexDescription value) {
         return switch (value.type()) {
             case BTREE -> "CREATE INDEX %s ON %s USING btree(%s)".formatted(indexName, tableName, value.field());
-            case GIN -> "CREATE INDEX %s ON %s USING gin(%s)".formatted(indexName, tableName, value.field());
+            case GIN -> "CREATE INDEX %s ON %s USING gin(%s gin_trgm_ops)".formatted(indexName, tableName, value.field());
         };
     }
 
