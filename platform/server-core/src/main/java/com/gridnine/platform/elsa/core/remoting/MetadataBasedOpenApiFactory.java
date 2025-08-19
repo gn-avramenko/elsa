@@ -23,7 +23,6 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import io.swagger.v3.oas.models.servers.Server;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,6 @@ public class MetadataBasedOpenApiFactory {
                         .termsOfService("https://swagger.io/terms/")
                         .license(new License().name("Apache 2.0").url("https://springdoc.org")))
                 .components(new Components());
-        api.addServersItem(new Server().url("http://localhost:8080/api"));
         TypeNameResolver.std.setUseFqn(true); // Use fully-qualified names.
         api = generateRemotingsDefinitions(api);
         return resolveRecursiveSchemas(api);
@@ -88,12 +86,6 @@ public class MetadataBasedOpenApiFactory {
         for (var entry : services.entrySet()) {
             api = processServiceDescription(api, path, entry.getValue());
         }
-
-        Map<String, RemotingSubscriptionDescription> subscriptions = desc.getSubscriptions();
-        for (var entry : subscriptions.entrySet()) {
-            api = processRemotingSubscriptionDescription(api, path, entry.getValue());
-        }
-
         return api;
     }
 
@@ -138,8 +130,9 @@ public class MetadataBasedOpenApiFactory {
         List<Parameter> requestParams = new ArrayList<>();
         Map<String, Schema> prop2schema = converter.readAll(Class.forName(desc.getRequestClassName()))
                 .get(desc.getRequestClassName()).getProperties();
-        Map<String, StandardPropertyDescription> properties = registry.getEntities()
-                .get(desc.getRequestClassName()).getProperties();
+        var entities = registry.getEntities()
+                .get(desc.getRequestClassName());
+        Map<String, StandardPropertyDescription> properties = entities.getProperties();
         for (var prop : prop2schema.keySet()) {
             requestParams.add(new Parameter().name(prop).schema(prop2schema.get(prop))
                     .in(ParameterIn.QUERY.toString()).required(Optional.ofNullable(properties.get(prop))
@@ -187,10 +180,6 @@ public class MetadataBasedOpenApiFactory {
         var pi = new PathItem();
         api.path(path, pi);
         return pi;
-    }
-
-    private OpenAPI processRemotingSubscriptionDescription(final OpenAPI api, String prefix, RemotingSubscriptionDescription desc) {
-        return api;
     }
 
     private OpenAPI resolveRecursiveSchemas(final OpenAPI api) {

@@ -195,8 +195,15 @@ public final class JdbcStructureUpdater {
         var columns = new LinkedHashMap<String, JdbcFieldType>();
         var indexes = new LinkedHashMap<String, JdbcIndexDescription>();
         databaseTableDescription.getFields().forEach((key, value) -> {
+            if(value == null || key == null || key.startsWith("_") || key.equalsIgnoreCase("sum")) {
+                return;
+            }
             columns.putAll(value.getColumns());
-            indexes.putAll(value.getIndexes(databaseTableDescription.getName()));
+            var ci = value.getIndexes(databaseTableDescription.getName());
+            ci.forEach((k,v) ->{
+                var indexName = k.length()> 62? k.substring(0,62) : k;
+                indexes.put(indexName, v);
+            });
         });
         return new JdbcCreateTableData(databaseTableDescription.getName(), columns, indexes);
     }

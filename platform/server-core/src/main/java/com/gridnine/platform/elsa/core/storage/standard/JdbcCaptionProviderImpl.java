@@ -118,18 +118,23 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
         var className = objectClass.getName();
         var cache = caches.get(className);
         if (cache == null) {
-            var capacityStr = env.getProperty("cache.caption.capacity.%s".formatted(className));
-            if (capacityStr == null) {
-                capacityStr = env.getProperty("cache.caption.capacity.default", "10000");
+            synchronized (this) {
+                cache = caches.get(className);
+                if (cache == null) {
+                    var capacityStr = env.getProperty("cache.caption.capacity.%s".formatted(className));
+                    if (capacityStr == null) {
+                        capacityStr = env.getProperty("cache.caption.capacity.default", "10000");
+                    }
+                    var capacity = Integer.parseInt(capacityStr);
+                    var expirationInSecondsStr = env.getProperty("cache.caption.expiration.%s".formatted(className));
+                    if (expirationInSecondsStr == null) {
+                        expirationInSecondsStr = env.getProperty("cache.caption.expiration.default", "3600");
+                    }
+                    var expirationInSeconds = Integer.parseInt(expirationInSecondsStr);
+                    cache = cacheManager.createKeyValueCache(UUID.class, cacheClass, "caption_%s".formatted(className), capacity, expirationInSeconds);
+                    caches.put(className, cache);
+                }
             }
-            var capacity = Integer.parseInt(capacityStr);
-            var expirationInSecondsStr = env.getProperty("cache.caption.expiration.%s".formatted(className));
-            if (expirationInSecondsStr == null) {
-                expirationInSecondsStr = env.getProperty("cache.caption.expiration.default", "3600");
-            }
-            var expirationInSeconds = Integer.parseInt(expirationInSecondsStr);
-            cache = cacheManager.createKeyValueCache(UUID.class, cacheClass, "caption_%s".formatted(className), capacity, expirationInSeconds);
-            caches.put(className, cache);
         }
         return cache;
     }

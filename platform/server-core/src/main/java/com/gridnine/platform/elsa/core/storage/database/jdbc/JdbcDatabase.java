@@ -101,7 +101,7 @@ public class JdbcDatabase implements Database {
     public <A extends BaseAsset> DatabaseAssetWrapper<A> loadAssetWrapper(Class<A> aClass, UUID id) {
         var description = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(aClass.getName()));
         Objects.requireNonNull(description);
-        var columnNames = getColumnNames(description, false, Collections.emptySet(), Collections.emptySet());
+        var columnNames = getColumnNames(description, Collections.emptySet(), Collections.emptySet());
         var sql = "select %s from %s where %s = ?".formatted(TextUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.idName);
         var result = template.query(sql, ps -> ps.setObject(1, id), rs -> {
             if (!rs.next()) {
@@ -266,7 +266,7 @@ public class JdbcDatabase implements Database {
     public <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id) {
         var description = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
         Objects.requireNonNull(description);
-        var columnNames = getColumnNames(description, false, Collections.emptySet(), Collections.singleton(DatabaseAssetWrapper.Fields.aggregatedData));
+        var columnNames = getColumnNames(description, Collections.emptySet(), Collections.singleton(DatabaseAssetWrapper.Fields.aggregatedData));
         var sql = "select %s from %s where %s = ?".formatted(TextUtils.join(columnNames, ", "), description.getName(), BaseIdentity.Fields.idName);
         var result = template.query(sql, ps -> ps.setObject(1, id), rs -> {
             if (!rs.next()) {
@@ -340,7 +340,7 @@ public class JdbcDatabase implements Database {
             return;
         }
         var selectSql = "select %s from %s where document = ?".formatted(
-                TextUtils.join(getColumnNames(descr, false, Collections.emptySet(), Collections.emptySet()), ", "),
+                TextUtils.join(getColumnNames(descr, Collections.emptySet(), Collections.emptySet()), ", "),
                 descr.getName());
         var existingProjections = template.query(selectSql, (ps) -> ps.setObject(1, id), (rs, idx) -> ExceptionUtils.wrapException(() -> {
             var res = new DatabaseSearchableProjectionWrapper<>(reflectionFactory.newInstance(projectionClass), domainMetaRegistry, null);
@@ -784,16 +784,11 @@ public class JdbcDatabase implements Database {
     }
 
 
-    private Set<String> getColumnNames(JdbcTableDescription description, boolean hasJoin, Set<String> includedProperties, Set<String> excludedProperties) {
+    private Set<String> getColumnNames(JdbcTableDescription description, Set<String> includedProperties, Set<String> excludedProperties) {
         var result = new LinkedHashSet<String>();
         description.getFields().forEach((id, handler) -> {
             if (isIncluded(id, includedProperties, excludedProperties)) {
-                result.addAll(handler.getColumns().keySet().stream().map(it -> {
-                    if(it.equals("id")){
-                        return "%s.id".formatted(description.getName());
-                    }
-                    return it;
-                }).toList());
+                result.addAll(handler.getColumns().keySet());
             }
         });
         return result;
@@ -813,7 +808,7 @@ public class JdbcDatabase implements Database {
         var joinPart = prepareJoinPart(query.getOrders(), cls);
         var orderPart = prepareOrderPart(query.getOrders(), cls);
         var limitPart = prepareLimitPart(query);
-        var selectSql = "select %s from %s ".formatted(TextUtils.join(getColumnNames(descr, TextUtils.isNotBlank(joinPart), properties, excludedProperties), ", ")
+        var selectSql = "select %s from %s ".formatted(TextUtils.join(getColumnNames(descr, properties, excludedProperties), ", ")
                 , JdbcUtils.getTableName(cls.getName())) +
                 joinPart +
                 wherePart.sql +
@@ -944,7 +939,7 @@ public class JdbcDatabase implements Database {
         var sql = new StringBuilder();
         var indexOfSQL = new AtomicReference<>(0);
         prepareWherePartInternal(sql, values, indexOfSQL, criterions, descr, vad);
-        return new WherePartData(values, " where %s".formatted(sql));
+        return new WherePartData(values, "where %s".formatted(sql));
     }
 
     private String makeAndToken(int currentSQLIndex) {
@@ -1040,11 +1035,19 @@ public class JdbcDatabase implements Database {
                     case LE -> addSimpleCriterion(sql, values, sc.property, "<=",
                             sc.value, indexOfSQL, descr);
                     case CONTAINS -> {
-                        var currentSQLIndex = indexOfSQL.get();
-                        var subQuery = "%s ? in(unnest(%s))".formatted(makeAndToken(currentSQLIndex), sc.property);
-                        sql.insert(currentSQLIndex, subQuery);
-                        indexOfSQL.set(currentSQLIndex + subQuery.length());
-                        values.add(getSqlQueryValue(sc.value, descr, sc.property));
+                        if(dialect.hasArraysAnyOperationSupport()) {
+                            var currentSQLIndex = indexOfSQL.get();
+                            var subQuery = "%s ? = ANY(%s)".formatted(makeAndToken(currentSQLIndex), sc.property);
+                            sql.insert(currentSQLIndex, subQuery);
+                            indexOfSQL.set(currentSQLIndex + subQuery.length());
+                            values.add(getSqlQueryValue(sc.value, descr, sc.property));
+                        } else {
+                            var currentSQLIndex = indexOfSQL.get();
+                            var subQuery = "%s ? in(unnest(%s))".formatted(makeAndToken(currentSQLIndex), sc.property);
+                            sql.insert(currentSQLIndex, subQuery);
+                            indexOfSQL.set(currentSQLIndex + subQuery.length());
+                            values.add(getSqlQueryValue(sc.value, descr, sc.property));
+                        }
                     }
                     case ANY_IN -> createArrayInCriterion(sc, true, indexOfSQL, sql, descr, vad, values);
                     case NONE_IN -> createArrayInCriterion(sc, false, indexOfSQL, sql, descr, vad, values);
@@ -1111,7 +1114,8 @@ public class JdbcDatabase implements Database {
 
     private Pair<Object, JdbcFieldType> getSqlQueryValue(Object value, JdbcTableDescription descr, String propertyName) throws Exception {
         var fieldId = propertyName.contains(".")? propertyName.substring(propertyName.lastIndexOf(".")+1): propertyName;
-        return descr.getFields().get(fieldId).getSqlQueryValue(value, enumMapper, classMapper, reflectionFactory);
+        var field =  descr.getFields().get(fieldId);
+        return field.getSqlQueryValue(value, enumMapper, classMapper, reflectionFactory);
     }
 
     private void withConnection(RunnableWithExceptionAndArgument<Connection> callback) throws Exception {

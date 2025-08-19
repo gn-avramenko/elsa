@@ -35,6 +35,7 @@
             <extension base="tns:MetaElementType">
                 <attribute name="type" type="tns:ValueType" use="required"/>
                 <attribute name="class-name" type="string"/>
+                <attribute name="ts-class-name" type="string"/>
                 <attribute name="non-nullable" type="boolean" default="false"/>
             </extension>
         </complexContent>

@@ -63,6 +63,7 @@ public class HsqldbDialect implements JdbcDialect {
                     var sqlType = switch (dataType) {
                         case "CHARACTER VARYING" -> maxLength.intValue() > 256 ? JdbcFieldType.TEXT : JdbcFieldType.STRING;
                         case "INTEGER" -> JdbcFieldType.INT;
+                        case "TIMESTAMP WITH TIME ZONE" -> JdbcFieldType.INSTANT;
                         default -> throw new UnsupportedOperationException("type %s %s is not supported".formatted(dataType, maxLength));
                     };
                     result.put(((String) map.get("COLUMN_NAME")).toLowerCase(), sqlType);
@@ -91,7 +92,7 @@ public class HsqldbDialect implements JdbcDialect {
         return switch (value) {
             case UUID -> "UUID";
             case INT_ID -> "INT PRIMARY KEY";
-            case STRING -> "CHAR VARYING(256)";
+            case STRING -> "CHAR VARYING(255)";
             case BOOLEAN -> "BOOLEAN";
             case TEXT -> "LONGVARCHAR";
             case DATE -> "DATE";
@@ -101,7 +102,7 @@ public class HsqldbDialect implements JdbcDialect {
             case INT -> "INT";
             case BIG_DECIMAL -> "DECIMAL(19,2)";
             case BLOB -> "BLOB";
-            case STRING_ARRAY -> "CHAR VARYING(256) ARRAY";
+            case STRING_ARRAY -> "CHAR VARYING(255) ARRAY";
             case LONG_ARRAY -> "BIGINT ARRAY";
             case UUID_ARRAY -> "UUID ARRAY";
             case INT_ARRAY -> "INT ARRAY";
@@ -176,6 +177,11 @@ public class HsqldbDialect implements JdbcDialect {
 
     @Override
     public boolean hasArraysIntersectionOperationSupport() {
+        return false;
+    }
+
+    @Override
+    public boolean hasArraysAnyOperationSupport() {
         return false;
     }
 }

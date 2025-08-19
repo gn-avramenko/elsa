@@ -33,6 +33,7 @@ import com.gridnine.platform.elsa.common.core.serialization.JsonMarshaller;
 import com.gridnine.platform.elsa.common.core.serialization.JsonUnmarshaller;
 import com.gridnine.platform.elsa.common.core.serialization.ParameterMapConverter;
 import com.gridnine.platform.elsa.common.core.serialization.meta.ObjectMetadataProvidersFactory;
+import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -47,6 +48,11 @@ public class ElsaCommonCoreConfiguration {
     @Bean
     public Localizer localizer() {
         return new Localizer();
+    }
+
+    @Bean
+    public ExceptionUtils exceptionUtils() {
+        return new ExceptionUtils();
     }
 
     @Bean

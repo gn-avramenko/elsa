@@ -22,6 +22,8 @@
 package com.gridnine.platform.elsa.common.core.utils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -64,6 +66,39 @@ public class IoUtils {
         return count;
     }
 
+    public static String sha1sum(File file) {
+        return ExceptionUtils.wrapException(() -> {
+            try (FileInputStream fis = new FileInputStream(file)) {
+                return sha1sum(fis);
+            }
+        });
+    }
+
+    public static String sha1sum(String data) {
+        return ExceptionUtils.wrapException(() -> {
+            try (var bais =new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8))) {
+                return sha1sum(bais);
+            }
+        });
+    }
+
+    public static String sha1sum(InputStream is) {
+        return ExceptionUtils.wrapException(() -> {
+            MessageDigest md;
+            md = MessageDigest.getInstance("SHA1");
+            byte[] buffer = new byte[1024];
+            int n;
+            while ((n = is.read(buffer)) != -1) {
+                md.update(buffer, 0, n);
+            }
+            byte[] digest = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            return sb.toString();
+        });
+    }
     public static void closeQuietly(Closeable closeable) {
         try {
             closeable.close();

@@ -30,22 +30,23 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-core:2.13.3")
-    implementation("ch.qos.logback:logback-classic:1.4.12")
-    implementation("org.springframework:spring-context:6.0.11")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
+    implementation("ch.qos.logback:logback-classic:1.5.13")
+    implementation("org.springframework:spring-context:6.2.7")
     implementation(project(":platform:common-meta"))
     testImplementation("org.junit.platform:junit-platform-suite:1+")
     testImplementation("org.junit.jupiter:junit-jupiter:5+")
     testFixturesImplementation(project(":platform:common-meta"))
-    testFixturesImplementation("org.springframework:spring-test:6.0.11")
-    testFixturesImplementation("ch.qos.logback:logback-classic:1.4.12")
+    testFixturesImplementation("org.springframework:spring-test:6.2.7")
+    testFixturesImplementation("ch.qos.logback:logback-classic:1.5.13")
     testFixturesImplementation("org.junit.platform:junit-platform-suite:1+")
     testFixturesImplementation("org.junit.jupiter:junit-jupiter:5+")
     testFixturesImplementation("org.mockito:mockito-core:5+")
     testFixturesImplementation("org.mockito:mockito-junit-jupiter:5+")
-    testFixturesImplementation("org.springframework:spring-context:6.0.11")
+    testFixturesImplementation("org.springframework:spring-context:6.2.7")
 
 }
+
 
 sourceSets.main {
     java.srcDirs("src/main/java", "src/main/java-gen")

@@ -23,6 +23,8 @@ package com.gridnine.platform.elsa.common.core.utils;
 
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -83,9 +85,10 @@ public class TextUtils {
         }
     }
 
-    public static boolean isNotBlank(String str){
+    public static boolean isNotBlank(String str) {
         return !isBlank(str);
     }
+
     private static StringBuilder printStackTraceElement(StackTraceElement ste, StringBuilder sb) {
         sb.append("%s.%s(".formatted(ste.getClassName(), ste.getMethodName()));
         if (ste.isNativeMethod()) {
@@ -97,5 +100,9 @@ public class TextUtils {
         return sb;
     }
 
-
+    public static String urlEncode(String string) {
+        return URLEncoder
+                .encode(string, StandardCharsets.UTF_8)
+                .replace("+", "%20");
+    }
 }

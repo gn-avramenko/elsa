@@ -42,11 +42,6 @@ public class SearchQueryBuilder extends BaseQueryBuilder<SearchQueryBuilder, Sea
         return addOrder(property, order);
     }
 
-    public  SearchQueryBuilder orderBy(String property, SortOrder order) {
-        query.getOrders().put(property, order);
-        return this;
-    }
-
     public <T extends FieldNameSupport & SortSupport> SearchQueryBuilder addOrder(T property, SortOrder order) {
         query.getOrders().put(property.name, order);
         return this;

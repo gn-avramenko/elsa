@@ -858,6 +858,9 @@ public class StandardStorage implements Storage {
         });
     }
 
+    public void resetClassesCache(){
+        advices = null;
+    }
 
     private void init() {
         if (advices == null) {
@@ -901,24 +904,20 @@ public class StandardStorage implements Storage {
 
     @Override
     public <I extends BaseIdentity> String getCaption(Class<I> type, UUID id, Locale currentLocale) {
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx)  -> {
-            if (isLocalizable(type)) {
-                return database.getCaption(type, id, currentLocale);
-            }
-            return database.getCaption(type, id);
-        }, false));
-    }
-
-    private boolean isLocalizable(Class<?> type) {
-        var docDescr = domainMetaRegistry.getDocuments().get(type.getName());
-        if (docDescr != null) {
-            return docDescr.getLocalizableCaptionExpression() != null;
+        var locale = currentLocale;
+        if(locale == null){
+            locale = LocaleUtils.getCurrentLocale();
         }
-        var assetDescr = domainMetaRegistry.getAssets().get(type.getName());
-        if (assetDescr != null) {
-            return assetDescr.getLocalizableCaptionExpression() != null;
+        var oldLocale = LocaleUtils.getCurrentLocale();
+        LocaleUtils.setCurrentLocale(locale);
+        try{
+            var ref = new EntityReference<BaseIdentity>();
+            ref.setType((Class<BaseIdentity>) type);
+            ref.setId(id);
+            return captionProvider.getCaption(ref);
+        } finally {
+            LocaleUtils.setCurrentLocale(oldLocale);
         }
-        return false;
     }
 
     @Override

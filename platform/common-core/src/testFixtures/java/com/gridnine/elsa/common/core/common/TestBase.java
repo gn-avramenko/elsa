@@ -42,6 +42,11 @@ import java.math.BigDecimal;
 @ExtendWith(MockitoExtension.class)
 public abstract class TestBase {
 
+    public TestBase(){
+        System.setProperty("elsa.testing", "true");
+    }
+
+
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @BeforeEach

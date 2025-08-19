@@ -27,7 +27,6 @@ import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,36 +50,8 @@ public class ObjectMetadataProvidersFactory {
         }
         return providersCache.computeIfAbsent(className, this::createProvider);
     }
-    private BaseObjectMetadataProvider getObjectMetadataProvider(){
-        return new BaseObjectMetadataProvider() {
-            {
-                setAbstract(true);
-            }
-            @Override
-            public Object getPropertyValue(Object obj, String id) {
-                return null;
-            }
 
-            @Override
-            public void setPropertyValue(Object obj, String id, Object value) {
-
-            }
-
-            @Override
-            public Collection<?> getCollection(Object obj, String id) {
-                return null;
-            }
-
-            @Override
-            public Map<?, ?> getMap(Object obj, String id) {
-                return null;
-            }
-        };
-    }
     private BaseObjectMetadataProvider<?> createProvider(String className) {
-        if("Object".equals(className)){
-            return getObjectMetadataProvider();
-        }
         var docDescription = domainMetaRegistry.getDocuments().get(className);
         if (docDescription != null) {
             return new DomainDocumentMetadataProvider(docDescription, domainMetaRegistry, customMetaRegistry, remotingMetaRegistry);

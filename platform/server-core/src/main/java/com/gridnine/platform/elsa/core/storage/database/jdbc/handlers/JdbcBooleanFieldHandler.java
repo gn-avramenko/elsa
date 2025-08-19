@@ -42,7 +42,7 @@ public class JdbcBooleanFieldHandler extends BaseJdbcSingleFieldHandler {
 
     @Override
     public Object getModelValue(ResultSet rs, EnumMapper enumMapper, ClassMapper classMapper, CaptionProvider captionProvider, ReflectionFactory factory, JdbcDialect dialect) throws Exception {
-        return JdbcUtils.isNull(rs, fieldName) ? null : rs.getBoolean(fieldName);
+        return JdbcUtils.isNull(rs, fieldName)? null: rs.getBoolean(fieldName);
     }
 
     @Override

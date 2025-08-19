@@ -40,8 +40,11 @@ import java.time.Duration;
 
 @Component
 public class EhCacheManager implements com.gridnine.platform.elsa.core.cache.CacheManager {
-    private final CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build(true);
+    private final CacheManager cacheManager;
 
+    public EhCacheManager(){
+        this.cacheManager =  CacheManagerBuilder.newCacheManagerBuilder().build(true);
+    }
 
     @Autowired
     private Environment env;

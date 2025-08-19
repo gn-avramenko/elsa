@@ -189,8 +189,12 @@ public class SimpleAtomikosJdbcDatabaseFactory implements DatabaseFactory {
 
     @PreDestroy
     public void preDestroy() {
-        ((AtomikosDataSourceBean) ds).close();
-        tm.close();
+        if(ds != null) {
+            ((AtomikosDataSourceBean) ds).close();
+        }
+        if(tm != null) {
+            tm.close();
+        }
     }
 
 }

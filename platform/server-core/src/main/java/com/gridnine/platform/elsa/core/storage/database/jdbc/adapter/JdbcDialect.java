@@ -68,4 +68,6 @@ public interface JdbcDialect {
     String createIndexExtensionsSql(JdbcIndexType type);
 
     boolean hasArraysIntersectionOperationSupport();
+
+    boolean hasArraysAnyOperationSupport();
 }

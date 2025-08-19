@@ -19,41 +19,27 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.common.core.utils;
+package com.gridnine.platform.elsa.server.core.encrypt;
 
-import com.gridnine.platform.elsa.common.core.l10n.Localizer;
-import com.gridnine.platform.elsa.common.core.model.common.RunnableWithException;
-import com.gridnine.platform.elsa.common.core.model.common.Xeption;
+import com.gridnine.platform.elsa.core.codec.AesCodec;
+import com.gridnine.platform.elsa.server.core.common.ServerCoreTestBase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.concurrent.Callable;
 
-public class ExceptionUtils {
+public class AesCodecTest extends ServerCoreTestBase {
 
     @Autowired
-    private Localizer localizer;
+    private AesCodec desCodec;
 
-    public static void wrapException(RunnableWithException body) {
-        try {
-            body.run();
-        } catch (Exception e) {
-            throw new Error(e);
-        }
-    }
-
-    public static <T> T wrapException(Callable<T> body) {
-        try {
-            return body.call();
-        } catch (Exception e) {
-            throw new Error(e);
-        }
-    }
-
-    public String getLocalizedMessage(Xeption ex) {
-        return switch (ex.getType()) {
-            case FOR_END_USER -> localizer.toString(ex.getEndUserMessage());
-            case FOR_ADMIN -> localizer.toString(ex.getAdminMessage());
-            case FOR_DEVELOPER -> ex.getDeveloperMessage();
-        };
+    @Test
+    public void testCode() {
+        var str = "hello мир";
+        var encrypted = desCodec.encrypt(str);
+        Assertions.assertEquals(str, desCodec.decrypt(encrypted));
+        str = "hello мир 2";
+        encrypted = desCodec.encrypt(str);
+        Assertions.assertEquals(str, desCodec.decrypt(encrypted));
     }
 }

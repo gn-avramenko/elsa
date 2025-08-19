@@ -12,8 +12,8 @@ tasks.compileJava.get().dependsOn(tasks.getByName("eCodeGen"))
 
 dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
-    implementation("ch.qos.logback:logback-classic:1.4.12")
-    implementation("org.springframework:spring-context:6.0.11")
+    implementation("ch.qos.logback:logback-classic:1.5.13")
+    implementation("org.springframework:spring-context:6.2.7")
     implementation("org.springframework.data:spring-data-mongodb:4.1.2")
     implementation(project(":platform:common-meta"))
     implementation(project(":platform:common-core"))
@@ -27,13 +27,13 @@ dependencies {
     testFixturesImplementation(testFixtures(project(":platform:common-core")))
     testFixturesImplementation(testFixtures(project(":platform:server-core")))
     testFixturesImplementation("org.springframework.data:spring-data-mongodb:4.1.2")
-    testFixturesImplementation("org.springframework:spring-context:6.0.11")
-    testFixturesImplementation("org.springframework:spring-test:6.0.11")
+    testFixturesImplementation("org.springframework:spring-context:6.2.7")
+    testFixturesImplementation("org.springframework:spring-test:6.2.7")
     testFixturesImplementation("org.junit.jupiter:junit-jupiter:5+")
-    testFixturesImplementation("de.bwaldvogel:mongo-java-server:1.44.0")
+    testFixturesImplementation("de.bwaldvogel:mongo-java-server:1.47.0")
 }
 
-elsa {
+configure<com.gridnine.platform.elsa.gradle.plugin.ElsaJavaExtension> {
     codegen {
         domain(
             "src/testFixtures/java-gen",

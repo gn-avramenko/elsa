@@ -22,29 +22,29 @@
 package com.gridnine.platform.elsa.core.remoting.standard;
 
 import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
-import com.gridnine.platform.elsa.common.rest.core.GetServiceDescriptionRequest;
-import com.gridnine.platform.elsa.common.rest.core.GetServiceDescriptionResponse;
+import com.gridnine.platform.elsa.common.rest.core.GetSubscriptionDescriptionRequest;
+import com.gridnine.platform.elsa.common.rest.core.GetSubscriptionDescriptionResponse;
 import com.gridnine.platform.elsa.core.remoting.RemotingCallContext;
 import com.gridnine.platform.elsa.core.remoting.RestHandler;
 import com.gridnine.platform.elsa.server.core.CoreRemotingConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class GetServiceDescriptionHandler implements RestHandler<GetServiceDescriptionRequest, GetServiceDescriptionResponse> {
+public class GetSubscriptionDescriptionHandler implements RestHandler<GetSubscriptionDescriptionRequest, GetSubscriptionDescriptionResponse> {
 
     @Autowired
     private RemotingMetaRegistry remotingMetaRegistry;
 
     @Override
     public String getId() {
-        return CoreRemotingConstants.CORE_META_GET_SERVICE_DESCRIPTION;
+        return CoreRemotingConstants.CORE_META_GET_SUBSCRIPTION_DESCRIPTION;
     }
 
     @Override
-    public GetServiceDescriptionResponse service(GetServiceDescriptionRequest request, RemotingCallContext context) {
-        var serverCall = remotingMetaRegistry.getRemotings().get(request.getRemotingId()).getGroups().get(request.getGroupId()).getServices().get(request.getMethodId());
-        var result = new GetServiceDescriptionResponse();
-        result.setRequestClassName(serverCall.getRequestClassName());
-        result.setResponseClassName(serverCall.getResponseClassName());
+    public GetSubscriptionDescriptionResponse service(GetSubscriptionDescriptionRequest request, RemotingCallContext context) {
+        var subscriptionDescription = remotingMetaRegistry.getRemotings().get(request.getRemotingId()).getGroups().get(request.getGroupId()).getSubscriptions().get(request.getSubscriptionId());
+        var result = new GetSubscriptionDescriptionResponse();
+        result.setParameterClassName(subscriptionDescription.getParameterClassName());
+        result.setEventClassName(subscriptionDescription.getEventClassName());
         return result;
     }
 }

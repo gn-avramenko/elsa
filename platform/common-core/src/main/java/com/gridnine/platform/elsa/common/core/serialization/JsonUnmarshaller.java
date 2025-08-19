@@ -182,69 +182,31 @@ public class JsonUnmarshaller {
     }
 
     private Object readJsonValue(SerializablePropertyType type, String className, JsonParser parser, SerializationParameters params) throws Exception {
+        var nextToken = parser.nextToken();
+        if(nextToken == JsonToken.VALUE_NULL){
+            return null;
+        }
         return switch (type) {
-            case STRING -> {
-                parser.nextToken();
-                yield parser.getText();
-            }
-            case ENUM -> {
-                parser.nextToken();
-                yield switch (params.getEnumSerializationStrategy()) {
-                    case ID -> reflectionFactory.safeGetEnum(className, enumMapper.getName(parser.getIntValue(), reflectionFactory.getClass(className)));
-                    case NAME -> reflectionFactory.safeGetEnum(className, parser.getText());
-                };
-            }
-            case CLASS -> {
-                parser.nextToken();
-                yield switch (params.getClassSerializationStrategy()) {
-                    case ID -> reflectionFactory.getClass(classMapper.getName(parser.getIntValue()));
-                    case NAME -> reflectionFactory.getClass(parser.getText());
-                };
-            }
-            case ENTITY_REFERENCE -> {
-                parser.nextToken();
-                yield readEntityReference(parser, className, params);
-            }
-            case ENTITY -> {
-                parser.nextToken();
-                yield unmarshal(parser, className, params);
-            }
-            case BIG_DECIMAL -> {
-                parser.nextToken();
-                yield BigDecimal.valueOf(parser.getDoubleValue());
-            }
-            case UUID -> {
-                parser.nextToken();
-                yield UUID.fromString(parser.getValueAsString());
-            }
-            case INT -> {
-                parser.nextToken();
-                yield parser.getIntValue();
-            }
-            case LONG -> {
-                parser.nextToken();
-                yield parser.getLongValue();
-            }
-            case BYTE_ARRAY -> {
-                parser.nextToken();
-                yield parser.getBinaryValue();
-            }
-            case LOCAL_DATE_TIME -> {
-                parser.nextToken();
-                yield LocalDateTime.parse(parser.getText(), dateTimeFormatter);
-            }
-            case INSTANT -> {
-                parser.nextToken();
-                yield Instant.parse(parser.getText()).atZone(ZoneId.systemDefault()).toInstant();
-            }
-            case LOCAL_DATE -> {
-                parser.nextToken();
-                yield LocalDate.parse(parser.getText(), dateFormatter);
-            }
-            case BOOLEAN -> {
-                parser.nextToken();
-                yield parser.getBooleanValue();
-            }
+            case STRING -> parser.getText();
+            case ENUM -> switch (params.getEnumSerializationStrategy()) {
+                case ID -> reflectionFactory.safeGetEnum(className, enumMapper.getName(parser.getIntValue(), reflectionFactory.getClass(className)));
+                case NAME -> reflectionFactory.safeGetEnum(className, parser.getText());
+            };
+            case CLASS -> switch (params.getClassSerializationStrategy()) {
+                case ID -> reflectionFactory.getClass(classMapper.getName(parser.getIntValue()));
+                case NAME -> reflectionFactory.getClass(parser.getText());
+            };
+            case ENTITY_REFERENCE -> readEntityReference(parser, className, params);
+            case ENTITY -> unmarshal(parser, className, params);
+            case BIG_DECIMAL -> BigDecimal.valueOf(parser.getDoubleValue());
+            case UUID -> UUID.fromString(parser.getValueAsString());
+            case INT -> parser.getIntValue();
+            case LONG -> parser.getLongValue();
+            case BYTE_ARRAY -> parser.getBinaryValue();
+            case LOCAL_DATE_TIME -> LocalDateTime.parse(parser.getText(), dateTimeFormatter);
+            case INSTANT -> Instant.parse(parser.getText()).atZone(ZoneId.systemDefault()).toInstant();
+            case LOCAL_DATE -> LocalDate.parse(parser.getText(), dateFormatter);
+            case BOOLEAN -> parser.getBooleanValue();
         };
     }
 

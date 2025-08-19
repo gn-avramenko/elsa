@@ -107,8 +107,11 @@ public class ElsaFileStorage {
         var parentDir = file.getParentFile();
         while (!parentDir.exists()) {
             parentDir = parentDir.getParentFile();
+            if(parentDir == null){
+                break;
+            }
         }
-        lockManager.withLock("xa-disk-%s".formatted(parentDir.getAbsolutePath()), ()->{
+        lockManager.withLock(parentDir == null? "xadisk-global": "xa-disk-%s".formatted(parentDir.getAbsolutePath()), ()->{
             if(file.getParentFile().exists()){
                 return;
             }
@@ -121,7 +124,6 @@ public class ElsaFileStorage {
     public void delete(File file) {
         withTransaction((session) -> {
             deleteFileInternal(session, file);
-            session.deleteFile(file);
             return null;
         });
     }

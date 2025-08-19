@@ -21,7 +21,6 @@
 
 package com.gridnine.platform.elsa.server.core.storage;
 
-import com.gridnine.platform.elsa.common.core.model.domain.BaseVirtualAsset;
 import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
 import com.gridnine.platform.elsa.common.core.search.*;
 import com.gridnine.platform.elsa.common.core.test.model.domain.*;
@@ -169,7 +168,7 @@ public class StorageTest extends ServerCoreTestBase {
     }
 
     @Test
-    public void testVirtualAssets() throws Exception{
+    public void testVirtualAssets() {
         var joinedAsset = new TestDomainJoinedAsset();
         joinedAsset.setJoinedProperty("joined value");
         storage.saveAsset(joinedAsset, "init");
@@ -182,7 +181,7 @@ public class StorageTest extends ServerCoreTestBase {
                 new SearchQueryBuilder().where(SearchCriterion.eq(TestDomainVirtualAssetFields.joinedProperty, "joined value"))
                         .orderBy(TestDomainVirtualAssetFields.stringProperty, SortOrder.ASC).build());
         Assertions.assertEquals(1, vas.size());
-        var item= vas.get(0);
+        var item = vas.get(0);
         baseAsset = storage.loadAsset(baseAsset.toReference(), false);
         Assertions.assertEquals(baseAsset.getStringProperty(), item.getStringProperty());
         Assertions.assertEquals(baseAsset.getDateProperty(), item.getDateProperty());

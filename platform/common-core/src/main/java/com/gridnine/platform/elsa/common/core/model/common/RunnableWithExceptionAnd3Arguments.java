@@ -19,10 +19,8 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.core.remoting;
+package com.gridnine.platform.elsa.common.core.model.common;
 
-public interface SubscriptionHandler<P, E> {
-    boolean isApplicable(E event, P parameters, RemotingSubscriptionContext context) throws Exception;
-
-    String getId();
+public interface RunnableWithExceptionAnd3Arguments<A1, A2,A3> {
+    void run(A1 arg1, A2 arg2, A3 arg3) throws Exception;
 }

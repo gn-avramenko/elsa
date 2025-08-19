@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class MongoConverter {
 
     private final static String CLASS_NAME_PROPERTY = "_cn";
@@ -41,7 +42,6 @@ public class MongoConverter {
     private final DateTimeFormatter instantFormatter = DateTimeFormatter.ISO_INSTANT;
 
     private final ObjectMetadataProvidersFactory metadataProvidersFactory;
-
 
     private final ReflectionFactory reflectionFactory;
 
@@ -66,9 +66,9 @@ public class MongoConverter {
             var orders = query.getOrders().entrySet().stream().map((k) -> new Sort.Order(k.getValue() == SortOrder.ASC ? Sort.Direction.ASC : Sort.Direction.DESC, k.getKey())).toArray(Sort.Order[]::new);
             result.with(Sort.by(orders));
         }
-        if(query.getCriterions().size() == 1){
+        if (query.getCriterions().size() == 1) {
             result.addCriteria(toCriteria(query.getCriterions().get(0), className));
-        } else if(!query.getCriterions().isEmpty()) {
+        } else if (!query.getCriterions().isEmpty()) {
             result.addCriteria(new Criteria().andOperator(query.getCriterions().stream().map(it -> toCriteria(it, className)).toList()));
         }
         return result;
@@ -77,7 +77,7 @@ public class MongoConverter {
     private Criteria toCriteria(SearchCriterion searchCriterion, String className) {
         if (searchCriterion instanceof SimpleCriterion sc) {
             BaseObjectMetadataProvider<?> provider = metadataProvidersFactory.getProvider(className);
-            if(sc.operation == SimpleCriterion.Operation.CONTAINS){
+            if (sc.operation == SimpleCriterion.Operation.CONTAINS) {
                 SerializableCollectionDescription coll = provider.getCollection(sc.property);
                 switch (sc.operation) {
                     case CONTAINS -> {
@@ -88,7 +88,7 @@ public class MongoConverter {
             } else {
                 String propertyName;
                 Object value;
-                if(sc.property.contains(".")){//NestedProperty
+                if (sc.property.contains(".")) {//NestedProperty
                     propertyName = sc.property;
                     value = sc.value;
                 } else {
@@ -179,6 +179,7 @@ public class MongoConverter {
         throw Xeption.forDeveloper("unsupported id " + id);
     }
 
+    @SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
     private Object toQueryValue(Object value, SerializablePropertyDescription property) {
         if (value == null) {
             return null;
@@ -216,7 +217,7 @@ public class MongoConverter {
     }
 
     public <A extends BaseIntrospectableObject> A fromDocument(Document doc, Class<A> cls) {
-        if(doc == null){
+        if (doc == null) {
             return null;
         }
         return ExceptionUtils.wrapException(() -> unmarshal(doc, cls.getName()));
@@ -249,13 +250,13 @@ public class MongoConverter {
                                 mapDescription.valueClassName())));
             }
         }
-        if(result instanceof BaseAsset ba){
-            if(ba.getVersionInfo() == null){
+        if (result instanceof BaseAsset ba) {
+            if (ba.getVersionInfo() == null) {
                 ba.setVersionInfo(new VersionInfo());
             }
         }
-        if(result instanceof BaseDocument bd){
-            if(bd.getVersionInfo() == null){
+        if (result instanceof BaseDocument bd) {
+            if (bd.getVersionInfo() == null) {
                 bd.setVersionInfo(new VersionInfo());
             }
         }
@@ -263,21 +264,24 @@ public class MongoConverter {
     }
 
     private Object getModelValue(Object o, SerializablePropertyType type, boolean anAbstract, String className) {
-        if(o == null){
+        if (o == null && type != SerializablePropertyType.INT && type != SerializablePropertyType.LONG && type != SerializablePropertyType.BOOLEAN) {
             return null;
         }
         switch (type) {
             case UUID -> {
                 return UUID.fromString((String) o);
             }
-            case STRING,  BOOLEAN -> {
+            case STRING -> {
                 return o;
             }
+            case BOOLEAN -> {
+                return Boolean.TRUE.equals(o);
+            }
             case INT -> {
-                return ((Number)o).intValue();
+                return o == null ? 0 : ((Number) o).intValue();
             }
             case LONG -> {
-                return ((Number)o).longValue();
+                return o == null ? 0 : ((Number) o).longValue();
             }
             case CLASS -> {
                 return reflectionFactory.getClass((String) o);
@@ -286,10 +290,10 @@ public class MongoConverter {
                 return reflectionFactory.safeGetEnum(className, (String) o);
             }
             case ENTITY -> {
-                return unmarshal((Map<String,Object>) o, className);
+                return unmarshal((Map<String, Object>) o, className);
             }
             case BIG_DECIMAL -> {
-                return (o instanceof Decimal128)?((Decimal128) o).bigDecimalValue(): BigDecimal.valueOf(((Number) o).doubleValue());
+                return (o instanceof Decimal128) ? ((Decimal128) o).bigDecimalValue() : BigDecimal.valueOf(((Number) o).doubleValue());
             }
             case BYTE_ARRAY -> {
                 return ((BsonBinary) o).getData();
@@ -301,7 +305,7 @@ public class MongoConverter {
                 return LocalDate.parse((String) o, dateFormatter);
             }
             case INSTANT -> {
-                return ((Date) o).toInstant();
+                return o instanceof Date ? ((Date) o).toInstant() : null;
             }
             case ENTITY_REFERENCE -> {
                 var doc = (BsonDocument) o;
@@ -314,9 +318,8 @@ public class MongoConverter {
 
     public <A extends BaseIdentity> Document toDocument(A object, Document existingDocument) {
         Document document = existingDocument != null ? existingDocument : new Document();
-        ExceptionUtils.wrapException(() -> {
-            marshal(document, object, false, existingDocument, new HashSet<>());
-        });
+        ExceptionUtils.wrapException(() ->
+                marshal(document, object, false, existingDocument, new HashSet<>()));
         return document;
     }
 
@@ -332,17 +335,23 @@ public class MongoConverter {
         }
         @SuppressWarnings("unchecked") var provider = (BaseObjectMetadataProvider<Object>) metadataProvidersFactory.getProvider(key);
 
+        if (existingDocument != null) {
+            document.putAll(existingDocument);
+        }
         if (isAbstract) {
             document.put(CLASS_NAME_PROPERTY, key);
         }
         for (SerializablePropertyDescription prop : provider.getAllProperties()) {
-            document.remove(prop.id());
             var value = provider.getPropertyValue(obj, prop.id());
             if (value != null) {
-                document.put(prop.id(), getBsonValue(value, prop.type(), prop.isAbstract(), processed));
+                document.put(prop.id(), getBsonValue(value, prop.type(), prop.isAbstract(),
+                        Optional.ofNullable(existingDocument)
+                                .map(ed -> ed.get(prop.id())).orElse(null), processed));
+            } else {
+                document.remove(prop.id());
             }
         }
-        for (SerializableCollectionDescription coll : provider.getAllCollections()) {
+        for (SerializableCollectionDescription coll : provider.getAllCollections()) { // todo: add support for collections of nested entities
             document.remove(coll.id());
             Collection<?> values = provider.getCollection(obj, coll.id());
             if (!values.isEmpty()) {
@@ -353,9 +362,9 @@ public class MongoConverter {
                 }
             }
         }
-        for (SerializableMapDescription mapDescription : provider.getAllMaps()) {
-            var map = provider.getMap(obj, mapDescription.id());
+        for (SerializableMapDescription mapDescription : provider.getAllMaps()) { // todo: add support for maps of nested entities
             document.remove(mapDescription.id());
+            var map = provider.getMap(obj, mapDescription.id());
             if (!map.isEmpty()) {
                 var array = new BsonArray();
                 document.put(mapDescription.id(), array);
@@ -369,7 +378,13 @@ public class MongoConverter {
         }
     }
 
-    private BsonValue getBsonValue(Object value, SerializablePropertyType type, boolean anAbstract, Set<Object> processed) throws Exception {
+    private BsonValue getBsonValue(Object value, SerializablePropertyType type, boolean isAbstract,
+                                   Set<Object> processed) throws Exception {
+        return getBsonValue(value, type, isAbstract, null, processed);
+    }
+
+    private BsonValue getBsonValue(Object value, SerializablePropertyType type, boolean isAbstract,
+                                   Object existingValue, Set<Object> processed) throws Exception {
         switch (type) {
             case UUID -> {
                 return new BsonString(value.toString());
@@ -384,12 +399,12 @@ public class MongoConverter {
                 return new BsonString(((Enum<?>) value).name());
             }
             case ENTITY -> {
-                var document = new BsonDocument();
-                marshal((Map) document, value, anAbstract, null, processed);
-                return document;
+                var document = new Document();
+                marshal(document, value, isAbstract, (Map<String, Object>) existingValue, processed);
+                return document.toBsonDocument();
             }
             case BIG_DECIMAL -> {
-                return new BsonDecimal128(new Decimal128((BigDecimal) value));
+                return new BsonDouble(((BigDecimal) value).doubleValue());
             }
             case INT -> {
                 return new BsonInt32((Integer) value);

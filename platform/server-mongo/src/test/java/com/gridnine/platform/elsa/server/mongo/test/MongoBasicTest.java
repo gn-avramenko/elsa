@@ -44,7 +44,7 @@ public class MongoBasicTest extends ServerMongoTestBase{
         Assertions.assertEquals(1, assets.size());
         Assertions.assertEquals("test", assets.get(0).getStringProperty());
         Assertions.assertEquals(true, assets.get(0).getBooleanProperty());
-        Assertions.assertEquals(BigDecimal.TEN, assets.get(0).getBigDecimalProperty());
+        assertEquals(10 , assets.get(0).getBigDecimalProperty());
         Assertions.assertEquals(10L, assets.get(0).getLongProperty());
         storage.deleteAsset(asset);
         Assertions.assertNull(storage.loadAsset(assetRef, false));

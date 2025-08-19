@@ -7,7 +7,6 @@ package com.gridnine.platform.elsa.core.remoting;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
-import com.gridnine.platform.elsa.common.core.l10n.Localizer;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.reflection.ReflectionFactory;
@@ -21,7 +20,11 @@ import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.IoUtils;
 import com.gridnine.platform.elsa.common.core.utils.Pair;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
-import com.gridnine.platform.elsa.common.meta.remoting.*;
+import com.gridnine.platform.elsa.common.meta.remoting.HttpMethod;
+import com.gridnine.platform.elsa.common.meta.remoting.RemotingDescription;
+import com.gridnine.platform.elsa.common.meta.remoting.RemotingGroupDescription;
+import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
+import com.gridnine.platform.elsa.common.meta.remoting.ServiceDescription;
 import com.gridnine.platform.elsa.core.remoting.standard.BinaryData;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,9 +38,14 @@ import org.springframework.http.HttpHeaders;
 
 import javax.annotation.PostConstruct;
 import java.io.Closeable;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -45,8 +53,6 @@ import java.util.stream.Collectors;
 public class RemotingHttpServlet extends HttpServlet {
 
     private final Map<String, EnumMap<HttpMethod, Pair<com.gridnine.platform.elsa.common.core.utils.Lazy<RestHandler<Object, Object>>, ServiceParams>>> scHandlersCache = new ConcurrentHashMap<>();
-
-    private final Map<String, Pair<com.gridnine.platform.elsa.common.core.utils.Lazy<SubscriptionHandler<Object, Object>>, SubscriptionParams>> subHandlersCache = new ConcurrentHashMap<>();
 
     private final SerializationParameters serializationParameters;
 
@@ -81,7 +87,7 @@ public class RemotingHttpServlet extends HttpServlet {
     ParameterMapConverter parameterMapConverter;
 
     @Autowired
-    private Localizer localizer;
+    private ExceptionUtils exceptionUtils;
 
     public RemotingHttpServlet() {
         serializationParameters = new SerializationParameters().setClassSerializationStrategy(SerializationParameters.ClassSerializationStrategy.NAME)
@@ -92,29 +98,19 @@ public class RemotingHttpServlet extends HttpServlet {
 
     @PostConstruct
     private void populateCaches() {
-        registry.getRemotings().values().forEach(remoting -> remoting.getGroups().values().forEach(group -> {
-            group.getServices().values().forEach(service -> {
-                String key = "/%s/%s/%s".formatted(remoting.getId(), group.getId(), service.getPath() == null ? service.getId() : service.getPath());
-                var map = scHandlersCache.computeIfAbsent(key, k -> new EnumMap<>(HttpMethod.class));
-                map.put(service.getMethod(), Pair.of(new com.gridnine.platform.elsa.common.core.utils.Lazy<>(() ->
-                                Objects.requireNonNull(handlersRegistry.getServiceHandler("%s:%s:%s".formatted(remoting.getId(), group.getId(), service.getId())))),
-                        new ServiceParams(remoting, group, service)));
-            });
-            group.getSubscriptions().values().forEach(subscription -> {
-                String key = "/%s/%s/%s".formatted(remoting.getId(), group.getId(), subscription.getId());
-                var pair = Pair.of(new com.gridnine.platform.elsa.common.core.utils.Lazy<>(() ->
-                                Objects.requireNonNull(handlersRegistry.getSubscriptionHandler("%s:%s:%s".formatted(remoting.getId(), group.getId(), subscription.getId())))),
-                        new SubscriptionParams(remoting, group, subscription));
-                subHandlersCache.put(key, pair);
-                subHandlersCache.put("%s/subscribe".formatted(key), pair);
-                subHandlersCache.put("%s/unsibscribe".formatted(key), pair);
-            });
-        }));
+        registry.getRemotings().values().forEach(remoting -> remoting.getGroups().values().forEach(group ->
+                group.getServices().values().forEach(service -> {
+                    String key = "/%s/%s/%s".formatted(remoting.getId(), group.getId(), service.getPath() == null ? service.getId() : service.getPath());
+                    var map = scHandlersCache.computeIfAbsent(key, k -> new EnumMap<>(HttpMethod.class));
+                    map.put(service.getMethod(), Pair.of(new com.gridnine.platform.elsa.common.core.utils.Lazy<>(() ->
+                                    Objects.requireNonNull(handlersRegistry.getServiceHandler("%s:%s:%s".formatted(remoting.getId(), group.getId(), service.getId())))),
+                            new ServiceParams(remoting, group, service)));
+                })));
     }
 
-    private String getPathInfo(final HttpServletRequest req){
+    private String getPathInfo(final HttpServletRequest req) {
         String pathInfo = req.getPathInfo();
-        if (pathInfo.endsWith("/")) {
+        if (pathInfo != null && pathInfo.endsWith("/")) {
             pathInfo = pathInfo.substring(0, pathInfo.length() - 1);
         }
         return pathInfo;
@@ -124,10 +120,8 @@ public class RemotingHttpServlet extends HttpServlet {
     protected void doOptions(final HttpServletRequest req, final HttpServletResponse res) {
         var pathInfo = getPathInfo(req);
         var allowedMethods = new ArrayList<HttpMethod>();
-        if(scHandlersCache.containsKey(pathInfo)){
+        if (scHandlersCache.containsKey(pathInfo)) {
             allowedMethods.addAll(scHandlersCache.get(pathInfo).keySet());
-        } else if (subHandlersCache.containsKey(pathInfo)){
-            allowedMethods.add(HttpMethod.POST);
         } else {
             res.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -149,9 +143,9 @@ public class RemotingHttpServlet extends HttpServlet {
     private void doHandle(final HttpServletRequest req, final HttpServletResponse res) {
         var pathInfo = getPathInfo(req);
         var method = HttpMethod.valueOf(req.getMethod());
-        if(scHandlersCache.containsKey(pathInfo)){
+        if (scHandlersCache.containsKey(pathInfo)) {
             var pair = scHandlersCache.get(pathInfo).get(method);
-            if(pair == null){
+            if (pair == null) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
@@ -163,25 +157,23 @@ public class RemotingHttpServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        doHandle(req,resp);
+        doHandle(req, resp);
     }
-
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        doHandle(req,resp);
+        doHandle(req, resp);
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        doHandle(req,resp);
+        doHandle(req, resp);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        doHandle(req,resp);
+        doHandle(req, resp);
     }
-
 
     private void processServiceRequest(HttpServletRequest req, HttpServletResponse resp, Pair<RestHandler<Object, Object>, ServiceParams> sc) {
         var context = new RemotingCallContext();
@@ -225,7 +217,11 @@ public class RemotingHttpServlet extends HttpServlet {
                         toClose.add(is);
                         bd.setMimeType(entry.getValue().getContentType());
                         bd.setContentLength(entry.getValue().getSize());
-                        bd.setName(entry.getValue().getSubmittedFileName());
+                        String filename = entry.getValue().getSubmittedFileName();
+                        if ((context.getHttpRequest().getParameter("filename") != null) && (field2part.size() == 1)) { // allow setting custom name for single file uploads
+                            filename = context.getHttpRequest().getParameter("filename");
+                        }
+                        bd.setName(clearFileName(filename));
                         bd.setInputStream(is);
                         provider.setPropertyValue(rq, entry.getKey(), bd);
                     }
@@ -237,22 +233,29 @@ public class RemotingHttpServlet extends HttpServlet {
             }
             var rp = handler.service(rq, context);
             toClose.forEach(IoUtils::closeQuietly);
-            if (BinaryData.class.getName().equals(scd.getResponseClassName())){
+            if (BinaryData.class.getName().equals(scd.getResponseClassName())) {
                 var bd = (BinaryData) rp;
-                context.getHttpResponse().setStatus(HttpServletResponse.SC_OK);
-                String range = context.getHttpRequest().getHeader("Range");
-                if(TextUtils.isNotBlank(range)){//partial download
-                    context.getHttpResponse().setHeader("Content-Length", String.valueOf(bd.getContentLength()));
-                    PartialDownloadHelper.processPartialDownload(context.getHttpRequest(), context.getHttpResponse(), bd);
-                } else {
-                    context.getHttpResponse().setContentType(bd.getMimeType() != null? bd.getMimeType(): "application/octet-stream");
+                try {
+                    context.getHttpResponse().setStatus(HttpServletResponse.SC_OK);
+                    if(context.getHttpResponse().getContentType() == null) {
+                        context.getHttpResponse().setContentType("application/octet-stream");
+                    }
                     context.getHttpResponse().setContentLengthLong(bd.getContentLength());
-                    context.getHttpResponse().setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''"
-                            + URLEncoder.encode(bd.getName(), StandardCharsets.UTF_8));
+                    if(bd.getLastModified() != null) {
+                        context.getHttpResponse().setHeader(HttpHeaders.LAST_MODIFIED, Instant.ofEpochMilli(bd.getLastModified()).toString());
+                    }
+                    if (context.getHttpResponse().getHeader(HttpHeaders.CONTENT_DISPOSITION) == null) {
+                        var encoded = TextUtils.urlEncode(bd.getName());
+                        context.getHttpResponse().setHeader(
+                                HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encoded
+                        );
+                    }
                     try (var os = context.getHttpResponse().getOutputStream()) {
                         bd.getInputStream().transferTo(os);
                         os.flush();
                     }
+                } finally {
+                    bd.getInputStream().close();
                 }
             } else if (scd.getResponseClassName() != null) {
                 context.getHttpResponse().setStatus(HttpServletResponse.SC_OK);
@@ -279,11 +282,7 @@ public class RemotingHttpServlet extends HttpServlet {
                     generator.writeStringField("type", xeption.getType().name());
                     generator.writeStringField(
                             "message",
-                            switch (xeption.getType()) {
-                                case FOR_END_USER -> localizer.toString(xeption.getEndUserMessage());
-                                case FOR_ADMIN -> localizer.toString(xeption.getAdminMessage());
-                                case FOR_DEVELOPER -> xeption.getDeveloperMessage();
-                            });
+                            exceptionUtils.getLocalizedMessage(xeption));
                 } else {
                     generator.writeStringField("message", t.getCause() != null ? t.getCause().getMessage() : t.getMessage());
                 }
@@ -292,6 +291,14 @@ public class RemotingHttpServlet extends HttpServlet {
                 generator.flush();
             }
         }
+    }
+
+    private String clearFileName(String submittedFileName) {
+        if (!submittedFileName.contains("/")) {
+            return submittedFileName;
+        }
+        var parts = submittedFileName.split("/");
+        return parts[parts.length - 1];
     }
 
     private static Map<String, Part> extractBinaryDataParts(Collection<Part> parts) {
@@ -308,10 +315,6 @@ public class RemotingHttpServlet extends HttpServlet {
             return findXeption(e.getCause());
         }
         return null;
-    }
-
-    record SubscriptionParams(RemotingDescription remoting, RemotingGroupDescription group,
-                              RemotingSubscriptionDescription subscription) {
     }
 
 

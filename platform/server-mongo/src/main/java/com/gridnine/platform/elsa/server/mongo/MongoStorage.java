@@ -449,11 +449,13 @@ public class MongoStorage implements Storage {
 
     private <D extends BaseDocument> void saveDocument(D doc, boolean createNewVersion, String comment, SaveDocumentParameters params,
                                                        List<StorageAdvice> advices, ElsaTransactionContext ctx, int idx) throws Exception {
-        if (idx == advices.size()) {
-            if (doc.getVersionInfo() == null) {
-                doc.setVersionInfo(new VersionInfo());
-            }
+        if (doc.getVersionInfo() == null) {
+            doc.setVersionInfo(new VersionInfo());
+        }
+        if(doc.getValue("_id") == null){
             doc.setValue("_id", new ObjectId().toHexString());
+        }
+        if (idx == advices.size()) {
             var context = getUpdateDocumentContext(doc, ctx);
             if (!params.isSkipInterceptors()) {
                 for (var interceptor : interceptors) {
@@ -660,16 +662,16 @@ public class MongoStorage implements Storage {
 
     private <A extends BaseAsset> void saveAsset(A asset, boolean createNewVersion, String comment, List<StorageAdvice> storageAdvices, ElsaTransactionContext ctx, int idx) throws Exception {
         init();
+        if (asset.getVersionInfo() == null) {
+            asset.setVersionInfo(new VersionInfo());
+        }
+        if(asset.getValue("_id") == null){
+            asset.setValue("_id", new ObjectId().toHexString());
+        }
         if (idx == storageAdvices.size()) {
             var uc = getUpdateAssetContext(asset, ctx);
             for (var interceptor : interceptors) {
                 interceptor.onSave(asset, uc.operationContext());
-            }
-            if (asset.getVersionInfo() == null) {
-                asset.setVersionInfo(new VersionInfo());
-            }
-            if(asset.getValue("_id") == null){
-                asset.setValue("_id", new ObjectId().toHexString());
             }
             var oldAsset = uc.oldAsset();
             if (oldAsset == null) {

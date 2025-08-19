@@ -16,6 +16,8 @@ public class BinaryData {
 
     private long contentLength;
 
+    private Long lastModified;
+
     public String getMimeType() {
         return mimeType;
     }
@@ -54,5 +56,13 @@ public class BinaryData {
 
     public void setPartialContent(boolean partialContent) {
         this.partialContent = partialContent;
+    }
+
+    public Long getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Long lastModified) {
+        this.lastModified = lastModified;
     }
 }

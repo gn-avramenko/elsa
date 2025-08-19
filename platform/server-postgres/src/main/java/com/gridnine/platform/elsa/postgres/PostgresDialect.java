@@ -106,7 +106,13 @@ public class PostgresDialect implements JdbcDialect {
             return JdbcFieldType.BOOLEAN;
         }
         if ("ARRAY".equalsIgnoreCase(dataType)) {
-            return "_uuid".equals(udtName)? JdbcFieldType.UUID_ARRAY: JdbcFieldType.STRING_ARRAY;
+            if("_int4".equals(udtName)){
+                return JdbcFieldType.INT_ARRAY;
+            } else if("_uuid".equals(udtName)){
+                return JdbcFieldType.UUID_ARRAY;
+            } else {
+                return JdbcFieldType.STRING_ARRAY;
+            }
         }
         throw new IllegalStateException("unsupported type: %s".formatted(dataType));
     }
@@ -132,7 +138,7 @@ public class PostgresDialect implements JdbcDialect {
     public String getSqlType(JdbcFieldType value) {
         return switch (value) {
             case INT_ID -> "INT PRIMARY KEY";
-            case STRING -> "CHAR VARYING(256)";
+            case STRING -> "CHAR VARYING(255)";
             case BOOLEAN -> "BOOLEAN";
             case TEXT -> "TEXT";
             case DATE -> "DATE";
@@ -142,7 +148,7 @@ public class PostgresDialect implements JdbcDialect {
             case INT -> "INT";
             case BIG_DECIMAL -> "numeric(19,2)";
             case BLOB -> "OID";
-            case STRING_ARRAY -> "CHAR VARYING(256)[]";
+            case STRING_ARRAY -> "CHAR VARYING(255)[]";
             case LONG_ARRAY -> "BIGINT ARRAY";
             case INT_ARRAY -> "INT ARRAY";
             case UUID -> "UUID";
@@ -232,6 +238,11 @@ public class PostgresDialect implements JdbcDialect {
 
     @Override
     public boolean hasArraysIntersectionOperationSupport() {
+        return true;
+    }
+
+    @Override
+    public boolean hasArraysAnyOperationSupport() {
         return true;
     }
 }

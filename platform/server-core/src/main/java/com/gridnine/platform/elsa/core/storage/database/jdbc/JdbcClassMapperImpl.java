@@ -28,6 +28,7 @@ import com.gridnine.platform.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.adapter.JdbcDialect;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,7 +101,12 @@ public class JdbcClassMapperImpl implements ClassMapper {
                     return rs.getInt(1);
                 });
             }
-            template.execute("insert into classmapping(id, classname) values (%s, '%s')".formatted(id, className));
+            var fId = id;
+            template.execute("insert into classmapping(id, classname) values (?, ?)", (PreparedStatementCallback<Void>) ps -> {
+                ps.setInt(1, fId);
+                ps.setString(2, className);
+                return null;
+            });
             id2name.put(id, className);
             name2Id.put(className, id);
         }

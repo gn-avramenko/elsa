@@ -90,7 +90,11 @@ public class ElsaCodeGenTask extends DefaultTask {
             context.put("domain-meta-registry", domainMetaRegistry);
             var parser = new DomainMetaRegistryParser();
             var projects = new ArrayList<Project>();
-            getProject().getConfigurations().getAt("implementation").getAllDependencies().withType(ProjectDependency.class).forEach((proj) -> projects.add(proj.getDependencyProject()));
+            var allProjects = getProject().getRootProject().getAllprojects();
+            getProject().getConfigurations().getAt("implementation").getAllDependencies().withType(ProjectDependency.class).forEach((proj) -> {
+                String path = proj.getPath();
+                allProjects.stream().filter(it -> it.getPath().equals(path)).findFirst().ifPresent(projects::add);
+            });
             projects.add(getProject());
             projects.forEach(project -> {
                 try {
