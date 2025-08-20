@@ -34,6 +34,12 @@
             <option value="$PROJECT_DIR$/platform/server-mongo" />
             <option value="$PROJECT_DIR$/platform/server-postgres" />
             <option value="$PROJECT_DIR$/platform/web-core" />
+            <option value="$PROJECT_DIR$/submodules" />
+            <option value="$PROJECT_DIR$/submodules/webpeer" />
+            <option value="$PROJECT_DIR$/submodules/webpeer/server" />
+            <option value="$PROJECT_DIR$/submodules/webpeer/server/core" />
+            <option value="$PROJECT_DIR$/submodules/webpeer/web" />
+            <option value="$PROJECT_DIR$/submodules/webpeer/web/core" />
           </set>
         </option>
       </GradleProjectSettings>
