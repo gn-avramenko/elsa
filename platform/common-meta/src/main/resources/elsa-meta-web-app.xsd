@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://vga.com/elsa/meta-web-app"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://vga.com/elsa/meta-web-app"
+        xmlns:common="http://vga.com/elsa/meta-common">
+    <element name="web-app">
+        <complexType>
+            <sequence>
+                <choice maxOccurs="unbounded" minOccurs="0">
+                    <element name="element" type="tns:EntityDescriptionType" />
+                    <element name="enum">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <element name="enum-item" maxOccurs="unbounded"
+                                                 minOccurs="0" type="common:MetaElementType"/>
+                                    </sequence>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                    <element name="entity">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <choice maxOccurs="unbounded" minOccurs="0">
+                                            <element name="property" type="common:PropertyType"/>
+                                            <element name="collection" type="common:CollectionType"/>
+                                            <element name="map" type="common:MapType"/>
+                                        </choice>
+                                    </sequence>
+                                    <attribute name="abstract" type="boolean"
+                                               default="false"/>
+                                    <attribute name="extends" type="string"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                </choice>
+            </sequence>
+        </complexType>
+    </element>
+    <complexType name="EntityDescriptionType">
+            <complexContent>
+                <extension base="common:MetaElementType">
+                    <sequence>
+                        <element name="init-properties" minOccurs="0">
+                            <complexType>
+                                <sequence>
+                                    <element name="property" type="common:PropertyType" minOccurs="1" maxOccurs="unbounded"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                        <element name="state" minOccurs="0">
+                            <complexType>
+                                <sequence>
+                                    <element name="property" type="common:PropertyType" minOccurs="1" maxOccurs="unbounded"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                        <element name="commands" minOccurs="0">
+                            <complexType>
+                                <sequence>
+                                    <element name="from-server" minOccurs="0">
+                                        <complexType>
+                                            <sequence>
+                                                <element name="command" type="common:MetaElementType" minOccurs="1" maxOccurs="unbounded"/>
+                                            </sequence>
+                                        </complexType>
+                                    </element>
+                                    <element name="from-client" minOccurs="0">
+                                        <complexType>
+                                            <sequence>
+                                                <element name="command" type="common:MetaElementType" minOccurs="1" maxOccurs="unbounded"/>
+                                            </sequence>
+                                        </complexType>
+                                    </element>
+                                </sequence>
+                            </complexType>
+                        </element>
+                        <element name="children" minOccurs="0">
+                            <complexType>
+                                <sequence>
+                                    <element name="child" type="tns:ElementType" maxOccurs="unbounded"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                    <attribute name="type" type="tns:ElementType"/>
+                </extension>
+            </complexContent>
+    </complexType>
+    <simpleType name="ElementType">
+        <restriction base="string">
+            <enumeration value="CONTAINER"/>
+            <enumeration value="AUTOCOMPLETE"/>
+            <enumeration value="TEXT_FIELD"/>
+            <enumeration value="NUMBER_FIELD"/>
+            <enumeration value="SELECT"/>
+            <enumeration value="CUSTOM"/>
+            <enumeration value="LOCAL_DATE"/>
+            <enumeration value="LOCAL_DATE_TIME"/>
+            <enumeration value="LABEL"/>
+            <enumeration value="BUTTON"/>
+            <enumeration value="CHECK_BOX"/>
+            <enumeration value="RADIO_BUTTON"/>
+            <enumeration value="FILE"/>
+            <enumeration value="BUTTON"/>
+        </restriction>
+    </simpleType>
+</schema>

@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+elsa:
+  storage:
+    type: STANDARD
+    databaseType: SIMPLE
+    adapter: postgres
+    url: jdbc:postgresql://localhost:5435/elsa-simple-site?loginTimeout=10
+    poolSize: 20
+    login: admin
+    password: admin
+
+spring.profiles.active: dev
+spring.output.ansi.enabled: ALWAYS
+logging:
+  file.name: logs/elsa-server.log
+  level:
+    root: INFO
+    com.gridnine: DEBUG
+    com.atomikos.datasource.xa.XATransactionalResource: ERROR
