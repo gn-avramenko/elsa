@@ -7,7 +7,7 @@
         <complexType>
             <sequence>
                 <choice maxOccurs="unbounded" minOccurs="0">
-                    <element name="element" type="tns:EntityDescriptionType" />
+                    <group ref="tns:AllElementsGroup"/>
                     <element name="enum">
                         <complexType>
                             <complexContent>
@@ -31,9 +31,6 @@
                                             <element name="map" type="common:MapType"/>
                                         </choice>
                                     </sequence>
-                                    <attribute name="abstract" type="boolean"
-                                               default="false"/>
-                                    <attribute name="extends" type="string"/>
                                 </extension>
                             </complexContent>
                         </complexType>
@@ -42,72 +39,171 @@
             </sequence>
         </complexType>
     </element>
-    <complexType name="EntityDescriptionType">
-            <complexContent>
-                <extension base="common:MetaElementType">
-                    <sequence>
-                        <element name="init-properties" minOccurs="0">
-                            <complexType>
-                                <sequence>
-                                    <element name="property" type="common:PropertyType" minOccurs="1" maxOccurs="unbounded"/>
-                                </sequence>
-                            </complexType>
-                        </element>
-                        <element name="state" minOccurs="0">
-                            <complexType>
-                                <sequence>
-                                    <element name="property" type="common:PropertyType" minOccurs="1" maxOccurs="unbounded"/>
-                                </sequence>
-                            </complexType>
-                        </element>
-                        <element name="commands" minOccurs="0">
-                            <complexType>
-                                <sequence>
-                                    <element name="from-server" minOccurs="0">
-                                        <complexType>
-                                            <sequence>
-                                                <element name="command" type="common:MetaElementType" minOccurs="1" maxOccurs="unbounded"/>
-                                            </sequence>
-                                        </complexType>
-                                    </element>
-                                    <element name="from-client" minOccurs="0">
-                                        <complexType>
-                                            <sequence>
-                                                <element name="command" type="common:MetaElementType" minOccurs="1" maxOccurs="unbounded"/>
-                                            </sequence>
-                                        </complexType>
-                                    </element>
-                                </sequence>
-                            </complexType>
-                        </element>
-                        <element name="children" minOccurs="0">
-                            <complexType>
-                                <sequence>
-                                    <element name="child" type="tns:ElementType" maxOccurs="unbounded"/>
-                                </sequence>
-                            </complexType>
-                        </element>
-                    </sequence>
-                    <attribute name="type" type="tns:ElementType"/>
-                </extension>
-            </complexContent>
+    <complexType name="BaseElementType">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <sequence>
+                    <element name="properties-extension" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="property" type="common:PropertyType" minOccurs="0"
+                                         maxOccurs="unbounded"/>
+                                <element name="collection" type="common:CollectionType" minOccurs="0"
+                                         maxOccurs="unbounded"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="state-extension" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <choice>
+                                <element name="property" type="common:PropertyType" minOccurs="0"
+                                         maxOccurs="unbounded"/>
+                                <element name="collection" type="common:CollectionType" minOccurs="0"
+                                             maxOccurs="unbounded"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="additional-commands-from-server" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="command" type="tns:CommandType" minOccurs="1"
+                                         maxOccurs="unbounded"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="additional-commands-from-client" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="command" type="tns:CommandType" minOccurs="1"
+                                         maxOccurs="unbounded"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="class-name" type="string" use="required"/>
+            </extension>
+        </complexContent>
     </complexType>
-    <simpleType name="ElementType">
+    <group name="AllElementsGroup">
+        <choice>
+            <element type="tns:ContainerType" name="container"/>
+            <element type="tns:ButtonType" name="button"/>
+            <element type="tns:SelectType" name="select"/>
+            <element type="tns:RouterType" name="router"/>
+            <element type="tns:TextAreaType" name="text-area"/>
+            <element type="tns:TextFieldType" name="text-field"/>
+            <element type="tns:TableType" name="table"/>
+            <element type="tns:AutocompleteType" name="autocomplete"/>
+            <element type="tns:LabelType" name="label"/>
+            <element type="tns:CustomType" name="custom"/>
+        </choice>
+    </group>
+    <simpleType name="ContainerFlexDirection">
         <restriction base="string">
-            <enumeration value="CONTAINER"/>
-            <enumeration value="AUTOCOMPLETE"/>
-            <enumeration value="TEXT_FIELD"/>
-            <enumeration value="NUMBER_FIELD"/>
-            <enumeration value="SELECT"/>
-            <enumeration value="CUSTOM"/>
-            <enumeration value="LOCAL_DATE"/>
-            <enumeration value="LOCAL_DATE_TIME"/>
-            <enumeration value="LABEL"/>
-            <enumeration value="BUTTON"/>
-            <enumeration value="CHECK_BOX"/>
-            <enumeration value="RADIO_BUTTON"/>
-            <enumeration value="FILE"/>
-            <enumeration value="BUTTON"/>
+            <enumeration value="ROW"/>
+            <enumeration value="COLUMN"/>
         </restriction>
     </simpleType>
+    <complexType name="CommandType">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <sequence minOccurs="0" maxOccurs="unbounded">
+                    <choice>
+                        <element name="property" type="common:PropertyType"/>
+                        <element name="collection" type="common:CollectionType"/>
+                    </choice>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="ContainerType">
+        <complexContent>
+            <extension base="tns:BaseElementType">
+                <sequence minOccurs="0">
+                    <element name="children">
+                        <complexType>
+                            <sequence>
+                                <choice>
+                                    <group ref="tns:AllElementsGroup"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="flex-direction" type="tns:ContainerFlexDirection"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="RouterType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="LabelType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="ButtonType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="TextAreaType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="TextFieldType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="SelectType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="AutocompleteType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="TableType">
+        <complexContent>
+            <extension base="tns:BaseElementType">
+                <sequence minOccurs="0">
+                    <element name="column-description-extension" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="property" type="common:PropertyType" minOccurs="0"
+                                         maxOccurs="unbounded"/>
+                                <element name="collection" type="common:CollectionType" minOccurs="0"
+                                         maxOccurs="unbounded"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="data-description">
+                        <complexType>
+                            <sequence  maxOccurs="unbounded">
+                                <choice>
+                                    <element name="property" type="common:PropertyType" minOccurs="0"
+                                             maxOccurs="unbounded"/>
+                                    <element name="collection" type="common:CollectionType" minOccurs="0"
+                                             maxOccurs="unbounded"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="CustomType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
 </schema>

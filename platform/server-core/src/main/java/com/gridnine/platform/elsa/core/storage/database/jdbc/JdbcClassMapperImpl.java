@@ -105,6 +105,7 @@ public class JdbcClassMapperImpl implements ClassMapper {
             template.execute("insert into classmapping(id, classname) values (?, ?)", (PreparedStatementCallback<Void>) ps -> {
                 ps.setInt(1, fId);
                 ps.setString(2, className);
+                ps.execute();
                 return null;
             });
             id2name.put(id, className);

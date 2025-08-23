@@ -1,0 +1,65 @@
+/*
+ * MIT License
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package com.gridnine.platform.elsa.demo.ui.components.test;
+
+public class TestMeasurementChartConfiguration {
+
+    private boolean nextMonthEnabled;
+
+    private boolean previousMonthEnabled;
+
+    private String month;
+
+    private int monthInt;
+
+    public void setMonthInt(int monthInt) {
+        this.monthInt = monthInt;
+    }
+
+    public int getMonthInt() {
+        return monthInt;
+    }
+
+    public boolean isNextMonthEnabled() {
+        return nextMonthEnabled;
+    }
+
+    public void setNextMonthEnabled(boolean nextMonthEnabled) {
+        this.nextMonthEnabled = nextMonthEnabled;
+    }
+
+    public boolean isPreviousMonthEnabled() {
+        return previousMonthEnabled;
+    }
+
+    public void setPreviousMonthEnabled(boolean previousMonthEnabled) {
+        this.previousMonthEnabled = previousMonthEnabled;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
+}

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "es2022",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "target": "es2022",
     "useDefineForClassFields": true,
 //    "lib": ["ES2020", "DOM", "DOM.Iterable"],
@@ -9,7 +9,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -29,7 +29,7 @@
 
     "baseUrl": "./",
     "paths": {
-      "webpeer-core": ["../../web/core/src/index"],
+      "webpeer-core": ["../../submodules/webpeer/web/core/src/index"],
     }
   },
   "include": ["src"],

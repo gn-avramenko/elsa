@@ -22,6 +22,7 @@
 package com.gridnine.platform.elsa.demo.ui;
 
 import com.gridnine.platform.elsa.demo.ui.components.SimpleSiteRootElement;
+import com.gridnine.platform.elsa.demo.ui.components.test.TestWebApp;
 import com.gridnine.webpeer.core.servlet.BaseWebAppServlet;
 import com.gridnine.webpeer.core.servlet.WebAppModule;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
@@ -30,11 +31,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleSiteWebAppServlet extends BaseWebAppServlet<SimpleSiteRootElement> {
+public class SimpleSiteWebAppServlet extends BaseWebAppServlet<TestWebApp> {
 
     @Override
-    protected SimpleSiteRootElement createRootElement(OperationUiContext operationUiContext) throws Exception {
-        return new SimpleSiteRootElement(operationUiContext);
+    protected TestWebApp createRootElement(OperationUiContext operationUiContext) throws Exception {
+        return new TestWebApp("root", operationUiContext);
     }
 
     @Override

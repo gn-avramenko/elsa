@@ -1,0 +1,20 @@
+import { registerFactory } from './common-component';
+import { WebAppFactory } from './test-webapp';
+import { TestNavigationPanelFactory } from './test-navigation';
+import { TestStandardLinkFactory } from './test-standard-link';
+import { TestAccountLinkFactory } from './test-account-link';
+import { TestLanguageSelectorFactory } from './test-language-selector';
+import { TestWebAppRouterFactory } from './test-web-app-router';
+import { TestHistoryPageFactory } from './test-history-page';
+import { TestMainPageFactory } from './test-main-page';
+import { TestMeasurementsChartFactory } from './test-measurements-chart';
+
+registerFactory('app.WebApp', new WebAppFactory());
+registerFactory('app.NavigationPanel', new TestNavigationPanelFactory());
+registerFactory('app.StandardLink', new TestStandardLinkFactory());
+registerFactory('app.AccountLink', new TestAccountLinkFactory());
+registerFactory('app.LanguageSelector', new TestLanguageSelectorFactory());
+registerFactory('app.WebAppRouter', new TestWebAppRouterFactory());
+registerFactory('history.HistoryPage', new TestHistoryPageFactory());
+registerFactory('main.MainPage', new TestMainPageFactory());
+registerFactory('main.MeasurementsChart', new TestMeasurementsChartFactory());
