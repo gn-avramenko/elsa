@@ -36,9 +36,10 @@ public class TestSearchField extends BaseWebAppUiElement {
 
     public TestSearchField(String tag, TestSearchFieldConfiguration config, OperationUiContext ctx) {
         super("common.SearchField", tag, ctx);
+        setInitParam("debounceTime", config.getDebounceTime());
+        setInitParam("deferred", config.isDeferred());
         setValue(config.getValue(), ctx);
         setHidden(config.isHidden(), ctx);
-        setDebounceTime(config.getDebounceTime(), ctx);
         setDisabled(config.isDisabled(), ctx);
     }
 
@@ -51,9 +52,6 @@ public class TestSearchField extends BaseWebAppUiElement {
     }
     public void setDisabled(boolean value, OperationUiContext context) {
         setProperty("disabled", value, context);
-    }
-    public void setDebounceTime(Integer value, OperationUiContext context) {
-        setProperty("debounceTime", value, context);
     }
 
     public Integer getDebounceTime() {

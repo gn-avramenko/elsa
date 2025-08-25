@@ -1,13 +1,13 @@
 import {
     BaseReactUiElement,
-    FlexDirection,
+    debounce,
     ReactUiElementFactory,
 } from './common-component';
 import React, { useEffect, useState } from 'react';
 import { DetailsModal, useModal } from './modal';
 import './scaffold-styles.css';
 
-function OrganizationsComponent(props: { element: OrganizationsWebapp }) {
+function SearchFieldComponent(props: { element: TestSearchField }) {
     for (const prop of props.element.state.keys()) {
         const [value, setValue] = useState(props.element.state.get(prop));
         props.element.state.set(prop, value);
@@ -37,7 +37,7 @@ function OrganizationsComponent(props: { element: OrganizationsWebapp }) {
                     flexDirection: 'row',
                 }}
             >
-                <div style={{ flexGrow: 0 }} key="id">
+                <div style={{ flexGrow: 0 }} className="webpeer-tag" key="id">
                     {props.element.tag}
                 </div>
                 <div style={{ flexGrow: 1 }} key="glue" />
@@ -51,17 +51,13 @@ function OrganizationsComponent(props: { element: OrganizationsWebapp }) {
                     Details
                 </button>
             </div>
-            <div
-                className="webpeer-container-content"
-                key="content"
-                style={{
-                    display: 'flex',
-                    flexDirection:
-                        props.element.flexDirection === 'ROW' ? 'row' : 'column',
+            <input
+                type="text"
+                className="webpeer-text-field"
+                onChange={(e) => {
+                    props.element.setValue(e.target.value);
                 }}
-            >
-                {props.element.findByTag('searchField').createReactElement()}
-            </div>
+            />
             <DetailsModal
                 element={props.element}
                 key="details"
@@ -72,22 +68,65 @@ function OrganizationsComponent(props: { element: OrganizationsWebapp }) {
     );
 }
 
-export class OrganizationsWebapp extends BaseReactUiElement {
-    readonly flexDirection: FlexDirection;
+export class TestSearchField extends BaseReactUiElement {
     constructor(model: any) {
-        super([], [], [], [], model);
-        this.flexDirection = model.flexDirection;
+        super(
+            ['deferred', 'debounceTime'],
+            ['value', 'hidden', 'disabled', 'trackValueChange'],
+            [],
+            ['value-changed'],
+            model
+        );
     }
+
+    private handleValueChanged = debounce(() => {
+        this.sendCommand('value-changed');
+    }, this.getDebounceTime());
+    isDeferred() {
+        return this.initParams.get('deferred') as boolean;
+    }
+
+    getDebounceTime() {
+        return this.initParams.get('debounceTime') as number;
+    }
+    getValue() {
+        return this.state.get('value') as string;
+    }
+    isHidden() {
+        return this.state.get('hidden') as boolean;
+    }
+    isTrackValueChange() {
+        return this.state.get('trackValueChange') as boolean;
+    }
+    isDisabled() {
+        return this.state.get('disabled') as boolean;
+    }
+
+    setValue(value?: string) {
+        this.stateSetters.get('value')!(value);
+        this.sendCommand(
+            'pc',
+            {
+                pn: 'value',
+                pv: value,
+            },
+            this.isDeferred()
+        );
+        if (this.isTrackValueChange()) {
+            this.handleValueChanged();
+        }
+    }
+
     createReactElement(): React.ReactElement {
-        return React.createElement(OrganizationsComponent, {
+        return React.createElement(SearchFieldComponent, {
             element: this,
             key: this.id,
         });
     }
 }
 
-export class TestOrganizationsFactory implements ReactUiElementFactory {
+export class TestSearchFieldFactory implements ReactUiElementFactory {
     createElement(model: any): BaseReactUiElement {
-        return new OrganizationsWebapp(model);
+        return new TestSearchField(model);
     }
 }

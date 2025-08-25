@@ -21,65 +21,69 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
-import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
 public class TestOrganizationsSection extends BaseWebAppUiElement {
 
+    private TestSearchField searchField;
     public TestOrganizationsSection(String tag, OperationUiContext ctx) {
         super("account.organization.OrganizationsSection", tag, ctx);
         var config = createConfiguration(ctx);
-        decorateWithListeners();
+        searchField = new TestSearchField("searchField", config.getSearchField(), ctx);
+        addChild(ctx, searchField, 0);
+        decorateWithListeners(ctx);
     }
 
 
-    private void decorateWithListeners() {
-
+    private void decorateWithListeners(OperationUiContext ctx) {
+        searchField.setValueChangeListener((arg) ->{
+            System.out.println("searchText" + searchField.getValue());
+        }, ctx);
     }
     private TestOrganizationsSectionConfiguration createConfiguration(OperationUiContext ctx) {
         var result = new TestOrganizationsSectionConfiguration();
-        var textFieldConfig = new TestSearchFieldConfiguration();
-        textFieldConfig.setDebounceTime(300);
-        result.setSearchField(textFieldConfig);
-        var organizationsListConfig = new TestEntityListConfiguration();
-        result.setOrganizationsList(organizationsListConfig);
-        {
-            var nameColumn = new TestEntityListColumnDescription();
-            nameColumn.setId("name");
-            nameColumn.setSortable(true);
-            nameColumn.setTitle("Name");
-            nameColumn.setType(TestEntityListColumnType.TEXT);
-            organizationsListConfig.getColumns().add(nameColumn);
-        }
-        {
-            var countryColumn = new TestEntityListColumnDescription();
-            countryColumn.setId("country");
-            countryColumn.setSortable(true);
-            countryColumn.setTitle("Country");
-            countryColumn.setType(TestEntityListColumnType.TEXT);
-            organizationsListConfig.getColumns().add(countryColumn);
-        }
-        {
-            var addressColumn = new TestEntityListColumnDescription();
-            addressColumn.setId("address");
-            addressColumn.setSortable(true);
-            addressColumn.setTitle("Address");
-            addressColumn.setType(TestEntityListColumnType.TEXT);
-            organizationsListConfig.getColumns().add(addressColumn);
-        }
-        {
-            var menuColumn = new TestEntityListColumnDescription();
-            menuColumn.setId("menu");
-            menuColumn.setSortable(true);
-            menuColumn.setType(TestEntityListColumnType.MENU);
-            organizationsListConfig.getColumns().add(menuColumn);
-        }
-        var sort = new TestSort();
-        organizationsListConfig.setSort(sort);
-        organizationsListConfig.setData(new JsonArray());
+        var searchField = new TestSearchFieldConfiguration();
+        searchField.setDebounceTime(300);
+        searchField.setDeferred(true);
+        result.setSearchField(searchField);
+//
+//        var organizationsListConfig = new TestEntityListConfiguration();
+//        result.setOrganizationsList(organizationsListConfig);
+//        {
+//            var nameColumn = new TestEntityListColumnDescription();
+//            nameColumn.setId("name");
+//            nameColumn.setSortable(true);
+//            nameColumn.setTitle("Name");
+//            nameColumn.setType(TestEntityListColumnType.TEXT);
+//            organizationsListConfig.getColumns().add(nameColumn);
+//        }
+//        {
+//            var countryColumn = new TestEntityListColumnDescription();
+//            countryColumn.setId("country");
+//            countryColumn.setSortable(true);
+//            countryColumn.setTitle("Country");
+//            countryColumn.setType(TestEntityListColumnType.TEXT);
+//            organizationsListConfig.getColumns().add(countryColumn);
+//        }
+//        {
+//            var addressColumn = new TestEntityListColumnDescription();
+//            addressColumn.setId("address");
+//            addressColumn.setSortable(true);
+//            addressColumn.setTitle("Address");
+//            addressColumn.setType(TestEntityListColumnType.TEXT);
+//            organizationsListConfig.getColumns().add(addressColumn);
+//        }
+//        {
+//            var menuColumn = new TestEntityListColumnDescription();
+//            menuColumn.setId("menu");
+//            menuColumn.setSortable(true);
+//            menuColumn.setType(TestEntityListColumnType.MENU);
+//            organizationsListConfig.getColumns().add(menuColumn);
+//        }
+//        var sort = new TestSort();
+//        organizationsListConfig.setSort(sort);
+//        organizationsListConfig.setData(new JsonArray());
         return result;
     }
 }

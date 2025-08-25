@@ -21,6 +21,8 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-public class TestOrganizationSectionConfiguration {
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
+public interface TestNestedRouter {
+    public void navigate(String path, OperationUiContext ctx);
 }

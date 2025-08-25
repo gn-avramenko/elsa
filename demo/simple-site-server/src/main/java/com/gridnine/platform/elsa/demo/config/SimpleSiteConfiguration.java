@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.demo.config;
 
+import com.gridnine.platform.elsa.demo.boot.SimpleSiteActivator;
 import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.demo.ui.WsContextListener;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -39,6 +40,10 @@ public class SimpleSiteConfiguration {
         return new ServletRegistrationBean<>(demoRootWebAppServlet(), "/*");
     }
 
+    @Bean
+    public SimpleSiteActivator  demoRootActivator() {
+        return new SimpleSiteActivator();
+    }
     @Bean
     public WsContextListener wsContextListener(){
         return new WsContextListener();

@@ -24,26 +24,46 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
-public class TestAccountRouter extends BaseWebAppUiElement {
+import java.util.ArrayList;
+
+public class TestAccountRouter extends BaseWebAppUiElement implements TestNestedRouter{
+
+    private String currentPath;
 
     public TestAccountRouter(String tag, OperationUiContext ctx) {
         super("account.AccountRouter", tag, ctx);
         var config = this.createConfiguration(ctx);
-        setPath(config.getPath(), ctx);
-        var elm = createElement(ctx);
+        this.currentPath = config.getPath();
+        var viewId = getViewId(currentPath);
+        var elm = createElement(viewId, ctx);
         addChild(ctx, elm, 0);
         decorateWithListeners();
     }
 
-    public void setPath(String path, OperationUiContext ctx) {
-        setProperty("path", path, ctx);
-    }
-
-    public String getPath() {
-        return getProperty("path", String.class);
+    private String getViewId(String path) {
+        if(path.contains("/account/organizations")){
+            return "organizations";
+        }
+        if(path.contains("/account/doctors")){
+            return "doctors";
+        }
+        if(path.contains("/account/managers")){
+            return "managers";
+        }
+        if(path.contains("/account/clients")){
+            return "clients";
+        }
+        if(path.contains("/account/account")){
+            return "account";
+        }
+        if(path.contains("/account/security")){
+            return "security";
+        }
+        throw new RuntimeException("Invalid path");
     }
 
     private TestAccountRouterConfiguration createConfiguration(OperationUiContext ctx) {
@@ -57,27 +77,16 @@ public class TestAccountRouter extends BaseWebAppUiElement {
     private void decorateWithListeners() {
     }
 
-    private BaseWebAppUiElement createElement(OperationUiContext ctx) {
-        String path = getPath();
-        if(path != null && path.contains("/account/organizations")){
-            return new TestOrganizationsSection("content", ctx);
-        }
-        if(path != null && path.contains("/account/doctors")){
-            return new TestDoctorsSection("content", ctx);
-        }
-        if(path != null && path.contains("/account/managers")){
-            return new TestManagersSection("content", ctx);
-        }
-        if(path != null && path.contains("/account/clients")){
-            return new TestClientsSection("content", ctx);
-        }
-        if(path != null && path.contains("/account/account")){
-            return new TestAccountSection("content", ctx);
-        }
-        if(path != null && path.contains("/account/security")){
-            return new TestSecuritySection("content", ctx);
-        }
-        return new TestOrganizationsSection("content", ctx);
+    private BaseWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
+        return switch (viewId){
+            case "organizations" -> new TestOrganizationsSection("content", ctx);
+            case "doctors" -> new TestDoctorsSection("content", ctx);
+            case "managers" -> new TestManagersSection("content", ctx);
+            case "clients" -> new TestClientsSection("content", ctx);
+            case "account" -> new TestAccountSection("content", ctx);
+            case "security" -> new TestSecuritySection("content", ctx);
+            default -> throw new RuntimeException("Invalid viewId");
+        };
     }
 
 
@@ -85,4 +94,34 @@ public class TestAccountRouter extends BaseWebAppUiElement {
     public void restoreFromState(JsonElement state, OperationUiContext ctx) {
         getUnmodifiableListOfChildren().getFirst().restoreFromState(WebPeerUtils.getDynamic(state, "content"), ctx);
     }
+
+    @Override
+    public void navigate(String path, OperationUiContext ctx) {
+        if(path.equals(this.currentPath)){
+            return;
+        }
+        String newViewId = getViewId(path);
+        String oldViewId = getViewId(this.currentPath);
+        this.currentPath = path;
+        if(oldViewId.equals(newViewId)){
+            var nestedRouters = new ArrayList<TestNestedRouter>();
+            collectNestedRouters(nestedRouters, this);
+            nestedRouters.forEach(nestedRouter -> {
+                nestedRouter.navigate(newViewId, ctx);
+            });
+            return;
+        }
+        var elm = getUnmodifiableListOfChildren().getFirst();
+        removeChild(ctx, elm);
+        elm = createElement(newViewId, ctx);
+        addChild(ctx, elm, 0);
+
+    }
+    private void collectNestedRouters(ArrayList<TestNestedRouter> nestedRouters, BaseUiElement testWebAppRouter) {
+        if(testWebAppRouter instanceof TestNestedRouter){
+            nestedRouters.add((TestNestedRouter) testWebAppRouter);
+        }
+        testWebAppRouter.getUnmodifiableListOfChildren().forEach(child -> collectNestedRouters(nestedRouters, child));
+    }
+
 }

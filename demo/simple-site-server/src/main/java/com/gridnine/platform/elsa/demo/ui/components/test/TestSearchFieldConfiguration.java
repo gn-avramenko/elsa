@@ -26,6 +26,7 @@ public class TestSearchFieldConfiguration {
     private boolean hidden;
     private boolean disabled;
     private int debounceTime;
+    private boolean deferred;
 
     public String getValue() {
         return value;
@@ -59,4 +60,11 @@ public class TestSearchFieldConfiguration {
         this.debounceTime = debounceTime;
     }
 
+    public boolean isDeferred() {
+        return deferred;
+    }
+
+    public void setDeferred(boolean deferred) {
+        this.deferred = deferred;
+    }
 }

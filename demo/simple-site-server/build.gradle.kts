@@ -3,6 +3,7 @@ plugins {
     id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.7"
     java
+    id("elsa-java")
 }
 
 repositories {
@@ -19,4 +20,16 @@ dependencies {
     implementation(project(":platform:server-web-app"))
     implementation(project(":platform:server-postgres"))
     implementation(project(":submodules:webpeer:server:core"))
+}
+
+sourceSets.main {
+    java.srcDirs("src/main/java", "src/main/java-gen")
+}
+
+
+elsa {
+    codegen {
+        domain("src/main/java-gen", "com.gridnine.platform.elsa.demo.SimpleWebAppDomainConfigurator",
+            listOf("src/main/codegen/domain.xml"))
+    }
 }

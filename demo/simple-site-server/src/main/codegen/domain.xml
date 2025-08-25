@@ -1,0 +1,12 @@
+<domain xmlns="http://vga.com/elsa/meta-domain">
+    <asset id="com.gridnine.platform.elsa.demo.domain.Country" cache-resolve="true" cache-caption="true">
+        <property id="name" type="STRING"/>
+    </asset>
+    <asset id="com.gridnine.platform.elsa.demo.domain.Organization" cache-resolve="true" cache-caption="true">
+        <property id="name" type="STRING"/>
+        <property id="address" type="STRING"/>
+        <property id="country" type="ENTITY_REFERENCE" class-name="com.gridnine.platform.elsa.demo.domain.Country"/>
+        <property id="contacts" type="STRING"/>
+        <caption-expression>name</caption-expression>
+    </asset>
+</domain>

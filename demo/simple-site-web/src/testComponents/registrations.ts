@@ -17,7 +17,8 @@ import { TestManagersPageFactory } from './test-managers-page';
 import { TestClientsPageFactory } from './test-clients-page';
 import { TestSecurityPageFactory } from './test-security-page';
 import { TestDoctorsPageFactory } from './test-doctors-page';
-import {TestAccountPageFactory} from "./test-account-page";
+import { TestAccountPageFactory } from './test-account-page';
+import { TestSearchFieldFactory } from './test-search-field';
 
 registerFactory('app.WebApp', new WebAppFactory());
 registerFactory('app.NavigationPanel', new TestNavigationPanelFactory());
@@ -45,3 +46,5 @@ registerFactory('account.client.ClientsSection', new TestClientsPageFactory());
 registerFactory('account.security.SecuritySection', new TestSecurityPageFactory());
 registerFactory('account.doctor.DoctorsSection', new TestDoctorsPageFactory());
 registerFactory('account.account.AccountSection', new TestAccountPageFactory());
+
+registerFactory('common.SearchField', new TestSearchFieldFactory());

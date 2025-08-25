@@ -25,20 +25,26 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.servlet.WebAppModule;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.GlobalUiContext;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.TypedParameter;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
+import java.util.ArrayList;
+
 public class TestWebAppRouter extends BaseWebAppUiElement {
 
     public final static TypedParameter<String> ROUTER_PATH = new TypedParameter<>("router-path");
+
+    private String currentPath;
 
     public TestWebAppRouter(String tag, OperationUiContext ctx) {
         super("app.WebAppRouter", tag, ctx);
         var config = this.createConfiguration(ctx);
         setPath(config.getPath(), ctx);
-        var elm = createElement(ctx);
+        var viewId = getViewId(config.getPath());
+        var elm = createElement(viewId, ctx);
         addChild(ctx, elm, 0);
         decorateWithListeners();
     }
@@ -60,12 +66,20 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
     private void decorateWithListeners() {
     }
 
-    private BaseWebAppUiElement createElement(OperationUiContext ctx) {
-        String path = getPath();
+    private String getViewId(String path){
         if(path != null && path.contains("/history")){
-            return new TestHistoryPage("content", ctx);
+            return "history";
         }
         if(path != null && path.contains("/account")){
+            return "account";
+        }
+        return "main";
+    }
+    private BaseWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
+        if("history".equals(viewId)){
+            return new TestHistoryPage("content", ctx);
+        }
+        if("account".equals(viewId)){
             return new TestAccountContainerPage("content", ctx);
         }
         return new TestMainPage("content", ctx);
@@ -84,10 +98,31 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
     public void navigate(String path, OperationUiContext ctx) {
         setProperty("path", path, ctx);
         ctx.setParameter(ROUTER_PATH, path);
+        if(path.equals(currentPath)){
+            return;
+        }
+        var viewId = getViewId(path);
+        var oldViewId = getViewId(currentPath);
+        currentPath = path;
+        if(viewId.equals(oldViewId)){
+            var nestedRouters = new ArrayList<TestNestedRouter>();
+            collectNestedRouters(nestedRouters, this);
+            nestedRouters.forEach(nestedRouter -> {
+                nestedRouter.navigate(path, ctx);
+            });
+            return;
+        }
         var elm = getUnmodifiableListOfChildren().getFirst();
         removeChild(ctx, elm);
-        elm = createElement(ctx);
+        elm = createElement(viewId, ctx);
         addChild(ctx, elm, 0);
+    }
+
+    private void collectNestedRouters(ArrayList<TestNestedRouter> nestedRouters, BaseUiElement testWebAppRouter) {
+        if(testWebAppRouter instanceof TestNestedRouter){
+            nestedRouters.add((TestNestedRouter) testWebAppRouter);
+        }
+        testWebAppRouter.getUnmodifiableListOfChildren().forEach(child -> collectNestedRouters(nestedRouters, child));
     }
 
     @Override

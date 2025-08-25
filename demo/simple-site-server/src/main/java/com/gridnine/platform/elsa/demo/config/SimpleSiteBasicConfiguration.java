@@ -19,22 +19,22 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.demo.boot;
+package com.gridnine.platform.elsa.demo.config;
 
-import com.gridnine.platform.elsa.common.core.boot.ElsaActivator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.gridnine.platform.elsa.demo.SimpleWebAppDomainConfigurator;
+import com.gridnine.platform.elsa.demo.boot.SimpleSiteActivator;
+import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
+import com.gridnine.platform.elsa.demo.ui.WsContextListener;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication(scanBasePackages = {"com.gridnine.platform.elsa.demo.config", "com.gridnine.platform.elsa.config"})
-public class SimpleSiteApplication {
+@Configuration
+public class SimpleSiteBasicConfiguration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleSiteApplication.class);
 
-    public static void main(String[] args) {
-        var ctx = SpringApplication.run(SimpleSiteApplication.class, args);
-        ElsaActivator.performActivation(ctx);
-        LOG.info("application started");
+    @Bean
+    public SimpleWebAppDomainConfigurator simpleWebAppDomainConfigurator() {
+        return new SimpleWebAppDomainConfigurator();
     }
 }
