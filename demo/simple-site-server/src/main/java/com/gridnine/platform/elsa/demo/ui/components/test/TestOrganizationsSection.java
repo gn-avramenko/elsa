@@ -26,7 +26,7 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public class TestOrganizationsSection extends BaseWebAppUiElement {
 
-    private TestSearchField searchField;
+    private final TestSearchField searchField;
     public TestOrganizationsSection(String tag, OperationUiContext ctx) {
         super("account.organization.OrganizationsSection", tag, ctx);
         var config = createConfiguration(ctx);

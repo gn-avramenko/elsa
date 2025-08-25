@@ -106,9 +106,7 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
         if(oldViewId.equals(newViewId)){
             var nestedRouters = new ArrayList<TestNestedRouter>();
             collectNestedRouters(nestedRouters, this);
-            nestedRouters.forEach(nestedRouter -> {
-                nestedRouter.navigate(newViewId, ctx);
-            });
+            nestedRouters.forEach(nestedRouter -> nestedRouter.navigate(newViewId, ctx));
             return;
         }
         var elm = getUnmodifiableListOfChildren().getFirst();

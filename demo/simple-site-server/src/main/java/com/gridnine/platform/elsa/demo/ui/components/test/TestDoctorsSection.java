@@ -21,7 +21,6 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 

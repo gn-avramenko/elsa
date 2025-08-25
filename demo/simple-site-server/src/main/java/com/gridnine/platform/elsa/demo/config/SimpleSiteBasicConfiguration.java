@@ -22,10 +22,6 @@
 package com.gridnine.platform.elsa.demo.config;
 
 import com.gridnine.platform.elsa.demo.SimpleWebAppDomainConfigurator;
-import com.gridnine.platform.elsa.demo.boot.SimpleSiteActivator;
-import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
-import com.gridnine.platform.elsa.demo.ui.WsContextListener;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -24,5 +24,5 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public interface TestNestedRouter {
-    public void navigate(String path, OperationUiContext ctx);
+    void navigate(String path, OperationUiContext ctx);
 }
