@@ -40,7 +40,7 @@
             <button id="feedBackSendButton" class-name="main.FeedbackSendButton"/>
         </children>
     </container>
-    <container id="accountContainer" class-name="account.AccountLayout" flex-direction="ROW">
+    <container id="accountContainer" class-name="account.AccountContainer" flex-direction="ROW">
         <children>
             <container id="navigation" class-name="account.AccountNavigation">
                 <children>

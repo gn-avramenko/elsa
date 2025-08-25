@@ -24,18 +24,13 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
-import com.gridnine.webpeer.core.servlet.WebAppModule;
-import com.gridnine.webpeer.core.ui.GlobalUiContext;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
-import com.gridnine.webpeer.core.utils.TypedParameter;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
-public class TestWebAppRouter extends BaseWebAppUiElement {
+public class TestAccountRouter extends BaseWebAppUiElement {
 
-    public final static TypedParameter<String> ROUTER_PATH = new TypedParameter<>("router-path");
-
-    public TestWebAppRouter(String tag, OperationUiContext ctx) {
-        super("app.WebAppRouter", tag, ctx);
+    public TestAccountRouter(String tag, OperationUiContext ctx) {
+        super("account.AccountRouter", tag, ctx);
         var config = this.createConfiguration(ctx);
         setPath(config.getPath(), ctx);
         var elm = createElement(ctx);
@@ -50,10 +45,12 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
     public String getPath() {
         return getProperty("path", String.class);
     }
-    private TestWebAppRouterConfiguration createConfiguration(OperationUiContext ctx) {
-        var result = new TestWebAppRouterConfiguration();
+
+    private TestAccountRouterConfiguration createConfiguration(OperationUiContext ctx) {
+        var result = new TestAccountRouterConfiguration();
         JsonObject params = ctx.getParameter(OperationUiContext.PARAMS);
-        result.setPath(WebPeerUtils.getString(params, "initPath"));
+        var path = ctx.getParameter(TestWebAppRouter.ROUTER_PATH);
+        result.setPath(path == null? WebPeerUtils.getString(params, "initPath"): path);
         return result;
     }
 
@@ -62,33 +59,27 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
 
     private BaseWebAppUiElement createElement(OperationUiContext ctx) {
         String path = getPath();
-        if(path != null && path.contains("/history")){
-            return new TestHistoryPage("content", ctx);
+        if(path != null && path.contains("/account/organizations")){
+            return new TestOrganizationsSection("content", ctx);
         }
-        if(path != null && path.contains("/account")){
-            return new TestAccountContainerPage("content", ctx);
+        if(path != null && path.contains("/account/doctors")){
+            return new TestDoctorsSection("content", ctx);
         }
-        return new TestMainPage("content", ctx);
+        if(path != null && path.contains("/account/managers")){
+            return new TestManagersSection("content", ctx);
+        }
+        if(path != null && path.contains("/account/clients")){
+            return new TestClientsSection("content", ctx);
+        }
+        if(path != null && path.contains("/account/account")){
+            return new TestAccountSection("content", ctx);
+        }
+        if(path != null && path.contains("/account/security")){
+            return new TestSecuritySection("content", ctx);
+        }
+        return new TestOrganizationsSection("content", ctx);
     }
 
-    @Override
-    public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception {
-        if("navigate".equals(commandId)) {
-            var path = WebPeerUtils.getString(data.getAsJsonObject(), "path");
-            navigate(path, ctx);
-            return;
-        }
-        super.processCommand(ctx, commandId, data);
-    }
-
-    public void navigate(String path, OperationUiContext ctx) {
-        setProperty("path", path, ctx);
-        ctx.setParameter(ROUTER_PATH, path);
-        var elm = getUnmodifiableListOfChildren().getFirst();
-        removeChild(ctx, elm);
-        elm = createElement(ctx);
-        addChild(ctx, elm, 0);
-    }
 
     @Override
     public void restoreFromState(JsonElement state, OperationUiContext ctx) {

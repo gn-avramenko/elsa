@@ -161,3 +161,8 @@
     flex-grow: 1;
     height: 100px;
 }
+
+body{
+    overflow-x: auto;
+    overflow-y: auto;
+}

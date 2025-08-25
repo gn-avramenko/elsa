@@ -29,34 +29,20 @@ import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
 public class TestOrganizationsSection extends BaseWebAppUiElement {
 
-    private final TestSearchField searchField;
-
-    private final TestEntityListTable organizationsList;
-
-    public TestOrganizationsSection(String tag, OperationUiContext ctx, JsonObject state) {
+    public TestOrganizationsSection(String tag, OperationUiContext ctx) {
         super("account.organization.OrganizationsSection", tag, ctx);
-        var config = createConfiguration(ctx, state);
-        searchField = new TestSearchField("searchField", config.getSearchField(), ctx);
-        organizationsList = new TestEntityListTable("organizationsList", config.getOrganizationsList(), ctx);
+        var config = createConfiguration(ctx);
         decorateWithListeners();
     }
 
-    public TestSearchField getSearchField() {
-        return searchField;
-    }
-
-    public TestEntityListTable getOrganizationsList() {
-        return organizationsList;
-    }
 
     private void decorateWithListeners() {
 
     }
-    private TestOrganizationsSectionConfiguration createConfiguration(OperationUiContext ctx, JsonObject state) {
+    private TestOrganizationsSectionConfiguration createConfiguration(OperationUiContext ctx) {
         var result = new TestOrganizationsSectionConfiguration();
         var textFieldConfig = new TestSearchFieldConfiguration();
         textFieldConfig.setDebounceTime(300);
-        textFieldConfig.setValue(WebPeerUtils.getString(WebPeerUtils.getObject(state, "searchField"), "value"));
         result.setSearchField(textFieldConfig);
         var organizationsListConfig = new TestEntityListConfiguration();
         result.setOrganizationsList(organizationsListConfig);
@@ -92,9 +78,6 @@ public class TestOrganizationsSection extends BaseWebAppUiElement {
             organizationsListConfig.getColumns().add(menuColumn);
         }
         var sort = new TestSort();
-        var sortObj = WebPeerUtils.getObject(WebPeerUtils.getObject(state, "organizationsList"), "sort");
-        sort.setDirection(sortObj == null? TestSortDirection.ASC : TestSortDirection.valueOf(WebPeerUtils.getString(sortObj, "direction")));
-        sort.setFieldId(sortObj == null? "name": WebPeerUtils.getString(sortObj, "name"));
         organizationsListConfig.setSort(sort);
         organizationsListConfig.setData(new JsonArray());
         return result;

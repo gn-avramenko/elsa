@@ -74,10 +74,9 @@ public class TestNavigationPanel extends BaseWebAppUiElement {
             TestWebApp.lookup(this).navigate("/main", ctx);
         });
         accountLink.setClickListener((ctx) ->{
-            System.out.println("Clicked on account link");
+            TestWebApp.lookup(this).navigate("/account/organizations", ctx);
         });
         languageSelector.setSelectionListener((ctx, language) -> {
-            System.out.println("Selected language: " + language);
             languageSelector.setSelectedId(language, ctx);
         });
     }
