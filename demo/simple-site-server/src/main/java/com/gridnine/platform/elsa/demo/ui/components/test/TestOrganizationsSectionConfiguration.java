@@ -24,11 +24,21 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 public class TestOrganizationsSectionConfiguration {
     private TestSearchFieldConfiguration searchField;
 
+    private TestEntityListConfiguration<TestOrganizationEntry> organizationsList;
+
     public void setSearchField(TestSearchFieldConfiguration searchField) {
         this.searchField = searchField;
     }
 
     public TestSearchFieldConfiguration getSearchField() {
         return searchField;
+    }
+
+    public TestEntityListConfiguration<TestOrganizationEntry> getOrganizationsList() {
+        return organizationsList;
+    }
+
+    public void setOrganizationsList(TestEntityListConfiguration<TestOrganizationEntry> organizationsList) {
+        this.organizationsList = organizationsList;
     }
 }

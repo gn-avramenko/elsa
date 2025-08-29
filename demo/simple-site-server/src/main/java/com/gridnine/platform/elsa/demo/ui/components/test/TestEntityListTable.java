@@ -23,15 +23,19 @@
 package com.gridnine.platform.elsa.demo.ui.components.test;
 //codegen:header:end
 //codegen:import:start
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAnd2Arguments;
+import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd4Arguments;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
+import com.gridnine.webpeer.core.utils.RunnableWithExceptionAndArgument;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
+import org.springdoc.core.converters.models.Sort;
 
 import java.util.List;
 //codegen:import:end
@@ -39,69 +43,89 @@ import java.util.List;
 //codegen:class:start
 public class TestEntityListTable extends BaseWebAppUiElement {
 
-    private RunnableWithExceptionAnd4Arguments<String, String, String,OperationUiContext> actionListener;
+    private RunnableWithExceptionAnd4Arguments<String, String, String, OperationUiContext> actionListener;
 
-    private List<TestEntityListColumnDescription> columns;
+    private RunnableWithExceptionAndArgument<OperationUiContext> refreshDataListener;
 
-    private CallableWithExceptionAnd2Arguments<JsonArray, JsonObject, OperationUiContext> dataSource;
+    private RunnableWithExceptionAndArgument<OperationUiContext> loadMoreListener;
 
-    public TestEntityListTable(String tag, TestEntityListConfiguration config, OperationUiContext ctx) {
+    private RunnableWithExceptionAnd2Arguments<OperationUiContext, TestSort> changeSortListener;
+
+    public TestEntityListTable(String tag, TestEntityListConfiguration<TestOrganizationEntry> config, OperationUiContext ctx) {
         super("common.EntityList", tag, ctx);
         setColumns(config.getColumns(), ctx);
+        setSort(config.getSort(), ctx);
         setData(config.getData(), ctx);
+        setLoading(config.isLoading(), ctx);
     }
 
-    public void setActionListener(RunnableWithExceptionAnd4Arguments<String, String, String,OperationUiContext> actionListener, OperationUiContext context) {
+    public void setActionListener(RunnableWithExceptionAnd4Arguments<String, String, String, OperationUiContext> actionListener) {
         this.actionListener = actionListener;
     }
 
-    public void setData(JsonArray data, OperationUiContext context) {
-        setProperty("data", data, context);
+    public void setRefreshDataListener(RunnableWithExceptionAndArgument<OperationUiContext> refreshDataListener) {
+        this.refreshDataListener = refreshDataListener;
     }
 
-    public void setSort(JsonObject sort, OperationUiContext context) {
-        setProperty("sort", sort, context);
+    public void setLoadMoreListener(RunnableWithExceptionAndArgument<OperationUiContext> loadMoreListener) {
+        this.loadMoreListener = loadMoreListener;
     }
 
-    public JsonArray getData() {
-        return getProperty("data", JsonArray.class);
+    public void setData(List<TestOrganizationEntry> data, OperationUiContext context) {
+        setProperty("data", WebPeerUtils.serialize(data), context);
     }
 
-    public List<TestEntityListColumnDescription> getColumns() {
-        return columns;
+    public void setSort(TestSort sort, OperationUiContext context) {
+        WebPeerUtils.wrapException(() -> {
+            setProperty("sort", sort, context);
+            if (this.changeSortListener != null) {
+                this.changeSortListener.run(context, sort);
+            }
+        });
     }
 
-    public void setDataSource(CallableWithExceptionAnd2Arguments<JsonArray, JsonObject, OperationUiContext> dataSource) {
-        this.dataSource = dataSource;
+    public void setLoading(boolean loading, OperationUiContext context) {
+        setProperty("loading", loading, context);
     }
 
-    public CallableWithExceptionAnd2Arguments<JsonArray, JsonObject, OperationUiContext> getDataSource() {
-        return dataSource;
+    public void setChangeSortListener(RunnableWithExceptionAnd2Arguments<OperationUiContext, TestSort> changeSortListener) {
+        this.changeSortListener = changeSortListener;
     }
 
     public void setColumns(List<TestEntityListColumnDescription> columns, OperationUiContext context) {
-        this.columns = columns;
-        var array = new JsonArray();
-        for (TestEntityListColumnDescription column : columns) {
-            ExceptionUtils.wrapException(()->array.add(column.serialize()));
-        }
-        setProperty("columns", array, context);
+        setProperty("columns", WebPeerUtils.serialize(columns), context);
     }
+
 
     @Override
     public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception {
-        if("get-data".equals(commandId)){
-            var res = this.dataSource.call( data.getAsJsonObject(), ctx);
-            setSort(data.getAsJsonObject().get("sort").getAsJsonObject(), ctx);
-            setData(res, ctx);
+        if ("refresh-data".equals(commandId)) {
+            this.refreshDataListener.run(ctx);
             return;
         }
-        if("table-action".equals(commandId)){
+        if ("load-more".equals(commandId)) {
+            this.loadMoreListener.run(ctx);
+            return;
+        }
+        if ("table-action".equals(commandId)) {
             var obj = data.getAsJsonObject();
             this.actionListener.run(WebPeerUtils.getString(obj, "rowId"), WebPeerUtils.getString(obj, "columnId"), WebPeerUtils.getString(obj, "actionId"), ctx);
             return;
         }
         super.processCommand(ctx, commandId, data);
     }
+
+    public TestSort getSort() {
+        var prop = getProperty("sort", Object.class);
+        if(prop instanceof TestSort) {
+            return (TestSort) prop;
+        }
+        var result = new TestSort();
+        result.setDirection(TestSortDirection.valueOf(WebPeerUtils.getString((JsonObject) prop, "direction")));
+        result.setFieldId(WebPeerUtils.getString((JsonObject) prop, "fieldId"));
+        return result;
+    }
+
 //codegen:class:end
+
 }

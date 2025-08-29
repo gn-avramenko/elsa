@@ -61,6 +61,7 @@ function OrganizationsComponent(props: { element: OrganizationsWebapp }) {
                 }}
             >
                 {props.element.findByTag('searchField').createReactElement()}
+                {props.element.findByTag('organizationsList').createReactElement()}
             </div>
             <DetailsModal
                 element={props.element}

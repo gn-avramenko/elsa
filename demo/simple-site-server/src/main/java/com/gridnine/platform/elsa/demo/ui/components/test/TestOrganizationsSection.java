@@ -21,69 +21,126 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
+import com.gridnine.platform.elsa.common.core.search.SearchQuery;
+import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
+import com.gridnine.platform.elsa.common.core.search.SortOrder;
+import com.gridnine.platform.elsa.core.storage.Storage;
+import com.gridnine.platform.elsa.demo.domain.Organization;
+import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
+
+import java.util.ArrayList;
 
 public class TestOrganizationsSection extends BaseWebAppUiElement {
 
     private final TestSearchField searchField;
+
+    private final TestEntityListTable organizationsList;
+
+    private final Storage storage;
+
     public TestOrganizationsSection(String tag, OperationUiContext ctx) {
         super("account.organization.OrganizationsSection", tag, ctx);
+        storage = ctx.getParameter(SimpleSiteWebAppServlet.BEAN_FACTORY).getBean(Storage.class);
         var config = createConfiguration(ctx);
         searchField = new TestSearchField("searchField", config.getSearchField(), ctx);
         addChild(ctx, searchField, 0);
+        organizationsList = new TestEntityListTable("organizationsList", config.getOrganizationsList(), ctx);
+        addChild(ctx, organizationsList, 0);
         decorateWithListeners(ctx);
+        organizationsList.sendPostProcessCommand(ctx, "refresh-data", null);
     }
 
 
     private void decorateWithListeners(OperationUiContext ctx) {
-        searchField.setValueChangeListener((arg) ->{
-            System.out.println("searchText" + searchField.getValue());
+        searchField.setValueChangeListener((context)->{
+            organizationsList.setLoading(false, context);
+            organizationsList.sendCommand(context, "refresh-data", null);
         }, ctx);
+        organizationsList.setActionListener((rowId, columnId, actionId, context) ->{
+            System.out.printf("action: %s %s %s%n", rowId, columnId, actionId);
+        });
+        organizationsList.setChangeSortListener((context, sort) ->{
+            refreshData(context);
+        });
+        organizationsList.setRefreshDataListener(this::refreshData);
     }
+
+    private void refreshData(OperationUiContext context) {
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            //noops
+        }
+        var listSort = organizationsList.getSort();
+        var assets=storage.searchAssets(Organization.class, new SearchQueryBuilder().addOrder(listSort.getFieldId(),  listSort.getDirection() == TestSortDirection.ASC? SortOrder.ASC: SortOrder.DESC)
+                .freeText(searchField.getValue()).limit(10).build(), false);
+        var data = assets.stream().map(it ->{
+            var entity = new  TestOrganizationEntry();
+            entity.setAddress(it.getAddress());
+            entity.setName(it.getName());
+            entity.setContacts(it.getContacts());
+            entity.setId(it.getId().toString());
+            if(it.getCountry() != null) {
+                entity.setCountry(it.getCountry().getCaption());
+            }
+            entity.getMenu().add(new TestOption("edit", "Edit"));
+            entity.getMenu().add(new TestOption("delete", "Delete"));
+            return entity;
+        }).toList();
+        organizationsList.setData(data, context);
+        organizationsList.setLoading(false, context);
+    }
+
     private TestOrganizationsSectionConfiguration createConfiguration(OperationUiContext ctx) {
         var result = new TestOrganizationsSectionConfiguration();
         var searchField = new TestSearchFieldConfiguration();
         searchField.setDebounceTime(300);
         searchField.setDeferred(true);
         result.setSearchField(searchField);
-//
-//        var organizationsListConfig = new TestEntityListConfiguration();
-//        result.setOrganizationsList(organizationsListConfig);
-//        {
-//            var nameColumn = new TestEntityListColumnDescription();
-//            nameColumn.setId("name");
-//            nameColumn.setSortable(true);
-//            nameColumn.setTitle("Name");
-//            nameColumn.setType(TestEntityListColumnType.TEXT);
-//            organizationsListConfig.getColumns().add(nameColumn);
-//        }
-//        {
-//            var countryColumn = new TestEntityListColumnDescription();
-//            countryColumn.setId("country");
-//            countryColumn.setSortable(true);
-//            countryColumn.setTitle("Country");
-//            countryColumn.setType(TestEntityListColumnType.TEXT);
-//            organizationsListConfig.getColumns().add(countryColumn);
-//        }
-//        {
-//            var addressColumn = new TestEntityListColumnDescription();
-//            addressColumn.setId("address");
-//            addressColumn.setSortable(true);
-//            addressColumn.setTitle("Address");
-//            addressColumn.setType(TestEntityListColumnType.TEXT);
-//            organizationsListConfig.getColumns().add(addressColumn);
-//        }
-//        {
-//            var menuColumn = new TestEntityListColumnDescription();
-//            menuColumn.setId("menu");
-//            menuColumn.setSortable(true);
-//            menuColumn.setType(TestEntityListColumnType.MENU);
-//            organizationsListConfig.getColumns().add(menuColumn);
-//        }
-//        var sort = new TestSort();
-//        organizationsListConfig.setSort(sort);
-//        organizationsListConfig.setData(new JsonArray());
+
+        var organizationsListConfig = new TestEntityListConfiguration<TestOrganizationEntry>();
+        result.setOrganizationsList(organizationsListConfig);
+        {
+            var nameColumn = new TestEntityListColumnDescription();
+            nameColumn.setId("name");
+            nameColumn.setSortable(true);
+            nameColumn.setTitle("Name");
+            nameColumn.setType(TestEntityListColumnType.TEXT);
+            organizationsListConfig.getColumns().add(nameColumn);
+        }
+        {
+            var countryColumn = new TestEntityListColumnDescription();
+            countryColumn.setId("country");
+            countryColumn.setSortable(true);
+            countryColumn.setTitle("Country");
+            countryColumn.setType(TestEntityListColumnType.TEXT);
+            organizationsListConfig.getColumns().add(countryColumn);
+        }
+        {
+            var addressColumn = new TestEntityListColumnDescription();
+            addressColumn.setId("address");
+            addressColumn.setSortable(true);
+            addressColumn.setTitle("Address");
+            addressColumn.setType(TestEntityListColumnType.TEXT);
+            organizationsListConfig.getColumns().add(addressColumn);
+        }
+        {
+            var menuColumn = new TestEntityListColumnDescription();
+            menuColumn.setId("menu");
+            menuColumn.setSortable(false);
+            menuColumn.setType(TestEntityListColumnType.MENU);
+            organizationsListConfig.getColumns().add(menuColumn);
+        }
+        var sort = new TestSort();
+        sort.setDirection(TestSortDirection.ASC);
+        sort.setFieldId("name");
+        organizationsListConfig.setSort(sort);
+        organizationsListConfig.setData(new ArrayList<>());
+        organizationsListConfig.setLoading(true);
         return result;
     }
+
+
 }

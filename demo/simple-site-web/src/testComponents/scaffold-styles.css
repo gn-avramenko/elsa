@@ -166,3 +166,10 @@ body{
     overflow-x: auto;
     overflow-y: auto;
 }
+.webpeer-table {
+    border-collapse: collapse;
+}
+.webpeer-table  th, td {
+    border: cadetblue solid 1px;
+    padding: 3px;
+}

@@ -26,10 +26,11 @@ import com.google.gson.JsonArray;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestEntityListConfiguration {
+public class TestEntityListConfiguration<T> {
     private List<TestEntityListColumnDescription> columns = new ArrayList<>();
-    private JsonArray data;
+    private List<T> data;
     private TestSort sort;
+    private boolean loading;
 
     public TestSort getSort() {
         return sort;
@@ -39,15 +40,23 @@ public class TestEntityListConfiguration {
         this.sort = sort;
     }
 
-    public JsonArray getData() {
+    public List<T> getData() {
         return data;
     }
 
-    public void setData(JsonArray data) {
+    public void setData(List<T> data) {
         this.data = data;
     }
 
     public List<TestEntityListColumnDescription> getColumns() {
         return columns;
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
     }
 }

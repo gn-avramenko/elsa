@@ -23,10 +23,12 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.ArrayList;
 
@@ -34,8 +36,11 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
 
     private String currentPath;
 
+    private  final ListableBeanFactory beanFactory;
+
     public TestAccountRouter(String tag, OperationUiContext ctx) {
         super("account.AccountRouter", tag, ctx);
+        beanFactory = ctx.getParameter(SimpleSiteWebAppServlet.BEAN_FACTORY);
         var config = this.createConfiguration(ctx);
         this.currentPath = config.getPath();
         var viewId = getViewId(currentPath);
@@ -78,6 +83,7 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
     }
 
     private BaseWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
+        ctx.setParameter(SimpleSiteWebAppServlet.BEAN_FACTORY, beanFactory);
         return switch (viewId){
             case "organizations" -> new TestOrganizationsSection("content", ctx);
             case "doctors" -> new TestDoctorsSection("content", ctx);
@@ -109,11 +115,10 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
             nestedRouters.forEach(nestedRouter -> nestedRouter.navigate(newViewId, ctx));
             return;
         }
-        var elm = getUnmodifiableListOfChildren().getFirst();
+        var elm = (BaseWebAppUiElement) getUnmodifiableListOfChildren().getFirst();
         removeChild(ctx, elm);
         elm = createElement(newViewId, ctx);
         addChild(ctx, elm, 0);
-
     }
     private void collectNestedRouters(ArrayList<TestNestedRouter> nestedRouters, BaseUiElement testWebAppRouter) {
         if(testWebAppRouter instanceof TestNestedRouter){

@@ -126,3 +126,29 @@ export function debounce<T extends (...args: any[]) => any>(
         }, wait);
     };
 }
+
+export type TestSortDirection = 'ASC' | 'DESC';
+export type TestSort = {
+    fieldId: string;
+    direction: TestSortDirection;
+};
+export type TestEntityListColumnType = 'TEXT' | 'MENU' | 'CUSTOM' | 'OPTION';
+
+export type TestColumnDescription = {
+    title: string;
+    id: string;
+    type: TestEntityListColumnType;
+    customSubtype?: string;
+    sortable: boolean;
+};
+
+export type TestOption = {
+    id: string;
+    displayName?: string;
+};
+
+export type TableAction = {
+    columnId: string,
+    rowId: string,
+    actionId: string;
+};

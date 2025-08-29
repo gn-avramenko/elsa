@@ -79,6 +79,7 @@ public class SimpleSiteActivator implements ElsaActivator {
             org.setContacts(getRandomString(words));
             org.setCountry(getRandomBoolean()? ruCountry: japCountry);
             org.setContacts(getRandomString(words));
+            org.setAddress(getRandomString(words));
             storage.saveAsset(org, false, "test data");
 
         }

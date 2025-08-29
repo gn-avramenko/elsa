@@ -21,11 +21,15 @@
 
 package com.gridnine.platform.elsa.demo.ui;
 
-import com.gridnine.platform.elsa.demo.ui.components.SimpleSiteRootElement;
 import com.gridnine.platform.elsa.demo.ui.components.test.TestWebApp;
 import com.gridnine.webpeer.core.servlet.BaseWebAppServlet;
 import com.gridnine.webpeer.core.servlet.WebAppModule;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
+import com.gridnine.webpeer.core.utils.TypedParameter;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.AbstractBeanFactory;
+import org.springframework.core.env.Environment;
 
 import java.net.URL;
 import java.util.List;
@@ -33,8 +37,13 @@ import java.util.Map;
 
 public class SimpleSiteWebAppServlet extends BaseWebAppServlet<TestWebApp> {
 
+    public static final TypedParameter<ListableBeanFactory> BEAN_FACTORY = new TypedParameter<>("BEAN_FACTORY");
+    @Autowired
+    private ListableBeanFactory factory;
+
     @Override
     protected TestWebApp createRootElement(OperationUiContext operationUiContext) throws Exception {
+        operationUiContext.setParameter(BEAN_FACTORY, factory);
         return new TestWebApp("root", operationUiContext);
     }
 

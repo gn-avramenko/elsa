@@ -23,11 +23,13 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.TypedParameter;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.ArrayList;
 
@@ -37,8 +39,11 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
 
     private String currentPath;
 
+    private final ListableBeanFactory factory;
+
     public TestWebAppRouter(String tag, OperationUiContext ctx) {
         super("app.WebAppRouter", tag, ctx);
+        factory = ctx.getParameter(SimpleSiteWebAppServlet.BEAN_FACTORY);
         var config = this.createConfiguration(ctx);
         setPath(config.getPath(), ctx);
         var viewId = getViewId(config.getPath());
@@ -74,6 +79,7 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
         return "main";
     }
     private BaseWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
+        ctx.setParameter(SimpleSiteWebAppServlet.BEAN_FACTORY, factory);
         if("history".equals(viewId)){
             return new TestHistoryPage("content", ctx);
         }
@@ -110,7 +116,7 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
             });
             return;
         }
-        var elm = getUnmodifiableListOfChildren().getFirst();
+        var elm = (BaseWebAppUiElement)getUnmodifiableListOfChildren().getFirst();
         removeChild(ctx, elm);
         elm = createElement(viewId, ctx);
         addChild(ctx, elm, 0);
