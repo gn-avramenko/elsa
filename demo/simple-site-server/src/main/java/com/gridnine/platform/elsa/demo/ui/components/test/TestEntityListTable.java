@@ -51,7 +51,7 @@ public class TestEntityListTable extends BaseWebAppUiElement {
 
     private RunnableWithExceptionAnd2Arguments<OperationUiContext, TestSort> changeSortListener;
 
-    public TestEntityListTable(String tag, TestEntityListConfiguration<TestOrganizationEntry> config, OperationUiContext ctx) {
+    public TestEntityListTable(String tag, TestEntityListConfiguration<?> config, OperationUiContext ctx) {
         super("common.EntityList", tag, ctx);
         setColumns(config.getColumns(), ctx);
         setSort(config.getSort(), ctx);
@@ -71,7 +71,7 @@ public class TestEntityListTable extends BaseWebAppUiElement {
         this.loadMoreListener = loadMoreListener;
     }
 
-    public void setData(List<TestOrganizationEntry> data, OperationUiContext context) {
+    public void setData(List<?> data, OperationUiContext context) {
         setProperty("data", WebPeerUtils.serialize(data), context);
     }
 

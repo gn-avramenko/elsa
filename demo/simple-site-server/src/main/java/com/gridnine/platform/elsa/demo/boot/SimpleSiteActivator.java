@@ -29,6 +29,7 @@ import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.demo.domain.Country;
 import com.gridnine.platform.elsa.demo.domain.CountryFields;
+import com.gridnine.platform.elsa.demo.domain.Manager;
 import com.gridnine.platform.elsa.demo.domain.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -73,15 +74,21 @@ public class SimpleSiteActivator implements ElsaActivator {
 
     private void generateSampleData(EntityReference<Country> ruCountry, EntityReference<Country> japCountry, List<String> words) {
         int dn = 1;
-        for (int n = 0; n < 100; n++) {
+        for (int n = 0; n < 20; n++) {
             var org = new Organization();
             org.setName(getRandomString(words));
             org.setContacts(getRandomString(words));
             org.setCountry(getRandomBoolean()? ruCountry: japCountry);
-            org.setContacts(getRandomString(words));
             org.setAddress(getRandomString(words));
             storage.saveAsset(org, false, "test data");
-
+            for (int m = 0; m < 20; m++) {
+                var manager = new Manager();
+                manager.setName(getRandomString(words));
+                manager.setContacts(getRandomString(words));
+                manager.setEmail(getRandomString(words));
+                manager.setOrganization(org.toReference());
+                storage.saveAsset(manager, false, "test data");
+            }
         }
     }
 

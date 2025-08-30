@@ -173,3 +173,130 @@ body{
     border: cadetblue solid 1px;
     padding: 3px;
 }
+
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    background: white;
+}
+
+.selected-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.selected-item {
+    background: #e3f2fd;
+    padding: 4px 8px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.remove-btn:hover {
+    background: #ff4444;
+    color: white;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.autocomplete-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 4px 0;
+    font-size: 16px;
+}
+
+.autocomplete-input:disabled {
+    background-color: #f5f5f5;
+}
+
+.loading-indicator {
+    position: absolute;
+    right: 8px;
+    font-size: 16px;
+}
+
+.suggestions-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.suggestions-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:hover {
+    background: #f5f5f5;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.loading-message,
+.error-message,
+.no-suggestions {
+    padding: 12px;
+    text-align: center;
+    color: #666;
+}
+
+.loading-message {
+    color: #007bff;
+}
+
+.error-message {
+    color: #dc3545;
+    background: #f8d7da;
+}
+
+.no-suggestions {
+    font-style: italic;
+}

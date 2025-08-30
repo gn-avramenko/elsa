@@ -20,6 +20,7 @@ import { TestDoctorsPageFactory } from './test-doctors-page';
 import { TestAccountPageFactory } from './test-account-page';
 import { TestSearchFieldFactory } from './test-search-field';
 import { TestEntityListFactory } from './test-entity-list';
+import { TestAutocompleteFieldFactory } from './test-autocomplete-field';
 
 registerFactory('app.WebApp', new WebAppFactory());
 registerFactory('app.NavigationPanel', new TestNavigationPanelFactory());
@@ -49,4 +50,5 @@ registerFactory('account.doctor.DoctorsSection', new TestDoctorsPageFactory());
 registerFactory('account.account.AccountSection', new TestAccountPageFactory());
 
 registerFactory('common.SearchField', new TestSearchFieldFactory());
+registerFactory('common.StandardAutocomplete', new TestAutocompleteFieldFactory());
 registerFactory('common.EntityList', new TestEntityListFactory());

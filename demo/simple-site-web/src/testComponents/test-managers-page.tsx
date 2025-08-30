@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { DetailsModal, useModal } from './modal';
 import './scaffold-styles.css';
 
-function ManagersPageComponent(props: { element: ManagersPageWebapp }) {
+function ManagersPageComponent(props: { element: ManagersPage }) {
     for (const prop of props.element.state.keys()) {
         const [value, setValue] = useState(props.element.state.get(prop));
         props.element.state.set(prop, value);
@@ -60,7 +60,9 @@ function ManagersPageComponent(props: { element: ManagersPageWebapp }) {
                         props.element.flexDirection === 'ROW' ? 'row' : 'column',
                 }}
             >
-                Managers
+                {props.element.findByTag('searchField').createReactElement()}
+                {props.element.findByTag('organization').createReactElement()}
+                {props.element.findByTag('managersList').createReactElement()}
             </div>
             <DetailsModal
                 element={props.element}
@@ -72,7 +74,7 @@ function ManagersPageComponent(props: { element: ManagersPageWebapp }) {
     );
 }
 
-export class ManagersPageWebapp extends BaseReactUiElement {
+export class ManagersPage extends BaseReactUiElement {
     readonly flexDirection: FlexDirection;
     constructor(model: any) {
         super([], [], [], [], model);
@@ -88,6 +90,6 @@ export class ManagersPageWebapp extends BaseReactUiElement {
 
 export class TestManagersPageFactory implements ReactUiElementFactory {
     createElement(model: any): BaseReactUiElement {
-        return new ManagersPageWebapp(model);
+        return new ManagersPage(model);
     }
 }

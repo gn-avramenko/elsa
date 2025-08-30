@@ -10,4 +10,11 @@
         <property id="contacts" type="STRING"  use-in-text-search="true"/>
         <caption-expression>name</caption-expression>
     </asset>
+    <asset id="com.gridnine.platform.elsa.demo.domain.Manager" cache-resolve="true" cache-caption="true">
+        <property id="name" type="STRING" use-in-text-search="true"/>
+        <property id="email" type="STRING"  use-in-text-search="true"/>
+        <property id="contacts" type="STRING"  use-in-text-search="true"/>
+        <property id="organization" type="ENTITY_REFERENCE" use-in-text-search="true" class-name="com.gridnine.platform.elsa.demo.domain.Organization"/>
+        <caption-expression>name</caption-expression>
+    </asset>
 </domain>

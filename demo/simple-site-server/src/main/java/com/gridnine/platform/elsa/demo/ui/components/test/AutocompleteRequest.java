@@ -21,35 +21,24 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-public class TestManagersSectionConfiguration {
+public class AutocompleteRequest {
+    private String query;
 
-    private TestSearchFieldConfiguration searchField;
+    private int limit;
 
-    private TestEntityListConfiguration<TestManagerEntry> managersList;
-
-    private TestAutocompleteFieldConfiguration organization;
-
-    public TestSearchFieldConfiguration getSearchField() {
-        return searchField;
+    public int getLimit() {
+        return limit;
     }
 
-    public void setSearchField(TestSearchFieldConfiguration searchField) {
-        this.searchField = searchField;
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
-    public TestEntityListConfiguration<TestManagerEntry> getManagersList() {
-        return managersList;
+    public String getQuery() {
+        return query;
     }
 
-    public void setManagersList(TestEntityListConfiguration<TestManagerEntry> managersList) {
-        this.managersList = managersList;
-    }
-
-    public TestAutocompleteFieldConfiguration getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(TestAutocompleteFieldConfiguration organization) {
-        this.organization = organization;
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

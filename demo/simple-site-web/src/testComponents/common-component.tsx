@@ -148,7 +148,7 @@ export type TestOption = {
 };
 
 export type TableAction = {
-    columnId: string,
-    rowId: string,
+    columnId: string;
+    rowId: string;
     actionId: string;
 };
