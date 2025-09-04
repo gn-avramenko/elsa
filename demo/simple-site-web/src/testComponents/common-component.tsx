@@ -1,5 +1,10 @@
 import { ReactElement } from 'react';
-import { BaseUiElement, webpeerExt, WebPeerExtension } from 'webpeer-core';
+import {
+    BaseUiElement,
+    PreloaderMiddleware,
+    webpeerExt,
+    WebPeerExtension,
+} from 'webpeer-core';
 import { createRoot, Root } from 'react-dom/client';
 
 export interface ReactUiElementFactory {
@@ -23,6 +28,8 @@ export abstract class BaseReactUiElement extends BaseUiElement {
     actionsFromServer: string[] = [];
 
     actionsFromClient: string[] = [];
+
+    counter = 1;
 
     stateSetters: Map<string, (value?: any) => void> = new Map<
         string,
@@ -50,6 +57,7 @@ export abstract class BaseReactUiElement extends BaseUiElement {
         });
         initParams.forEach((key) => this.initParams.set(key, model[key]));
         stateParams.forEach((key) => this.state.set(key, model[key]));
+        this.state.set('counter', this.counter);
         this.actionsFromClient = actionsFromClient;
         this.actionsFromServer = actionsFromServer;
     }
@@ -67,7 +75,8 @@ export abstract class BaseReactUiElement extends BaseUiElement {
     }
 
     redraw() {
-        //noops
+        this.counter++;
+        this.stateSetters.get('counter')!(this.counter);
     }
 
     processCommandFromServer(commandId: string, data?: any) {
@@ -79,7 +88,8 @@ export abstract class BaseReactUiElement extends BaseUiElement {
     }
 
     protected updatePropertyValue(pn: string, pv: any) {
-        this.stateSetters.get(pn)!(pv);
+        this.state.set(pn, pv);
+        this.stateSetters.get(pn)?.call(this, pv);
     }
 }
 
@@ -91,6 +101,26 @@ export const registerFactory = (type: string, factory: ReactUiElementFactory) =>
 
 let root: Root | null = null;
 
+export const preloaderHolder = {
+    showPreloader: () => {},
+    hidePreloader: () => {},
+};
+
+reactWebPeerExt.setMiddleware([
+    new PreloaderMiddleware(
+        {
+            showPreloader() {
+                preloaderHolder.showPreloader();
+            },
+            hidePreloader() {
+                preloaderHolder.hidePreloader();
+            },
+        },
+        {
+            delay: 300,
+        }
+    ),
+]);
 reactWebPeerExt.uiHandler = {
     drawUi(rootElm: BaseReactUiElement) {
         if (!root) {

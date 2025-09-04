@@ -21,5 +21,25 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-public class TestOrganizationSection {
+import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.webpeer.core.ui.OperationUiContext;
+
+public class TestBaseEditor extends BaseWebAppUiElement {
+
+    public TestBaseEditor(String type, String tag, OperationUiContext ctx) {
+        super(type, tag, ctx);
+    }
+
+    public void setDataLoading(boolean loading, OperationUiContext ctx) {
+        setProperty("dataLoading", loading, ctx);
+    }
+
+    public void setHasChanges(boolean hasChanges, OperationUiContext ctx) {
+        setProperty("hasChanges", hasChanges, ctx);
+    }
+
+    public void setTitle(String title, OperationUiContext ctx) {
+        setProperty("title", title, ctx);
+    }
+
 }

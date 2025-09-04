@@ -21,6 +21,8 @@ import { TestAccountPageFactory } from './test-account-page';
 import { TestSearchFieldFactory } from './test-search-field';
 import { TestEntityListFactory } from './test-entity-list';
 import { TestAutocompleteFieldFactory } from './test-autocomplete-field';
+import { TestStandardTextFieldFactory } from './test-standard-text-field';
+import { TestOrganizationEditorFactory } from './test-organization-editor';
 
 registerFactory('app.WebApp', new WebAppFactory());
 registerFactory('app.NavigationPanel', new TestNavigationPanelFactory());
@@ -48,7 +50,12 @@ registerFactory('account.client.ClientsSection', new TestClientsPageFactory());
 registerFactory('account.security.SecuritySection', new TestSecurityPageFactory());
 registerFactory('account.doctor.DoctorsSection', new TestDoctorsPageFactory());
 registerFactory('account.account.AccountSection', new TestAccountPageFactory());
+registerFactory(
+    'account.organization.OrganizationEditor',
+    new TestOrganizationEditorFactory()
+);
 
 registerFactory('common.SearchField', new TestSearchFieldFactory());
 registerFactory('common.StandardAutocomplete', new TestAutocompleteFieldFactory());
+registerFactory('common.StandardTextField', new TestStandardTextFieldFactory());
 registerFactory('common.EntityList', new TestEntityListFactory());

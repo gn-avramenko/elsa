@@ -92,6 +92,10 @@
     border-radius: 4px;
     cursor: pointer;
 }
+button:disabled,
+button[disabled]{
+    background: #666666;
+}
 .webpeer-tag{
     line-height: 28px;
 }
@@ -299,4 +303,8 @@ body{
 
 .no-suggestions {
     font-style: italic;
+}
+
+.has-error{
+    border-color: #dc3545;
 }

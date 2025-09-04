@@ -24,11 +24,31 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 public class TestWebAppRouterConfiguration {
     private String path;
 
+    private boolean hasChanges;
+
+    private String confirmMessage;
+
+    public boolean isHasChanges() {
+        return hasChanges;
+    }
+
+    public void setHasChanges(boolean hasChanges) {
+        this.hasChanges = hasChanges;
+    }
+
     public String getPath() {
         return path;
     }
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getConfirmMessage() {
+        return confirmMessage;
+    }
+
+    public void setConfirmMessage(String confirmMessage) {
+        this.confirmMessage = confirmMessage;
     }
 }

@@ -46,10 +46,22 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
         factory = ctx.getParameter(SimpleSiteWebAppServlet.BEAN_FACTORY);
         var config = this.createConfiguration(ctx);
         setPath(config.getPath(), ctx);
+        setHasChanges(false, ctx);
+        setConfirmMessage(config.getConfirmMessage(), ctx);
+        currentPath = config.getPath();
+        ctx.setParameter(TestWebAppRouter.ROUTER_PATH, currentPath);
         var viewId = getViewId(config.getPath());
         var elm = createElement(viewId, ctx);
         addChild(ctx, elm, 0);
         decorateWithListeners();
+    }
+
+    public boolean isHasChanges(){
+        return getProperty("hasChanges", Boolean.class);
+    }
+
+    public void setHasChanges(boolean value, OperationUiContext ctx){
+        setProperty("hasChanges", value, ctx);
     }
 
     public void setPath(String path, OperationUiContext ctx) {
@@ -59,10 +71,17 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
     public String getPath() {
         return getProperty("path", String.class);
     }
+
+    public void setConfirmMessage(String confirmMessage, OperationUiContext ctx) {
+        setProperty("confirmMessage", confirmMessage, ctx);
+    }
+
+
     private TestWebAppRouterConfiguration createConfiguration(OperationUiContext ctx) {
         var result = new TestWebAppRouterConfiguration();
         JsonObject params = ctx.getParameter(OperationUiContext.PARAMS);
         result.setPath(WebPeerUtils.getString(params, "initPath"));
+        result.setConfirmMessage("There is unsaved changes. Are you sure you want to continue?");
         return result;
     }
 
@@ -93,18 +112,27 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
     public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception {
         if("navigate".equals(commandId)) {
             var path = WebPeerUtils.getString(data.getAsJsonObject(), "path");
-            navigate(path, ctx);
+            var force = WebPeerUtils.getBoolean(data.getAsJsonObject(), "force", false);
+            navigate(path, force, ctx);
             return;
         }
         super.processCommand(ctx, commandId, data);
     }
 
-    public void navigate(String path, OperationUiContext ctx) {
-        setProperty("path", path, ctx);
+    public void navigate(String path, boolean force, OperationUiContext ctx) {
         ctx.setParameter(ROUTER_PATH, path);
         if(path.equals(currentPath)){
             return;
         }
+        if(isHasChanges() && !force){
+            var cmdData = new JsonObject();
+            cmdData.addProperty("path", path);
+            cmdData.addProperty("force", true);
+            TestWebApp.lookup(this).confirm("There unsaved changes. Continue?",  getId(), "navigate", cmdData, ctx);
+            return;
+        }
+        setProperty("path", path, ctx);
+        setHasChanges(false, ctx);
         var viewId = getViewId(path);
         var oldViewId = getViewId(currentPath);
         currentPath = path;
@@ -129,8 +157,4 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
         testWebAppRouter.getUnmodifiableListOfChildren().forEach(child -> collectNestedRouters(nestedRouters, child));
     }
 
-    @Override
-    public void restoreFromState(JsonElement state, OperationUiContext ctx) {
-        getUnmodifiableListOfChildren().getFirst().restoreFromState(WebPeerUtils.getDynamic(state, "content"), ctx);
-    }
 }

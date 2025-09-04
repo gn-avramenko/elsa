@@ -21,24 +21,43 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
-import com.gridnine.webpeer.core.ui.OperationUiContext;
+public class TestOrganizationConfiguration extends TestBaseEditorConfiguration{
+    private TestStandardEditorTextFieldConfiguration name;
 
-public class TestAccountSection extends BaseWebAppUiElement {
+    private TestStandardEditorTextFieldConfiguration contacts;
 
-    public TestAccountSection(String tag, OperationUiContext ctx) {
-        super("account.account.AccountSection", tag, ctx);
-        setInitParam("flexDirection", "ROW");
-        var config = this.createConfiguration(ctx);
-        decorateWithListeners();
+    private TestStandardEditorTextFieldConfiguration address;
+
+    private TestAutocompleteFieldConfiguration country;
+    public void setName(TestStandardEditorTextFieldConfiguration name) {
+        this.name = name;
     }
 
-    private TestAccountSectionConfiguration createConfiguration(OperationUiContext ctx) {
-        var result = new TestAccountSectionConfiguration();
-        return result;
+    public TestStandardEditorTextFieldConfiguration getName() {
+        return name;
     }
 
-    private void decorateWithListeners() {
+    public TestStandardEditorTextFieldConfiguration getContacts() {
+        return contacts;
     }
 
+    public void setContacts(TestStandardEditorTextFieldConfiguration contacts) {
+        this.contacts = contacts;
+    }
+
+    public TestStandardEditorTextFieldConfiguration getAddress() {
+        return address;
+    }
+
+    public void setAddress(TestStandardEditorTextFieldConfiguration address) {
+        this.address = address;
+    }
+
+    public TestAutocompleteFieldConfiguration getCountry() {
+        return country;
+    }
+
+    public void setCountry(TestAutocompleteFieldConfiguration country) {
+        this.country = country;
+    }
 }

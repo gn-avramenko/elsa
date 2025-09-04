@@ -23,38 +23,29 @@
 package com.gridnine.platform.elsa.demo.ui.components.test;
 //codegen:header:end
 //codegen:import:start
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAnd2Arguments;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.RunnableWithExceptionAndArgument;
-import com.gridnine.webpeer.core.utils.WebPeerUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 //codegen:import:end
 
 //codegen:class:start
-public class TestAutocompleteField extends BaseWebAppUiElement {
+public class TestStandardEditorTextField extends BaseWebAppUiElement {
 
     private RunnableWithExceptionAndArgument<OperationUiContext> valueChangeListener;
 
-    private CallableWithExceptionAnd2Arguments<List<TestOption>, OperationUiContext, AutocompleteRequest> suggestionsProvider;
-
-    public TestAutocompleteField(String tag, TestAutocompleteFieldConfiguration config, OperationUiContext ctx) {
-        super("common.StandardAutocomplete", tag, ctx);
+    public TestStandardEditorTextField(String tag, TestStandardEditorTextFieldConfiguration config, OperationUiContext ctx) {
+        super("common.StandardTextField", tag, ctx);
         setInitParam("debounceTime", config.getDebounceTime());
         setInitParam("deferred", config.isDeferred());
-        setInitParam("multiple", config.isMultiple());
-        setInitParam("limit", config.getLimit());
-        setValues(config.getValues(), ctx);
+        setValue(config.getValue(), ctx);
         setHidden(config.isHidden(), ctx);
         setDisabled(config.isDisabled(), ctx);
+        setValidationMessage(config.getValidationMessage(), ctx);
     }
 
-    public void setValues(List<TestOption> values, OperationUiContext context) {
-        setProperty("values", values, context);
+    public void setValue(String value, OperationUiContext context) {
+        setProperty("value", value, context);
     }
 
     public void setHidden(boolean value, OperationUiContext context) {
@@ -64,14 +55,14 @@ public class TestAutocompleteField extends BaseWebAppUiElement {
         setProperty("disabled", value, context);
     }
 
+    public void setValidationMessage(String value, OperationUiContext context) {
+        setProperty("validationMessage", value, context);
+    }
+
+
     public Integer getDebounceTime() {
         return getProperty("debounceTime", Integer.class);
     }
-
-    public void setValidationMessage(String validationMessage, OperationUiContext context) {
-        setProperty("validationMessage", validationMessage, context);
-    }
-
 
     public boolean isHidden() {
         return getProperty("hidden", Boolean.class);
@@ -81,18 +72,8 @@ public class TestAutocompleteField extends BaseWebAppUiElement {
         return getProperty("disabled", Boolean.class);
     }
 
-    public List<TestOption> getValues() {
-        var prop = getProperty("values", Object.class);
-        if(prop instanceof List<?>){
-            return (List<TestOption>) prop;
-        }
-        var arr = (JsonArray) prop;
-        var list = new ArrayList<TestOption>();
-        arr.forEach(o -> {
-            var testOption = new TestOption(WebPeerUtils.getString(o.getAsJsonObject(), "id"), WebPeerUtils.getString(o.getAsJsonObject(), "displayName"));
-            list.add(testOption);
-        });
-        return list;
+    public String getValue() {
+        return getProperty("value", String.class);
     }
 
     public void setValueChangeListener(RunnableWithExceptionAndArgument<OperationUiContext> valueChangeListener, OperationUiContext context) {
@@ -100,9 +81,6 @@ public class TestAutocompleteField extends BaseWebAppUiElement {
         setProperty("trackValueChange", this.valueChangeListener != null, context);
     }
 
-    public void setSuggestionsProvider(CallableWithExceptionAnd2Arguments<List<TestOption>, OperationUiContext, AutocompleteRequest> suggestionsProvider) {
-        this.suggestionsProvider = suggestionsProvider;
-    }
 
     @Override
     public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception {
@@ -113,16 +91,4 @@ public class TestAutocompleteField extends BaseWebAppUiElement {
         super.processCommand(ctx, commandId, data);
     }
 //codegen:class:end
-
-    @Override
-    public JsonElement doService(String commandId, JsonElement request, OperationUiContext context) throws Exception {
-        if("get-suggestions".equals(commandId)){
-            var req = new  AutocompleteRequest();
-            req.setQuery(WebPeerUtils.getString(request.getAsJsonObject(), "query"));
-            req.setLimit(WebPeerUtils.getInt(request.getAsJsonObject(), "limit", 10));
-            var options = this.suggestionsProvider.call(context, req);
-            return WebPeerUtils.serialize(options);
-        }
-        return super.doService(commandId, request, context);
-    }
 }

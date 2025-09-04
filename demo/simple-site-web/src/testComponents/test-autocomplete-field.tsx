@@ -13,6 +13,7 @@ import React, {
 } from 'react';
 import { DetailsModal, useModal } from './modal';
 import './scaffold-styles.css';
+import { useEditor } from './common-editor';
 
 function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
     for (const prop of props.element.state.keys()) {
@@ -27,7 +28,6 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
     }, [props.element]);
     const [inputValue, setInputValue] = useState<string>('');
     const [suggestions, setSuggestions] = useState<TestOption[]>([]);
-    props.element.suggestionsSetter = setSuggestions;
     const [selectedItems, setSelectedItems] = useState<TestOption[]>(
         props.element.getValues()
     );
@@ -39,7 +39,7 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const timeoutRef = useRef<number | null>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
-
+    const editor = useEditor();
     // Функция для проверки, выбран ли уже элемент
     const isItemSelected = useCallback(
         (item: TestOption): boolean => {
@@ -49,8 +49,8 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
     );
 
     // Функция для запроса данных с сервера
-    const fetchSuggestions = useCallback(
-        (query?: string) => {
+    const getSuggestions = useCallback(
+        async (query?: string) => {
             // Отменяем предыдущий запрос
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
@@ -60,7 +60,9 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
 
             setIsLoading(true);
             setError(null);
-            props.element.requestSuggestions(query);
+            const options = await props.element.getSuggestions(query);
+            setIsLoading(false);
+            setSuggestions(options);
         },
         [isItemSelected]
     );
@@ -73,10 +75,10 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
             }
 
             timeoutRef.current = window.setTimeout(() => {
-                fetchSuggestions(query);
+                getSuggestions(query);
             }, props.element.getDebounceTime());
         },
-        [fetchSuggestions, props.element]
+        [getSuggestions, props.element]
     );
 
     // Обработка ввода с debounce
@@ -101,11 +103,15 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
             setInputValue('');
             setIsOpen(false);
             setSuggestions([]);
+            props.element.setValidationMessage(undefined);
 
             // Колбэк при изменении выбранных элементов
             props.element.setValues(newSelectedItems);
 
             inputRef.current?.focus();
+            if (editor) {
+                editor.setHasChanges(true);
+            }
         }
     };
 
@@ -118,6 +124,10 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
 
         // Колбэк при изменении выбранных элементов
         props.element.setValues(newSelectedItems);
+        props.element.setValidationMessage(undefined);
+        if (editor) {
+            editor.setHasChanges(true);
+        }
     };
 
     // Обработка клавиш
@@ -187,7 +197,9 @@ function AutocompleteFieldComponent(props: { element: TestAutocompleteField }) {
                     Details
                 </button>
             </div>
-            <div className="autocomplete-container">
+            <div
+                className={`autocomplete-container${props.element.getValidationMessage() ? ' has-error' : ''}`}
+            >
                 {/* Выбранные элементы */}
                 <div className="selected-items">
                     {selectedItems.map((item) => (
@@ -276,9 +288,9 @@ export class TestAutocompleteField extends BaseReactUiElement {
     constructor(model: any) {
         super(
             ['deferred', 'debounceTime', 'multiple', 'limit'],
-            ['values', 'hidden', 'disabled', 'trackValueChange'],
-            ['set-suggestions'],
-            ['value-changed', 'request-suggestions'],
+            ['values', 'hidden', 'disabled', 'trackValueChange', 'validationMessage'],
+            [],
+            ['value-changed'],
             model
         );
     }
@@ -290,8 +302,6 @@ export class TestAutocompleteField extends BaseReactUiElement {
     isDeferred() {
         return this.initParams.get('deferred') as boolean;
     }
-
-    suggestionsSetter: (suggestions: TestOption[]) => void = () => {};
 
     loadingSetter: (loading: boolean) => void = () => {};
 
@@ -315,8 +325,17 @@ export class TestAutocompleteField extends BaseReactUiElement {
         return this.state.get('disabled') as boolean;
     }
 
-    requestSuggestions(query?: string) {
-        this.sendCommand('request-suggestions', {
+    getValidationMessage() {
+        return this.state.get('validationMessage') as boolean;
+    }
+    setValidationMessage(value?: string) {
+        this.state.set('validationMessage', value);
+        this.stateSetters.get('validationMessage')!(value);
+        this.sendPropertyChange('valdationMessage', value, true);
+    }
+
+    async getSuggestions(query?: string) {
+        return await this.makeRequest('get-suggestions', {
             query,
             limit: this.getLimit(),
         });
@@ -335,15 +354,6 @@ export class TestAutocompleteField extends BaseReactUiElement {
         if (this.isTrackValueChange()) {
             this.sendCommand('value-changed');
         }
-    }
-
-    processCommandFromServer(commandId: string, data?: any) {
-        if (commandId === 'set-suggestions') {
-            this.suggestionsSetter(data);
-            this.loadingSetter(false);
-            return;
-        }
-        super.processCommandFromServer(commandId, data);
     }
 
     createReactElement(): React.ReactElement {

@@ -22,6 +22,7 @@
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
@@ -43,18 +44,12 @@ public class TestWebApp extends BaseWebAppUiElement {
         addChild(ctx, router, 0);
     }
 
-    @Override
-    public void restoreFromState(JsonElement state, OperationUiContext ctx) {
-        navigation.restoreFromState(WebPeerUtils.getDynamic(state, "navigation"), ctx);
-        router.restoreFromState(WebPeerUtils.getDynamic(state, "router"), ctx);
-    }
-
     public static TestWebApp lookup(BaseWebAppUiElement elm) {
         return lookupInternal(elm);
     }
 
     public void navigate(String path, OperationUiContext ctx) {
-        router.navigate(path, ctx);
+        router.navigate(path, false, ctx);
     }
 
     private static TestWebApp lookupInternal(BaseUiElement elm) {
@@ -62,6 +57,21 @@ public class TestWebApp extends BaseWebAppUiElement {
             return (TestWebApp) elm;
         }
         return lookupInternal(elm.getParent());
+    }
+
+    public void notify(String message, OperationUiContext ctx) {
+        var command = new JsonObject();
+        command.addProperty("message", message);
+        this.sendCommand(ctx, "notify", command);
+    }
+
+    public void confirm(String message, long elementId, String commandId, JsonElement commandData, OperationUiContext ctx) {
+        var command = new JsonObject();
+        command.addProperty("message", message);
+        command.addProperty("id", String.valueOf(elementId));
+        command.addProperty("cmd", commandId);
+        WebPeerUtils.addProperty(command, "data",commandData);
+        sendCommand(ctx, "confirm", command);
     }
 
     private TestWebAppConfiguration createConfiguration(OperationUiContext ctx) {

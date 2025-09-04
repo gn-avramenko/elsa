@@ -81,7 +81,18 @@ public abstract class BaseWebAppUiElement extends BaseUiElement {
         }
         var obj = state.getAsJsonObject();
         new ArrayList<>(this.state.keySet()).forEach(key -> this.state.put(key,WebPeerUtils.getValue(obj.get(key))));
+        if(!obj.has("children")){
+            return;
+        }
+        obj.getAsJsonArray("children").forEach(child -> {
+            var obj2 = child.getAsJsonObject();
+            var ch = getUnmodifiableListOfChildren().stream().filter(it -> it.getTag() != null && it.getTag().equals(WebPeerUtils.getString(obj2, "tag"))).findFirst().orElse(null);
+            if(ch != null){
+                ch.restoreFromState(child, ctx);
+            }
+        });
     }
+
 
     @Override
     public JsonObject buildState(OperationUiContext context) {

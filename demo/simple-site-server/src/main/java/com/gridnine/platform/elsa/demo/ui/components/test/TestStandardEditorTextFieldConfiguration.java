@@ -21,29 +21,20 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class TestAutocompleteFieldConfiguration {
-    private final List<TestOption> values = new ArrayList<>();
+public class TestStandardEditorTextFieldConfiguration {
+    private String value;
     private boolean hidden;
     private boolean disabled;
-    private int debounceTime = 300;
+    private int debounceTime;
     private boolean deferred;
-    private boolean multiple;
     private String validationMessage;
-    private int limit = 10;
 
-    public void setLimit(int limit) {
-        this.limit = limit;
+    public String getValue() {
+        return value;
     }
 
-    public int getLimit() {
-        return limit;
-    }
-
-    public List<TestOption> getValues() {
-        return values;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public boolean isHidden() {
@@ -76,14 +67,6 @@ public class TestAutocompleteFieldConfiguration {
 
     public void setDeferred(boolean deferred) {
         this.deferred = deferred;
-    }
-
-    public boolean isMultiple() {
-        return multiple;
-    }
-
-    public void setMultiple(boolean multiple) {
-        this.multiple = multiple;
     }
 
     public String getValidationMessage() {

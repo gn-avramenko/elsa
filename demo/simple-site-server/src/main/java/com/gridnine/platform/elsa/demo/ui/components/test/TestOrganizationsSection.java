@@ -21,6 +21,8 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
 import com.gridnine.platform.elsa.common.core.search.SortOrder;
@@ -29,8 +31,10 @@ import com.gridnine.platform.elsa.demo.domain.Organization;
 import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
+import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class TestOrganizationsSection extends BaseWebAppUiElement {
 
@@ -59,12 +63,35 @@ public class TestOrganizationsSection extends BaseWebAppUiElement {
             organizationsList.sendCommand(context, "refresh-data", null);
         }, ctx);
         organizationsList.setActionListener((rowId, columnId, actionId, context) ->{
-            System.out.printf("action: %s %s %s%n", rowId, columnId, actionId);
+            if("edit".equals(actionId)){
+                TestWebApp.lookup(this).navigate("/account/organizations/"+rowId, context);
+                return;
+            }
+            if("delete".equals(actionId)){
+                var cmd = new JsonObject();
+                cmd.addProperty("id", rowId);
+                TestWebApp.lookup(this).confirm("Are you sure to delete organization?", TestOrganizationsSection.this.getId(),
+                        "force-delete", cmd, context);
+                return;
+            }
         });
         organizationsList.setChangeSortListener((context, sort) ->{
             refreshData(context);
         });
         organizationsList.setRefreshDataListener(this::refreshData);
+    }
+
+    @Override
+    public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception {
+        if("force-delete".equals(commandId)){
+            var orgId = WebPeerUtils.getString(data.getAsJsonObject(), "id");
+            var org = storage.loadAsset(Organization.class, UUID.fromString(orgId), true);
+            storage.deleteAsset(org);
+            this.refreshData(ctx);
+            TestWebApp.lookup(this).notify("Organization deleted", ctx);
+            return;
+        }
+        super.processCommand(ctx, commandId, data);
     }
 
     private void refreshData(OperationUiContext context) {

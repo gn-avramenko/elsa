@@ -50,9 +50,13 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
     }
 
     private String getViewId(String path) {
+        if(path.contains("/account/organizations/")){
+            return "organization";
+        }
         if(path.contains("/account/organizations")){
             return "organizations";
         }
+
         if(path.contains("/account/doctors")){
             return "doctors";
         }
@@ -91,15 +95,11 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
             case "clients" -> new TestClientsSection("content", ctx);
             case "account" -> new TestAccountSection("content", ctx);
             case "security" -> new TestSecuritySection("content", ctx);
+            case "organization" -> new TestOrganizationEditor("content", ctx);
             default -> throw new RuntimeException("Invalid viewId");
         };
     }
 
-
-    @Override
-    public void restoreFromState(JsonElement state, OperationUiContext ctx) {
-        getUnmodifiableListOfChildren().getFirst().restoreFromState(WebPeerUtils.getDynamic(state, "content"), ctx);
-    }
 
     @Override
     public void navigate(String path, OperationUiContext ctx) {

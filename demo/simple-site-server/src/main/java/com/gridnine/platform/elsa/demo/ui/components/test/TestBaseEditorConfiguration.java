@@ -21,6 +21,34 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-public class TestOrganizationSectionConfiguration {
+public class TestBaseEditorConfiguration {
+    private boolean hasChanges;
 
+    private String title;
+
+    private boolean dataLoading;
+
+    public void setHasChanges(boolean hasChanges) {
+        this.hasChanges = hasChanges;
+    }
+
+    public boolean isHasChanges() {
+        return hasChanges;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public boolean isDataLoading() {
+        return dataLoading;
+    }
+
+    public void setDataLoading(boolean dataLoading) {
+        this.dataLoading = dataLoading;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
