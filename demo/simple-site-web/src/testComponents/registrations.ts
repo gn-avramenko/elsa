@@ -23,6 +23,10 @@ import { TestEntityListFactory } from './test-entity-list';
 import { TestAutocompleteFieldFactory } from './test-autocomplete-field';
 import { TestStandardTextFieldFactory } from './test-standard-text-field';
 import { TestOrganizationEditorFactory } from './test-organization-editor';
+import { TestWrapperFactory } from './test-wrapper';
+import { TestStandardLabelFactory } from './test-standard-label';
+import { TestDialogButtonFactory } from './test-dialog-button';
+import { TestConfirmDeleteDialogFactory } from './test-confirm-delete-dialog';
 
 registerFactory('app.WebApp', new WebAppFactory());
 registerFactory('app.NavigationPanel', new TestNavigationPanelFactory());
@@ -59,3 +63,10 @@ registerFactory('common.SearchField', new TestSearchFieldFactory());
 registerFactory('common.StandardAutocomplete', new TestAutocompleteFieldFactory());
 registerFactory('common.StandardTextField', new TestStandardTextFieldFactory());
 registerFactory('common.EntityList', new TestEntityListFactory());
+registerFactory('wrapper', new TestWrapperFactory());
+registerFactory('common.StandardLabel', new TestStandardLabelFactory());
+registerFactory('common.DialogButton', new TestDialogButtonFactory());
+registerFactory(
+    'account.organization.ConfirmDeleteDialog',
+    new TestConfirmDeleteDialogFactory()
+);

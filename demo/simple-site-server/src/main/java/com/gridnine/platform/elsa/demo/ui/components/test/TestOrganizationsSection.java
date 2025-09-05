@@ -68,10 +68,31 @@ public class TestOrganizationsSection extends BaseWebAppUiElement {
                 return;
             }
             if("delete".equals(actionId)){
-                var cmd = new JsonObject();
-                cmd.addProperty("id", rowId);
-                TestWebApp.lookup(this).confirm("Are you sure to delete organization?", TestOrganizationsSection.this.getId(),
-                        "force-delete", cmd, context);
+                var dialog = new TestConfirmDeleteDialog("delete-dialog", context);
+                var buttons = new ArrayList<TestDialogButton>();
+                {
+                    var conf = new TestDialogButtonConfiguration();
+                    conf.setTitle("Delete");
+                    var deleteButton = new TestDialogButton("ok", conf, context);
+                    deleteButton.setClickListener(ctx2 ->{
+                        var org = storage.loadAsset(Organization.class, UUID.fromString(rowId), true);
+                        storage.deleteAsset(org);
+                        this.refreshData(ctx2);
+                        TestWebApp.lookup(this).closeDialog(ctx2);
+                        TestWebApp.lookup(this).notify("Organization deleted", ctx2);
+                    });
+                    buttons.add(deleteButton);
+                }
+                {
+                    var conf = new TestDialogButtonConfiguration();
+                    conf.setTitle("Cancel");
+                    var deleteButton = new TestDialogButton("cancel", conf, context);
+                    deleteButton.setClickListener(ctx2 ->{
+                        TestWebApp.lookup(this).closeDialog(ctx2);
+                    });
+                    buttons.add(deleteButton);
+                }
+                TestWebApp.lookup(this).showDialog(dialog, buttons, context);
                 return;
             }
         });
@@ -79,19 +100,6 @@ public class TestOrganizationsSection extends BaseWebAppUiElement {
             refreshData(context);
         });
         organizationsList.setRefreshDataListener(this::refreshData);
-    }
-
-    @Override
-    public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception {
-        if("force-delete".equals(commandId)){
-            var orgId = WebPeerUtils.getString(data.getAsJsonObject(), "id");
-            var org = storage.loadAsset(Organization.class, UUID.fromString(orgId), true);
-            storage.deleteAsset(org);
-            this.refreshData(ctx);
-            TestWebApp.lookup(this).notify("Organization deleted", ctx);
-            return;
-        }
-        super.processCommand(ctx, commandId, data);
     }
 
     private void refreshData(OperationUiContext context) {

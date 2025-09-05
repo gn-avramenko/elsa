@@ -180,6 +180,45 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
     );
 };
 
+interface MainModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    content?: BaseReactUiElement;
+    buttons?: BaseReactUiElement[];
+}
+
+export const MainModal: React.FC<MainModalProps> = ({
+    isOpen,
+    onClose,
+    content,
+    buttons,
+}) => {
+    return isOpen ? (
+        <ModalPortal>
+            <div className="modal-overlay" onClick={onClose}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h2>Dialog</h2>
+                        <button
+                            className="modal-close"
+                            onClick={onClose}
+                            aria-label="Закрыть диалоговое окно"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="modal-body" style={{ height: '420px' }}>
+                        {content?.createReactElement() ?? ''}
+                    </div>
+                    <div className="modal-footer">
+                        {buttons?.map((it) => it.createReactElement()) ?? ''}
+                    </div>
+                </div>
+            </div>
+        </ModalPortal>
+    ) : null;
+};
+
 interface UseModalReturn {
     isOpen: boolean;
     open: () => void;
@@ -189,7 +228,9 @@ interface UseModalReturn {
 export const useModal = (): UseModalReturn => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    const open = (): void => setIsOpen(true);
+    const open = (): void => {
+        setIsOpen(true);
+    };
     const close = (): void => setIsOpen(false);
 
     return { isOpen, open, close };

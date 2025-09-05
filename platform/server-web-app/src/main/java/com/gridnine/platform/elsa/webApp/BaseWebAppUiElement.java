@@ -115,5 +115,9 @@ public abstract class BaseWebAppUiElement extends BaseUiElement {
             it.isJsonObject() && it.getAsJsonObject().has("tag") && it.getAsJsonObject().get("tag").getAsString().equals(tag)
         ).findFirst().orElse(null);
     }
+
+    protected BaseWebAppUiElement findChildByTag(String tag){
+        return  (BaseWebAppUiElement) getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals(tag)).findFirst().orElse(null);
+    }
 }
 

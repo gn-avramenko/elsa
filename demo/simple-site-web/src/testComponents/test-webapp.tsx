@@ -5,7 +5,7 @@ import {
     ReactUiElementFactory,
 } from './common-component';
 import React, { useEffect, useState } from 'react';
-import { DetailsModal, useModal } from './modal';
+import { DetailsModal, MainModal, useModal } from './modal';
 
 import './scaffold-styles.css';
 import { api } from 'webpeer-core';
@@ -103,6 +103,21 @@ function WebAppComponent(props: { element: TestWebapp }) {
                 type={toastType}
                 duration={2000}
             />
+            <MainModal
+                isOpen={props.element.isDialogVisible()}
+                onClose={() => {
+                    props.element.setDialogVisible(false);
+                }}
+                content={
+                    props.element.findByTag('modal')?.findByTag('content')
+                        ?.children?.[0] as BaseReactUiElement | undefined
+                }
+                buttons={
+                    props.element.findByTag('modal')?.findByTag('buttons')
+                        ?.children as any
+                }
+            />
+
             {isLoading ? <Preloader text="Loading" /> : ''}
         </div>
     );
@@ -112,11 +127,20 @@ export class TestWebapp extends BaseReactUiElement {
     readonly flexDirection: FlexDirection;
     notify: (value: string) => void = () => {};
     constructor(model: any) {
-        super([], [], [], [], model);
+        super([], ['dialogVisible'], [], [], model);
         this.flexDirection = model.flexDirection;
     }
     createReactElement(): React.ReactElement {
         return React.createElement(WebAppComponent, { element: this, key: this.id });
+    }
+
+    isDialogVisible(): boolean {
+        return this.state.get('dialogVisible') as boolean;
+    }
+
+    setDialogVisible(value: boolean) {
+        this.state.set('dialogVisible', value);
+        this.stateSetters.get('dialogVisible')!(value);
     }
 
     processCommandFromServer(commandId: string, data?: any) {

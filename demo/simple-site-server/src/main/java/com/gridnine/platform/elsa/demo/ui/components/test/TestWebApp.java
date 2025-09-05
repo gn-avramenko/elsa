@@ -28,6 +28,8 @@ import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
+import java.util.List;
+
 public class TestWebApp extends BaseWebAppUiElement {
 
     private final TestNavigationPanel navigation;
@@ -38,6 +40,7 @@ public class TestWebApp extends BaseWebAppUiElement {
         super("app.WebApp", tag, ctx);
         var config = createConfiguration(ctx);
         setInitParam("flexDirection", "COLUMN");
+        setProperty("dialogVisible", false, ctx);
         navigation = new TestNavigationPanel("navigation", ctx);
         addChild(ctx, navigation, 0);
         router = new TestWebAppRouter("router", ctx);
@@ -53,7 +56,7 @@ public class TestWebApp extends BaseWebAppUiElement {
     }
 
     private static TestWebApp lookupInternal(BaseUiElement elm) {
-        if(elm instanceof TestWebApp) {
+        if (elm instanceof TestWebApp) {
             return (TestWebApp) elm;
         }
         return lookupInternal(elm.getParent());
@@ -70,7 +73,7 @@ public class TestWebApp extends BaseWebAppUiElement {
         command.addProperty("message", message);
         command.addProperty("id", String.valueOf(elementId));
         command.addProperty("cmd", commandId);
-        WebPeerUtils.addProperty(command, "data",commandData);
+        WebPeerUtils.addProperty(command, "data", commandData);
         sendCommand(ctx, "confirm", command);
     }
 
@@ -79,4 +82,29 @@ public class TestWebApp extends BaseWebAppUiElement {
         return result;
     }
 
+    public void showDialog(BaseWebAppUiElement content, List<? extends BaseWebAppUiElement> buttons, OperationUiContext ctx) {
+        var modal = findChildByTag("modal");
+        if (modal != null) {
+            removeChild(ctx, modal);
+        }
+        modal = new TestModalElementWrapper("modal", ctx);
+        var cntw = new TestModalElementWrapper("content", ctx);
+        cntw.addChild(ctx, content, 0);
+        modal.addChild(ctx, cntw, 0);
+        var btnsw = new TestModalElementWrapper("buttons", ctx);
+        buttons.forEach(it -> btnsw.addChild(ctx, it, 0));
+        modal.addChild(ctx, btnsw, 0);
+        addChild(ctx, modal, 0);
+        setProperty("dialogVisible", true, ctx);
+    }
+
+    public void closeDialog(OperationUiContext ctx) {
+        setProperty("dialogVisible", false, ctx);
+    }
+
+    static class TestModalElementWrapper extends BaseWebAppUiElement {
+        public TestModalElementWrapper(String tag, OperationUiContext ctx) {
+            super("wrapper", tag, ctx);
+        }
+    }
 }
