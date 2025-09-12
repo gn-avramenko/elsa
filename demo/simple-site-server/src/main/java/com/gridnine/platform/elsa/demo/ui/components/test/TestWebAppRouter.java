@@ -24,7 +24,7 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.TypedParameter;
@@ -33,7 +33,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.ArrayList;
 
-public class TestWebAppRouter extends BaseWebAppUiElement {
+public class TestWebAppRouter extends BaseTestWebAppUiElement {
 
     public final static TypedParameter<String> ROUTER_PATH = new TypedParameter<>("router-path");
 
@@ -97,7 +97,7 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
         }
         return "main";
     }
-    private BaseWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
+    private BaseTestWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
         ctx.setParameter(SimpleSiteWebAppServlet.BEAN_FACTORY, factory);
         if("history".equals(viewId)){
             return new TestHistoryPage("content", ctx);
@@ -144,7 +144,7 @@ public class TestWebAppRouter extends BaseWebAppUiElement {
             });
             return;
         }
-        var elm = (BaseWebAppUiElement)getUnmodifiableListOfChildren().getFirst();
+        var elm = (BaseTestWebAppUiElement)getUnmodifiableListOfChildren().getFirst();
         removeChild(ctx, elm);
         elm = createElement(viewId, ctx);
         addChild(ctx, elm, 0);

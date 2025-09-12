@@ -23,14 +23,14 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
 import java.util.List;
 
-public class TestWebApp extends BaseWebAppUiElement {
+public class TestWebApp extends BaseTestWebAppUiElement {
 
     private final TestNavigationPanel navigation;
 
@@ -47,7 +47,7 @@ public class TestWebApp extends BaseWebAppUiElement {
         addChild(ctx, router, 0);
     }
 
-    public static TestWebApp lookup(BaseWebAppUiElement elm) {
+    public static TestWebApp lookup(BaseTestWebAppUiElement elm) {
         return lookupInternal(elm);
     }
 
@@ -82,7 +82,7 @@ public class TestWebApp extends BaseWebAppUiElement {
         return result;
     }
 
-    public void showDialog(BaseWebAppUiElement content, List<? extends BaseWebAppUiElement> buttons, OperationUiContext ctx) {
+    public void showDialog(BaseTestWebAppUiElement content, List<? extends BaseTestWebAppUiElement> buttons, OperationUiContext ctx) {
         var modal = findChildByTag("modal");
         if (modal != null) {
             removeChild(ctx, modal);
@@ -102,7 +102,7 @@ public class TestWebApp extends BaseWebAppUiElement {
         setProperty("dialogVisible", false, ctx);
     }
 
-    static class TestModalElementWrapper extends BaseWebAppUiElement {
+    static class TestModalElementWrapper extends BaseTestWebAppUiElement {
         public TestModalElementWrapper(String tag, OperationUiContext ctx) {
             super("wrapper", tag, ctx);
         }

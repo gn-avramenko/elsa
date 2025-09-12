@@ -21,22 +21,18 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
 import com.gridnine.platform.elsa.common.core.search.SortOrder;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.demo.domain.Organization;
 import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
-import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class TestOrganizationsSection extends BaseWebAppUiElement {
+public class TestOrganizationsSection extends BaseTestWebAppUiElement {
 
     private final TestSearchField searchField;
 

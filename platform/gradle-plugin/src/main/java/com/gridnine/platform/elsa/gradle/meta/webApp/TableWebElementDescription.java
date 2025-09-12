@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TableWebElementDescription extends BaseWebElementDescription {
 
-    private ElementExtension columnDescriptionExtension;
+    private WebAppEntity columnDescriptionExtension;
 
     private final List<TableDataFieldDescription> dataFields = new ArrayList<>();
 
@@ -18,11 +18,11 @@ public class TableWebElementDescription extends BaseWebElementDescription {
         super(id, className);
     }
 
-    public void setColumnDescriptionExtension(ElementExtension columnDescriptionExtension) {
+    public void setColumnDescriptionExtension(WebAppEntity columnDescriptionExtension) {
         this.columnDescriptionExtension = columnDescriptionExtension;
     }
 
-    public ElementExtension getColumnDescriptionExtension() {
+    public WebAppEntity getColumnDescriptionExtension() {
         return columnDescriptionExtension;
     }
 

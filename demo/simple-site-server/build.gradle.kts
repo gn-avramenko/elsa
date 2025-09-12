@@ -31,5 +31,7 @@ elsa {
     codegen {
         domain("src/main/java-gen", "com.gridnine.platform.elsa.demo.SimpleWebAppDomainConfigurator",
             listOf("src/main/codegen/domain.xml"))
+        webApp("src/main/java-gen", "src/main/java","com.gridnine.platform.elsa.demo.SimpleWebAppConfigurator",
+            listOf("src/main/codegen/simple-web-app.xml"));
     }
 }

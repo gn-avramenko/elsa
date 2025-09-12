@@ -23,13 +23,12 @@
 package com.gridnine.platform.elsa.demo.ui.components.test;
 //codegen:header:end
 //codegen:import:start
-import com.google.gson.JsonElement;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 //codegen:import:end
 
 //codegen:class:start
-public class TestStandardLabel extends BaseWebAppUiElement {
+public class TestStandardLabel extends BaseTestWebAppUiElement {
 
 
     public TestStandardLabel(String tag, TestStandardLabelConfiguration config, OperationUiContext ctx) {

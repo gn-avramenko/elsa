@@ -21,10 +21,10 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class TestHistoryPage extends BaseWebAppUiElement {
+public class TestHistoryPage extends BaseTestWebAppUiElement {
 
     public TestHistoryPage(String tag, OperationUiContext ctx) {
         super("history.HistoryPage", tag, ctx);

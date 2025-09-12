@@ -21,10 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.parser.webApp;
 
-import com.gridnine.platform.elsa.gradle.meta.common.StandardCollectionDescription;
-import com.gridnine.platform.elsa.gradle.meta.common.StandardPropertyDescription;
-import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
-import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
+import com.gridnine.platform.elsa.gradle.meta.common.*;
 import com.gridnine.platform.elsa.gradle.meta.webApp.*;
 import com.gridnine.platform.elsa.gradle.parser.common.CommonParserUtils;
 import com.gridnine.platform.elsa.gradle.parser.common.MetaDataParsingResult;
@@ -39,15 +36,15 @@ public class WebAppMetaRegistryParser {
         sources.forEach(it -> BuildExceptionUtils.wrapException(() -> {
             MetaDataParsingResult pr = CommonParserUtils.parse(it);
             XmlNode node = pr.node();
-            node.getChildren("enum").forEach(child ->
-                    CommonParserUtils.updateEnum(registry.getEnums(), child, pr.localizations()));
-            node.getChildren("entity").forEach(child ->
-                    CommonParserUtils.updateEntity(registry.getEntities(), child));
-            node.getChildren("element").forEach(child -> {
-                        processElement(child, registry);
-
-                    }
-            );
+            node.getChildren().forEach(child -> {
+                if("enum".equals(child.getName())){
+                    CommonParserUtils.updateEnum(registry.getEnums(), child, pr.localizations());
+                } else if("entity".equals(child.getName())){
+                    CommonParserUtils.updateEntity(registry.getEntities(), child);
+                } else {
+                    processElement(child, registry);
+                }
+            });
         }));
     }
 
@@ -58,6 +55,7 @@ public class WebAppMetaRegistryParser {
         var dd = registry.getElements().computeIfAbsent(className,
                 (cl) -> {
                     return switch (tagName) {
+                        case "modal" -> new ModalWebElementDescription(id, cl);
                         case "container" -> new ContainerWebElementDescription(id, cl);
                         case "button" -> new ButtonWebElementDescription(id, cl);
                         case "select" -> new SelectWebElementDescription(id, cl);
@@ -72,10 +70,15 @@ public class WebAppMetaRegistryParser {
                 });
         updateBaseProperties(dd, child);
         switch (dd.getType()) {
+            case MODAL -> {
+                ModalWebElementDescription cc = (ModalWebElementDescription) dd;
+                var children = child.getFirstChild("children");
+                if (children != null) {
+                    processElement(children, registry);
+                }
+            }
             case CONTAINER -> {
                 ContainerWebElementDescription cc = (ContainerWebElementDescription) dd;
-                var flexDirectionStr = child.getAttribute("flex-direction");
-                cc.setFlexDirection(flexDirectionStr == null ? null : ContainerFlexDirection.valueOf(flexDirectionStr));
                 var children = child.getFirstChild("children");
                 if (children != null) {
                     processElement(children, registry);
@@ -90,19 +93,29 @@ public class WebAppMetaRegistryParser {
             }
 
         }
+        var ce = WebAppMetadataHelper.extendWithStandardProperties(dd);
+        {
+            var cn = "%sConfiguration".formatted(ce.getClassName());
+            var ed = registry.getEntities().computeIfAbsent(cn, EntityDescription::new);
+            ed.getParameters().put("no-serialization", "true");
+            ed.getProperties().putAll(ce.getServerManagedState().getProperties());
+            ed.getCollections().putAll(ce.getServerManagedState().getCollections());
+        }
     }
 
     private void updateBaseProperties(BaseWebElementDescription dd, XmlNode child) {
-        dd.setPropertiesExtension(getElementExtension(child.getFirstChild("properties-extension")));
-        ;
-        dd.setStateExtension(getElementExtension(child.getFirstChild("state-extension")));
-        var scs = child.getFirstChild("additional-commands-from-server");
+        var state = getElementExtension(child.getFirstChild("server-manages-state"));
+        if(state != null) {
+            dd.getServerManagedState().getProperties().putAll(state.getProperties());
+            dd.getServerManagedState().getCollections().putAll(state.getCollections());
+        }
+        var scs = child.getFirstChild("commands-from-server");
         if (scs != null) {
             scs.getChildren().forEach(command -> {
                 //dd.getCommandsFromServer().add(CommonParserUtils.getIdAttribute(command));
             });
         }
-        var ccs = child.getFirstChild("additional-commands-from-client");
+        var ccs = child.getFirstChild("commands-from-client");
         if (ccs != null) {
             ccs.getChildren().forEach(command -> {
                 //dd.getCommandsFromClient().add(CommonParserUtils.getIdAttribute(command));
@@ -110,11 +123,11 @@ public class WebAppMetaRegistryParser {
         }
     }
 
-    private ElementExtension getElementExtension(XmlNode child) {
+    private WebAppEntity getElementExtension(XmlNode child) {
         if (child == null) {
             return null;
         }
-        var result = new ElementExtension();
+        var result = new WebAppEntity();
         child.getChildren("property").forEach(prop -> {
             var id = CommonParserUtils.getIdAttribute(prop);
             var pd = new StandardPropertyDescription(id);

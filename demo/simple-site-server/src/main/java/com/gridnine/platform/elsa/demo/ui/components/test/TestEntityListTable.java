@@ -24,24 +24,20 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 //codegen:header:end
 //codegen:import:start
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAnd2Arguments;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd4Arguments;
-import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.RunnableWithExceptionAndArgument;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
-import org.springdoc.core.converters.models.Sort;
 
 import java.util.List;
 //codegen:import:end
 
 //codegen:class:start
-public class TestEntityListTable extends BaseWebAppUiElement {
+public class TestEntityListTable extends BaseTestWebAppUiElement {
 
     private RunnableWithExceptionAnd4Arguments<String, String, String, OperationUiContext> actionListener;
 

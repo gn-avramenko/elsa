@@ -17,28 +17,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
+ *
+ *****************************************************************
+ * This is generated code, don't modify it manually
+ *****************************************************************/
 
-package com.gridnine.platform.elsa.gradle.meta.webApp;
+package com.gridnine.platform.elsa.webApp;
 
+public enum FlexDirection{
 
-import com.gridnine.platform.elsa.gradle.meta.common.*;
+	ROW,
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-public class ElementExtension {
-
-    private final Map<String, StandardPropertyDescription> properties = new LinkedHashMap<>();
-
-    private final Map<String, StandardCollectionDescription> collections = new LinkedHashMap<>();
-
-    public Map<String, StandardPropertyDescription> getProperties() {
-        return properties;
-    }
-
-    public Map<String, StandardCollectionDescription> getCollections() {
-        return collections;
-    }
-
+	COLUMN
 }

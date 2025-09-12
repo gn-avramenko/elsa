@@ -26,7 +26,7 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.gridnine.platform.elsa.common.core.model.common.CallableWithExceptionAnd2Arguments;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.RunnableWithExceptionAndArgument;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
@@ -36,7 +36,7 @@ import java.util.List;
 //codegen:import:end
 
 //codegen:class:start
-public class TestAutocompleteField extends BaseWebAppUiElement {
+public class TestAutocompleteField extends BaseTestWebAppUiElement {
 
     private RunnableWithExceptionAndArgument<OperationUiContext> valueChangeListener;
 

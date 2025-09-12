@@ -33,6 +33,8 @@ import com.gridnine.platform.elsa.gradle.codegen.remoting.JavaRemotingCodeGenera
 import com.gridnine.platform.elsa.gradle.codegen.remoting.OpenApiCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.remoting.OpenapiRemotingCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.remoting.WebRemotingCodeGenerator;
+import com.gridnine.platform.elsa.gradle.codegen.webApp.JavaWebAppCodeGenerator;
+import com.gridnine.platform.elsa.gradle.codegen.webApp.WebWebAppCodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.domain.DomainMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
@@ -124,9 +126,11 @@ public class ElsaCodeGenTask extends DefaultTask {
         }));
         gens.forEach(entry -> {
             var codeGen = (CodeGenerator) switch (entry.getKey()) {
+                case JAVA_WEB_APP -> new JavaWebAppCodeGenerator();
                 case JAVA_DOMAIN -> new JavaDomainCodeGenerator();
                 case JAVA_CUSTOM -> new JavaCustomCodeGenerator();
                 case JAVA_REMOTING -> new JavaRemotingCodeGenerator();
+                case WEB_WEB_APP -> new WebWebAppCodeGenerator(getProject());
                 case OPENAPI_REMOTING -> new OpenapiRemotingCodeGenerator();
                 case JAVA_L10N -> new JavaL10nCodeGenerator();
                 case WEB_REMOTING -> new WebRemotingCodeGenerator();

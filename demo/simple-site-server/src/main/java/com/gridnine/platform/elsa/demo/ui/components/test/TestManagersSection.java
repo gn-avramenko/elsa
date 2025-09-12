@@ -31,13 +31,13 @@ import com.gridnine.platform.elsa.demo.domain.ManagerFields;
 import com.gridnine.platform.elsa.demo.domain.Organization;
 import com.gridnine.platform.elsa.demo.domain.OrganizationFields;
 import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class TestManagersSection extends BaseWebAppUiElement {
+public class TestManagersSection extends BaseTestWebAppUiElement {
 
     private final TestSearchField searchField;
 

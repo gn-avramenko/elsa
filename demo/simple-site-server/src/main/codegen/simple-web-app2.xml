@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://vga.com/elsa/meta-web-app">
+    <entity id="main.MeasurementsDayData">
+        <property id="dayNumber" type="INT"/>
+        <property id="value" type="BIG_DECIMAL"/>
+    </entity>
+    <container id="webApp" class-name="app.WebApp" flex-direction="COLUMN">
+        <children>
+            <container id="navigation" class-name="app.NavigationPanel" flex-direction="ROW">
+                <children>
+                    <button id="mainLink" class-name="app.StandardLink"/>
+                    <button id="historyLink" class-name="app.StandardLink"/>
+                    <button id="accountLink" class-name="app.AccountLink">
+                        <state-extension>
+                            <property id="loggedIn" type="BOOLEAN" non-nullable="true"/>
+                            <property id="insideAccountSection" type="BOOLEAN" non-nullable="true"/>
+                        </state-extension>
+                    </button>
+                    <select id="languageSelector" class-name="app.LanguageSelector"/>
+                </children>
+            </container>
+            <router id="webAppRouter" class-name="app.WebAppRouter"/>
+        </children>
+    </container>
+    <container id="history-page" class-name="history.HistoryPage" flex-direction="COLUMN"/>
+    <container id="mainPage" class-name="main.MainPage" flex-direction="COLUMN">
+        <children>
+            <custom id="measurementsChart" class-name="main.MeasurementsChart">
+                <state-extension>
+                    <property id="nextMonthEnabled" type="BOOLEAN"/>
+                    <property id="previousMonthEnabled" type="BOOLEAN"/>
+                    <property id="month" type="STRING" />
+                </state-extension>
+                <additional-commands-from-client>
+                    <command id="showNextMonth"/>
+                    <command id="showPreviousMonth"/>
+                </additional-commands-from-client>
+            </custom>
+            <text-area id="feedbackContent" class-name="main.FeedbackContent"/>
+            <button id="feedBackSendButton" class-name="main.FeedbackSendButton"/>
+        </children>
+    </container>
+    <container id="accountContainer" class-name="account.AccountContainer" flex-direction="ROW">
+        <children>
+            <container id="navigation" class-name="account.AccountNavigation">
+                <children>
+                    <button id="organizationsLink" class-name="account.AccountNavigationButton">
+                        <state-extension>
+                            <property id="visible" type="BOOLEAN" non-nullable="true"/>
+                        </state-extension>
+                    </button>
+                    <button id="managersLink" class-name="account.AccountNavigationButton"/>
+                    <button id="doctorsLink" class-name="account.AccountNavigationButton"/>
+                    <button id="clientsLink" class-name="account.AccountNavigationButton"/>
+                    <button id="accountLink" class-name="account.AccountNavigationButton"/>
+                    <button id="securityLink" class-name="account.AccountNavigationButton"/>
+                    <button id="exitLink" class-name="account.AccountNavigationButton"/>
+                </children>
+            </container>
+            <router id="accountRouter" class-name="account.AccountRouter" />
+        </children>
+    </container>
+    <text-field id="searchField" class-name="common.SearchField">
+        <properties-extension>
+            <property id="debounceTime" type="INT" non-nullable="true"/>
+        </properties-extension>
+    </text-field>
+    <text-field id="standardTextField" class-name="common.StandardTextField"/>
+    <autocomplete id="standardAutocomplete" class-name="common.StandardAutocomplete"/>
+    <button id="saveButton" class-name="common.SaveButton"/>
+    <container id="organizationsSection" class-name="account.organization.OrganizationsSection" flex-direction="COLUMN">
+        <children>
+            <text-field id="searchField" class-name="common.SearchField"/>
+            <table id="organizationsList" class-name="account.organization.OrganizationsList"/>
+        </children>
+    </container>
+    <container id="organizationEditor" class-name="account.organization.OrganizationEditor" flex-direction="COLUMN">
+        <children>
+            <button id="backButton" class-name="common.EditorBackButton"/>
+            <label id="title" class-name="common.EditorTitleLabel"/>
+            <text-field id="address" class-name="common.StandardTextField"/>
+            <autocomplete id="country" class-name="common.StandardAutocomplete"/>
+            <text-field id="contacts" class-name="common.StandardTextField"/>
+        </children>
+    </container>
+    <container id="managersSection" class-name="account.manager.ManagersSection" flex-direction="COLUMN">
+        <children>
+            <text-field id="searchField" class-name="common.SearchField"/>
+            <text-field id="organization" class-name="common.SearchField"/>
+            <table id="managersList" class-name="account.manager.ManagersList"/>
+        </children>
+    </container>
+    <container id="doctorsSection" class-name="account.doctor.DoctorsSection" flex-direction="COLUMN">
+        <children>
+            <text-field id="searchField" class-name="common.SearchField"/>
+            <text-field id="organization" class-name="common.SearchField"/>
+            <table id="doctorsList" class-name="account.doctor.DoctorsList"/>
+        </children>
+    </container>
+    <container id="clientsSection" class-name="account.client.ClientsSection" flex-direction="COLUMN">
+        <children>
+            <text-field id="searchField" class-name="common.SearchField"/>
+            <text-field id="organization" class-name="common.SearchField"/>
+            <table id="clientsList" class-name="account.client.ClientsList"/>
+        </children>
+    </container>
+    <container id="accountSection" class-name="account.account.AccountSection" flex-direction="COLUMN">
+        <children>
+            <text-field id="firstName" class-name="common.StandardTextField"/>
+            <text-field id="lastName" class-name="common.StandardTextField"/>
+            <text-field id="middleName" class-name="common.StandardTextField"/>
+            <text-field id="email" class-name="common.StandardTextField"/>
+            <text-field id="contacts" class-name="common.StandardTextField"/>
+            <button id="saveButton" class-name="common.SaveButton"/>
+        </children>
+    </container>
+    <container id="securitySection" class-name="account.security.SecuritySection" flex-direction="COLUMN">
+        <children>
+            <text-field id="login" class-name="common.SearchField"/>
+            <button id="changePassword" class-name="account.security.ChangePasswordButton"/>
+        </children>
+    </container>
+</web-app>

@@ -21,10 +21,9 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
@@ -32,7 +31,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.ArrayList;
 
-public class TestAccountRouter extends BaseWebAppUiElement implements TestNestedRouter{
+public class TestAccountRouter extends BaseTestWebAppUiElement implements TestNestedRouter{
 
     private String currentPath;
 
@@ -86,7 +85,7 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
     private void decorateWithListeners() {
     }
 
-    private BaseWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
+    private BaseTestWebAppUiElement createElement(String viewId, OperationUiContext ctx) {
         ctx.setParameter(SimpleSiteWebAppServlet.BEAN_FACTORY, beanFactory);
         return switch (viewId){
             case "organizations" -> new TestOrganizationsSection("content", ctx);
@@ -115,7 +114,7 @@ public class TestAccountRouter extends BaseWebAppUiElement implements TestNested
             nestedRouters.forEach(nestedRouter -> nestedRouter.navigate(newViewId, ctx));
             return;
         }
-        var elm = (BaseWebAppUiElement) getUnmodifiableListOfChildren().getFirst();
+        var elm = (BaseTestWebAppUiElement) getUnmodifiableListOfChildren().getFirst();
         removeChild(ctx, elm);
         elm = createElement(newViewId, ctx);
         addChild(ctx, elm, 0);

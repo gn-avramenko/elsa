@@ -21,10 +21,10 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class TestClientsSection extends BaseWebAppUiElement {
+public class TestClientsSection extends BaseTestWebAppUiElement {
 
     public TestClientsSection(String tag, OperationUiContext ctx) {
         super("account.client.ClientsSection", tag, ctx);

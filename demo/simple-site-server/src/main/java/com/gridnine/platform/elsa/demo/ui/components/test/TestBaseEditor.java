@@ -21,10 +21,10 @@
 
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class TestBaseEditor extends BaseWebAppUiElement {
+public class TestBaseEditor extends BaseTestWebAppUiElement {
 
     public TestBaseEditor(String type, String tag, OperationUiContext ctx) {
         super(type, tag, ctx);

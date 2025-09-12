@@ -24,6 +24,7 @@ package com.gridnine.platform.elsa.gradle.plugin;
 import com.gridnine.platform.elsa.gradle.codegen.common.BaseCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.l10n.WebL10nCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.remoting.WebRemotingCodeGenRecord;
+import com.gridnine.platform.elsa.gradle.codegen.webApp.WebWebAppCodeGenRecord;
 
 import java.io.File;
 import java.util.List;
@@ -44,6 +45,14 @@ public class ElsaWebCodeGenExtension {
         var record = new WebRemotingCodeGenRecord();
         sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
+        codegenRecords.add(record);
+    }
+
+    public void webApp(String destDir, String sourceDir, List<String> sourcesFileNames) {
+        var record = new WebWebAppCodeGenRecord();
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.setDestinationDir(new File(projectDir, destDir));
+        record.setSourceDir(new File(projectDir, sourceDir));
         codegenRecords.add(record);
     }
 

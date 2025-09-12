@@ -10,23 +10,15 @@ import java.util.List;
 
 public class ContainerWebElementDescription extends BaseWebElementDescription {
 
-    private ContainerFlexDirection flexDirection;
+    private boolean managedConfiguration;
 
     private final List<BaseWebElementDescription> children = new ArrayList<>();
 
     public ContainerWebElementDescription(String id, String className) {
         super(id, className);
     }
-    public ContainerFlexDirection getFlexDirection() {
-        return flexDirection;
-    }
-
     public List<BaseWebElementDescription> getChildren() {
         return children;
-    }
-
-    public void setFlexDirection(ContainerFlexDirection flexDirection) {
-        this.flexDirection = flexDirection;
     }
 
     @Override
@@ -34,5 +26,11 @@ public class ContainerWebElementDescription extends BaseWebElementDescription {
         return WebElementType.CONTAINER;
     }
 
+    public void setManagedConfiguration(boolean managedConfiguration) {
+        this.managedConfiguration = managedConfiguration;
+    }
 
+    public boolean isManagedConfiguration() {
+        return managedConfiguration;
+    }
 }

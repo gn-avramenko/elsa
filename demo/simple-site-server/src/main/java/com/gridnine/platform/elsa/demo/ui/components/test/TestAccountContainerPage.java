@@ -22,11 +22,11 @@
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
 import com.google.gson.JsonElement;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 
-public class TestAccountContainerPage extends BaseWebAppUiElement {
+public class TestAccountContainerPage extends BaseTestWebAppUiElement {
 
     public TestAccountContainerPage(String tag, OperationUiContext ctx) {
         super("account.AccountContainer", tag, ctx);

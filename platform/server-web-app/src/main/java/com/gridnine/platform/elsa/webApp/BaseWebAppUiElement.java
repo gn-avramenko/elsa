@@ -33,18 +33,14 @@ import java.util.Map;
 
 public abstract class BaseWebAppUiElement extends BaseUiElement {
 
-    private final Map<String, Object> initParams = new HashMap<>();
-
     private final Map<String, Object> state = new HashMap<>();
+
+    private Map<String, WebAppValueChangeListener<?>> stateChangeListeners = new HashMap<>();
 
     private boolean initialized;
 
     public BaseWebAppUiElement(String type, String tag, OperationUiContext ctx) {
         super(type, tag, ctx);
-    }
-
-    protected void setInitParam(String key, Object value) {
-        initParams.put(key, value);
     }
 
     @Override
@@ -53,10 +49,20 @@ public abstract class BaseWebAppUiElement extends BaseUiElement {
             var obj =data.getAsJsonObject();
             var pn = WebPeerUtils.getString(obj, "pn");
             var pv = WebPeerUtils.getDynamic(obj, "pv");
-            state.put(pn, WebPeerUtils.getValue(pv));
+            var oldValue = state.get("pn");
+            var newValue = WebPeerUtils.getValue(pv);
+            state.put(pn, newValue);
+            @SuppressWarnings("unchecked") var listener = (WebAppValueChangeListener<Object>) stateChangeListeners.get(pn);
+            if (listener != null) {
+                listener.onValueChange(oldValue, newValue, ctx);
+            }
             return;
         }
         super.processCommand(ctx, commandId, data);
+    }
+
+    protected void setStateChangeListener(String propertyName, WebAppValueChangeListener<?> listener) {
+        stateChangeListeners.put(propertyName, listener);
     }
 
     protected void setProperty(String propertyName, Object value, OperationUiContext context) {
@@ -97,9 +103,6 @@ public abstract class BaseWebAppUiElement extends BaseUiElement {
     @Override
     public JsonObject buildState(OperationUiContext context) {
         var result =  super.buildState(context);
-        for(Map.Entry<String, Object> entry : initParams.entrySet()){
-            WebPeerUtils.addProperty(result, entry.getKey(), entry.getValue());
-        }
         for(Map.Entry<String, Object> entry : state.entrySet()){
             WebPeerUtils.addProperty(result, entry.getKey(), entry.getValue());
         }

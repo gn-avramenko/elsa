@@ -24,13 +24,13 @@ package com.gridnine.platform.elsa.demo.ui.components.test;
 //codegen:header:end
 //codegen:import:start
 import com.google.gson.JsonElement;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.RunnableWithExceptionAndArgument;
 //codegen:import:end
 
 //codegen:class:start
-public class TestStandardEditorTextField extends BaseWebAppUiElement {
+public class TestStandardEditorTextField extends BaseTestWebAppUiElement {
 
     private RunnableWithExceptionAndArgument<OperationUiContext> valueChangeListener;
 

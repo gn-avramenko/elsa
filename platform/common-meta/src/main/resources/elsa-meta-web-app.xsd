@@ -43,17 +43,7 @@
         <complexContent>
             <extension base="common:MetaElementType">
                 <sequence>
-                    <element name="properties-extension" minOccurs="0">
-                        <complexType>
-                            <sequence>
-                                <element name="property" type="common:PropertyType" minOccurs="0"
-                                         maxOccurs="unbounded"/>
-                                <element name="collection" type="common:CollectionType" minOccurs="0"
-                                         maxOccurs="unbounded"/>
-                            </sequence>
-                        </complexType>
-                    </element>
-                    <element name="state-extension" minOccurs="0">
+                    <element name="server-managed-state" minOccurs="0">
                         <complexType>
                             <sequence>
                                 <choice>
@@ -65,7 +55,7 @@
                             </sequence>
                         </complexType>
                     </element>
-                    <element name="additional-commands-from-server" minOccurs="0">
+                    <element name="commands-from-server" minOccurs="0">
                         <complexType>
                             <sequence>
                                 <element name="command" type="tns:CommandType" minOccurs="1"
@@ -73,7 +63,7 @@
                             </sequence>
                         </complexType>
                     </element>
-                    <element name="additional-commands-from-client" minOccurs="0">
+                    <element name="commands-from-client" minOccurs="0">
                         <complexType>
                             <sequence>
                                 <element name="command" type="tns:CommandType" minOccurs="1"
@@ -88,6 +78,7 @@
     </complexType>
     <group name="AllElementsGroup">
         <choice>
+            <element type="tns:ModalType" name="modal"/>
             <element type="tns:ContainerType" name="container"/>
             <element type="tns:ButtonType" name="button"/>
             <element type="tns:SelectType" name="select"/>
@@ -100,12 +91,6 @@
             <element type="tns:CustomType" name="custom"/>
         </choice>
     </group>
-    <simpleType name="ContainerFlexDirection">
-        <restriction base="string">
-            <enumeration value="ROW"/>
-            <enumeration value="COLUMN"/>
-        </restriction>
-    </simpleType>
     <complexType name="CommandType">
         <complexContent>
             <extension base="common:MetaElementType">
@@ -132,8 +117,13 @@
                         </complexType>
                     </element>
                 </sequence>
-                <attribute name="flex-direction" type="tns:ContainerFlexDirection"/>
+                <attribute name="managed-configuration" type="boolean" default="false"/>
             </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="ModalType">
+        <complexContent>
+            <extension base="tns:ContainerType"/>
         </complexContent>
     </complexType>
     <complexType name="RouterType">

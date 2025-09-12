@@ -6,6 +6,7 @@
 package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public enum WebElementType {
+    MODAL,
     CONTAINER,
     BUTTON,
     SELECT,

@@ -22,10 +22,10 @@
 package com.gridnine.platform.elsa.demo.ui.components.test;
 
 import com.google.gson.JsonElement;
-import com.gridnine.platform.elsa.webApp.BaseWebAppUiElement;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class TestMeasurementsChart extends BaseWebAppUiElement {
+public class TestMeasurementsChart extends BaseTestWebAppUiElement {
 
     public TestMeasurementsChart(String tag, TestMeasurementChartConfiguration config, OperationUiContext ctx) {
         super("main.MeasurementsChart", tag, ctx);

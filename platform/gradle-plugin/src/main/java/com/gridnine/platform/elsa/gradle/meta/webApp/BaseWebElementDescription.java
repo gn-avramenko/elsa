@@ -15,9 +15,7 @@ public abstract class BaseWebElementDescription extends BaseElementWithId {
 
     private String className;
 
-    private ElementExtension propertiesExtension;
-
-    private ElementExtension stateExtension;
+    private final WebAppEntity serverManagedState = new  WebAppEntity();
 
     private final List<WebElementCommandDescription> commandsFromServer = new LinkedList<>();
 
@@ -49,19 +47,8 @@ public abstract class BaseWebElementDescription extends BaseElementWithId {
         this.className = className;
     }
 
-    public ElementExtension getPropertiesExtension() {
-        return propertiesExtension;
+    public WebAppEntity getServerManagedState() {
+        return serverManagedState;
     }
 
-    public void setPropertiesExtension(ElementExtension propertiesExtension) {
-        this.propertiesExtension = propertiesExtension;
-    }
-
-    public ElementExtension getStateExtension() {
-        return stateExtension;
-    }
-
-    public void setStateExtension(ElementExtension stateExtension) {
-        this.stateExtension = stateExtension;
-    }
 }
