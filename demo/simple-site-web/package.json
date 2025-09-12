@@ -14,7 +14,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint src src-gen --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "prettier": {
     "trailingComma": "es5",

@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Set;
 
 public class WebWebCommonClassesHelper {
-    public static void generate(File sourceDir, List<File> updatedFiles) throws Exception {
-        copy("component.tsx", sourceDir, updatedFiles);
+    public static void generate(File sourceDir) throws Exception {
+        copy("component.tsx", sourceDir);
 
     }
-    private static void copy(String fileName, File sourceDir, List<File> updatedFiles) throws IOException {
+    private static void copy(String fileName, File sourceDir) throws IOException {
         var file =  new File(sourceDir, "common/%s".formatted(fileName));
         if(!file.exists()){
             if(!file.getParentFile().exists()){
@@ -42,7 +42,6 @@ public class WebWebCommonClassesHelper {
             }
             var content = BuildIoUtils.readText(WebWebCommonClassesHelper.class.getClassLoader().getResource(fileName));
             Files.write(file.toPath(), content.getBytes());
-            updatedFiles.add(file);
         }
     }
 }

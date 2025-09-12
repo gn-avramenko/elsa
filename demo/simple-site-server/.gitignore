@@ -29,3 +29,4 @@ replay_pid*
 /demo/build/
 /demo/out/
 /local-dev/pg-data/
+/local-dev/logs/

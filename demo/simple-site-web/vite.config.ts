@@ -39,6 +39,8 @@ const defineConfig = ({ mode, command }: ConfigEnv): UserConfig => {
                     __dirname,
                     '../../submodules/webpeer/web/core/src/index'
                 ), // Базовый алиас для папки src
+                '@': resolve(__dirname, 'src'),
+                '@g': resolve(__dirname, 'src-gen'),
             },
         },
         css: {

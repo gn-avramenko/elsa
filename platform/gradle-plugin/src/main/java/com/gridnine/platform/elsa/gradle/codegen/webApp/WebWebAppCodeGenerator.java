@@ -25,6 +25,7 @@ import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppElementsHelper;
 import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppEntityHelper;
+import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.WebWebAppElementsHelper;
 import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.WebWebCommonClassesHelper;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
@@ -39,11 +40,6 @@ import java.util.Set;
 
 public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRecord> {
 
-    private final Project project;
-    public WebWebAppCodeGenerator(Project project) {
-        this.project = project;
-    }
-
     @Override
     public void generate(WebWebAppCodeGenRecord record, File destDir, Set<File> generatedFiles, Map<Object, Object> context) throws Exception {
         var parser = new WebAppMetaRegistryParser();
@@ -52,7 +48,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
         var metaRegistry = new WebAppMetaRegistry();
         parser.updateMetaRegistry(metaRegistry, coll);
         var updatedFiles = new ArrayList<File>();
-        WebWebCommonClassesHelper.generate(record.getSourceDir(), updatedFiles);
-        project.getExtensions().getExtraProperties().set("updatedTsFiles", updatedFiles);
+        WebWebCommonClassesHelper.generate(record.getSourceDir());
+        WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), generatedFiles);
     }
 }

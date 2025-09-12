@@ -19,6 +19,9 @@ export const reactWebPeerExt = webpeerExt as ReactWebPeerExtension;
 reactWebPeerExt.elementHandlersFactories = new Map();
 
 export type InputType = 'TEXT_FIELD' | 'SELECT';
+
+export type FlexDirection = 'ROW' | 'COLUMN';
+
 export type ReactElementDescription = {
     state: string[];
     actionsFromServer: string[];
@@ -31,15 +34,13 @@ export abstract class BaseReactUiElement extends BaseUiElement {
 
     counter = 1;
 
-    stateSetters:
-        Map<string, (value?: any) => void> = new Map<
+    stateSetters: Map<string, (value?: any) => void> = new Map<
         string,
         (value?: any) => void
     >();
 
     createReactElement(): React.ReactElement {
-        return
-        React.createElement(this.functionalComponent, {
+        return React.createElement(this.functionalComponent, {
             element: this,
             key: this.id,
         });
@@ -59,7 +60,6 @@ export abstract class BaseReactUiElement extends BaseUiElement {
             this.children = this.children || [];
             this.children.push(elm);
         });
-        description.state.forEach((key) => this.state.set(key, model[key]));
         this.state.set('counter', this.counter);
     }
 

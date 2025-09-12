@@ -130,7 +130,7 @@ public class ElsaCodeGenTask extends DefaultTask {
                 case JAVA_DOMAIN -> new JavaDomainCodeGenerator();
                 case JAVA_CUSTOM -> new JavaCustomCodeGenerator();
                 case JAVA_REMOTING -> new JavaRemotingCodeGenerator();
-                case WEB_WEB_APP -> new WebWebAppCodeGenerator(getProject());
+                case WEB_WEB_APP -> new WebWebAppCodeGenerator();
                 case OPENAPI_REMOTING -> new OpenapiRemotingCodeGenerator();
                 case JAVA_L10N -> new JavaL10nCodeGenerator();
                 case WEB_REMOTING -> new WebRemotingCodeGenerator();

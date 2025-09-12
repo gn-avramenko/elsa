@@ -29,6 +29,9 @@ import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 public class WebCodeGeneratorUtils {
@@ -107,6 +110,7 @@ public class WebCodeGeneratorUtils {
         return ett != null && ett.isAbstract();
     }
 
+
     public static String getType(StandardValueType vt, RemotingMetaRegistry metaRegistry, String className) {
         return switch (vt) {
             case LONG, INT, BIG_DECIMAL -> "number";
@@ -117,7 +121,7 @@ public class WebCodeGeneratorUtils {
                 if("Object".equals(className)){
                     yield  "HasClassName";
                 }
-                if(isAbstract(className, metaRegistry)){
+                if(metaRegistry != null && isAbstract(className, metaRegistry)){
                     yield  "%s & HasClassName".formatted(JavaCodeGeneratorUtils.getSimpleName(className));
                 }
                 yield JavaCodeGeneratorUtils.getSimpleName(className);
@@ -178,5 +182,34 @@ public class WebCodeGeneratorUtils {
         }
         gen.blankLine();
 
+    }
+
+    public static File saveIfDiffers(String content, String fileName, File destDir) throws IOException {
+        var parts = fileName.split("\\.");
+        var currentFile = destDir;
+        var length = parts.length;
+        for (int n = length - 3; n < length - 2; n++) {
+            currentFile = new File(currentFile, parts[n] + "/");
+            assert currentFile.exists() || currentFile.mkdirs();
+        }
+        currentFile = new File(currentFile, parts[parts.length - 2] + "." + parts[parts.length - 1]);
+        if (currentFile.exists()) {
+            var currentContent = Files.readString(currentFile.toPath(), StandardCharsets.UTF_8);
+            if (currentContent.replaceAll("\\W", "").equals(content.replaceAll("\\W", ""))) {
+                return currentFile;
+            }
+        }
+        while (!currentFile.getParentFile().exists()) {
+            try {
+                //noinspection BusyWait
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //noops
+            }
+            //noinspection ResultOfMethodCallIgnored
+            currentFile.getParentFile().mkdirs();
+        }
+        Files.writeString(currentFile.toPath(), content);
+        return currentFile;
     }
 }
