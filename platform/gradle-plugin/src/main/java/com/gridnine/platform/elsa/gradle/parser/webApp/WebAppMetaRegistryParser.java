@@ -46,6 +46,18 @@ public class WebAppMetaRegistryParser {
                 }
             });
         }));
+        {
+            var flexDirectionEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.FlexDirection");
+            {
+                var item = new EnumItemDescription("ROW");
+                flexDirectionEnum.getItems().put(item.getId(), item);
+            }
+            {
+                var item = new EnumItemDescription("COLUMN");
+                flexDirectionEnum.getItems().put(item.getId(), item);
+            }
+            registry.getEnums().put(flexDirectionEnum.getId(), flexDirectionEnum);
+        }
     }
 
     private void processElement(XmlNode child, WebAppMetaRegistry registry) {

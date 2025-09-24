@@ -32,7 +32,10 @@ import java.util.Set;
 public class WebWebCommonClassesHelper {
     public static void generate(File sourceDir) throws Exception {
         copy("component.tsx", sourceDir);
-
+        copy("modal.tsx", sourceDir);
+        copy("styles.css", sourceDir);
+        copy("tabs.tsx", sourceDir);
+        copy("wrapper.tsx", sourceDir);
     }
     private static void copy(String fileName, File sourceDir) throws IOException {
         var file =  new File(sourceDir, "common/%s".formatted(fileName));

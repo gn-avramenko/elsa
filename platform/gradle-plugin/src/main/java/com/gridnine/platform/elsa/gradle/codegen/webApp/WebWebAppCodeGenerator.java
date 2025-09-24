@@ -23,10 +23,9 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
-import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppElementsHelper;
-import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppEntityHelper;
-import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.WebWebAppElementsHelper;
-import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.WebWebCommonClassesHelper;
+import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
+import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.*;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
@@ -47,8 +46,14 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
         coll.addAll(record.getExternalInjections());
         var metaRegistry = new WebAppMetaRegistry();
         parser.updateMetaRegistry(metaRegistry, coll);
-        var updatedFiles = new ArrayList<File>();
         WebWebCommonClassesHelper.generate(record.getSourceDir());
+        for(var item: metaRegistry.getEnums().values()) {
+            var gen = new TypeScriptCodeGenerator();
+            WebCodeGeneratorUtils.generateWebEnumCode(item, gen);
+            var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(item.getId() + ".ts", destDir));
+            generatedFiles.add(file);
+        }
         WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), generatedFiles);
+        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles);
     }
 }

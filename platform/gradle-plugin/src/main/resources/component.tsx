@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import 'styles.css';
 import {
     BaseUiElement,
     PreloaderMiddleware,
@@ -17,10 +18,6 @@ export type ReactWebPeerExtension = WebPeerExtension & {
 export const reactWebPeerExt = webpeerExt as ReactWebPeerExtension;
 
 reactWebPeerExt.elementHandlersFactories = new Map();
-
-export type InputType = 'TEXT_FIELD' | 'SELECT';
-
-export type FlexDirection = 'ROW' | 'COLUMN';
 
 export type ReactElementDescription = {
     state: string[];
@@ -60,6 +57,7 @@ export abstract class BaseReactUiElement extends BaseUiElement {
             this.children = this.children || [];
             this.children.push(elm);
         });
+        description.state.forEach((key) => this.state.set(key, model[key]));
         this.state.set('counter', this.counter);
     }
 

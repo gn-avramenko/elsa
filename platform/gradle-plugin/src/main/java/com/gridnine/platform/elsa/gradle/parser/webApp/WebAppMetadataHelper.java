@@ -44,7 +44,7 @@ public class WebAppMetadataHelper {
                 prop.setType(StandardValueType.ENUM);
                 prop.setNonNullable(true);
                 prop.setId("flexDirection");
-                prop.setClassName("com.gridnine.platform.elsa.webApp.FlexDirection");
+                prop.setClassName("com.gridnine.platform.elsa.webApp.common.FlexDirection");
                 state.getProperties().put(prop.getId(), prop);
             }
             case BUTTON -> {

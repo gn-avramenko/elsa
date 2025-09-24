@@ -26,6 +26,7 @@ import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
@@ -55,7 +56,7 @@ public class WebWebAppElementsHelper {
                     ca.append(BuildTextUtils.joinToString(elm.getCommandsFromServer().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
                     gen.addImport("{BaseReactUiElement} from '@/common/component'");
                     gen.wrapWithBlock("export abstract class %sSkeleton extends BaseReactUiElement".formatted(simpleClassName), () -> {
-                        gen.wrapWithBlock("protected constructor(model: any)", () -> {
+                        gen.wrapWithBlock("constructor(model: any)", () -> {
                             gen.printLine("""
                                     super({
                                        state: [%s],
@@ -86,8 +87,11 @@ public class WebWebAppElementsHelper {
                         }
                     });
 
-                    var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), className + "Skeleton.tsx", destDir);
+                    var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(className + "Skeleton.tsx", destDir));
                     generatedFiles.add(file);
+                }
+                switch (element.getType()) {
+                    case CONTAINER -> WebContainerHelper.generateContainer((ContainerWebElementDescription) element, sourceDir);
                 }
 
             });
@@ -105,9 +109,9 @@ public class WebWebAppElementsHelper {
         return new File(currentFile, parts[parts.length - 1] + ".java");
     }
 
-    private static String getImportName(String className) {
-        if("com.gridnine.platform.elsa.webApp.FlexDirection".equals(className)){
-            return "@/common/component";
+    public static String getImportName(String className) {
+        if("com.gridnine.platform.elsa.webApp.common.FlexDirection".equals(className)){
+            return "@g/common/FlexDirection";
         }
         var parts = className.split("\\.");
         StringBuilder s = new StringBuilder();

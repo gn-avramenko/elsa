@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import 'styles.css';
 import {
     BaseUiElement,
     PreloaderMiddleware,
@@ -18,7 +19,6 @@ export const reactWebPeerExt = webpeerExt as ReactWebPeerExtension;
 
 reactWebPeerExt.elementHandlersFactories = new Map();
 
-export type InputType = 'TEXT_FIELD' | 'SELECT';
 export type ReactElementDescription = {
     state: string[];
     actionsFromServer: string[];

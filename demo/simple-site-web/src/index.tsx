@@ -1,1 +1,1 @@
-import './testComponents/registrations'
+import '../src-gen/registry/RegistryConfigurator';

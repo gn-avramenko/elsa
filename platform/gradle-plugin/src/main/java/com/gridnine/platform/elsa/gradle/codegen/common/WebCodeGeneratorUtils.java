@@ -184,7 +184,7 @@ public class WebCodeGeneratorUtils {
 
     }
 
-    public static File saveIfDiffers(String content, String fileName, File destDir) throws IOException {
+    public static File getFile(String fileName, File destDir){
         var parts = fileName.split("\\.");
         var currentFile = destDir;
         var length = parts.length;
@@ -192,13 +192,10 @@ public class WebCodeGeneratorUtils {
             currentFile = new File(currentFile, parts[n] + "/");
             assert currentFile.exists() || currentFile.mkdirs();
         }
-        currentFile = new File(currentFile, parts[parts.length - 2] + "." + parts[parts.length - 1]);
-        if (currentFile.exists()) {
-            var currentContent = Files.readString(currentFile.toPath(), StandardCharsets.UTF_8);
-            if (currentContent.replaceAll("\\W", "").equals(content.replaceAll("\\W", ""))) {
-                return currentFile;
-            }
-        }
+        return  new File(currentFile, parts[parts.length - 2] + "." + parts[parts.length - 1]);
+    }
+
+    public static File saveIfDiffers(String content, File currentFile) throws IOException {
         while (!currentFile.getParentFile().exists()) {
             try {
                 //noinspection BusyWait
