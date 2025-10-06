@@ -7,8 +7,8 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class RouterWebElementDescription extends BaseWebElementDescription {
 
-    public RouterWebElementDescription(String id, String className) {
-        super(id, className);
+    public RouterWebElementDescription(String className) {
+        super(className);
     }
 
     @Override

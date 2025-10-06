@@ -27,6 +27,7 @@ import com.gridnine.platform.elsa.gradle.meta.common.*;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 public class JavaWebAppEntityHelper {
@@ -38,8 +39,10 @@ public class JavaWebAppEntityHelper {
         var noSerialization = "true".equals(ed.getParameters().get("no-serialization"));
         String implementsId = null;
         if (extendsId == null || "Object".equals(extendsId)) {
-            gen.addImport("com.gridnine.webpeer.core.utils.GsonSerializable");
-            gen.addImport("com.gridnine.platform.elsa.webApp.GsonDeserializable");
+            if(!noSerialization){
+                gen.addImport("com.gridnine.webpeer.core.utils.GsonSerializable");
+                gen.addImport("com.gridnine.platform.elsa.webApp.GsonDeserializable");
+            }
             extendsId = null;
             implementsId = noSerialization? null: "GsonSerializable, GsonDeserializable";
         } else {
@@ -73,7 +76,7 @@ public class JavaWebAppEntityHelper {
                 for (StandardPropertyDescription pd : ed.getProperties().values()) {
                     gen.blankLine();
                     String className = JavaCodeGeneratorUtils.getPropertyType(pd.getType(), pd.getClassName(), pd.isNonNullable(), gen);
-                    gen.wrapWithBlock("public %s %s%s()".formatted(className, className.equals("boolean") ? "is" : "get", BuildTextUtils.capitalize(pd.getId())), () -> gen.printLine("return %s;".formatted(pd.getId())));
+                    gen.wrapWithBlock("public %s %s%s()".formatted(className, pd.getType() ==StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(pd.getId())), () -> gen.printLine("return %s;".formatted(pd.getId())));
                     gen.blankLine();
                     gen.wrapWithBlock("public void set%s(%s value)".formatted(BuildTextUtils.capitalize(pd.getId()), className), () -> gen.printLine("this.%s = value;".formatted(pd.getId())));
                 }
@@ -84,6 +87,35 @@ public class JavaWebAppEntityHelper {
                     gen.wrapWithBlock("public %s<%s> get%s()".formatted(cd.isUnique() ? "Set" : "List", className, BuildTextUtils.capitalize(cd.getId())), () -> gen.printLine("return %s;".formatted(cd.getId())));
                 }
             }
+            {
+                gen.blankLine();
+                gen.printLine("@Override");
+                gen.wrapWithBlock("public boolean equals(Object other)", ()->{
+                    gen.wrapWithBlock("if(!(other instanceof %s))".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())), ()->{
+                        gen.printLine("return false;");
+                    });
+                    gen.printLine("var casted = (%s) other;".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())));
+                    for (StandardPropertyDescription pd : ed.getProperties().values()) {
+                        gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                        gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(pd.getId(), pd.getId()), ()->{
+                            gen.printLine("return false;");
+                        });
+                    }
+                    for (var coll : ed.getCollections().values()) {
+                        gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                        gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(coll.getId(), coll.getId()), ()->{
+                            gen.printLine("return false;");
+                        });
+                    }
+                    gen.printLine("return true;");
+                });
+            }
+            {
+                gen.blankLine();
+                gen.printLine("@Override");
+                gen.wrapWithBlock("public int hashCode()", ()-> gen.printLine("return super.hashCode();"));
+            }
+
             if(!noSerialization) {
                 {
                     gen.blankLine();

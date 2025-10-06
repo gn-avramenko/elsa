@@ -7,8 +7,8 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class ModalWebElementDescription extends BaseWebElementDescription {
 
-    public ModalWebElementDescription(String id, String className) {
-        super(id, className);
+    public ModalWebElementDescription(String className) {
+        super(className);
     }
 
     @Override

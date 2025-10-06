@@ -43,6 +43,7 @@
             <option value="$PROJECT_DIR$/submodules/webpeer/web/core" />
           </set>
         </option>
+        <option name="resolveExternalAnnotations" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

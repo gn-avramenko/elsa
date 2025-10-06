@@ -14,8 +14,8 @@ public class TableWebElementDescription extends BaseWebElementDescription {
 
     private final List<TableDataFieldDescription> dataFields = new ArrayList<>();
 
-    public TableWebElementDescription(String id, String className) {
-        super(id, className);
+    public TableWebElementDescription(String className) {
+        super(className);
     }
 
     public void setColumnDescriptionExtension(WebAppEntity columnDescriptionExtension) {

@@ -169,20 +169,6 @@ button[disabled]{
     width: calc(100% - 30px);
     align-items: flex-start;
 }
-.webpeer-inputs-label{
-    flex-grow: 0;
-}
-.webpeer-inputs-control{
-    flex-grow: 1;
-}
-
-.webpeer-inputs-container{
-    display: flex;
-    margin: 5px;
-    flex-direction: row;
-    width: calc(100% - 30px);
-    align-items: flex-start;
-}
 
 .webpeer-action-textarea{
     flex-grow: 1;

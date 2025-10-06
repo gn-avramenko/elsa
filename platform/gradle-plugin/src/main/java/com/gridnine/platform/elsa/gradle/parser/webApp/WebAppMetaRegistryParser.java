@@ -58,65 +58,98 @@ public class WebAppMetaRegistryParser {
             }
             registry.getEnums().put(flexDirectionEnum.getId(), flexDirectionEnum);
         }
+        {
+            var optionEntity = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Option");
+            {
+                var item = new StandardPropertyDescription("id");
+                item.setType(StandardValueType.STRING);
+                optionEntity.getProperties().put(item.getId(), item);
+            }
+            {
+                var item = new StandardPropertyDescription("displayName");
+                item.setType(StandardValueType.STRING);
+                optionEntity.getProperties().put(item.getId(), item);
+            }
+            registry.getEntities().put(optionEntity.getId(), optionEntity);
+        }
     }
 
-    private void processElement(XmlNode child, WebAppMetaRegistry registry) {
+    private BaseWebElementDescription processElement(XmlNode child, WebAppMetaRegistry registry) {
         String tagName = child.getName();
         String className = child.getAttribute("class-name");
-        String id = child.getAttribute("id");
-        var dd = registry.getElements().computeIfAbsent(className,
-                (cl) -> {
-                    return switch (tagName) {
-                        case "modal" -> new ModalWebElementDescription(id, cl);
-                        case "container" -> new ContainerWebElementDescription(id, cl);
-                        case "button" -> new ButtonWebElementDescription(id, cl);
-                        case "select" -> new SelectWebElementDescription(id, cl);
-                        case "router" -> new RouterWebElementDescription(id, cl);
-                        case "text-area" -> new TextAreaWebElementDescription(id, cl);
-                        case "text-field" -> new TextFieldWebElementDescription(id, cl);
-                        case "autocomplete" -> new AutocompleteWebElementDescription(id, cl);
-                        case "label" -> new LabelWebElementDescription(id, cl);
-                        case "custom" -> new CustomWebElementDescription(id, cl);
-                        default -> throw new IllegalArgumentException("unsupported tag name " + tagName);
-                    };
-                });
-        updateBaseProperties(dd, child);
-        switch (dd.getType()) {
-            case MODAL -> {
-                ModalWebElementDescription cc = (ModalWebElementDescription) dd;
-                var children = child.getFirstChild("children");
-                if (children != null) {
-                    processElement(children, registry);
-                }
-            }
-            case CONTAINER -> {
-                ContainerWebElementDescription cc = (ContainerWebElementDescription) dd;
-                var children = child.getFirstChild("children");
-                if (children != null) {
-                    processElement(children, registry);
-                }
-            }
-            case BUTTON, SELECT, ROUTER, TEXT_AREA, TEXT_FIELD, AUTOCOMPLETE, LABEL, CUSTOM -> {
-                //noops
-            }
-            case TABLE -> {
-                TableWebElementDescription td = (TableWebElementDescription) dd;
-                td.setColumnDescriptionExtension(getElementExtension(child.getFirstChild("column-description-extension")));
-            }
-
+        if(registry.getElements().containsKey(className)){
+            return registry.getElements().get(className);
         }
-        var ce = WebAppMetadataHelper.extendWithStandardProperties(dd);
-        {
-            var cn = "%sConfiguration".formatted(ce.getClassName());
-            var ed = registry.getEntities().computeIfAbsent(cn, EntityDescription::new);
-            ed.getParameters().put("no-serialization", "true");
-            ed.getProperties().putAll(ce.getServerManagedState().getProperties());
-            ed.getCollections().putAll(ce.getServerManagedState().getCollections());
-        }
+        var elm = switch (tagName){
+            case "modal" -> {
+                var result = new ModalWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "container" -> {
+                var result = new ContainerWebElementDescription(className);
+                updateBaseProperties(result, child);
+                var children = child.getFirstChild("children");
+                if(children != null){
+                    children.getChildren().forEach(it -> {
+                        result.getChildren().put(CommonParserUtils.getIdAttribute(it), processElement(it, registry));
+                    });
+                }
+                yield result;
+            }
+            case "button" -> {
+                var result = new ButtonWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "select" -> {
+                var result = new SelectWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "router" -> {
+                var result = new RouterWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "text-area" -> {
+                var result = new TextAreaWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "text-field" -> {
+                var result = new TextFieldWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "table" -> {
+                var result = new TableWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "autocomplete" -> {
+                var result = new AutocompleteWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "label" -> {
+                var result = new LabelWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            case "custom" -> {
+                var result = new CustomWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
+            default -> throw new IllegalArgumentException("unsupported tag name " + tagName);
+        };
+        registry.getElements().put(className, elm);
+        return elm;
     }
 
     private void updateBaseProperties(BaseWebElementDescription dd, XmlNode child) {
-        var state = getElementExtension(child.getFirstChild("server-manages-state"));
+        var state = getElementExtension(child.getFirstChild("server-managed-state"));
         if(state != null) {
             dd.getServerManagedState().getProperties().putAll(state.getProperties());
             dd.getServerManagedState().getCollections().putAll(state.getCollections());

@@ -7,11 +7,13 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 import com.gridnine.platform.elsa.gradle.meta.common.BaseElementWithId;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
-public abstract class BaseWebElementDescription extends BaseElementWithId {
+public abstract class BaseWebElementDescription {
 
     private String className;
 
@@ -21,13 +23,14 @@ public abstract class BaseWebElementDescription extends BaseElementWithId {
 
     private final List<WebElementCommandDescription> commandsFromClient = new LinkedList<>();
 
+    private final Map<String, InputDescription> inputs = new LinkedHashMap<>();
+
     public abstract WebElementType getType();
 
     public BaseWebElementDescription() {
     }
 
-    public BaseWebElementDescription(String id, String className) {
-        super(id);
+    public BaseWebElementDescription(String className) {
         this.className = className;
     }
 
@@ -51,4 +54,7 @@ public abstract class BaseWebElementDescription extends BaseElementWithId {
         return serverManagedState;
     }
 
+    public Map<String, InputDescription> getInputs() {
+        return inputs;
+    }
 }

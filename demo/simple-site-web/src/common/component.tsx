@@ -18,10 +18,17 @@ export const reactWebPeerExt = webpeerExt as ReactWebPeerExtension;
 
 reactWebPeerExt.elementHandlersFactories = new Map();
 
+export type InputType = 'SELECT' | 'TEXT_FIELD';
+
+export type InputDescription = {
+    inputType: InputType;
+    id: string;
+};
+
 export type ReactElementDescription = {
     state: string[];
-    actionsFromServer: string[];
     actionsFromClient: string[];
+    inputs: InputDescription[];
 };
 export abstract class BaseReactUiElement extends BaseUiElement {
     readonly description: ReactElementDescription;

@@ -32,10 +32,7 @@ import java.nio.file.Files;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JavaCodeGeneratorUtils {
 
@@ -462,6 +459,25 @@ public class JavaCodeGeneratorUtils {
             case BOOLEAN -> noNullable ? "boolean" : "Boolean";
             case BYTE_ARRAY -> "byte[]";
             case ENUM, ENTITY -> {
+                if(className.contains("<")){
+                    int idx = className.indexOf("<");
+                    var cl1 = className.substring(0, idx);
+                    gen.addImport(cl1);
+                    var cl2 = className.substring(idx + 1, className.length()-1);
+                    if(cl2.contains("<")){
+                        var idx2 = cl2.indexOf("<");
+                        var cl22 = cl2.substring(0, idx2);
+                        gen.addImport(cl22);
+                        var cl3 = cl2.substring(idx2 + 1, cl2.length()-1);
+                        if(cl3.contains(".")) {
+                            gen.addImport(cl3);
+                        }
+                        yield "%s<%s<%s>>".formatted(getSimpleName(cl1), getSimpleName(cl22), getSimpleName(cl3));
+                    } else if(cl2.contains(".")) {
+                        gen.addImport(cl2);
+                    }
+                    yield "%s<%s>".formatted(getSimpleName(cl1), getSimpleName(cl2));
+                }
                 var pk = getPackage(className);
                 if (!gen.getPackageName().equals(pk) && !"Object".equals(className)) {
                     gen.addImport(className);

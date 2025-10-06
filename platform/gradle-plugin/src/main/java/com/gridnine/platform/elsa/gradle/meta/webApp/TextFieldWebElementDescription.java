@@ -6,8 +6,8 @@
 package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class TextFieldWebElementDescription extends BaseWebElementDescription {
-    public TextFieldWebElementDescription(String id, String className) {
-        super(id, className);
+    public TextFieldWebElementDescription(String className) {
+        super(className);
     }
     @Override
     public WebElementType getType() {

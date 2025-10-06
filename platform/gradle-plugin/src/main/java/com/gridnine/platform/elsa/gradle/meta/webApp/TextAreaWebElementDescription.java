@@ -7,8 +7,8 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class TextAreaWebElementDescription extends BaseWebElementDescription {
 
-    public TextAreaWebElementDescription(String id, String className) {
-        super(id, className);
+    public TextAreaWebElementDescription(String className) {
+        super(className);
     }
 
     @Override

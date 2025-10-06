@@ -7,7 +7,7 @@
         <complexType>
             <sequence>
                 <choice maxOccurs="unbounded" minOccurs="0">
-                    <group ref="tns:AllElementsGroup"/>
+                    <group ref="tns:AllRootElementsGroup"/>
                     <element name="enum">
                         <complexType>
                             <complexContent>
@@ -71,10 +71,51 @@
                             </sequence>
                         </complexType>
                     </element>
+                    <element name="inputs" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="input" type="tns:InputType" minOccurs="1"
+                                         maxOccurs="unbounded"/>
+                            </sequence>
+                        </complexType>
+                    </element>
                 </sequence>
                 <attribute name="class-name" type="string" use="required"/>
             </extension>
         </complexContent>
+    </complexType>
+    <complexType name="BaseRootElementType">
+        <sequence>
+            <element name="server-managed-state" minOccurs="0">
+                <complexType>
+                    <sequence>
+                        <choice>
+                            <element name="property" type="common:PropertyType" minOccurs="0"
+                                     maxOccurs="unbounded"/>
+                            <element name="collection" type="common:CollectionType" minOccurs="0"
+                                     maxOccurs="unbounded"/>
+                        </choice>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="commands-from-server" minOccurs="0">
+                <complexType>
+                    <sequence>
+                        <element name="command" type="tns:CommandType" minOccurs="1"
+                                 maxOccurs="unbounded"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="commands-from-client" minOccurs="0">
+                <complexType>
+                    <sequence>
+                        <element name="command" type="tns:CommandType" minOccurs="1"
+                                 maxOccurs="unbounded"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </sequence>
+        <attribute name="class-name" type="string" use="required"/>
     </complexType>
     <group name="AllElementsGroup">
         <choice>
@@ -91,6 +132,46 @@
             <element type="tns:CustomType" name="custom"/>
         </choice>
     </group>
+    <group name="AllRootElementsGroup">
+        <choice>
+            <element type="tns:RootModalType" name="modal"/>
+            <element type="tns:RootContainerType" name="container"/>
+        </choice>
+    </group>
+    <complexType name="InputType">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <sequence>
+                    <element name="state" minOccurs="0" maxOccurs="1">
+                        <complexType>
+                            <sequence>
+                                <choice>
+                                    <element name="property" type="common:PropertyType" minOccurs="0"
+                                             maxOccurs="unbounded"/>
+                                    <element name="collection" type="common:CollectionType" minOccurs="0"
+                                             maxOccurs="unbounded"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="value" minOccurs="0" maxOccurs="1">
+                        <complexType>
+                            <sequence>
+                                <choice>
+                                    <element name="property" type="common:PropertyType" minOccurs="0"
+                                             maxOccurs="unbounded"/>
+                                    <element name="collection" type="common:CollectionType" minOccurs="0"
+                                             maxOccurs="unbounded"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="type" type="tns:InputType" use="required"/>
+                <attribute name="class-name" type="string"/>
+            </extension>
+        </complexContent>
+    </complexType>
     <complexType name="CommandType">
         <complexContent>
             <extension base="common:MetaElementType">
@@ -99,6 +180,23 @@
                         <element name="property" type="common:PropertyType"/>
                         <element name="collection" type="common:CollectionType"/>
                     </choice>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="RootContainerType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType">
+                <sequence minOccurs="0">
+                    <element name="children">
+                        <complexType>
+                            <sequence>
+                                <choice>
+                                    <group ref="tns:AllElementsGroup"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
                 </sequence>
             </extension>
         </complexContent>
@@ -124,6 +222,11 @@
     <complexType name="ModalType">
         <complexContent>
             <extension base="tns:ContainerType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="RootModalType">
+        <complexContent>
+            <extension base="tns:RootContainerType"/>
         </complexContent>
     </complexType>
     <complexType name="RouterType">
@@ -196,4 +299,11 @@
             <extension base="tns:BaseElementType"/>
         </complexContent>
     </complexType>
+    <simpleType name="InputType">
+        <restriction base="string">
+            <enumeration value="TEXT_FIELD"/>
+            <enumeration value="SELECT"/>
+            <enumeration value="AUTOCOMPLETE"/>
+        </restriction>
+    </simpleType>
 </schema>

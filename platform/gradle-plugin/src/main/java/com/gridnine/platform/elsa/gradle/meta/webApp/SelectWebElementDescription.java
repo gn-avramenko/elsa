@@ -6,8 +6,8 @@
 package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class SelectWebElementDescription extends BaseWebElementDescription {
-    public SelectWebElementDescription(String id, String className) {
-        super(id, className);
+    public SelectWebElementDescription(String className) {
+        super(className);
     }
     @Override
     public WebElementType getType() {

@@ -7,8 +7,8 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class ButtonWebElementDescription extends BaseWebElementDescription {
 
-    public ButtonWebElementDescription(String id, String className) {
-        super(id, className);
+    public ButtonWebElementDescription(String className) {
+        super(className);
     }
 
     @Override

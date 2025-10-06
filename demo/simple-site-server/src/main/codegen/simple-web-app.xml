@@ -4,7 +4,20 @@
         <property id="dayNumber" type="INT" non-nullable="true"/>
         <property id="value" type="BIG_DECIMAL" non-nullable="true"/>
     </entity>
-    <container id="webApp" class-name="com.gridnine.platform.elsa.demo.ui.app.WebApp">
-
+    <container class-name="com.gridnine.platform.elsa.demo.ui.app.WebApp">
+        <children>
+            <container id="navigation" class-name="com.gridnine.platform.elsa.demo.ui.app.NavigationPanel">
+                <children>
+                    <button id="mainLink" class-name="com.gridnine.platform.elsa.demo.ui.app.StandardLink"/>
+                    <button id="historyLink" class-name="com.gridnine.platform.elsa.demo.ui.app.StandardLink"/>
+                    <button id="accountLink" class-name="com.gridnine.platform.elsa.demo.ui.app.AccountLink">
+                        <server-managed-state>
+                            <property id="loggedIn" type="BOOLEAN"/>
+                        </server-managed-state>
+                    </button>
+                    <select id="languageSelector" class-name="com.gridnine.platform.elsa.demo.ui.app.LanguageSelector"/>
+                </children>
+            </container>
+        </children>
     </container>
 </web-app>

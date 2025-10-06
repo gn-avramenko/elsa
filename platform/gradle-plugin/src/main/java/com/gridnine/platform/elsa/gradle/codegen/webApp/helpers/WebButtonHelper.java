@@ -23,14 +23,14 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.webApp.ButtonWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
-public class WebContainerHelper {
-    public static void generateContainer(ContainerWebElementDescription descr, File destDir) throws IOException {
+public class WebButtonHelper {
+    public static void generateButton(ButtonWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
         var skeletonImport = WebWebAppElementsHelper.getImportName(descr.getClassName()+"Skeleton");
@@ -43,31 +43,18 @@ public class WebContainerHelper {
                 function %s(props: { element: %s }) {
                     return (
                         <WebComponentWrapper element={props.element}>
-                            <div
-                                className="webpeer-container-content"
-                                key="content"
-                                style={{
-                                    display: 'flex',
-                                    flexDirection:
-                                        props.element.getFlexDirection() === 'ROW' ? 'row' : 'column',
-                                }}
-                            >
-                                {(props.element.children || []).map((it) => {
-                                    if (props.element.getProcessedChildren().indexOf(it.id) === -1) {
-                                        return (it as BaseReactUiElement).createReactElement();
-                                    }
-                                    return null;
-                                })}
-                            </div>
+                             <button
+                                                  className="webpeer-button"
+                                                  onClick={() => props.element.sendClick()}
+                                              >
+                                                  {props.element.getTitle()}
+                                              </button>
                         </WebComponentWrapper>
                     );
                 }
                 
                 export class %s extends %s {
                     functionalComponent = %s;
-                    getProcessedChildren(): string[] {
-                        return [];
-                    }
                 }
                 """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);

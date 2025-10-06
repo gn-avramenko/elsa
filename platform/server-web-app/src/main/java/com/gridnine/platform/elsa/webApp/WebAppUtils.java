@@ -34,9 +34,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class WebAppUtils {
     public static JsonElement toJsonValue(List<?> value, StandardValueType elementType) {
@@ -90,6 +88,18 @@ public class WebAppUtils {
             }
         }
         throw Xeption.forDeveloper("unsupported type %s".formatted(type));
+    }
+    public static<T> List<T> fromJsonArrayValue(JsonElement value, StandardValueType type, String className, Class<T> cls) throws Exception {
+        if(value == null || value.isJsonNull()){
+            return List.of();
+        }
+        var arr = value.getAsJsonArray();
+        var result = new ArrayList<T>();
+        for(var elm: arr){
+            var item = fromJsonValue(elm, type, className, cls);
+            result.add(item);
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -148,5 +158,25 @@ public class WebAppUtils {
 
     public static BaseUiElement findChildByTag(BaseUiElement element, String tag){
         return  element.getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals(tag)).findFirst().orElse(null);
+    }
+
+    public static boolean equals(Object a, Object b) {
+        if(a instanceof List<?> lst){
+            if(!(b instanceof List<?>)){
+                return false;
+            }
+            var lst1 = (List<?>) a;
+            var lst2 = (List<?>) b;
+            if(lst1.size() != lst2.size()){
+                return false;
+            }
+            for(int i = 0; i < lst1.size(); i++){
+                if(!Objects.equals(lst1.get(i), lst2.get(i))){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return Objects.equals(a, b);
     }
 }

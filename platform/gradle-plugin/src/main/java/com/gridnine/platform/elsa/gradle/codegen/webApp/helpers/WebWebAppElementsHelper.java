@@ -26,6 +26,7 @@ import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.webApp.ButtonWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
@@ -40,7 +41,7 @@ public class WebWebAppElementsHelper {
     public static void generate(WebAppMetaRegistry registry, File destDir, File sourceDir, Set<File> generatedFiles) throws Exception {
         registry.getElements().values().forEach(element -> {
             BuildExceptionUtils.wrapException(() -> {
-                var elm = WebAppMetadataHelper.extendWithStandardProperties(element);
+                var elm = WebAppMetadataHelper.toCustomEntity(element);
                 {
                     var className = elm.getClassName();
                     var simpleClassName = JavaCodeGeneratorUtils.getSimpleName(className);
@@ -53,7 +54,7 @@ public class WebWebAppElementsHelper {
                     var sa = new StringBuilder();
                     sa.append(BuildTextUtils.joinToString(elm.getCommandsFromServer().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
                     var ca = new StringBuilder();
-                    ca.append(BuildTextUtils.joinToString(elm.getCommandsFromServer().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
+                    ca.append(BuildTextUtils.joinToString(elm.getCommandsFromClient().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
                     gen.addImport("{BaseReactUiElement} from '@/common/component'");
                     gen.wrapWithBlock("export abstract class %sSkeleton extends BaseReactUiElement".formatted(simpleClassName), () -> {
                         gen.wrapWithBlock("constructor(model: any)", () -> {
@@ -85,6 +86,14 @@ public class WebWebAppElementsHelper {
                                         getType(coll.getElementType(), registry, coll.getElementClassName(), gen)));
                             });
                         }
+                        for(var action: elm.getCommandsFromClient()){
+                            if(action.getCollections().isEmpty() && action.getProperties().isEmpty()){
+                                gen.wrapWithBlock("async send%s()".formatted(BuildTextUtils.capitalize(action.getId())), ()->{
+                                    gen.printLine("await this.sendCommand('%s');".formatted(action.getId()));
+                                });
+                            }
+
+                        }
                     });
 
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(className + "Skeleton.tsx", destDir));
@@ -92,6 +101,7 @@ public class WebWebAppElementsHelper {
                 }
                 switch (element.getType()) {
                     case CONTAINER -> WebContainerHelper.generateContainer((ContainerWebElementDescription) element, sourceDir);
+                    case BUTTON -> WebButtonHelper.generateButton((ButtonWebElementDescription) element, sourceDir);
                 }
 
             });

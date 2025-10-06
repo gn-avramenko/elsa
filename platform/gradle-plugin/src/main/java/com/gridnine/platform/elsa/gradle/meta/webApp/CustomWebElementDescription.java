@@ -7,8 +7,8 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class CustomWebElementDescription extends BaseWebElementDescription {
 
-    public CustomWebElementDescription(String id, String className) {
-        super(id, className);
+    public CustomWebElementDescription(String className) {
+        super(className);
     }
 
     @Override

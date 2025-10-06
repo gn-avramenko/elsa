@@ -7,8 +7,8 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public class LabelWebElementDescription extends BaseWebElementDescription {
 
-    public LabelWebElementDescription(String id, String className) {
-        super(id, className);
+    public LabelWebElementDescription(String className) {
+        super(className);
     }
 
     @Override

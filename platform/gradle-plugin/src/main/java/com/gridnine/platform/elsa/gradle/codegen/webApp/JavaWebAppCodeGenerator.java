@@ -27,13 +27,14 @@ import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppElemen
 import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppEntityHelper;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.StandardPropertyDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetaRegistryParser;
+import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JavaWebAppCodeGenerator implements CodeGenerator<JavaWebAppCodeGenRecord> {
 
@@ -48,6 +49,10 @@ public class JavaWebAppCodeGenerator implements CodeGenerator<JavaWebAppCodeGenR
             JavaCodeGeneratorUtils.generateJavaEnumCode(ed, destDir, generatedFiles);
         }
         for (EntityDescription ed : metaRegistry.getEntities().values()) {
+            JavaWebAppEntityHelper.generateJavaEntityCode(ed, destDir, generatedFiles);
+        }
+        for(var elm: metaRegistry.getElements().values()){
+            var ed = WebAppMetadataHelper.getConfigurationDescription(elm);
             JavaWebAppEntityHelper.generateJavaEntityCode(ed, destDir, generatedFiles);
         }
         JavaWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), generatedFiles);
