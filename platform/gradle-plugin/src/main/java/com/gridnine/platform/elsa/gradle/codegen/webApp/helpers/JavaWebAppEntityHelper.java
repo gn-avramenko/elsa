@@ -144,10 +144,10 @@ public class JavaWebAppEntityHelper {
                                 gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
                                 gen.addImport("com.google.gson.JsonArray");
                                 gen.printLine("var coll = new JsonArray();");
-                                gen.wrapWithBlock("for(var elm: %s)", () -> {
-                                    gen.printLine("coll.add(WebAppUtils.toJsonValue(%s,  StandardValueType.%s));".formatted(cd.getId(), cd.getElementType().name()));
+                                gen.wrapWithBlock("for(var elm: %s)".formatted(cd.getId()), () -> {
+                                    gen.printLine("coll.add(WebAppUtils.toJsonValue(elm,  StandardValueType.%s));".formatted(cd.getElementType().name()));
                                 });
-                                gen.printLine("obj.add(\"%s\", coll)".formatted(cd.getId()));
+                                gen.printLine("obj.add(\"%s\", coll);".formatted(cd.getId()));
                             });
                         }
                         gen.printLine("return obj;");
@@ -167,11 +167,11 @@ public class JavaWebAppEntityHelper {
                             for (StandardCollectionDescription cd : ed.getCollections().values()) {
                                 gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                 gen.printLine("%s.clear();".formatted(cd.getId()));
-                                gen.wrapWithBlock("if(obj.has\"%s\"))".formatted(cd.getId()), () -> {
+                                gen.wrapWithBlock("if(obj.has(\"%s\"))".formatted(cd.getId()), () -> {
                                     gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                     gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
-                                    gen.wrapWithBlock("for(var elm : %s.getAsJsonArray())".formatted(cd.getId()), () -> {
-                                        gen.printLine("%s.add(WebAppUtils.fromJsonValue(obj.get(%s), StandardValueType.%s, %s, %s.class));".formatted(cd.getId(), cd.getId(), cd.getElementType().name(), cd.getElementClassName() == null ? "null" : "\"%s\"".formatted(cd.getElementClassName()), JavaCodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen)));
+                                    gen.wrapWithBlock("for(var elm : obj.get(\"%s\").getAsJsonArray())".formatted(cd.getId()), () -> {
+                                        gen.printLine("%s.add(WebAppUtils.fromJsonValue(elm, StandardValueType.%s, %s, %s.class));".formatted(cd.getId(), cd.getElementType().name(), cd.getElementClassName() == null ? "null" : "\"%s\"".formatted(cd.getElementClassName()), JavaCodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen)));
                                     });
                                 });
                             }

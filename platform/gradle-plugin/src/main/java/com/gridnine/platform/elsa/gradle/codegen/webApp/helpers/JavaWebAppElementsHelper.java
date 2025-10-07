@@ -21,7 +21,6 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
-import com.gridnine.platform.elsa.gradle.codegen.common.GenEntityDescription;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
@@ -34,7 +33,6 @@ import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -52,54 +50,31 @@ public class JavaWebAppElementsHelper {
                     default -> true;
                 };
                 {
-                    var fields = new ArrayList<Property>();
+                    var fields = new ArrayList<Field>();
                     if (element instanceof WebElementWithChildren ctr) {
                         for (var entry : ctr.getChildren().entrySet()) {
                             var child = entry.getValue();
-                            fields.add(new Property(entry.getKey(), StandardValueType.ENTITY, child.getClassName(), false,  WebAppMetadataHelper.isManagedConfiguration(child)? PropertyType.MANAGED_CHILD: PropertyType.CHILD));
+                            fields.add(new Field(entry.getKey(), StandardValueType.ENTITY, child.getClassName(), false,  WebAppMetadataHelper.isManagedConfiguration(child)? FieldType.MANAGED_CHILD: FieldType.CHILD, true));
                         }
                     }
                     for (var command : elm.getCommandsFromClient()) {
                         if (command.getCollections().isEmpty() && command.getProperties().isEmpty()) {
-                            fields.add(new Property("%sListener".formatted(command.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument<com.gridnine.webpeer.core.ui.OperationUiContext>", false, PropertyType.COMMAND_FROM_CLIENT));
+                            fields.add(new Field("%sListener".formatted(command.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument<com.gridnine.webpeer.core.ui.OperationUiContext>", false, FieldType.COMMAND_FROM_CLIENT, false));
                         }
                     }
                     for (var property : elm.getServerManagedState().getProperties().values()) {
-                        fields.add(new Property(property.getId(), property.getType(), property.getClassName(), false, PropertyType.STANDARD));
+                        fields.add(new Field(property.getId(), property.getType(), property.getClassName(), false, FieldType.STANDARD, property.isNonNullable()));
                     }
 
                     for (var coll : elm.getServerManagedState().getCollections().values()) {
-                        fields.add(new Property(coll.getId(), coll.getElementType(), coll.getId(), true, PropertyType.STANDARD));
+                        fields.add(new Field(coll.getId(), coll.getElementType(), coll.getElementClassName(), true, FieldType.STANDARD, true));
                     }
-                    if(elm.getInputs().size() == 1 ){
-                        var value = elm.getInputs().entrySet().iterator().next().getValue();
-                        if (value.getSettings() != null) {
-                            if(value.getSettings().getCollections().size() + value.getSettings().getProperties().size() == 1) {
-                                for (var property : value.getSettings().getProperties().values()) {
-                                    fields.add(new Property(property.getId(), property.getType(), property.getClassName(), false, PropertyType.STANDARD));
-                                }
-                                for (var coll : value.getSettings().getCollections().values()) {
-                                    fields.add(new Property(coll.getId(), coll.getElementType(), coll.getElementClassName(), true, PropertyType.STANDARD));
-                                }
-                            }
-                        }
-                        if (value.getValue() != null) {
-                            if(value.getValue().getCollections().size() + value.getValue().getProperties().size() == 1) {
-                                for (var property : value.getValue().getProperties().values()) {
-                                    fields.add(new Property(property.getId(), property.getType(), property.getClassName(), false, PropertyType.INPUT));
-                                    fields.add(new Property("%sChangeListener".formatted(property.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(WebAppMetadataHelper.getPropertyType(property.getType(), property.getClassName())), false, PropertyType.INPUT_CHANGE_LISTENER));
-                                    fields.add(new Property("has%sChangeListener".formatted(BuildTextUtils.capitalize(property.getId())), StandardValueType.BOOLEAN, null, false, PropertyType.INPUT_HAS_CHANGE_LISTENER));
-                                }
-                                for (var coll : value.getValue().getCollections().values()) {
-                                    fields.add(new Property(coll.getId(), coll.getElementType(), coll.getId(), true, PropertyType.INPUT));
-                                    fields.add(new Property("%sChangeListener".formatted(coll.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<java.util.List<%s>>".formatted(WebAppMetadataHelper.getPropertyType(coll.getElementType(), coll.getElementClassName())), false, PropertyType.INPUT_CHANGE_LISTENER));
-                                    fields.add(new Property("has%sChangeListener".formatted(BuildTextUtils.capitalize(coll.getId())), StandardValueType.BOOLEAN, null, false, PropertyType.INPUT_HAS_CHANGE_LISTENER));
-                                }
-                            }
-                        }
+                    if(elm.getInput() != null){
+                        var valueClassName = "%sInputValue".formatted(elm.getClassName());
+                        fields.add(new Field("value", StandardValueType.ENTITY, valueClassName, false, FieldType.INPUT, false));
+                        fields.add(new Field("valueChangeListener", StandardValueType.ENTITY, "com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(valueClassName), false, FieldType.INPUT_CHANGE_LISTENER, false));
+                        fields.add(new Field("hasValueChangeListener", StandardValueType.BOOLEAN, null, false, FieldType.INPUT_HAS_CHANGE_LISTENER, true));
                     }
-
-
                     var className = elm.getClassName();
                     var simpleClassName = JavaCodeGeneratorUtils.getSimpleName(className);
                     var gen = new JavaCodeGenerator();
@@ -121,12 +96,12 @@ public class JavaWebAppElementsHelper {
                                         gen.addImport("java.util.ArrayList");
                                         gen.printLine("private List<%s> %s = new ArrayList<>();".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen), field.id));
                                     } else {
-                                        gen.printLine("private %s %s;".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, true, gen), field.id));
+                                        gen.printLine("private %s %s;".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.id));
                                     }
                                 }
 
                                 case MANAGED_CHILD,CHILD->{
-                                    gen.printLine("private final %s %s;".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, true, gen), field.id));
+                                    gen.printLine("private final %s %s;".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.id));
                                 }
                             }
                         }
@@ -159,13 +134,14 @@ public class JavaWebAppElementsHelper {
                             }
                         });
                         for(var field: fields) {
-                            if(field.type == PropertyType.INPUT_HAS_CHANGE_LISTENER){
+                            if(field.type == FieldType.INPUT_HAS_CHANGE_LISTENER){
                                 continue;
                             }
                             if(field.collection){
                                 switch (field.type) {
                                     case INPUT -> {
                                         gen.blankLine();
+                                        gen.addImport("java.util.List");
                                         gen.wrapWithBlock("public List<%s> get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen), BuildTextUtils.capitalize(field.id)), () -> {
                                             gen.printLine("return (List<%s>) state.get(\"%s\");".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen), field.id));
                                         });
@@ -190,11 +166,12 @@ public class JavaWebAppElementsHelper {
                                     }
                                     default -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public List<%s> get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen), BuildTextUtils.capitalize(field.id)), () -> {
-                                            gen.printLine("return (List<%s>) state.get(\"%s\");".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen), field.id));
+                                        gen.addImport("java.util.List");
+                                        gen.wrapWithBlock("public List<%s> get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), BuildTextUtils.capitalize(field.id)), () -> {
+                                            gen.printLine("return (List<%s>) state.get(\"%s\");".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.id));
                                         });
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public void set%s(List<%s> value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen)), () -> {
+                                        gen.wrapWithBlock("public void set%s(List<%s> value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
                                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                             gen.wrapWithBlock("if(WebAppUtils.equals(value, state.get(\"%s\")))".formatted(field.id), ()->{
                                                 gen.printLine("return;");
@@ -219,21 +196,21 @@ public class JavaWebAppElementsHelper {
                                 switch (field.type) {
                                     case COMMAND_FROM_CLIENT -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, true, gen), field.valueType == StandardValueType.BOOLEAN? "is":"get", BuildTextUtils.capitalize(field.id)), () -> {
+                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.valueType == StandardValueType.BOOLEAN? "is":"get", BuildTextUtils.capitalize(field.id)), () -> {
                                             gen.printLine("return this.%s;".formatted( field.id));
                                         });
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen)), () -> {
+                                        gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
                                             gen.printLine("this.%s = value;".formatted(field.id));
                                         });
                                     }
                                     case INPUT_CHANGE_LISTENER -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public %s get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen), BuildTextUtils.capitalize(field.id)), () -> {
+                                        gen.wrapWithBlock("public %s get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), BuildTextUtils.capitalize(field.id)), () -> {
                                             gen.printLine("return %s;".formatted(field.id));
                                         });
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen)), () -> {
+                                        gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
                                             gen.printLine("this.%s = value;".formatted(field.id));
                                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                             var propertyName = "has%s".formatted(BuildTextUtils.capitalize(field.id));
@@ -254,17 +231,17 @@ public class JavaWebAppElementsHelper {
                                     }
                                     case CHILD,MANAGED_CHILD -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public %s get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, true, gen),  BuildTextUtils.capitalize(field.id)), () -> {
+                                        gen.wrapWithBlock("public %s get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen),  BuildTextUtils.capitalize(field.id)), () -> {
                                             gen.printLine("return this.%s;".formatted(field.id));
                                         });
                                     }
                                     default -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, true, gen), field.valueType == StandardValueType.BOOLEAN? "is":"get", BuildTextUtils.capitalize(field.id)), () -> {
-                                            gen.printLine("return (%s) state.get(\"%s\");".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, true, gen), field.id));
+                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.valueType == StandardValueType.BOOLEAN? "is":"get", BuildTextUtils.capitalize(field.id)), () -> {
+                                            gen.printLine("return (%s) state.get(\"%s\");".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.id));
                                         });
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, true, gen)), () -> {
+                                        gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
                                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                             gen.wrapWithBlock("if(WebAppUtils.equals(value, state.get(\"%s\")))".formatted(field.id), ()->{
                                                 gen.printLine("return;");
@@ -286,7 +263,7 @@ public class JavaWebAppElementsHelper {
 
                             }
                         }
-                        var inputs = fields.stream().filter(it -> it.type == PropertyType.INPUT).toList();
+                        var inputs = fields.stream().filter(it -> it.type == FieldType.INPUT).toList();
                         if (!elm.getCommandsFromClient().isEmpty() || !inputs.isEmpty()) {
                             gen.printLine("@Override");
                             gen.addImport("com.google.gson.JsonElement");
@@ -413,11 +390,11 @@ public class JavaWebAppElementsHelper {
         return new File(currentFile, parts[parts.length - 1] + ".java");
     }
 
-    record Property(String id, StandardValueType valueType, String className, boolean collection, PropertyType type) {
+    record Field(String id, StandardValueType valueType, String className, boolean collection, FieldType type, boolean nonNullable) {
 
     }
 
-    enum PropertyType {
+    enum FieldType {
         STANDARD,
         INPUT,
         INPUT_CHANGE_LISTENER,

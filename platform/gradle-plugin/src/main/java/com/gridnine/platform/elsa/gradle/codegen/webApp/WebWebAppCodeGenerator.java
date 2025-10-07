@@ -28,8 +28,10 @@ import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.*;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.CustomWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetaRegistryParser;
+import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import org.gradle.api.Project;
 
 import java.io.File;
@@ -52,6 +54,22 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
             WebCodeGeneratorUtils.generateWebEnumCode(item, gen);
             var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(item.getId() + ".ts", destDir));
             generatedFiles.add(file);
+        }
+        for(var item: metaRegistry.getEntities().values()) {
+            var gen = new TypeScriptCodeGenerator();
+            WebCodeGeneratorUtils.generateWebEntityCode(item, null, gen);
+            var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(item.getId() + ".ts", destDir));
+            generatedFiles.add(file);
+        }
+        for(var elm: metaRegistry.getElements().values()){
+            CustomWebElementDescription ce = WebAppMetadataHelper.toCustomEntity(elm);
+            if(ce.getInput() != null){
+                var id = WebAppMetadataHelper.getInputValueDescription(ce);
+                var gen = new TypeScriptCodeGenerator();
+                WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen);
+                var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
+                generatedFiles.add(file);
+            }
         }
         WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), generatedFiles);
         WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles);

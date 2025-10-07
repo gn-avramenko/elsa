@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import './styles.css';
 import { BaseReactUiElement } from './component';
@@ -26,6 +26,9 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
     const state = toString(element.state);
     const payloadValues = new Map<string, string | undefined>();
     const payloadSetters = new Map<string, any>();
+    const [inputValue, setInputValue] = useState<string>(
+        element.state.get('value') && JSON.stringify(element.state.get('value'))
+    );
     for (const act of element.description.actionsFromClient) {
         const [v, setV] = useState<string | undefined>();
         payloadValues.set(act, v);
@@ -90,6 +93,51 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
                             </div>
                         ),
                     },
+                    {
+                        id: 'input',
+                        label: 'Input',
+                        content: (
+                            <div
+                                key="input"
+                                style={{
+                                    width: '100%',
+                                    height: '400px',
+                                    overflowY: 'auto',
+                                }}
+                            >
+                                {element.description.input ? (
+                                    <div
+                                        key="container"
+                                        className="webpeer-inputs-container"
+                                    >
+                                        <button
+                                            key="button"
+                                            className="webpeer-button"
+                                            onClick={() =>
+                                                (element as any).setValue(
+                                                    inputValue
+                                                        ? JSON.parse(inputValue)
+                                                        : null
+                                                )
+                                            }
+                                        >
+                                            Commit
+                                        </button>
+                                        <textarea
+                                            value={inputValue}
+                                            key="text-area"
+                                            className="webpeer-action-textarea"
+                                            onChange={(e) => {
+                                                setInputValue(e.target.value);
+                                            }}
+                                        ></textarea>
+                                    </div>
+                                ) : (
+                                    ''
+                                )}
+                            </div>
+                        ),
+                    },
                 ]}
                 key="tabs"
                 defaultActiveTab="state"
@@ -101,16 +149,6 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
 export function WebComponentWrapper(
     props: React.PropsWithChildren<{ element: BaseReactUiElement }>
 ) {
-    for (const prop of props.element.state.keys()) {
-        const [value, setValue] = useState(props.element.state.get(prop));
-        props.element.state.set(prop, value);
-        props.element.stateSetters.set(prop, setValue);
-    }
-    useEffect(() => {
-        props.element.state.forEach((value, key) => {
-            props.element.stateSetters.get(key)?.(value);
-        });
-    }, [props.element]);
     const modal = useModal();
     return (
         <div

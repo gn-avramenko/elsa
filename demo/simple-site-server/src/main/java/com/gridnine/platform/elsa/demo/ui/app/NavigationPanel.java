@@ -25,6 +25,7 @@
 package com.gridnine.platform.elsa.demo.ui.app;
 
 import com.gridnine.platform.elsa.webApp.common.FlexDirection;
+import com.gridnine.platform.elsa.webApp.common.Option;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public class NavigationPanel extends NavigationPanelSkeleton{
@@ -52,6 +53,38 @@ public class NavigationPanel extends NavigationPanelSkeleton{
                 System.out.println("history link clicked");
             });
             result.setHistoryLink(historyLinkConfig);
+        }
+        {
+            var accountLinkConfig = new AccountLinkConfiguration();
+            accountLinkConfig.setTitle("Account");
+            accountLinkConfig.setClickListener(ct ->{
+                System.out.println("account link clicked");
+            });
+            result.setAccountLink(accountLinkConfig);
+        }
+        {
+            var languageSelector = new LanguageSelectorConfiguration();
+            {
+                var option = new Option();
+                option.setId("ru");
+                option.setDisplayName("Русский");
+                languageSelector.getOptions().add(option);
+            }
+            {
+                var option = new Option();
+                option.setId("en");
+                option.setDisplayName("English");
+                languageSelector.getOptions().add(option);
+            }
+            {
+                var value = new LanguageSelectorInputValue();
+                value.getValues().add("en");
+                languageSelector.setValue(value);
+            }
+            languageSelector.setValueChangeListener(((oldValue, newValue, context) ->
+              System.out.println("new value = %s".formatted(newValue.getValues().get(0)))
+            ));
+            result.setLanguageSelector(languageSelector);
         }
         return result;
     }

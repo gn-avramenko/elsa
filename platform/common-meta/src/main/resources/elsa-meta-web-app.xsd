@@ -20,21 +20,7 @@
                             </complexContent>
                         </complexType>
                     </element>
-                    <element name="entity">
-                        <complexType>
-                            <complexContent>
-                                <extension base="common:MetaElementType">
-                                    <sequence>
-                                        <choice maxOccurs="unbounded" minOccurs="0">
-                                            <element name="property" type="common:PropertyType"/>
-                                            <element name="collection" type="common:CollectionType"/>
-                                            <element name="map" type="common:MapType"/>
-                                        </choice>
-                                    </sequence>
-                                </extension>
-                            </complexContent>
-                        </complexType>
-                    </element>
+                    <element name="entity" type="tns:EntityWithId"/>
                 </choice>
             </sequence>
         </complexType>
@@ -43,22 +29,11 @@
         <complexContent>
             <extension base="common:MetaElementType">
                 <sequence>
-                    <element name="server-managed-state" minOccurs="0">
-                        <complexType>
-                            <sequence>
-                                <choice>
-                                <element name="property" type="common:PropertyType" minOccurs="0"
-                                         maxOccurs="unbounded"/>
-                                <element name="collection" type="common:CollectionType" minOccurs="0"
-                                             maxOccurs="unbounded"/>
-                                </choice>
-                            </sequence>
-                        </complexType>
-                    </element>
+                    <element name="server-managed-state" minOccurs="0" type="tns:Entity"/>
                     <element name="commands-from-server" minOccurs="0">
                         <complexType>
                             <sequence>
-                                <element name="command" type="tns:CommandType" minOccurs="1"
+                                <element name="command" type="tns:EntityWithId" minOccurs="1"
                                          maxOccurs="unbounded"/>
                             </sequence>
                         </complexType>
@@ -66,19 +41,12 @@
                     <element name="commands-from-client" minOccurs="0">
                         <complexType>
                             <sequence>
-                                <element name="command" type="tns:CommandType" minOccurs="1"
+                                <element name="command" type="tns:EntityWithId" minOccurs="1"
                                          maxOccurs="unbounded"/>
                             </sequence>
                         </complexType>
                     </element>
-                    <element name="inputs" minOccurs="0">
-                        <complexType>
-                            <sequence>
-                                <element name="input" type="tns:InputType" minOccurs="1"
-                                         maxOccurs="unbounded"/>
-                            </sequence>
-                        </complexType>
-                    </element>
+                    <element name="input-value" minOccurs="0" type="tns:Entity"/>
                 </sequence>
                 <attribute name="class-name" type="string" use="required"/>
             </extension>
@@ -101,7 +69,7 @@
             <element name="commands-from-server" minOccurs="0">
                 <complexType>
                     <sequence>
-                        <element name="command" type="tns:CommandType" minOccurs="1"
+                        <element name="command" type="tns:EntityWithId" minOccurs="1"
                                  maxOccurs="unbounded"/>
                     </sequence>
                 </complexType>
@@ -109,7 +77,7 @@
             <element name="commands-from-client" minOccurs="0">
                 <complexType>
                     <sequence>
-                        <element name="command" type="tns:CommandType" minOccurs="1"
+                        <element name="command" type="tns:EntityWithId" minOccurs="1"
                                  maxOccurs="unbounded"/>
                     </sequence>
                 </complexType>
@@ -138,52 +106,7 @@
             <element type="tns:RootContainerType" name="container"/>
         </choice>
     </group>
-    <complexType name="InputType">
-        <complexContent>
-            <extension base="common:MetaElementType">
-                <sequence>
-                    <element name="state" minOccurs="0" maxOccurs="1">
-                        <complexType>
-                            <sequence>
-                                <choice>
-                                    <element name="property" type="common:PropertyType" minOccurs="0"
-                                             maxOccurs="unbounded"/>
-                                    <element name="collection" type="common:CollectionType" minOccurs="0"
-                                             maxOccurs="unbounded"/>
-                                </choice>
-                            </sequence>
-                        </complexType>
-                    </element>
-                    <element name="value" minOccurs="0" maxOccurs="1">
-                        <complexType>
-                            <sequence>
-                                <choice>
-                                    <element name="property" type="common:PropertyType" minOccurs="0"
-                                             maxOccurs="unbounded"/>
-                                    <element name="collection" type="common:CollectionType" minOccurs="0"
-                                             maxOccurs="unbounded"/>
-                                </choice>
-                            </sequence>
-                        </complexType>
-                    </element>
-                </sequence>
-                <attribute name="type" type="tns:InputType" use="required"/>
-                <attribute name="class-name" type="string"/>
-            </extension>
-        </complexContent>
-    </complexType>
-    <complexType name="CommandType">
-        <complexContent>
-            <extension base="common:MetaElementType">
-                <sequence minOccurs="0" maxOccurs="unbounded">
-                    <choice>
-                        <element name="property" type="common:PropertyType"/>
-                        <element name="collection" type="common:CollectionType"/>
-                    </choice>
-                </sequence>
-            </extension>
-        </complexContent>
-    </complexType>
+
     <complexType name="RootContainerType">
         <complexContent>
             <extension base="tns:BaseRootElementType">
@@ -268,29 +191,24 @@
         <complexContent>
             <extension base="tns:BaseElementType">
                 <sequence minOccurs="0">
-                    <element name="column-description-extension" minOccurs="0">
-                        <complexType>
-                            <sequence>
-                                <element name="property" type="common:PropertyType" minOccurs="0"
-                                         maxOccurs="unbounded"/>
-                                <element name="collection" type="common:CollectionType" minOccurs="0"
-                                         maxOccurs="unbounded"/>
-                            </sequence>
-                        </complexType>
-                    </element>
-                    <element name="data-description">
-                        <complexType>
-                            <sequence  maxOccurs="unbounded">
-                                <choice>
-                                    <element name="property" type="common:PropertyType" minOccurs="0"
-                                             maxOccurs="unbounded"/>
-                                    <element name="collection" type="common:CollectionType" minOccurs="0"
-                                             maxOccurs="unbounded"/>
-                                </choice>
-                            </sequence>
-                        </complexType>
-                    </element>
+                    <element name="column-description-extension" minOccurs="0" type="tns:Entity"/>
+                    <element name="data-description" type="tns:Entity"/>
                 </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="Entity">
+            <sequence>
+                <element name="property" type="common:PropertyType" minOccurs="0"
+                         maxOccurs="unbounded"/>
+                <element name="collection" type="common:CollectionType" minOccurs="0"
+                         maxOccurs="unbounded"/>
+            </sequence>
+    </complexType>
+    <complexType name="EntityWithId">
+        <complexContent>
+            <extension base="tns:Entity">
+                <attribute name="id" use="required"/>
             </extension>
         </complexContent>
     </complexType>
@@ -299,11 +217,4 @@
             <extension base="tns:BaseElementType"/>
         </complexContent>
     </complexType>
-    <simpleType name="InputType">
-        <restriction base="string">
-            <enumeration value="TEXT_FIELD"/>
-            <enumeration value="SELECT"/>
-            <enumeration value="AUTOCOMPLETE"/>
-        </restriction>
-    </simpleType>
 </schema>

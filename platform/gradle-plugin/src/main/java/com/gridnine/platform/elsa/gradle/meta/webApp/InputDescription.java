@@ -21,10 +21,8 @@
 
 package com.gridnine.platform.elsa.gradle.meta.webApp;
 
-public class InputDescription {
+public class InputDescription{
     private InputType type;
-
-    private WebAppEntity settings;
 
     private WebAppEntity value;
 
@@ -34,14 +32,6 @@ public class InputDescription {
 
     public void setType(InputType type) {
         this.type = type;
-    }
-
-    public WebAppEntity getSettings() {
-        return settings;
-    }
-
-    public void setSettings(WebAppEntity settings) {
-        this.settings = settings;
     }
 
     public WebAppEntity getValue() {

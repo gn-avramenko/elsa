@@ -63,11 +63,13 @@ public class WebAppMetaRegistryParser {
             {
                 var item = new StandardPropertyDescription("id");
                 item.setType(StandardValueType.STRING);
+                item.setNonNullable(true);
                 optionEntity.getProperties().put(item.getId(), item);
             }
             {
                 var item = new StandardPropertyDescription("displayName");
                 item.setType(StandardValueType.STRING);
+                item.setNonNullable(true);
                 optionEntity.getProperties().put(item.getId(), item);
             }
             registry.getEntities().put(optionEntity.getId(), optionEntity);

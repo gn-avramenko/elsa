@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import './styles.css';
 import { BaseReactUiElement } from './component';
@@ -26,6 +26,9 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
     const state = toString(element.state);
     const payloadValues = new Map<string, string | undefined>();
     const payloadSetters = new Map<string, any>();
+    const [inputValue, setInputValue] = useState<string>(
+        element.state.get('value') && JSON.stringify(element.state.get('value'))
+    );
     for (const act of element.description.actionsFromClient) {
         const [v, setV] = useState<string | undefined>();
         payloadValues.set(act, v);
@@ -91,63 +94,47 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
                         ),
                     },
                     {
-                        id: 'inputs',
-                        label: 'Inputs',
+                        id: 'input',
+                        label: 'Input',
                         content: (
                             <div
-                                key="inputs"
+                                key="input"
                                 style={{
                                     width: '100%',
                                     height: '400px',
                                     overflowY: 'auto',
                                 }}
                             >
-                                {element.description.inputs.map((id, _idx, arr) => (
+                                {element.description.input ? (
                                     <div
-                                        key={id.id}
+                                        key="container"
                                         className="webpeer-inputs-container"
                                     >
-                                        <div
-                                            key="label"
-                                            className="webpeer-inputs-control"
+                                        <button
+                                            key="button"
+                                            className="webpeer-button"
+                                            onClick={() =>
+                                                (element as any).setValue(
+                                                    inputValue
+                                                        ? JSON.parse(inputValue)
+                                                        : null
+                                                )
+                                            }
                                         >
-                                            {id.id}
-                                        </div>
-                                        {id.inputType === 'SELECT' ? (
-                                            <select
-                                                key="value"
-                                                value={element.state.get(
-                                                    arr.length === 1
-                                                        ? 'value'
-                                                        : `${id.id}`
-                                                )}
-                                                onChange={(e) => {
-                                                    const setterName =
-                                                        arr.length === 1
-                                                            ? 'setValue'
-                                                            : `set${id.id.substring(0, 1).toUpperCase()}${id.id.substring(1)}`;
-                                                    (element as any)[setterName](
-                                                        e.target.value
-                                                    );
-                                                }}
-                                            >
-                                                {(
-                                                    element.state.get(
-                                                        arr.length === 1
-                                                            ? 'options'
-                                                            : `${id.id}Options`
-                                                    ) || []
-                                                ).map((opt: any) => (
-                                                    <option value={opt.id}>
-                                                        {opt.displayName}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        ) : (
-                                            ''
-                                        )}
+                                            Commit
+                                        </button>
+                                        <textarea
+                                            value={inputValue}
+                                            key="text-area"
+                                            className="webpeer-action-textarea"
+                                            onChange={(e) => {
+                                                setInputValue(e.target.value);
+                                            }}
+                                        ></textarea>
                                     </div>
-                                ))}
+                                ) : (
+                                    ''
+                                )}
                             </div>
                         ),
                     },
@@ -162,16 +149,6 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
 export function WebComponentWrapper(
     props: React.PropsWithChildren<{ element: BaseReactUiElement }>
 ) {
-    for (const prop of props.element.state.keys()) {
-        const [value, setValue] = useState(props.element.state.get(prop));
-        props.element.state.set(prop, value);
-        props.element.stateSetters.set(prop, setValue);
-    }
-    useEffect(() => {
-        props.element.state.forEach((value, key) => {
-            props.element.stateSetters.get(key)?.(value);
-        });
-    }, [props.element]);
     const modal = useModal();
     return (
         <div

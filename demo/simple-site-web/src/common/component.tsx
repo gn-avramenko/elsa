@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
     BaseUiElement,
     PreloaderMiddleware,
@@ -25,10 +25,23 @@ export type InputDescription = {
     id: string;
 };
 
+export function initStateSetters(element: BaseReactUiElement) {
+    for (const prop of element.state.keys()) {
+        const [value, setValue] = useState(element.state.get(prop));
+        element.state.set(prop, value);
+        element.stateSetters.set(prop, setValue);
+    }
+    useEffect(() => {
+        element.state.forEach((value, key) => {
+            element.stateSetters.get(key)?.(value);
+        });
+    }, [element]);
+}
+
 export type ReactElementDescription = {
     state: string[];
     actionsFromClient: string[];
-    inputs: InputDescription[];
+    input?: InputType;
 };
 export abstract class BaseReactUiElement extends BaseUiElement {
     readonly description: ReactElementDescription;

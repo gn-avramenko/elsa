@@ -25,9 +25,9 @@ import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
-import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.meta.webApp.ButtonWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.SelectWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
@@ -50,26 +50,37 @@ public class WebWebAppElementsHelper {
                     var stateKeys = new ArrayList<String>();
                     stateKeys.addAll(elm.getServerManagedState().getProperties().keySet());
                     stateKeys.addAll(elm.getServerManagedState().getCollections().keySet());
+                    if(elm.getInput() != null){
+                      stateKeys.add("value");
+                      stateKeys.add("hasValueChangeListener");
+                    }
                     stateStr.append(BuildTextUtils.joinToString(stateKeys.stream().map("\"%s\""::formatted).toList(), ", "));
-                    var sa = new StringBuilder();
-                    sa.append(BuildTextUtils.joinToString(elm.getCommandsFromServer().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
                     var ca = new StringBuilder();
                     ca.append(BuildTextUtils.joinToString(elm.getCommandsFromClient().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
                     gen.addImport("{BaseReactUiElement} from '@/common/component'");
+                    var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
+                    var inputValueImport = WebWebAppElementsHelper.getImportName(className+"InputValue");
+                    if(elm.getInput() != null){
+                        gen.addImport("{%s} from '%s'".formatted(inputValueSimpleClassName, inputValueImport));
+                    }
                     gen.wrapWithBlock("export abstract class %sSkeleton extends BaseReactUiElement".formatted(simpleClassName), () -> {
                         gen.wrapWithBlock("constructor(model: any)", () -> {
                             gen.printLine("""
                                     super({
                                        state: [%s],
-                                       actionsFromServer: [%s],
                                        actionsFromClient: [%s],
+                                       input: %s
                                     }, model);
-                                    """.formatted(stateStr, sa, ca));
+                                    """.formatted(stateStr, ca, elm.getInput() == null? "undefined": "'%s'".formatted(elm.getInput().getType().name())));
                             for (var prop : elm.getServerManagedState().getProperties().values()) {
                                 gen.printLine("this.state.set('%s', model.%s);".formatted(prop.getId(), prop.getId()));
                             }
                             for (var coll : elm.getServerManagedState().getCollections().values()) {
                                 gen.printLine("this.state.set('%s', model.%s??[]);".formatted(coll.getId(), coll.getId()));
+                            }
+                            if(elm.getInput() != null){
+                                gen.printLine("this.state.set('value', model.value);");
+                                gen.printLine("this.state.set('hasValueChangeListener', model.hasValueChangeListener);");
                             }
                         });
                         gen.blankLine();
@@ -82,8 +93,21 @@ public class WebWebAppElementsHelper {
                         }
                         for (var coll : elm.getServerManagedState().getCollections().values()) {
                             gen.wrapWithBlock("get%s()".formatted(BuildTextUtils.capitalize(coll.getId())), () -> {
-                                gen.printLine("return this.state.get('%s') as %s[] | undefined".formatted(coll.getId(),
+                                gen.printLine("return this.state.get('%s') as %s[] || [] ".formatted(coll.getId(),
                                         getType(coll.getElementType(), registry, coll.getElementClassName(), gen)));
+                            });
+                        }
+                        if(elm.getInput() != null){
+                            gen.wrapWithBlock("getValue()", () -> {
+                                gen.printLine("return this.state.get('value') as %s".formatted(inputValueSimpleClassName));
+                            });
+                            gen.wrapWithBlock("setValue(value: %s)".formatted(inputValueSimpleClassName), () -> {
+                                gen.printLine("this.stateSetters.get('value')!(value)");
+                                gen.printLine("""
+                                        this.sendCommand('pc', {
+                                           pn : 'value',
+                                           pv: value
+                                        }, !this.state.get('hasValueChangeListener') && !!this.state.get('deferred'));""");
                             });
                         }
                         for(var action: elm.getCommandsFromClient()){
@@ -102,6 +126,7 @@ public class WebWebAppElementsHelper {
                 switch (element.getType()) {
                     case CONTAINER -> WebContainerHelper.generateContainer((ContainerWebElementDescription) element, sourceDir);
                     case BUTTON -> WebButtonHelper.generateButton((ButtonWebElementDescription) element, sourceDir);
+                    case SELECT -> WebSelectHelper.generateSelect((SelectWebElementDescription) element, sourceDir);
                 }
 
             });

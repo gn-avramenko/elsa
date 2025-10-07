@@ -38,9 +38,11 @@ public class WebButtonHelper {
         var componentName = "%sComponent".formatted(basicName);
         var result = """
                 import { WebComponentWrapper } from '@/common/wrapper';
+                import { initStateSetters } from '@/common/component';
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
+                    initStateSetters(props.element);
                     return (
                         <WebComponentWrapper element={props.element}>
                              <button

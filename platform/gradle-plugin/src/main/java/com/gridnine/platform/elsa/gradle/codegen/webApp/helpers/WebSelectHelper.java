@@ -23,14 +23,13 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
-import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.SelectWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
-public class WebContainerHelper {
-    public static void generateContainer(ContainerWebElementDescription descr, File destDir) throws IOException {
+public class WebSelectHelper {
+    public static void generateSelect(SelectWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
         var skeletonImport = WebWebAppElementsHelper.getImportName(descr.getClassName()+"Skeleton");
@@ -45,31 +44,30 @@ public class WebContainerHelper {
                     initStateSetters(props.element);
                     return (
                         <WebComponentWrapper element={props.element}>
-                            <div
-                                className="webpeer-container-content"
-                                key="content"
-                                style={{
-                                    display: 'flex',
-                                    flexDirection:
-                                        props.element.getFlexDirection() === 'ROW' ? 'row' : 'column',
-                                }}
-                            >
-                                {(props.element.children || []).map((it) => {
-                                    if (props.element.getProcessedChildren().indexOf(it.id) === -1) {
-                                        return (it as BaseReactUiElement).createReactElement();
-                                    }
-                                    return null;
-                                })}
-                            </div>
+                              <select
+                                                                       key="select"
+                                                                       className="webpeer-select"
+                                                                       multiple={!!props.element.getMultiple()}
+                                                                       onChange={(e) => {
+                                                                       const values = [...e.target.options].filter(it => it.selected).map(it => it.value);
+                                                                       props.element.setValue({
+                                                                        values
+                                                                       })
+                                                                       }
+                                                                       }
+                                                                   >
+                                                                       {props.element.getOptions().map((it) => (
+                                                                           <option key={it.id} value={it.id} selected={(props.element.getValue()?.values ||[]).indexOf(it.id) !== -1}>
+                                                                               {it.displayName}
+                                                                           </option>
+                                                                       ))}
+                                                                   </select>
                         </WebComponentWrapper>
                     );
                 }
                 
                 export class %s extends %s {
                     functionalComponent = %s;
-                    getProcessedChildren(): string[] {
-                        return [];
-                    }
                 }
                 """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);

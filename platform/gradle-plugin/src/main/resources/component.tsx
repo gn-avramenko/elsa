@@ -1,5 +1,4 @@
-import React, { ReactElement } from 'react';
-import 'styles.css';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
     BaseUiElement,
     PreloaderMiddleware,
@@ -19,10 +18,30 @@ export const reactWebPeerExt = webpeerExt as ReactWebPeerExtension;
 
 reactWebPeerExt.elementHandlersFactories = new Map();
 
+export type InputType = 'SELECT' | 'TEXT_FIELD';
+
+export type InputDescription = {
+    inputType: InputType;
+    id: string;
+};
+
+export function initStateSetters(element: BaseReactUiElement) {
+    for (const prop of element.state.keys()) {
+        const [value, setValue] = useState(element.state.get(prop));
+        element.state.set(prop, value);
+        element.stateSetters.set(prop, setValue);
+    }
+    useEffect(() => {
+        element.state.forEach((value, key) => {
+            element.stateSetters.get(key)?.(value);
+        });
+    }, [element]);
+}
+
 export type ReactElementDescription = {
     state: string[];
-    actionsFromServer: string[];
     actionsFromClient: string[];
+    input?: InputType;
 };
 export abstract class BaseReactUiElement extends BaseUiElement {
     readonly description: ReactElementDescription;
@@ -61,7 +80,7 @@ export abstract class BaseReactUiElement extends BaseUiElement {
         this.state.set('counter', this.counter);
     }
 
-    protected findByTag(tag: string) {
+    public findByTag(tag: string) {
         return this.children?.find((it) => it.tag === tag) as BaseReactUiElement;
     }
 

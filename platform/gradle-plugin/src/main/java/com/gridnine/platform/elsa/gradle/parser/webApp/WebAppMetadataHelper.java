@@ -69,26 +69,29 @@ public class WebAppMetadataHelper {
                 SelectWebElementDescription sd = (SelectWebElementDescription) element;
                 {
                     var input = new InputDescription();
-                    result.getInputs().put("value", input);
-                    var settings = new WebAppEntity();
-                    input.setSettings(settings);
-                    {
-                        var options = new StandardCollectionDescription();
-                        options.setElementType(StandardValueType.ENTITY);
-                        options.setId("options");
-                        options.setElementClassName("com.gridnine.platform.elsa.webApp.common.Option");
-                        settings.getCollections().put(options.getId(), options);
-                    }
+                    result.setInput(input);
+                    input.setType(InputType.SELECT);
                     var value = new WebAppEntity();
                     input.setValue(value);
-                    {
-                        var prop = new StandardCollectionDescription();
-                        prop.setElementType(StandardValueType.STRING);
-                        prop.setId("values");
-                        value.getCollections().put(prop.getId(), prop);
-                    }
-                    addDeferred(sd, result);
+                    var prop = new StandardCollectionDescription();
+                    prop.setId("values");
+                    prop.setElementType(StandardValueType.STRING);
+                    value.getCollections().put(prop.getId(), prop);
                 }
+                {
+                    var options = new StandardCollectionDescription();
+                    options.setElementType(StandardValueType.ENTITY);
+                    options.setId("options");
+                    options.setElementClassName("com.gridnine.platform.elsa.webApp.common.Option");
+                    result.getServerManagedState().getCollections().put(options.getId(), options);
+                }
+                {
+                    var multiple = new StandardPropertyDescription();
+                    multiple.setType(StandardValueType.BOOLEAN);
+                    multiple.setId("multiple");
+                    result.getServerManagedState().getProperties().put(multiple.getId(), multiple);
+                }
+                addDeferred(sd, result);
             }
             case ROUTER -> {
             }
@@ -112,10 +115,17 @@ public class WebAppMetadataHelper {
         var prop = new StandardPropertyDescription();
         prop.setId("deferred");
         prop.setType(StandardValueType.BOOLEAN);
-        prop.setNonNullable(true);
+        prop.setNonNullable(false);
         ce.getServerManagedState().getProperties().put(prop.getId(), prop);
     }
-
+    public static EntityDescription getInputValueDescription(BaseWebElementDescription element) {
+        WebAppEntity value = element.getInput().getValue();
+        var cn = "%sInputValue".formatted(element.getClassName());
+        var ed = new EntityDescription(cn);
+        ed.getProperties().putAll(value.getProperties());
+        ed.getCollections().putAll(value.getCollections());
+        return ed;
+    }
     public static EntityDescription getConfigurationDescription(BaseWebElementDescription element) {
         var ce = toCustomEntity(element);
         var cn = "%sConfiguration".formatted(ce.getClassName());
@@ -132,30 +142,23 @@ public class WebAppMetadataHelper {
             }
             ed.getProperties().put(prop.getId(), prop);
         }
-        if(ce.getInputs().size() == 1){
-            var entry = ce.getInputs().entrySet().iterator().next();
-            if(entry.getValue().getSettings() != null){
-                ed.getProperties().putAll(entry.getValue().getSettings().getProperties());
-                ed.getCollections().putAll(entry.getValue().getSettings().getCollections());
-            }
-            ed.getProperties().putAll(entry.getValue().getValue().getProperties());
-            ed.getCollections().putAll(entry.getValue().getValue().getCollections());
-            for(var value: entry.getValue().getValue().getProperties().values()){
+        if(ce.getInput() != null){
+            var inputValueClass = "%sInputValue".formatted(ce.getClassName());
+            {
                 var prop = new StandardPropertyDescription();
                 prop.setType(StandardValueType.ENTITY);
-                prop.setId("%sChangeListener".formatted(value.getId()));
-                prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(getPropertyType(value.getType(), value.getClassName())));
+                prop.setId("valueChangeListener");
+                prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(inputValueClass));
                 ed.getProperties().put(prop.getId(), prop);
             }
-            for(var value: entry.getValue().getValue().getCollections().values()){
+            {
                 var prop = new StandardPropertyDescription();
                 prop.setType(StandardValueType.ENTITY);
-                prop.setId("%sChangeListener".formatted(value.getId()));
-                prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<java.util.List<%s>>".formatted(getPropertyType(value.getElementType(), value.getElementClassName())));
+                prop.setId("value");
+                prop.setClassName(inputValueClass);
                 ed.getProperties().put(prop.getId(), prop);
             }
         }
-
         if(element instanceof WebElementWithChildren hasChildren){
             for(var entry: hasChildren.getChildren().entrySet()){
                 var child = entry.getValue();
