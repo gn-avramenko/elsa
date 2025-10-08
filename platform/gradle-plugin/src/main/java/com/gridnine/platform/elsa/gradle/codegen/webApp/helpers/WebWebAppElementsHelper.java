@@ -25,10 +25,7 @@ import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
-import com.gridnine.platform.elsa.gradle.meta.webApp.ButtonWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.SelectWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.webApp.*;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
@@ -127,6 +124,10 @@ public class WebWebAppElementsHelper {
                     case CONTAINER -> WebContainerHelper.generateContainer((ContainerWebElementDescription) element, sourceDir);
                     case BUTTON -> WebButtonHelper.generateButton((ButtonWebElementDescription) element, sourceDir);
                     case SELECT -> WebSelectHelper.generateSelect((SelectWebElementDescription) element, sourceDir);
+                    case ROUTER -> WebRouterHelper.generateRouter((RouterWebElementDescription)  element, sourceDir);
+                    case CUSTOM -> WebCustomHelper.generateCustom((CustomWebElementDescription) element, sourceDir);
+                    case TEXT_AREA ->  WebTextAreaHelper.generateTextArea((TextAreaWebElementDescription) element, sourceDir);
+                    case NESTED_ROUTER -> WebNestedRouterHelper.generateNestedRouter((NestedRouterWebElementDescription) element, sourceDir);
                 }
 
             });

@@ -196,6 +196,14 @@ public class WebCodeGeneratorUtils {
     }
 
     public static File saveIfDiffers(String content, File currentFile) throws IOException {
+        if(currentFile.exists()){
+            var existing = Files.readString(currentFile.toPath(),  StandardCharsets.UTF_8);
+            var trim1 = trimContent(content);
+            var trim2 = trimContent(existing);
+            if(trim1.equals(trim2)){
+                return currentFile;
+            }
+        }
         while (!currentFile.getParentFile().exists()) {
             try {
                 //noinspection BusyWait
@@ -208,5 +216,9 @@ public class WebCodeGeneratorUtils {
         }
         Files.writeString(currentFile.toPath(), content);
         return currentFile;
+    }
+
+    private static String trimContent(String content) {
+        return content.replaceAll("\\s+", "").replaceAll(",","");
     }
 }

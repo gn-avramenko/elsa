@@ -42,7 +42,7 @@ public class NavigationPanel extends NavigationPanelSkeleton{
             var mainLinkConfig = new StandardLinkConfiguration();
             mainLinkConfig.setTitle("Main");
             mainLinkConfig.setClickListener(ct ->{
-                System.out.println("main link clicked");
+                WebApp.lookup(NavigationPanel.this).navigate("/main", ct);
             });
             result.setMainLink(mainLinkConfig);
         }
@@ -50,7 +50,7 @@ public class NavigationPanel extends NavigationPanelSkeleton{
             var historyLinkConfig = new StandardLinkConfiguration();
             historyLinkConfig.setTitle("History");
             historyLinkConfig.setClickListener(ct ->{
-                System.out.println("history link clicked");
+                WebApp.lookup(NavigationPanel.this).navigate("/history", ct);
             });
             result.setHistoryLink(historyLinkConfig);
         }
@@ -58,7 +58,7 @@ public class NavigationPanel extends NavigationPanelSkeleton{
             var accountLinkConfig = new AccountLinkConfiguration();
             accountLinkConfig.setTitle("Account");
             accountLinkConfig.setClickListener(ct ->{
-                System.out.println("account link clicked");
+                WebApp.lookup(NavigationPanel.this).navigate("/account/organizations", ct);
             });
             result.setAccountLink(accountLinkConfig);
         }

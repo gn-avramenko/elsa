@@ -18,6 +18,57 @@
                     <select id="languageSelector" class-name="com.gridnine.platform.elsa.demo.ui.app.LanguageSelector"/>
                 </children>
             </container>
+            <router id="mainRouter" class-name="com.gridnine.platform.elsa.demo.ui.app.MainRouter"/>
         </children>
     </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.main.MainPage">
+        <children>
+            <custom id="measurementsChart" class-name="com.gridnine.platform.elsa.demo.ui.main.MeasurementsChart">
+                <server-managed-state>
+                    <property id="nextMonthEnabled" type="BOOLEAN" non-nullable="true"/>
+                    <property id="previousMonthEnabled" type="BOOLEAN" non-nullable="true"/>
+                    <property id="month" type="STRING" non-nullable="true"/>
+                </server-managed-state>
+                <commands-from-client>
+                    <command id="showNextMonth"/>
+                    <command id="showPreviousMonth"/>
+                </commands-from-client>
+            </custom>
+            <text-area id="feedbackContent" class-name="com.gridnine.platform.elsa.demo.ui.main.FeedbackContent"/>
+            <button id="sendFeedback" class-name="com.gridnine.platform.elsa.demo.ui.main.SendFeedbackButton"/>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.history.HistoryPage">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.AccountPage">
+        <children>
+            <container id="navigation" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigation">
+                <children>
+                    <button id="organizationsLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="managersLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="doctorsLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="clientsLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="accountLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="securityLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="exitLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                </children>
+            </container>
+            <nested-router id="router" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountRouter"/>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationsSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationEditor">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.manager.ManagersSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.doctor.DoctorsSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.client.ClientsSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.account.AccountSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.security.SecuritySection">
+    </container>
+
 </web-app>

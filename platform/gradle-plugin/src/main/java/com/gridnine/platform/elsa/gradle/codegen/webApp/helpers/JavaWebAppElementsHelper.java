@@ -26,6 +26,7 @@ import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.webApp.WebElementType;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebElementWithChildren;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
@@ -47,6 +48,7 @@ public class JavaWebAppElementsHelper {
                 var elm = WebAppMetadataHelper.toCustomEntity(element);
                 var managedConfiguration = switch (element.getType()) {
                     case CONTAINER -> ((ContainerWebElementDescription) element).isManagedConfiguration();
+                    case ROUTER, NESTED_ROUTER -> false;
                     default -> true;
                 };
                 {
@@ -54,7 +56,7 @@ public class JavaWebAppElementsHelper {
                     if (element instanceof WebElementWithChildren ctr) {
                         for (var entry : ctr.getChildren().entrySet()) {
                             var child = entry.getValue();
-                            fields.add(new Field(entry.getKey(), StandardValueType.ENTITY, child.getClassName(), false,  WebAppMetadataHelper.isManagedConfiguration(child)? FieldType.MANAGED_CHILD: FieldType.CHILD, true));
+                            fields.add(new Field(entry.getKey(), StandardValueType.ENTITY, child.getClassName(), false, WebAppMetadataHelper.isManagedConfiguration(child) ? FieldType.MANAGED_CHILD : FieldType.CHILD, true));
                         }
                     }
                     for (var command : elm.getCommandsFromClient()) {
@@ -69,7 +71,7 @@ public class JavaWebAppElementsHelper {
                     for (var coll : elm.getServerManagedState().getCollections().values()) {
                         fields.add(new Field(coll.getId(), coll.getElementType(), coll.getElementClassName(), true, FieldType.STANDARD, true));
                     }
-                    if(elm.getInput() != null){
+                    if (elm.getInput() != null) {
                         var valueClassName = "%sInputValue".formatted(elm.getClassName());
                         fields.add(new Field("value", StandardValueType.ENTITY, valueClassName, false, FieldType.INPUT, false));
                         fields.add(new Field("valueChangeListener", StandardValueType.ENTITY, "com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(valueClassName), false, FieldType.INPUT_CHANGE_LISTENER, false));
@@ -81,16 +83,20 @@ public class JavaWebAppElementsHelper {
                     var packageName = JavaCodeGeneratorUtils.getPackage(className);
                     gen.setPackageName(packageName);
                     gen.addImport("com.gridnine.webpeer.core.ui.OperationUiContext");
-                    gen.wrapWithBlock("public abstract class %sSkeleton extends BaseUiElement".formatted(simpleClassName), () -> {
-                        gen.printLine("private boolean initialized;");
+                    var impl = "";
+                    if(element.getType() == WebElementType.NESTED_ROUTER){
+                        gen.addImport("com.gridnine.platform.elsa.webApp.NestedRouter");
+                        impl = " implements NestedRouter";
+                    }
+                    gen.wrapWithBlock("public abstract class %sSkeleton extends BaseUiElement%s".formatted(simpleClassName, impl), () -> {
                         gen.blankLine();
                         gen.addImport("java.util.HashMap");
                         gen.addImport("java.util.Map");
                         gen.printLine("private final Map<String, Object> state = new HashMap<>();");
                         gen.addImport("com.gridnine.webpeer.core.ui.BaseUiElement");
-                        for(var field: fields) {
-                            switch (field.type){
-                                case INPUT,INPUT_CHANGE_LISTENER,COMMAND_FROM_CLIENT ->{
+                        for (var field : fields) {
+                            switch (field.type) {
+                                case INPUT, INPUT_CHANGE_LISTENER, COMMAND_FROM_CLIENT -> {
                                     if (field.collection) {
                                         gen.addImport("java.util.List");
                                         gen.addImport("java.util.ArrayList");
@@ -100,7 +106,7 @@ public class JavaWebAppElementsHelper {
                                     }
                                 }
 
-                                case MANAGED_CHILD,CHILD->{
+                                case MANAGED_CHILD, CHILD -> {
                                     gen.printLine("private final %s %s;".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.id));
                                 }
                             }
@@ -129,15 +135,16 @@ public class JavaWebAppElementsHelper {
                                     case INPUT_HAS_CHANGE_LISTENER -> {
                                         //noops
                                     }
-                                    default -> gen.printLine("set%s(config.%s%s(), ctx);".formatted(BuildTextUtils.capitalize(field.id), field.valueType == StandardValueType.BOOLEAN? "is":"get", BuildTextUtils.capitalize(field.id)));
+                                    default ->
+                                            gen.printLine("set%s(config.%s%s(), ctx);".formatted(BuildTextUtils.capitalize(field.id), field.valueType == StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(field.id)));
                                 }
                             }
                         });
-                        for(var field: fields) {
-                            if(field.type == FieldType.INPUT_HAS_CHANGE_LISTENER){
+                        for (var field : fields) {
+                            if (field.type == FieldType.INPUT_HAS_CHANGE_LISTENER) {
                                 continue;
                             }
-                            if(field.collection){
+                            if (field.collection) {
                                 switch (field.type) {
                                     case INPUT -> {
                                         gen.blankLine();
@@ -148,12 +155,12 @@ public class JavaWebAppElementsHelper {
                                         gen.blankLine();
                                         gen.wrapWithBlock("public void set%s(List<%s> value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, false, gen)), () -> {
                                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
-                                            gen.wrapWithBlock("if(WebAppUtils.equals(value, this.%s))".formatted(field.id), ()->{
+                                            gen.wrapWithBlock("if(WebAppUtils.equals(value, this.%s))".formatted(field.id), () -> {
                                                 gen.printLine("return;");
                                             });
                                             gen.printLine("state.put(\"%s\", value);".formatted(field.id));
                                             gen.printLine("this.%s = value;".formatted(field.id));
-                                            gen.wrapWithBlock("if(initialized)", () -> {
+                                            gen.wrapWithBlock("if(isInitialized())", () -> {
                                                 gen.addImport("com.google.gson.JsonObject");
                                                 gen.printLine("var data = new JsonObject();");
                                                 gen.printLine("data.addProperty(\"pn\", \"%s\");".formatted(field.id));
@@ -173,11 +180,11 @@ public class JavaWebAppElementsHelper {
                                         gen.blankLine();
                                         gen.wrapWithBlock("public void set%s(List<%s> value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
                                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
-                                            gen.wrapWithBlock("if(WebAppUtils.equals(value, state.get(\"%s\")))".formatted(field.id), ()->{
+                                            gen.wrapWithBlock("if(WebAppUtils.equals(value, state.get(\"%s\")))".formatted(field.id), () -> {
                                                 gen.printLine("return;");
                                             });
                                             gen.printLine("state.put(\"%s\", value);".formatted(field.id));
-                                            gen.wrapWithBlock("if(initialized)", () -> {
+                                            gen.wrapWithBlock("if(isInitialized())", () -> {
                                                 gen.addImport("com.google.gson.JsonObject");
                                                 gen.printLine("var data = new JsonObject();");
                                                 gen.printLine("data.addProperty(\"pn\", \"%s\");".formatted(field.id));
@@ -196,8 +203,8 @@ public class JavaWebAppElementsHelper {
                                 switch (field.type) {
                                     case COMMAND_FROM_CLIENT -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.valueType == StandardValueType.BOOLEAN? "is":"get", BuildTextUtils.capitalize(field.id)), () -> {
-                                            gen.printLine("return this.%s;".formatted( field.id));
+                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.valueType == StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(field.id)), () -> {
+                                            gen.printLine("return this.%s;".formatted(field.id));
                                         });
                                         gen.blankLine();
                                         gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
@@ -214,11 +221,11 @@ public class JavaWebAppElementsHelper {
                                             gen.printLine("this.%s = value;".formatted(field.id));
                                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                             var propertyName = "has%s".formatted(BuildTextUtils.capitalize(field.id));
-                                            gen.wrapWithBlock("if(WebAppUtils.equals(value != null, state.get(\"%s\")))".formatted(propertyName), ()->{
+                                            gen.wrapWithBlock("if(WebAppUtils.equals(value != null, state.get(\"%s\")))".formatted(propertyName), () -> {
                                                 gen.printLine("return;");
                                             });
                                             gen.printLine("state.put(\"%s\", value != null);".formatted(propertyName));
-                                            gen.wrapWithBlock("if(initialized)", () -> {
+                                            gen.wrapWithBlock("if(isInitialized())", () -> {
                                                 gen.addImport("com.google.gson.JsonObject");
                                                 gen.printLine("var data = new JsonObject();");
                                                 gen.printLine("data.addProperty(\"pn\", \"%s\");".formatted(propertyName));
@@ -229,25 +236,25 @@ public class JavaWebAppElementsHelper {
                                             });
                                         });
                                     }
-                                    case CHILD,MANAGED_CHILD -> {
+                                    case CHILD, MANAGED_CHILD -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public %s get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen),  BuildTextUtils.capitalize(field.id)), () -> {
+                                        gen.wrapWithBlock("public %s get%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), BuildTextUtils.capitalize(field.id)), () -> {
                                             gen.printLine("return this.%s;".formatted(field.id));
                                         });
                                     }
                                     default -> {
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.valueType == StandardValueType.BOOLEAN? "is":"get", BuildTextUtils.capitalize(field.id)), () -> {
+                                        gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.valueType == StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(field.id)), () -> {
                                             gen.printLine("return (%s) state.get(\"%s\");".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.id));
                                         });
                                         gen.blankLine();
                                         gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
                                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
-                                            gen.wrapWithBlock("if(WebAppUtils.equals(value, state.get(\"%s\")))".formatted(field.id), ()->{
+                                            gen.wrapWithBlock("if(WebAppUtils.equals(value, state.get(\"%s\")))".formatted(field.id), () -> {
                                                 gen.printLine("return;");
                                             });
                                             gen.printLine("state.put(\"%s\", value);".formatted(field.id));
-                                            gen.wrapWithBlock("if(initialized)", () -> {
+                                            gen.wrapWithBlock("if(isInitialized())", () -> {
                                                 gen.addImport("com.google.gson.JsonObject");
                                                 gen.printLine("var data = new JsonObject();");
                                                 gen.printLine("data.addProperty(\"pn\", \"%s\");".formatted(field.id));
@@ -268,27 +275,28 @@ public class JavaWebAppElementsHelper {
                             gen.printLine("@Override");
                             gen.addImport("com.google.gson.JsonElement");
                             gen.wrapWithBlock("public void processCommand(OperationUiContext ctx, String commandId, JsonElement data)  throws Exception", () -> {
-                                if(!inputs.isEmpty()) {
-                                    gen.wrapWithBlock("if(commandId.equals(\"pc\"))", ()->{
+                                if (!inputs.isEmpty()) {
+                                    gen.wrapWithBlock("if(commandId.equals(\"pc\"))", () -> {
                                         gen.printLine("var obj = data.getAsJsonObject();");
                                         gen.addImport("com.gridnine.webpeer.core.utils.WebPeerUtils");
                                         gen.printLine("var pn = WebPeerUtils.getString(obj, \"pn\");");
                                         gen.printLine("var pv = obj.get(\"pv\");");
-                                        for(var input: inputs){
-                                            gen.wrapWithBlock("if(pn.equals(\"%s\"))".formatted(input.id), ()->{
-                                               gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
-                                               gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
-                                               gen.printLine("var oldValue = this.%s;".formatted(input.id));
-                                               if(input.collection){
-                                                   gen.printLine("var newValue = WebAppUtils.fromJsonArrayValue(pv, StandardValueType.%s, \"%s\", %s.class);".formatted(input.valueType, input.className, getPropertyType(input.valueType, input.className, gen)));
-                                               } else {
-                                                   gen.printLine("var newValue = WebAppUtils.fromJsonValue(pv, StandardValueType.%s, \"%s\", %s.class);".formatted(input.valueType, input.className, getPropertyType(input.valueType, input.className, gen)));
-                                               }
+                                        for (var input : inputs) {
+                                            gen.wrapWithBlock("if(pn.equals(\"%s\"))".formatted(input.id), () -> {
+                                                gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
+                                                gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                                gen.printLine("var oldValue = this.%s;".formatted(input.id));
+                                                if (input.collection) {
+                                                    gen.printLine("var newValue = WebAppUtils.fromJsonArrayValue(pv, StandardValueType.%s, \"%s\", %s.class);".formatted(input.valueType, input.className, getPropertyType(input.valueType, input.className, gen)));
+                                                } else {
+                                                    gen.printLine("var newValue = WebAppUtils.fromJsonValue(pv, StandardValueType.%s, \"%s\", %s.class);".formatted(input.valueType, input.className, getPropertyType(input.valueType, input.className, gen)));
+                                                }
                                                 gen.printLine("this.%s = newValue;".formatted(input.id));
-                                               gen.wrapWithBlock("if(this.%sChangeListener != null)".formatted(input.id), ()->{
-                                                   gen.printLine("this.%sChangeListener.onValueChange(oldValue, newValue, ctx);".formatted(input.id));
-                                               });
-                                               gen.printLine("return;");
+                                                gen.printLine("state.put(\"%s\", value);".formatted(input.id));
+                                                gen.wrapWithBlock("if(this.%sChangeListener != null)".formatted(input.id), () -> {
+                                                    gen.printLine("this.%sChangeListener.onValueChange(oldValue, newValue, ctx);".formatted(input.id));
+                                                });
+                                                gen.printLine("return;");
                                             });
                                         }
                                     });
@@ -312,10 +320,10 @@ public class JavaWebAppElementsHelper {
                         gen.addImport("com.google.gson.JsonObject");
                         gen.wrapWithBlock("public JsonObject buildState(OperationUiContext context)", () -> {
                             gen.printLine("var result =  super.buildState(context);");
-                            for(var field: fields){
-                                switch (field.type){
-                                    case STANDARD,INPUT,INPUT_HAS_CHANGE_LISTENER -> {
-                                        if(field.collection){
+                            for (var field : fields) {
+                                switch (field.type) {
+                                    case STANDARD, INPUT, INPUT_HAS_CHANGE_LISTENER -> {
+                                        if (field.collection) {
                                             gen.wrapWithBlock("if(state.get(\"%s\") != null && !((List<?>)state.get(\"%s\")).isEmpty())".formatted(field.id, field.id), () -> {
                                                 gen.addImport("com.google.gson.JsonArray");
                                                 gen.printLine("var coll = new JsonArray();");
@@ -362,12 +370,122 @@ public class JavaWebAppElementsHelper {
                         gen.setPackageName(packageName);
                         gen.addImport("com.gridnine.webpeer.core.ui.OperationUiContext");
                         gen.wrapWithBlock("public class %s extends %sSkeleton".formatted(simpleClassName, simpleClassName), () -> {
+                            if (element.getType() == WebElementType.ROUTER || element.getType() == WebElementType.NESTED_ROUTER) {
+                                gen.addImport("com.gridnine.platform.elsa.webApp.StandardParameters");
+                                gen.addImport("org.springframework.beans.factory.ListableBeanFactory");
+                                gen.addImport("com.gridnine.webpeer.core.ui.BaseUiElement");
+                                gen.printLine("private String currentPath;");
+                                gen.printLine("private final ListableBeanFactory factory;");
+                            }
                             var cns = managedConfiguration ? "public %s(String tag, %sConfiguration config, OperationUiContext ctx)".formatted(simpleClassName, simpleClassName) :
                                     "public %s(String tag, OperationUiContext ctx)".formatted(simpleClassName);
                             gen.blankLine();
                             gen.wrapWithBlock(cns, () -> {
                                 gen.printLine(managedConfiguration ? "super(tag, config, ctx);" : "super(tag, ctx);");
+                                if (element.getType() == WebElementType.ROUTER || element.getType() == WebElementType.NESTED_ROUTER) {
+                                    gen.printLine("factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);");
+                                    if (element.getType() == WebElementType.ROUTER) {
+                                        gen.printLine("currentPath = getPath();");
+                                    } else {
+                                        gen.printLine("var config = createConfiguration(ctx);");
+                                        gen.printLine("currentPath = config.getPath();");
+                                    }
+                                    gen.printLine("ctx.setParameter(StandardParameters.ROUTER_PATH, currentPath);");
+                                    if (element.getType() == WebElementType.ROUTER) {
+                                        gen.printLine("var viewId = getViewId(getPath());");
+                                    } else {
+                                        gen.printLine("var viewId = getViewId(config.getPath());");
+                                    }
+                                    gen.printLine("var elm = createElement(viewId, ctx);");
+                                    gen.printLine("addChild(ctx, elm, 0);");
+                                }
                             });
+                            if (element.getType() == WebElementType.ROUTER || element.getType() == WebElementType.NESTED_ROUTER) {
+                                gen.addImport("com.google.gson.JsonElement");
+                                gen.addImport("com.gridnine.webpeer.core.utils.WebPeerUtils");
+                                gen.addImport("com.gridnine.platform.elsa.webApp.NestedRouter");
+                                gen.addImport("java.util.List");
+                                gen.addImport("java.util.ArrayList");
+                                gen.addImport("com.gridnine.webpeer.core.ui.BaseUiElement");
+                                gen.wrapWithBlock("private String getViewId(String path)", () -> {
+                                    gen.printLine("throw new Exception(\"not implemented\");");
+                                });
+
+                                gen.wrapWithBlock("private BaseUiElement createElement(String viewId, OperationUiContext ctx)", () -> {
+                                    gen.printLine("throw new Exception(\"not implemented\");");
+                                });
+                                if (element.getType() == WebElementType.ROUTER) {
+                                    gen.printLine("@Override");
+                                    gen.wrapWithBlock("public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception", () -> {
+                                        gen.wrapWithBlock("if(\"navigate\".equals(commandId))", () -> {
+                                            gen.printLine("var path = WebPeerUtils.getString(data.getAsJsonObject(), \"path\");");
+                                            gen.printLine("var force = WebPeerUtils.getBoolean(data.getAsJsonObject(), \"force\", false);");
+                                            gen.printLine("navigate(path, force, ctx);");
+                                            gen.printLine("return;");
+                                        });
+                                        gen.printLine("super.processCommand(ctx, commandId, data);");
+                                    });
+                                }
+                                gen.blankLine();
+                                gen.wrapWithBlock("private void collectNestedRouters(List<NestedRouter> nestedRouters, BaseUiElement elm)", () -> {
+                                    gen.wrapWithBlock("if(elm instanceof NestedRouter)", () -> {
+                                        gen.printLine("nestedRouters.add((NestedRouter) elm);");
+                                    });
+                                    gen.printLine("elm.getUnmodifiableListOfChildren().forEach(child -> collectNestedRouters(nestedRouters, child));");
+                                });
+                                if(element.getType() == WebElementType.ROUTER) {
+                                    gen.blankLine();
+                                    gen.wrapWithBlock("private void confirm()", () -> {
+                                        gen.printLine("throw new Exception(\"not implemented\")");
+                                    });
+                                }
+                                gen.blankLine();
+                                var navigate = element.getType() == WebElementType.NESTED_ROUTER? "public void navigate(String path, OperationUiContext ctx)": "public void navigate(String path, boolean force, OperationUiContext ctx)";
+                                gen.wrapWithBlock(navigate, () -> {
+                                    gen.printLine("ctx.setParameter(StandardParameters.ROUTER_PATH, path);");
+                                    gen.wrapWithBlock("if(path.equals(currentPath))", () -> {
+                                        gen.printLine("return;");
+                                    });
+                                    if (element.getType() == WebElementType.ROUTER) {
+                                        gen.wrapWithBlock("if(Boolean.TRUE.equals(isHasChanges()) && !force)", () -> {
+                                            gen.printLine("confirm();");
+                                            gen.printLine("return;");
+                                        });
+                                    }
+                                    if (element.getType() == WebElementType.ROUTER) {
+                                        gen.printLine("setPath(path, ctx);");
+                                        gen.printLine("setHasChanges(false, ctx);");
+                                    }
+                                    gen.printLine("var viewId = getViewId(path);");
+                                    gen.printLine("var oldViewId = getViewId(currentPath);");
+                                    gen.printLine("currentPath = path;");
+                                    gen.wrapWithBlock("if(viewId.equals(oldViewId))", () -> {
+                                        gen.printLine("var nestedRouters = new ArrayList<NestedRouter>();");
+                                        gen.printLine("collectNestedRouters(nestedRouters, this);");
+                                        gen.wrapWithBlock("for(var nestedRouter : nestedRouters)", () -> {
+                                            gen.printLine("nestedRouter.navigate(path, ctx);");
+                                        });
+                                        gen.printLine("return;");
+                                    });
+                                    gen.printLine("var elm = getUnmodifiableListOfChildren().getFirst();");
+                                    gen.printLine("removeChild(ctx, elm);");
+                                    gen.printLine("elm = createElement(viewId, ctx);");
+                                    gen.printLine("addChild(ctx, elm, 0);");
+                                });
+                                if (element.getType() == WebElementType.NESTED_ROUTER) {
+                                    gen.blankLine();
+                                    gen.printLine("@Override");
+                                    gen.wrapWithBlock("protected %sConfiguration createConfiguration(OperationUiContext ctx)".formatted(simpleClassName), () -> {
+                                        gen.printLine("var result = new %sConfiguration();".formatted(simpleClassName));
+                                        gen.addImport("com.gridnine.platform.elsa.webApp.StandardParameters");
+                                        gen.printLine("var params = ctx.getParameter(OperationUiContext.PARAMS);");
+                                        gen.printLine("var path = ctx.getParameter(StandardParameters.ROUTER_PATH);");
+                                        gen.addImport("com.gridnine.webpeer.core.utils.WebPeerUtils");
+                                        gen.printLine(" result.setPath(path == null? WebPeerUtils.getString(params, \"initPath\"): path);");
+                                        gen.printLine("return result;");
+                                    });
+                                }
+                            }
                         });
                         if (!sourceFile.getParentFile().exists()) {
                             sourceFile.getParentFile().mkdirs();
@@ -390,7 +508,8 @@ public class JavaWebAppElementsHelper {
         return new File(currentFile, parts[parts.length - 1] + ".java");
     }
 
-    record Field(String id, StandardValueType valueType, String className, boolean collection, FieldType type, boolean nonNullable) {
+    record Field(String id, StandardValueType valueType, String className, boolean collection, FieldType type,
+                 boolean nonNullable) {
 
     }
 

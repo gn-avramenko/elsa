@@ -24,7 +24,7 @@ tasks.register<NpxTask>("eslint-fix") {
 
     command.set("eslint")
     args.set(listOf(
-        "src/common/**",
+        "src/**",
         "src-gen/**",
         "--ext", ".js,.ts,.jsx,.tsx",
         "--format", "stylish",

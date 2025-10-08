@@ -38,7 +38,7 @@ public class WebContainerHelper {
         var componentName = "%sComponent".formatted(basicName);
         var result = """
                 import { WebComponentWrapper } from '@/common/wrapper';
-                import { initStateSetters } from '@/common/component';
+                import { BaseReactUiElement, initStateSetters } from '@/common/component';
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {

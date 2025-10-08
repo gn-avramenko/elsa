@@ -4,12 +4,12 @@ import { AccountLinkSkeleton } from '@g/app/AccountLinkSkeleton';
 function AccountLinkFC(props: { element: AccountLinkComponent }) {
     return (
         <WebComponentWrapper element={props.element}>
-             <button
-                                  className="webpeer-button"
-                                  onClick={() => props.element.sendClick()}
-                              >
-                                  {props.element.getTitle()}
-                              </button>
+            <button
+                className="webpeer-button"
+                onClick={() => props.element.sendClick()}
+            >
+                {props.element.getTitle()}
+            </button>
         </WebComponentWrapper>
     );
 }

@@ -317,3 +317,7 @@ body{
 .has-error{
     border-color: #dc3545;
 }
+
+.webpeer-text-area{
+    height: 100px;
+}

@@ -23,6 +23,7 @@ package com.gridnine.platform.elsa.gradle.meta.webApp;
 
 public enum InputType {
     TEXT_FIELD,
+    TEXT_AREA,
     SELECT,
     AUTOCOMPLETE
 }

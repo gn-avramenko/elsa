@@ -18,7 +18,7 @@ export const reactWebPeerExt = webpeerExt as ReactWebPeerExtension;
 
 reactWebPeerExt.elementHandlersFactories = new Map();
 
-export type InputType = 'SELECT' | 'TEXT_FIELD';
+export type InputType = 'SELECT' | 'TEXT_FIELD' | 'TEXT_AREA';
 
 export type InputDescription = {
     inputType: InputType;

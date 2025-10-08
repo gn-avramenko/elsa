@@ -94,8 +94,44 @@ public class WebAppMetadataHelper {
                 addDeferred(sd, result);
             }
             case ROUTER -> {
+                RouterWebElementDescription rd = (RouterWebElementDescription) element;
+                {
+                    var path = new StandardPropertyDescription();
+                    path.setType(StandardValueType.STRING);
+                    path.setId("path");
+                    path.setNonNullable(true);
+                    result.getServerManagedState().getProperties().put(path.getId(), path);
+                }
+                {
+                    var hasChanges = new StandardPropertyDescription();
+                    hasChanges.setType(StandardValueType.BOOLEAN);
+                    hasChanges.setId("hasChanges");
+                    result.getServerManagedState().getProperties().put(hasChanges.getId(), hasChanges);
+                }
+                {
+                    var confirmMessage = new StandardPropertyDescription();
+                    confirmMessage.setType(StandardValueType.STRING);
+                    confirmMessage.setId("confirmMessage");
+                    result.getServerManagedState().getProperties().put(confirmMessage.getId(), confirmMessage);
+                }
+            }
+            case NESTED_ROUTER -> {
             }
             case TEXT_AREA -> {
+                var tad = (TextAreaWebElementDescription) element;
+                {
+                    var input = new InputDescription();
+                    result.setInput(input);
+                    input.setType(InputType.TEXT_AREA);
+                    var value = new WebAppEntity();
+                    input.setValue(value);
+                    var prop = new StandardPropertyDescription();
+                    prop.setId("value");
+                    prop.setType(StandardValueType.STRING);
+                    value.getProperties().put(prop.getId(), prop);
+                }
+                addValidation(tad, result);
+                addDeferred(tad, result);
             }
             case TEXT_FIELD -> {
             }
@@ -109,6 +145,14 @@ public class WebAppMetadataHelper {
             }
         }
         return result;
+    }
+
+    private static void addValidation(BaseWebElementDescription tad, CustomWebElementDescription result) {
+        var prop = new StandardPropertyDescription();
+        prop.setId("validationMessage");
+        prop.setType(StandardValueType.STRING);
+        prop.setNonNullable(false);
+        result.getServerManagedState().getProperties().put(prop.getId(), prop);
     }
 
     private static void addDeferred(BaseWebElementDescription sd, CustomWebElementDescription ce) {
@@ -148,6 +192,7 @@ public class WebAppMetadataHelper {
                 var prop = new StandardPropertyDescription();
                 prop.setType(StandardValueType.ENTITY);
                 prop.setId("valueChangeListener");
+                prop.getParameters().put("no-equals", "true");
                 prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(inputValueClass));
                 ed.getProperties().put(prop.getId(), prop);
             }
@@ -172,6 +217,12 @@ public class WebAppMetadataHelper {
                 }
             }
         }
+        if(element instanceof NestedRouterWebElementDescription){
+            var prop = new StandardPropertyDescription();
+            prop.setType(StandardValueType.STRING);
+            prop.setId("path");
+            ed.getProperties().put(prop.getId(), prop);
+        }
         return ed;
     }
 
@@ -183,6 +234,7 @@ public class WebAppMetadataHelper {
                 var ctr = (ContainerWebElementDescription)child;
                 yield ctr.isManagedConfiguration();
             }
+            case NESTED_ROUTER,ROUTER -> false;
             default -> true;
         };
     }

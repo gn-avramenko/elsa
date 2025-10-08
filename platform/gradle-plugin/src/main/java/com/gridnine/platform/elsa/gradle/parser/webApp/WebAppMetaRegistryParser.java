@@ -114,6 +114,11 @@ public class WebAppMetaRegistryParser {
                 updateBaseProperties(result, child);
                 yield result;
             }
+            case "nested-router" -> {
+                var result = new NestedRouterWebElementDescription(className);
+                updateBaseProperties(result, child);
+                yield result;
+            }
             case "text-area" -> {
                 var result = new TextAreaWebElementDescription(className);
                 updateBaseProperties(result, child);
@@ -165,7 +170,13 @@ public class WebAppMetaRegistryParser {
         var ccs = child.getFirstChild("commands-from-client");
         if (ccs != null) {
             ccs.getChildren().forEach(command -> {
-                //dd.getCommandsFromClient().add(CommonParserUtils.getIdAttribute(command));
+                var item = new WebElementCommandDescription();
+                item.setId(CommonParserUtils.getIdAttribute(command));
+                var ett = new CustomWebElementDescription("test");
+                updateBaseProperties(ett, command);
+                item.getProperties().putAll(ett.getServerManagedState().getProperties());
+                item.getCollections().putAll(ett.getServerManagedState().getCollections());
+                dd.getCommandsFromClient().add(item);
             });
         }
     }

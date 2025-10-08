@@ -92,6 +92,7 @@
             <element type="tns:ButtonType" name="button"/>
             <element type="tns:SelectType" name="select"/>
             <element type="tns:RouterType" name="router"/>
+            <element type="tns:NestedRouterType" name="nested-router"/>
             <element type="tns:TextAreaType" name="text-area"/>
             <element type="tns:TextFieldType" name="text-field"/>
             <element type="tns:TableType" name="table"/>
@@ -114,7 +115,7 @@
                     <element name="children">
                         <complexType>
                             <sequence>
-                                <choice>
+                                <choice maxOccurs="unbounded" minOccurs="0">
                                     <group ref="tns:AllElementsGroup"/>
                                 </choice>
                             </sequence>
@@ -153,6 +154,11 @@
         </complexContent>
     </complexType>
     <complexType name="RouterType">
+        <complexContent>
+            <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="NestedRouterType">
         <complexContent>
             <extension base="tns:BaseElementType"/>
         </complexContent>

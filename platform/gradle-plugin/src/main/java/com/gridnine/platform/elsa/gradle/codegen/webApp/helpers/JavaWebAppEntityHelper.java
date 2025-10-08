@@ -96,6 +96,9 @@ public class JavaWebAppEntityHelper {
                     });
                     gen.printLine("var casted = (%s) other;".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())));
                     for (StandardPropertyDescription pd : ed.getProperties().values()) {
+                        if("true".equals(pd.getParameters().get("no-equals"))){
+                            continue;
+                        }
                         gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                         gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(pd.getId(), pd.getId()), ()->{
                             gen.printLine("return false;");

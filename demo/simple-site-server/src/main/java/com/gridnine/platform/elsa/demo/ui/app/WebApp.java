@@ -24,7 +24,10 @@
 
 package com.gridnine.platform.elsa.demo.ui.app;
 
+import com.gridnine.platform.elsa.demo.ui.components.test.TestWebApp;
+import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
 import com.gridnine.platform.elsa.webApp.common.FlexDirection;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public class WebApp extends WebAppSkeleton{
@@ -39,4 +42,20 @@ public class WebApp extends WebAppSkeleton{
         result.setFlexDirection(FlexDirection.COLUMN);
         return result;
     }
+
+    public void navigate(String path, OperationUiContext ctx) {
+        getMainRouter().navigate(path, false, ctx);
+    }
+
+    public static WebApp lookup(BaseUiElement elm) {
+        return lookupInternal(elm);
+    }
+
+    private static WebApp lookupInternal(BaseUiElement elm) {
+        if (elm instanceof WebApp) {
+            return (WebApp) elm;
+        }
+        return lookupInternal(elm.getParent());
+    }
+
 }
