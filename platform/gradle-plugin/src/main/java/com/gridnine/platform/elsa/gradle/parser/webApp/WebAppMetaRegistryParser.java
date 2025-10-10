@@ -84,6 +84,10 @@ public class WebAppMetaRegistryParser {
                 var item = new EnumItemDescription("CUSTOM");
                 entityListColumnType.getItems().put(item.getId(), item);
             }
+            {
+                var item = new EnumItemDescription("OPTION");
+                entityListColumnType.getItems().put(item.getId(), item);
+            }
             registry.getEnums().put(entityListColumnType.getId(), entityListColumnType);
         }
         {

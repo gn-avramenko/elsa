@@ -38,10 +38,55 @@ public class WebTableHelper {
         var result = """
                 import { WebComponentWrapper } from '@/common/wrapper';
                 import { initStateSetters } from '@/common/component';
+                import { EntityListColumnDescription } from '@g/common/EntityListColumnDescription';
+                import { Option } from '@g/common/Option';
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
                     initStateSetters(props.element);
+                    const getSortIcon = (columnKey: string) => {
+                            if (props.element.getSort()?.field !== columnKey) {
+                                return '↕️';
+                            }
+                            return props.element.getSort()?.sortOrder === 'ASC' ? '↑' : '↓';
+                        };
+                    const renderCellContent = (rowId: string, value: any, c: EntityListColumnDescription) => {
+                            switch (c.columnType) {
+                                case 'TEXT': {
+                                    return value?.toString();
+                                }
+                                case 'OPTION': {
+                                    return value?.toString();
+                                }
+                                case 'MENU': {
+                                    const menu = value as Option[];
+                                    return (
+                                        <select
+                                            value="_select"
+                                            onChange={(ev) => {
+                                                props.element.sendAction({
+                                                    rowId,
+                                                    actionId: ev.target.value,
+                                                    columnId: c.id,
+                                                });
+                                            }}
+                                        >
+                                            <option key="select-action" value="_select">
+                                                ...
+                                            </option>
+                                            {menu.map((m) => (
+                                                <option key={m.id} value={m.id}>
+                                                    {m.displayName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    );
+                                }
+                                case 'CUSTOM': {
+                                    return value?.toString();
+                                }
+                            }
+                        };
                     return (
                         <WebComponentWrapper element={props.element}>
                             <table className="webpeer-table">
@@ -51,32 +96,32 @@ public class WebTableHelper {
                                       <th
                                         key={c.id}
                                         onClick={() => {
-                                          if (!c.sortable) {
-                                            return;
-                                          }
-                                          if (props.element.getSort()?.field === c.id) {
-                                              const newSort = { ...props.element.getSort()! };
-                                              newSort.direction = newSort.direction == 'ASC' ? 'DESC' : 'ASC';
-                                              props.element.setSort(newSort);
-                                                props.element.processRefreshData();
-                                                                      return;
-                                                                  }
-                                                                  props.element.setSort({
-                                                                      fieldId: c.id,
-                                                                      direction: 'ASC',
-                                                                  });
-                                                                  props.element.processRefreshData();
-                                                              }}
-                                                          >
-                                                              {c.title} {c.sortable ? getSortIcon(c.id) : ''}
-                                                          </th>
-                                                      ))}
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-                                                  {props.element.isLoading() ? (
-                                                      <tr>
-                                                          <td colSpan={props.element.getColumns().length}>Loading</td>
+                                             if (!c.sortable) {
+                                                return;
+                                             }
+                                             if (props.element.getSort()?.field === c.id) {
+                                                  const newSort = { ...props.element.getSort()! };
+                                                  newSort.sortOrder = newSort.sortOrder == 'ASC' ? 'DESC' : 'ASC';
+                                                  props.element.sendSort({ sort: newSort });
+                                                  return;
+                                             }
+                                             props.element.sendSort({
+                                                   sort: {
+                                                     field: c.id,
+                                                     sortOrder: 'ASC',
+                                                   }
+                                             });
+                                        }}
+                                        >
+                                           {c.title} {c.sortable ? getSortIcon(c.id) : ''}
+                                            </th>
+                                        ))}
+                                         </tr>
+                                        </thead>
+                                             <tbody>
+                                                {props.element.getLoading() ? (
+                                                 <tr>
+                                                      <td colSpan={props.element.getColumns().length}>Loading</td>
                                                       </tr>
                                                   ) : (
                                                       props.element.getData().map((entry) => (
@@ -100,8 +145,9 @@ public class WebTableHelper {
                 }
                 export class %s extends %s {
                     functionalComponent = %s;
-                    setValidationMessage(value?: string) {
-                        this.stateSetters.get('validationMessage')!(value);
+                
+                    processRefreshData(){
+                       this.sendRefreshData();
                     }
                 }
                 """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);

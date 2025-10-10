@@ -151,7 +151,7 @@ public class WebWebAppElementsHelper {
                     case TEXT_AREA ->  WebTextAreaHelper.generateTextArea((TextAreaWebElementDescription) element, sourceDir);
                     case TEXT_FIELD ->  WebTextFieldHelper.generateTextField((TextFieldWebElementDescription) element, sourceDir);
                     case NESTED_ROUTER -> WebNestedRouterHelper.generateNestedRouter((NestedRouterWebElementDescription) element, sourceDir);
-//                    case TABLE -> WebTableHelper.generateTable((TableWebElementDescription) element, sourceDir);
+                    case TABLE -> WebTableHelper.generateTable((TableWebElementDescription) element, sourceDir);
                 }
 
             });
