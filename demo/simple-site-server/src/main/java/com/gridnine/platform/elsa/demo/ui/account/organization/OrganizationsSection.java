@@ -65,7 +65,8 @@ public class OrganizationsSection extends OrganizationsSectionSkeleton{
             searchField.setDeferred(false);
             searchField.setDebounceTime(300);
             searchField.setValueChangeListener(((oldValue, newValue, context) -> {
-               refreshData(context);
+               getOrganizationsList().setLoading(true, context);
+               getOrganizationsList().refreshData(context, true);
             } ));
             config.setSearch(searchField);
         }
@@ -144,10 +145,13 @@ public class OrganizationsSection extends OrganizationsSectionSkeleton{
             });
             organizationsListConfig.setLoadMoreListener((context) -> {
                 limit+=10;
-                refreshData(context);
+                getOrganizationsList().setLoading(true, context);
+                getOrganizationsList().refreshData(context, true);
             });
             organizationsListConfig.setSortListener((sa, context) ->{
-                refreshData(context);
+                getOrganizationsList().setLoading(true, context);
+                getOrganizationsList().setSort(sa.getSort(), context);
+                getOrganizationsList().refreshData(context, true);
             });
             organizationsListConfig.setRefreshDataListener(this::refreshData);
             config.setOrganizationsList(organizationsListConfig);
@@ -163,7 +167,7 @@ public class OrganizationsSection extends OrganizationsSectionSkeleton{
         }
         var listSort = getOrganizationsList().getSort();
         var assets=storage.searchAssets(Organization.class, new SearchQueryBuilder().addOrder(listSort.getField(),  listSort.getSortOrder() == SortOrder.ASC? com.gridnine.platform.elsa.common.core.search.SortOrder.ASC: com.gridnine.platform.elsa.common.core.search.SortOrder.DESC)
-                .freeText(getSearch().getValue().getValue()).limit(limit).build(), false);
+                .freeText(getSearch().getValue()== null? null: getSearch().getValue().getValue()).limit(limit).build(), false);
         var data = assets.stream().map(it ->{
             var entity = new OrganizationsListRow();
             entity.setAddress(it.getAddress());
