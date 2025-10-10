@@ -32,7 +32,7 @@ public class WebNestedRouterHelper {
     public static void generateNestedRouter(NestedRouterWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebWebAppElementsHelper.getImportName(descr.getClassName()+"Skeleton");
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """

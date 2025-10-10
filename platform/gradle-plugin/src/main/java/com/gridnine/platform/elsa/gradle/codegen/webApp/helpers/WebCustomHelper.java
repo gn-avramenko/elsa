@@ -23,7 +23,6 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
-import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.CustomWebElementDescription;
 
 import java.io.File;
@@ -33,7 +32,7 @@ public class WebCustomHelper {
     public static void generateCustom(CustomWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebWebAppElementsHelper.getImportName(descr.getClassName()+"Skeleton");
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """

@@ -36,6 +36,7 @@ public class WebWebCommonClassesHelper {
         copy("styles.css", sourceDir);
         copy("tabs.tsx", sourceDir);
         copy("wrapper.tsx", sourceDir);
+        copy("debounce.ts", sourceDir);
     }
     private static void copy(String fileName, File sourceDir) throws IOException {
         var file =  new File(sourceDir, "common/%s".formatted(fileName));

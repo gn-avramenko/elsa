@@ -23,13 +23,13 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
-import com.gridnine.platform.elsa.gradle.meta.webApp.TextAreaWebElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.TextFieldWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;
 
-public class WebTextAreaHelper {
-    public static void generateTextArea(TextAreaWebElementDescription descr, File destDir) throws IOException {
+public class WebTextFieldHelper {
+    public static void generateTextField(TextFieldWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
         var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
@@ -38,20 +38,28 @@ public class WebTextAreaHelper {
         var result = """
                 import { WebComponentWrapper } from '@/common/wrapper';
                 import { initStateSetters } from '@/common/component';
+                import { debounce } from '@/common/debounce';
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
                     initStateSetters(props.element);
                     return (
                         <WebComponentWrapper element={props.element}>
-                            <textarea
+                            <input
+                               type="text"
                                value={props.element.getValue()?.value??''}
-                               className={`webpeer-text-area${props.element.getValidationMessage() ? ' has-error' : ''}`}
+                               className={`webpeer-text-field${props.element.getValidationMessage() ? ' has-error' : ''}`}
                                onChange={(e) => {
                                         props.element.setValidationMessage(undefined);
-                                        props.element.setValue({
+                                        const value = {
                                           value: e.target.value
-                                        });
+                                        };
+                                        if(props.element.getDebounceTime()){
+                                            props.element.stateSetters.get('value')!(value);
+                                            props.element.debouncedSetValue(value);
+                                        } else {
+                                            props.element.setValue(value);
+                                        }
                                        }}
                             />
                         </WebComponentWrapper>
@@ -59,6 +67,16 @@ public class WebTextAreaHelper {
                 }
                 export class %s extends %s {
                     functionalComponent = %s;
+                
+                    debouncedSetValue = debounce((value: any) => {
+                           this.sendCommand(
+                                'pc',
+                                {
+                                    pn: 'value',
+                                    pv: value,
+                                });
+                        }, this.getDebounceTime()??0);
+                
                     setValidationMessage(value?: string) {
                         this.stateSetters.get('validationMessage')!(value);
                     }

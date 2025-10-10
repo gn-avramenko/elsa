@@ -165,7 +165,7 @@ public class JavaWebAppEntityHelper {
                             for (StandardPropertyDescription pd : ed.getProperties().values()) {
                                 gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                 gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
-                                gen.printLine("%s = WebAppUtils.fromJsonValue(obj.has(\"%s\")? obj.get(\"%s\"): null, StandardValueType.%s, %s, %s.class);".formatted(pd.getId(), pd.getId(), pd.getId(), pd.getType().name(), pd.getClassName() == null ? "null" : "\"%s\"".formatted(pd.getClassName()), JavaCodeGeneratorUtils.getPropertyType(pd.getType(), pd.getClassName(), false, gen)));
+                                gen.printLine("%s = WebAppUtils.fromJsonValue(obj.has(\"%s\")? obj.get(\"%s\"): null, StandardValueType.%s, %s.class);".formatted(pd.getId(), pd.getId(), pd.getId(), pd.getType().name(), JavaCodeGeneratorUtils.getPropertyType(pd.getType(), pd.getClassName(), false, gen)));
                             }
                             for (StandardCollectionDescription cd : ed.getCollections().values()) {
                                 gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
@@ -174,7 +174,7 @@ public class JavaWebAppEntityHelper {
                                     gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                     gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
                                     gen.wrapWithBlock("for(var elm : obj.get(\"%s\").getAsJsonArray())".formatted(cd.getId()), () -> {
-                                        gen.printLine("%s.add(WebAppUtils.fromJsonValue(elm, StandardValueType.%s, %s, %s.class));".formatted(cd.getId(), cd.getElementType().name(), cd.getElementClassName() == null ? "null" : "\"%s\"".formatted(cd.getElementClassName()), JavaCodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen)));
+                                        gen.printLine("%s.add(WebAppUtils.fromJsonValue(elm, StandardValueType.%s, %s.class));".formatted(cd.getId(), cd.getElementType().name(), JavaCodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen)));
                                     });
                                 });
                             }

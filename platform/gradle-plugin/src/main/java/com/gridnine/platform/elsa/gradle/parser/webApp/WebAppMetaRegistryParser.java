@@ -59,6 +59,51 @@ public class WebAppMetaRegistryParser {
             registry.getEnums().put(flexDirectionEnum.getId(), flexDirectionEnum);
         }
         {
+            var sortOrderEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.SortOrder");
+            {
+                var item = new EnumItemDescription("ASC");
+                sortOrderEnum.getItems().put(item.getId(), item);
+            }
+            {
+                var item = new EnumItemDescription("DESC");
+                sortOrderEnum.getItems().put(item.getId(), item);
+            }
+            registry.getEnums().put(sortOrderEnum.getId(), sortOrderEnum);
+        }
+        {
+            var entityListColumnType = new EnumDescription("com.gridnine.platform.elsa.webApp.common.EntityListColumnType");
+            {
+                var item = new EnumItemDescription("TEXT");
+                entityListColumnType.getItems().put(item.getId(), item);
+            }
+            {
+                var item = new EnumItemDescription("MENU");
+                entityListColumnType.getItems().put(item.getId(), item);
+            }
+            {
+                var item = new EnumItemDescription("CUSTOM");
+                entityListColumnType.getItems().put(item.getId(), item);
+            }
+            registry.getEnums().put(entityListColumnType.getId(), entityListColumnType);
+        }
+        {
+            var sort = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Sort");
+            {
+                var item = new StandardPropertyDescription("field");
+                item.setType(StandardValueType.STRING);
+                item.setNonNullable(true);
+                sort.getProperties().put(item.getId(), item);
+            }
+            {
+                var item = new StandardPropertyDescription("sortOrder");
+                item.setType(StandardValueType.ENUM);
+                item.setNonNullable(true);
+                item.setClassName("com.gridnine.platform.elsa.webApp.common.SortOrder");
+                sort.getProperties().put(item.getId(), item);
+            }
+            registry.getEntities().put(sort.getId(), sort);
+        }
+        {
             var optionEntity = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Option");
             {
                 var item = new StandardPropertyDescription("id");
@@ -74,6 +119,41 @@ public class WebAppMetaRegistryParser {
             }
             registry.getEntities().put(optionEntity.getId(), optionEntity);
         }
+        {
+            var entityListColumnDescription = new EntityDescription("com.gridnine.platform.elsa.webApp.common.EntityListColumnDescription");
+            {
+                var item = new StandardPropertyDescription("id");
+                item.setType(StandardValueType.STRING);
+                item.setNonNullable(true);
+                entityListColumnDescription.getProperties().put(item.getId(), item);
+            }
+            {
+                var item = new StandardPropertyDescription("title");
+                item.setType(StandardValueType.STRING);
+                item.setNonNullable(true);
+                entityListColumnDescription.getProperties().put(item.getId(), item);
+            }
+            {
+                var item = new StandardPropertyDescription("columnType");
+                item.setType(StandardValueType.ENUM);
+                item.setNonNullable(true);
+                item.setClassName("com.gridnine.platform.elsa.webApp.common.EntityListColumnType");
+                entityListColumnDescription.getProperties().put(item.getId(), item);
+            }
+            {
+                var item = new StandardPropertyDescription("customSubtype");
+                item.setType(StandardValueType.STRING);
+                entityListColumnDescription.getProperties().put(item.getId(), item);
+            }
+            {
+                var item = new StandardPropertyDescription("sortable");
+                item.setType(StandardValueType.BOOLEAN);
+                item.setNonNullable(true);
+                entityListColumnDescription.getProperties().put(item.getId(), item);
+            }
+            registry.getEntities().put(entityListColumnDescription.getId(), entityListColumnDescription);
+        }
+
     }
 
     private BaseWebElementDescription processElement(XmlNode child, WebAppMetaRegistry registry) {
@@ -91,6 +171,7 @@ public class WebAppMetaRegistryParser {
             case "container" -> {
                 var result = new ContainerWebElementDescription(className);
                 updateBaseProperties(result, child);
+                result.setManagedConfiguration("true".equals(child.getAttribute("managed-configuration")));
                 var children = child.getFirstChild("children");
                 if(children != null){
                     children.getChildren().forEach(it -> {
@@ -131,7 +212,13 @@ public class WebAppMetaRegistryParser {
             }
             case "table" -> {
                 var result = new TableWebElementDescription(className);
+                result.setManagedConfiguration("true".equals(child.getAttribute("managed-configuration")));
                 updateBaseProperties(result, child);
+                var row = child.getFirstChild("row");
+                var ett = new EntityDescription("ett");
+                CommonParserUtils.fillEntityDescription(row, ett);
+                result.getRow().getProperties().putAll(ett.getProperties());
+                result.getRow().getCollections().putAll(ett.getCollections());
                 yield result;
             }
             case "autocomplete" -> {

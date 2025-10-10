@@ -56,7 +56,7 @@ public class WebWebAppElementsHelper {
                     ca.append(BuildTextUtils.joinToString(elm.getCommandsFromClient().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
                     gen.addImport("{BaseReactUiElement} from '@/common/component'");
                     var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
-                    var inputValueImport = WebWebAppElementsHelper.getImportName(className+"InputValue");
+                    var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue");
                     if(elm.getInput() != null){
                         gen.addImport("{%s} from '%s'".formatted(inputValueSimpleClassName, inputValueImport));
                     }
@@ -94,6 +94,19 @@ public class WebWebAppElementsHelper {
                                         getType(coll.getElementType(), registry, coll.getElementClassName(), gen)));
                             });
                         }
+                        if(!elm.getCommandsFromServer().isEmpty()){
+                            gen.wrapWithBlock("processCommandFromServer(commandId: string, data?: any)", ()->{
+                               for(var command : elm.getCommandsFromServer()){
+                                   gen.wrapWithBlock("if (commandId === '%s')".formatted(command.getId()), ()->{
+                                       if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
+                                           gen.printLine("this.process%s();".formatted(BuildTextUtils.capitalize(command.getId())));
+                                       }
+                                       gen.printLine("return;");
+                                   });
+                               }
+                               gen.printLine("super.processCommandFromServer(commandId, data);");
+                            });
+                        }
                         if(elm.getInput() != null){
                             gen.wrapWithBlock("getValue()", () -> {
                                 gen.printLine("return this.state.get('value') as %s".formatted(inputValueSimpleClassName));
@@ -112,8 +125,17 @@ public class WebWebAppElementsHelper {
                                 gen.wrapWithBlock("async send%s()".formatted(BuildTextUtils.capitalize(action.getId())), ()->{
                                     gen.printLine("await this.sendCommand('%s');".formatted(action.getId()));
                                 });
+                            } else {
+                                var actionClassName = "%s%sAction".formatted(elm.getClassName(),BuildTextUtils.capitalize(action.getId()));
+                                gen.wrapWithBlock("async send%s(value: %s)".formatted(BuildTextUtils.capitalize(action.getId()), getType(StandardValueType.ENTITY, registry, actionClassName, gen)), ()->{
+                                    gen.printLine("await this.sendCommand('%s', value);".formatted(action.getId()));
+                                });
                             }
-
+                        }
+                        for(var command : elm.getCommandsFromServer()){
+                            if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
+                                gen.printLine("abstract process%s(): void;".formatted(BuildTextUtils.capitalize(command.getId())));
+                            }
                         }
                     });
 
@@ -127,7 +149,9 @@ public class WebWebAppElementsHelper {
                     case ROUTER -> WebRouterHelper.generateRouter((RouterWebElementDescription)  element, sourceDir);
                     case CUSTOM -> WebCustomHelper.generateCustom((CustomWebElementDescription) element, sourceDir);
                     case TEXT_AREA ->  WebTextAreaHelper.generateTextArea((TextAreaWebElementDescription) element, sourceDir);
+                    case TEXT_FIELD ->  WebTextFieldHelper.generateTextField((TextFieldWebElementDescription) element, sourceDir);
                     case NESTED_ROUTER -> WebNestedRouterHelper.generateNestedRouter((NestedRouterWebElementDescription) element, sourceDir);
+//                    case TABLE -> WebTableHelper.generateTable((TableWebElementDescription) element, sourceDir);
                 }
 
             });
@@ -145,29 +169,16 @@ public class WebWebAppElementsHelper {
         return new File(currentFile, parts[parts.length - 1] + ".java");
     }
 
-    public static String getImportName(String className) {
-        if("com.gridnine.platform.elsa.webApp.common.FlexDirection".equals(className)){
-            return "@g/common/FlexDirection";
-        }
-        var parts = className.split("\\.");
-        StringBuilder s = new StringBuilder();
-        var length = parts.length;
-        for (int n = length - 2; n < length; n++) {
-            if(!s.isEmpty()){
-                s.append("/");
-            }
-            s.append(parts[n]);
-        }
-        return "@g/"+ s;
-    }
-
     private static String getType(StandardValueType vt, WebAppMetaRegistry metaRegistry, String className, TypeScriptCodeGenerator gen) throws Exception {
         return switch (vt) {
             case LONG, INT, BIG_DECIMAL -> "number";
             case UUID, STRING, CLASS, LOCAL_DATE, INSTANT, LOCAL_DATE_TIME -> "string";
             case ENUM,ENTITY -> {
                 var simpleName = JavaCodeGeneratorUtils.getSimpleName(className);
-                var importName = getImportName(className);
+                if("Object".equals(simpleName)){
+                    yield "any";
+                }
+                var importName = WebCodeGeneratorUtils.getImportName(className);
                 gen.addImport("{%s} from '%s'".formatted(simpleName, importName));
                 yield  simpleName;
             }

@@ -89,21 +89,21 @@ public class WebAppUtils {
         }
         throw Xeption.forDeveloper("unsupported type %s".formatted(type));
     }
-    public static<T> List<T> fromJsonArrayValue(JsonElement value, StandardValueType type, String className, Class<T> cls) throws Exception {
+    public static<T> List<T> fromJsonArrayValue(JsonElement value, StandardValueType type,  Class<T> cls) throws Exception {
         if(value == null || value.isJsonNull()){
             return List.of();
         }
         var arr = value.getAsJsonArray();
         var result = new ArrayList<T>();
         for(var elm: arr){
-            var item = fromJsonValue(elm, type, className, cls);
+            var item = fromJsonValue(elm, type, cls);
             result.add(item);
         }
         return result;
     }
 
     @SuppressWarnings("unchecked")
-    public static<T> T fromJsonValue(JsonElement value, StandardValueType type, String className, Class<T> cls) throws Exception {
+    public static<T> T fromJsonValue(JsonElement value, StandardValueType type, Class<T> cls) throws Exception {
         if(value == null || value.isJsonNull()){
             return null;
         }
@@ -125,7 +125,7 @@ public class WebAppUtils {
             case BYTE_ARRAY:
                 throw Xeption.forDeveloper("unsupported type %s".formatted(type));
             case ENTITY: {
-                var  res = (GsonDeserializable) Class.forName(className).getConstructor().newInstance();
+                var  res = (GsonDeserializable) cls.getConstructor().newInstance();
                 res.deserialize(value);
                 return (T) res;
             }

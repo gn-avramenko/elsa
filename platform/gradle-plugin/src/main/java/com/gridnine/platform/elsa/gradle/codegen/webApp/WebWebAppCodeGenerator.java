@@ -29,9 +29,11 @@ import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.*;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.CustomWebElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.TableWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
+import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 import org.gradle.api.Project;
 
 import java.io.File;
@@ -68,6 +70,28 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                 var gen = new TypeScriptCodeGenerator();
                 WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen);
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
+                generatedFiles.add(file);
+            }
+            for(var action: ce.getCommandsFromClient()){
+                if(action.getProperties().size()+action.getCollections().size()>0){
+                    var dd = new EntityDescription();
+                    dd.setId("%s%sAction".formatted(elm.getClassName(), BuildTextUtils.capitalize(action.getId())));
+                    dd.getProperties().putAll(action.getProperties());
+                    dd.getCollections().putAll(action.getCollections());
+                    var gen = new TypeScriptCodeGenerator();
+                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                    var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
+                    generatedFiles.add(file);
+                }
+            }
+            if(elm instanceof TableWebElementDescription td){
+                var dd = new EntityDescription();
+                dd.setId("%sRow".formatted(td.getClassName()));
+                dd.getProperties().putAll(td.getRow().getProperties());
+                dd.getCollections().putAll(td.getRow().getCollections());
+                var gen = new TypeScriptCodeGenerator();
+                WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
         }

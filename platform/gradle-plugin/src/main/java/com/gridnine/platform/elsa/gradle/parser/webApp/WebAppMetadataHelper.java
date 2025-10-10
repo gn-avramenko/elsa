@@ -28,11 +28,14 @@ import com.gridnine.platform.elsa.gradle.meta.common.StandardCollectionDescripti
 import com.gridnine.platform.elsa.gradle.meta.common.StandardPropertyDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.webApp.*;
+import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebAppMetadataHelper {
     public static CustomWebElementDescription toCustomEntity(BaseWebElementDescription element) {
@@ -119,23 +122,101 @@ public class WebAppMetadataHelper {
             }
             case TEXT_AREA -> {
                 var tad = (TextAreaWebElementDescription) element;
-                {
-                    var input = new InputDescription();
-                    result.setInput(input);
-                    input.setType(InputType.TEXT_AREA);
-                    var value = new WebAppEntity();
-                    input.setValue(value);
-                    var prop = new StandardPropertyDescription();
-                    prop.setId("value");
-                    prop.setType(StandardValueType.STRING);
-                    value.getProperties().put(prop.getId(), prop);
-                }
+                addValue(result, InputType.TEXT_AREA, StandardValueType.STRING);
                 addValidation(tad, result);
                 addDeferred(tad, result);
             }
             case TEXT_FIELD -> {
+                var tfd = (TextFieldWebElementDescription) element;
+                addValue(result, InputType.TEXT_FIELD, StandardValueType.STRING);
+                addValidation(tfd, result);
+                addDeferred(tfd, result);
+                addDebounceTime(tfd, result);
             }
             case TABLE -> {
+                var td = (TableWebElementDescription) element;
+                {
+                    var columns = new StandardCollectionDescription();
+                    columns.setElementType(StandardValueType.ENTITY);
+                    columns.setId("columns");
+                    columns.setElementClassName("com.gridnine.platform.elsa.webApp.common.EntityListColumnDescription");
+                    result.getServerManagedState().getCollections().put(columns.getId(), columns);
+                }
+                {
+                    var data = new StandardCollectionDescription();
+                    data.setElementType(StandardValueType.ENTITY);
+                    data.setId("data");
+                    data.setElementClassName("%sRow".formatted(td.getClassName()));
+                    result.getServerManagedState().getCollections().put(data.getId(), data);
+                }
+                {
+                    var sort = new StandardPropertyDescription();
+                    sort.setType(StandardValueType.ENTITY);
+                    sort.setId("sort");
+                    sort.setClassName("com.gridnine.platform.elsa.webApp.common.Sort");
+                    result.getServerManagedState().getProperties().put(sort.getId(), sort);
+                }
+                {
+                    var loading = new StandardPropertyDescription();
+                    loading.setType(StandardValueType.BOOLEAN);
+                    loading.setId("loading");
+                    result.getServerManagedState().getProperties().put(loading.getId(), loading);
+                }
+                {
+                    var action = new WebElementCommandDescription();
+                    result.getCommandsFromClient().add(action);
+                    action.setId("action");
+                    {
+                        var arg = new  StandardPropertyDescription();
+                        arg.setType(StandardValueType.STRING);
+                        arg.setId("rowId");
+                        arg.setNonNullable(true);
+                        action.getProperties().put(arg.getId(), arg);
+                    }
+                    {
+                        var arg = new  StandardPropertyDescription();
+                        arg.setType(StandardValueType.STRING);
+                        arg.setId("columnId");
+                        arg.setNonNullable(true);
+                        action.getProperties().put(arg.getId(), arg);
+                    }
+                    {
+                        var arg = new  StandardPropertyDescription();
+                        arg.setType(StandardValueType.STRING);
+                        arg.setId("actionId");
+                        arg.setNonNullable(true);
+                        action.getProperties().put(arg.getId(), arg);
+                    }
+                }
+                {
+                    var sort = new WebElementCommandDescription();
+                    result.getCommandsFromClient().add(sort);
+                    sort.setId("sort");
+                    {
+                        var arg = new  StandardPropertyDescription();
+                        arg.setType(StandardValueType.ENTITY);
+                        arg.setId("sort");
+                        arg.setClassName("com.gridnine.platform.elsa.webApp.common.Sort");
+                        arg.setNonNullable(true);
+                        sort.getProperties().put(arg.getId(), arg);
+                    }
+
+                }
+                {
+                    var loadMore = new WebElementCommandDescription();
+                    loadMore.setId("loadMore");
+                    result.getCommandsFromClient().add(loadMore);
+                }
+                {
+                    var refreshData = new WebElementCommandDescription();
+                    refreshData.setId("refreshData");
+                    result.getCommandsFromClient().add(refreshData);
+                }
+                {
+                    var refreshData = new WebElementCommandDescription();
+                    refreshData.setId("refreshData");
+                    result.getCommandsFromServer().add(refreshData);
+                }
             }
             case AUTOCOMPLETE -> {
             }
@@ -147,12 +228,32 @@ public class WebAppMetadataHelper {
         return result;
     }
 
+    private static void addValue(CustomWebElementDescription result, InputType inputType, StandardValueType standardValueType) {
+        var input = new InputDescription();
+        result.setInput(input);
+        input.setType(inputType);
+        var value = new WebAppEntity();
+        input.setValue(value);
+        var prop = new StandardPropertyDescription();
+        prop.setId("value");
+        prop.setType(standardValueType);
+        value.getProperties().put(prop.getId(), prop);
+    }
+
     private static void addValidation(BaseWebElementDescription tad, CustomWebElementDescription result) {
         var prop = new StandardPropertyDescription();
         prop.setId("validationMessage");
         prop.setType(StandardValueType.STRING);
         prop.setNonNullable(false);
         result.getServerManagedState().getProperties().put(prop.getId(), prop);
+    }
+
+    private static void addDebounceTime(BaseWebElementDescription sd, CustomWebElementDescription ce) {
+        var prop = new StandardPropertyDescription();
+        prop.setId("debounceTime");
+        prop.setType(StandardValueType.INT);
+        prop.setNonNullable(false);
+        ce.getServerManagedState().getProperties().put(prop.getId(), prop);
     }
 
     private static void addDeferred(BaseWebElementDescription sd, CustomWebElementDescription ce) {
@@ -170,6 +271,24 @@ public class WebAppMetadataHelper {
         ed.getCollections().putAll(value.getCollections());
         return ed;
     }
+    public static List<EntityDescription> getCommandsDescription(BaseWebElementDescription element) {
+        var result = new  ArrayList<EntityDescription>();
+        var lst = new ArrayList<WebElementCommandDescription>();
+        var ce = toCustomEntity(element);
+        lst.addAll(ce.getCommandsFromClient());
+        lst.addAll(ce.getCommandsFromServer());
+        for(var command :lst) {
+            if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
+                continue;
+            }
+            var cn = "%s%sAction".formatted(ce.getClassName(),BuildTextUtils.capitalize(command.getId()));
+            var ed = new EntityDescription(cn);
+            ed.getProperties().putAll(command.getProperties());
+            ed.getCollections().putAll(command.getCollections());
+            result.add(ed);
+        }
+        return result;
+    }
     public static EntityDescription getConfigurationDescription(BaseWebElementDescription element) {
         var ce = toCustomEntity(element);
         var cn = "%sConfiguration".formatted(ce.getClassName());
@@ -183,6 +302,8 @@ public class WebAppMetadataHelper {
             prop.setId("%sListener".formatted(cmd.getId()));
             if(cmd.getProperties().isEmpty() && cmd.getCollections().isEmpty()){
                 prop.setClassName("com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument<com.gridnine.webpeer.core.ui.OperationUiContext>");
+            } else {
+                prop.setClassName("com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments<%s%sAction, com.gridnine.webpeer.core.ui.OperationUiContext>".formatted(element.getClassName(), BuildTextUtils.capitalize(cmd.getId())));
             }
             ed.getProperties().put(prop.getId(), prop);
         }
@@ -232,6 +353,10 @@ public class WebAppMetadataHelper {
         return switch (child.getType()) {
             case CONTAINER -> {
                 var ctr = (ContainerWebElementDescription)child;
+                yield ctr.isManagedConfiguration();
+            }
+            case  TABLE -> {
+                var ctr = (TableWebElementDescription)child;
                 yield ctr.isManagedConfiguration();
             }
             case NESTED_ROUTER,ROUTER -> false;

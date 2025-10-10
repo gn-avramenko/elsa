@@ -105,6 +105,7 @@
         <choice>
             <element type="tns:RootModalType" name="modal"/>
             <element type="tns:RootContainerType" name="container"/>
+            <element type="tns:RootTextFieldType" name="text-field"/>
         </choice>
     </group>
 
@@ -178,6 +179,11 @@
             <extension base="tns:BaseElementType"/>
         </complexContent>
     </complexType>
+    <complexType name="RootTextFieldType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType"/>
+        </complexContent>
+    </complexType>
     <complexType name="TextFieldType">
         <complexContent>
             <extension base="tns:BaseElementType"/>
@@ -196,10 +202,10 @@
     <complexType name="TableType">
         <complexContent>
             <extension base="tns:BaseElementType">
-                <sequence minOccurs="0">
-                    <element name="column-description-extension" minOccurs="0" type="tns:Entity"/>
-                    <element name="data-description" type="tns:Entity"/>
+                <sequence>
+                    <element name="row" type="tns:Entity"/>
                 </sequence>
+                <attribute name="managed-configuration" type="boolean" default="false"/>
             </extension>
         </complexContent>
     </complexType>

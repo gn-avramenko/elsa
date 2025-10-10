@@ -24,7 +24,6 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.webApp.RouterWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.SelectWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ public class WebRouterHelper {
     public static void generateRouter(RouterWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebWebAppElementsHelper.getImportName(descr.getClassName() + "Skeleton");
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName() + "Skeleton");
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """

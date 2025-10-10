@@ -24,10 +24,7 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
-import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
-import com.gridnine.platform.elsa.gradle.meta.webApp.WebElementType;
-import com.gridnine.platform.elsa.gradle.meta.webApp.WebElementWithChildren;
+import com.gridnine.platform.elsa.gradle.meta.webApp.*;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
@@ -39,6 +36,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class JavaWebAppElementsHelper {
@@ -48,6 +46,7 @@ public class JavaWebAppElementsHelper {
                 var elm = WebAppMetadataHelper.toCustomEntity(element);
                 var managedConfiguration = switch (element.getType()) {
                     case CONTAINER -> ((ContainerWebElementDescription) element).isManagedConfiguration();
+                    case TABLE -> ((TableWebElementDescription) element).isManagedConfiguration();
                     case ROUTER, NESTED_ROUTER -> false;
                     default -> true;
                 };
@@ -60,8 +59,10 @@ public class JavaWebAppElementsHelper {
                         }
                     }
                     for (var command : elm.getCommandsFromClient()) {
-                        if (command.getCollections().isEmpty() && command.getProperties().isEmpty()) {
+                        if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                             fields.add(new Field("%sListener".formatted(command.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument<com.gridnine.webpeer.core.ui.OperationUiContext>", false, FieldType.COMMAND_FROM_CLIENT, false));
+                        } else {
+                            fields.add(new Field("%sListener".formatted(command.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments<%s%sAction, com.gridnine.webpeer.core.ui.OperationUiContext>".formatted(element.getClassName(),BuildTextUtils.capitalize(command.getId())), false, FieldType.COMMAND_FROM_CLIENT, false));
                         }
                     }
                     for (var property : elm.getServerManagedState().getProperties().values()) {
@@ -287,9 +288,9 @@ public class JavaWebAppElementsHelper {
                                                 gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                                                 gen.printLine("var oldValue = this.%s;".formatted(input.id));
                                                 if (input.collection) {
-                                                    gen.printLine("var newValue = WebAppUtils.fromJsonArrayValue(pv, StandardValueType.%s, \"%s\", %s.class);".formatted(input.valueType, input.className, getPropertyType(input.valueType, input.className, gen)));
+                                                    gen.printLine("var newValue = WebAppUtils.fromJsonArrayValue(pv, StandardValueType.%s, %s.class);".formatted(input.valueType, getPropertyType(input.valueType, input.className, gen)));
                                                 } else {
-                                                    gen.printLine("var newValue = WebAppUtils.fromJsonValue(pv, StandardValueType.%s, \"%s\", %s.class);".formatted(input.valueType, input.className, getPropertyType(input.valueType, input.className, gen)));
+                                                    gen.printLine("var newValue = WebAppUtils.fromJsonValue(pv, StandardValueType.%s, %s.class);".formatted(input.valueType, getPropertyType(input.valueType, input.className, gen)));
                                                 }
                                                 gen.printLine("this.%s = newValue;".formatted(input.id));
                                                 gen.printLine("state.put(\"%s\", value);".formatted(input.id));
@@ -303,17 +304,32 @@ public class JavaWebAppElementsHelper {
 
                                 }
                                 for (var action : elm.getCommandsFromClient()) {
-                                    if (action.getCollections().isEmpty() && action.getProperties().isEmpty()) {
                                         gen.wrapWithBlock("if(commandId.equals(\"%s\"))".formatted(action.getId()), () -> {
-                                            gen.printLine("this.%sListener.run(ctx);".formatted(action.getId()));
+                                            if (action.getCollections().isEmpty() && action.getProperties().isEmpty()) {
+                                                gen.printLine("this.%sListener.run(ctx);".formatted(action.getId()));
+                                                gen.printLine("return;");
+                                                return;
+                                            }
+                                            var actionClassName = getPropertyType(StandardValueType.ENTITY, "%s%sAction".formatted(className, BuildTextUtils.capitalize(action.getId())), gen);
+                                            gen.printLine("var actionValue = WebAppUtils.fromJsonValue(data, StandardValueType.ENTITY, %s.class);".formatted(actionClassName));
+                                            gen.printLine("this.%sListener.run(actionValue, ctx);".formatted(action.getId()));
                                             gen.printLine("return;");
+                                            return;
                                         });
-                                        continue;
-                                    }
-                                    throw new Exception("not implemented");
-                                }
+                                 }
                                 gen.printLine("super.processCommand(ctx, commandId, data);");
                             });
+                            for (var action : elm.getCommandsFromServer()) {
+                                if(action.getProperties().isEmpty() && action.getCollections().isEmpty()) {
+                                    gen.wrapWithBlock("public void %s(OperationUiContext ctx, boolean postProcess)".formatted(action.getId()), ()->{
+                                        gen.wrapWithBlock("if(postProcess)", ()->{
+                                            gen.printLine("sendPostProcessCommand(ctx, \"%s\", null);".formatted(action.getId()));
+                                            gen.printLine("return;");
+                                        });
+                                        gen.printLine("sendCommand(ctx, \"%s\", null);".formatted(action.getId()));
+                                    });
+                                }
+                            }
                         }
                         gen.blankLine();
                         gen.printLine("@Override");

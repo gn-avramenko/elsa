@@ -53,20 +53,20 @@ public class WebCodeGeneratorUtils {
         var imports = new HashSet<String>();
         for (var pd : ed.getProperties().values()) {
             if(pd.getType() == StandardValueType.ENTITY || pd.getType() == StandardValueType.ENUM){
-                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getClassName()));
+                imports.add(pd.getClassName());
             }
         }
         for (var pd : ed.getCollections().values()) {
             if(pd.getElementType() == StandardValueType.ENTITY|| pd.getElementType() == StandardValueType.ENUM){
-                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getElementClassName()));
+                imports.add(pd.getElementClassName());
             }
         }
         for (var pd : ed.getMaps().values()) {
             if(pd.getKeyType() == StandardValueType.ENTITY|| pd.getKeyType() == StandardValueType.ENUM){
-                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getKeyClassName()));
+                imports.add(pd.getKeyClassName());
             }
             if(pd.getValueType() == StandardValueType.ENTITY|| pd.getValueType() == StandardValueType.ENUM){
-                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getValueClassName()));
+                imports.add(pd.getValueClassName());
             }
         }
         if(ed.getExtendsId() != null){
@@ -77,10 +77,10 @@ public class WebCodeGeneratorUtils {
                 gen.printLine("import { HasClassName } from 'elsa-web-core'");
             }
             imports.stream().sorted().forEach(it ->{
-                if("BinaryData".equals(it)){
+                if(it.contains("BinaryData")){
                     gen.printLine("import { BinaryData }  from 'elsa-web-core';");
                 } else if(!"Object".equals(it)) {
-                    gen.printLine("import { %s } from './%s';".formatted(it, it));
+                    gen.printLine("import { %s } from '%s';".formatted(JavaCodeGeneratorUtils.getSimpleName(it), getImportName(it)));
                 }
             });
             gen.blankLine();
@@ -105,6 +105,9 @@ public class WebCodeGeneratorUtils {
     private static boolean isAbstract(String it, RemotingMetaRegistry metaRegistry) {
         if("Object".equals(it)){
             return true;
+        }
+        if(metaRegistry == null){
+            return false;
         }
         var ett = metaRegistry.getEntities().get(it);
         return ett != null && ett.isAbstract();
@@ -219,6 +222,20 @@ public class WebCodeGeneratorUtils {
     }
 
     private static String trimContent(String content) {
-        return content.replaceAll("\\s+", "").replaceAll(",","");
+        return content.replaceAll("\\s+|,|;|\"|'|\\)|\\(", "");
+    }
+
+
+    public static String getImportName(String className) {
+        var parts = className.split("\\.");
+        StringBuilder s = new StringBuilder();
+        var length = parts.length;
+        for (int n = length - 2; n < length; n++) {
+            if(!s.isEmpty()){
+                s.append("/");
+            }
+            s.append(parts[n]);
+        }
+        return "@g/"+ s;
     }
 }

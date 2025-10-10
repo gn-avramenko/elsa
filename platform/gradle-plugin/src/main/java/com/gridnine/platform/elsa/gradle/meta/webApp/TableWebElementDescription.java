@@ -5,25 +5,22 @@
 
 package com.gridnine.platform.elsa.gradle.meta.webApp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TableWebElementDescription extends BaseWebElementDescription {
 
-    private WebAppEntity columnDescriptionExtension;
+    private boolean managedConfiguration;
 
-    private final List<TableDataFieldDescription> dataFields = new ArrayList<>();
+    private final WebAppEntity row = new WebAppEntity();
 
     public TableWebElementDescription(String className) {
         super(className);
     }
 
-    public void setColumnDescriptionExtension(WebAppEntity columnDescriptionExtension) {
-        this.columnDescriptionExtension = columnDescriptionExtension;
+    public boolean isManagedConfiguration() {
+        return managedConfiguration;
     }
 
-    public WebAppEntity getColumnDescriptionExtension() {
-        return columnDescriptionExtension;
+    public void setManagedConfiguration(boolean managedConfiguration) {
+        this.managedConfiguration = managedConfiguration;
     }
 
     @Override
@@ -31,8 +28,7 @@ public class TableWebElementDescription extends BaseWebElementDescription {
         return WebElementType.TABLE;
     }
 
-
-    public List<TableDataFieldDescription> getDataFields() {
-        return dataFields;
+    public WebAppEntity getRow() {
+        return row;
     }
 }

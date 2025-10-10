@@ -38,7 +38,7 @@ public class WebWebRegistryHelper {
                 var className = element.getClassName();
                 var simpleClassName = JavaCodeGeneratorUtils.getSimpleName(className);
                 gen.addImport("{registerFactory} from '@/common/component'");
-                gen.addImport("{%sComponent} from '%s'".formatted(simpleClassName, WebWebAppElementsHelper.getImportName(className)).replace("@g", "@"));
+                gen.addImport("{%sComponent} from '%s'".formatted(simpleClassName, WebCodeGeneratorUtils.getImportName(className)).replace("@g", "@"));
                 gen.blankLine();
                 gen.printLine("""
                         registerFactory('%s', {

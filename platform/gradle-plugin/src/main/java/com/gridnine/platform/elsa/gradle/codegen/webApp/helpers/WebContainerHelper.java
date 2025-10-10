@@ -27,13 +27,12 @@ import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescript
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
 public class WebContainerHelper {
     public static void generateContainer(ContainerWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebWebAppElementsHelper.getImportName(descr.getClassName()+"Skeleton");
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """

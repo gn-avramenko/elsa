@@ -22,11 +22,13 @@
  * This is generated code, don't modify it manually
  *****************************************************************/
 
-package com.gridnine.platform.elsa.webApp;
+package com.gridnine.platform.elsa.demo.ui.organization;
 
-public enum FlexDirection{
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-	ROW,
+public class OrganizationsList extends OrganizationsListSkeleton{
 
-	COLUMN
+	public OrganizationsList(String tag, OrganizationsListConfiguration config, OperationUiContext ctx){
+		super(tag, config, ctx);
+	}
 }

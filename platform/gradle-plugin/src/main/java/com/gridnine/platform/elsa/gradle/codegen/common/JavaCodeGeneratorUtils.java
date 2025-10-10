@@ -467,16 +467,16 @@ public class JavaCodeGeneratorUtils {
                     if(cl2.contains("<")){
                         var idx2 = cl2.indexOf("<");
                         var cl22 = cl2.substring(0, idx2);
-                        gen.addImport(cl22);
+                        cl22 = addImport(cl22, gen);
                         var cl3 = cl2.substring(idx2 + 1, cl2.length()-1);
                         if(cl3.contains(".")) {
-                            gen.addImport(cl3);
+                            cl3 = addImport(cl3, gen);
                         }
-                        yield "%s<%s<%s>>".formatted(getSimpleName(cl1), getSimpleName(cl22), getSimpleName(cl3));
+                        yield "%s<%s<%s>>".formatted(getSimpleName(cl1), cl22, cl3);
                     } else if(cl2.contains(".")) {
-                        gen.addImport(cl2);
+                        cl2 = addImport(cl2, gen);
                     }
-                    yield "%s<%s>".formatted(getSimpleName(cl1), getSimpleName(cl2));
+                    yield "%s<%s>".formatted(getSimpleName(cl1), cl2);
                 }
                 var pk = getPackage(className);
                 if (!gen.getPackageName().equals(pk) && !"Object".equals(className)) {
@@ -504,6 +504,19 @@ public class JavaCodeGeneratorUtils {
                 yield BigDecimal.class.getSimpleName();
             }
         };
+    }
+
+    private static String addImport(String cl22, JavaCodeGenerator gen) {
+        if(!cl22.contains(",")){
+            gen.addImport(cl22.trim());
+            return getSimpleName(cl22);
+        }
+        var result = new ArrayList<String>();
+        Arrays.stream(cl22.split(",")).forEach(cl ->{
+            gen.addImport(cl.trim());
+            result.add(getSimpleName(cl));
+        });
+        return BuildTextUtils.joinToString(result, ", ");
     }
 
     public static String toCamelCased(String name) {

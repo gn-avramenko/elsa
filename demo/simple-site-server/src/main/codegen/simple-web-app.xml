@@ -4,6 +4,7 @@
         <property id="dayNumber" type="INT" non-nullable="true"/>
         <property id="value" type="BIG_DECIMAL" non-nullable="true"/>
     </entity>
+    <text-field class-name="com.gridnine.platform.elsa.demo.ui.common.SearchField"/>
     <container class-name="com.gridnine.platform.elsa.demo.ui.app.WebApp">
         <children>
             <container id="navigation" class-name="com.gridnine.platform.elsa.demo.ui.app.NavigationPanel">
@@ -57,6 +58,22 @@
         </children>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationsSection">
+        <children>
+            <text-field id="search" class-name="com.gridnine.platform.elsa.demo.ui.common.SearchField"/>
+            <table id="organizationsList" class-name="com.gridnine.platform.elsa.demo.ui.organization.OrganizationsList"  managed-configuration="true">
+                <row>
+                    <property id="id" type="STRING" non-nullable="true"/>
+                    <property id="name" type="STRING"/>
+                    <property id="address" type="STRING"/>
+                    <property id="country" type="STRING"/>
+                    <property id="contacts" type="STRING"/>
+                    <collection id="menu" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+                </row>
+                <commands-from-server>
+                    <command id="refreshData" />
+                </commands-from-server>
+            </table>
+        </children>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationEditor">
     </container>
