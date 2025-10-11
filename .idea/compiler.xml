@@ -1,55 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="11">
-      <module name="elsa.demo.server" target="21" />
-      <module name="elsa.demo.server.main" target="21" />
-      <module name="elsa.demo.server.test" target="21" />
-      <module name="simple-site-server" target="21" />
-      <module name="simple-site-server.demo.simple-site-server" target="21" />
-      <module name="simple-site-server.demo.simple-site-server.main" target="21" />
-      <module name="simple-site-server.demo.simple-site-server.test" target="21" />
-      <module name="simple-site-server.main" target="21" />
-      <module name="simple-site-server.platform.common-core" target="21" />
-      <module name="simple-site-server.platform.common-core.main" target="21" />
-      <module name="simple-site-server.platform.common-core.test" target="21" />
-      <module name="simple-site-server.platform.common-core.testFixtures" target="21" />
-      <module name="simple-site-server.platform.common-meta" target="21" />
-      <module name="simple-site-server.platform.common-meta.main" target="21" />
-      <module name="simple-site-server.platform.common-meta.test" target="21" />
-      <module name="simple-site-server.platform.server-atomikos" target="21" />
-      <module name="simple-site-server.platform.server-atomikos.main" target="21" />
-      <module name="simple-site-server.platform.server-atomikos.test" target="21" />
-      <module name="simple-site-server.platform.server-atomikos.testFixtures" target="21" />
-      <module name="simple-site-server.platform.server-core" target="21" />
-      <module name="simple-site-server.platform.server-core.main" target="21" />
-      <module name="simple-site-server.platform.server-core.test" target="21" />
-      <module name="simple-site-server.platform.server-core.testFixtures" target="21" />
-      <module name="simple-site-server.platform.server-file-storage" target="21" />
-      <module name="simple-site-server.platform.server-file-storage.main" target="21" />
-      <module name="simple-site-server.platform.server-file-storage.test" target="21" />
-      <module name="simple-site-server.platform.server-file-storage.testFixtures" target="21" />
-      <module name="simple-site-server.platform.server-mongo" target="21" />
-      <module name="simple-site-server.platform.server-mongo.main" target="21" />
-      <module name="simple-site-server.platform.server-mongo.test" target="21" />
-      <module name="simple-site-server.platform.server-mongo.testFixtures" target="21" />
-      <module name="simple-site-server.platform.server-postgres" target="21" />
-      <module name="simple-site-server.platform.server-postgres.main" target="21" />
-      <module name="simple-site-server.platform.server-postgres.test" target="21" />
-      <module name="simple-site-server.test" target="21" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="25" />
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="elsa.demo.server" options="-parameters" />
-      <module name="elsa.demo.server.main" options="-parameters" />
-      <module name="elsa.demo.server.test" options="-parameters" />
       <module name="elsa.demo.simple-site-server" options="-parameters" />
       <module name="elsa.demo.simple-site-server.main" options="-parameters" />
       <module name="elsa.demo.simple-site-server.test" options="-parameters" />
-      <module name="simple-site-server.demo.simple-site-server" options="-parameters" />
-      <module name="simple-site-server.demo.simple-site-server.main" options="-parameters" />
-      <module name="simple-site-server.demo.simple-site-server.test" options="-parameters" />
     </option>
   </component>
 </project>
