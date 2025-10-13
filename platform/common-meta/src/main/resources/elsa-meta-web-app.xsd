@@ -47,6 +47,14 @@
                         </complexType>
                     </element>
                     <element name="input-value" minOccurs="0" type="tns:Entity"/>
+                    <element name="services" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                                <element name="service" type="tns:Service"
+                                         maxOccurs="unbounded"/>
+                            </sequence>
+                        </complexType>
+                    </element>
                 </sequence>
                 <attribute name="class-name" type="string" use="required"/>
             </extension>
@@ -228,5 +236,12 @@
         <complexContent>
             <extension base="tns:BaseElementType"/>
         </complexContent>
+    </complexType>
+    <complexType name="Service">
+        <sequence>
+            <element name="request" type="tns:Entity" minOccurs="0"/>
+            <element name="response" type="tns:Entity"/>
+        </sequence>
+        <attribute name="id" use="required"/>
     </complexType>
 </schema>

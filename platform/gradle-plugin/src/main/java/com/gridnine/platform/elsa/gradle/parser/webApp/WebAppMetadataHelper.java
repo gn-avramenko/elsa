@@ -21,8 +21,6 @@
 
 package com.gridnine.platform.elsa.gradle.parser.webApp;
 
-import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
-import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardCollectionDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.StandardPropertyDescription;
@@ -219,6 +217,33 @@ public class WebAppMetadataHelper {
                 }
             }
             case AUTOCOMPLETE -> {
+                var ac =  (AutocompleteWebElementDescription) element;
+                addDebounceTime(ac, result);
+                addDeferred(ac, result);
+                {
+                    var multiple = new StandardPropertyDescription();
+                    multiple.setType(StandardValueType.BOOLEAN);
+                    multiple.setId("multiple");
+                    result.getServerManagedState().getProperties().put(multiple.getId(), multiple);
+                }
+                {
+                    var limit = new StandardPropertyDescription();
+                    limit.setType(StandardValueType.INT);
+                    limit.setId("limit");
+                    result.getServerManagedState().getProperties().put(limit.getId(), limit);
+                }
+                addValidation(ac, result);
+                var input = new InputDescription();
+                result.setInput(input);
+                input.setType(InputType.AUTOCOMPLETE);
+                var value = new WebAppEntity();
+                input.setValue(value);
+                var field = new StandardCollectionDescription();
+                field.setId("value");
+                field.setElementType(StandardValueType.ENTITY);
+                field.setElementClassName("com.gridnine.platform.elsa.webApp.common.Option");
+                value.getCollections().put(field.getId(), field);
+                result.setInput(input);
             }
             case LABEL -> {
             }

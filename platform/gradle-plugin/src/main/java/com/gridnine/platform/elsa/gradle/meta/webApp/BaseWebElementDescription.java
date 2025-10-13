@@ -19,6 +19,8 @@ public abstract class BaseWebElementDescription {
 
     private final List<WebElementCommandDescription> commandsFromClient = new LinkedList<>();
 
+    private final List<ServiceDescription> services = new LinkedList<>();
+
     private InputDescription input;
 
     public abstract WebElementType getType();
@@ -56,5 +58,9 @@ public abstract class BaseWebElementDescription {
 
     public void setInput(InputDescription input) {
         this.input = input;
+    }
+
+    public List<ServiceDescription> getServices() {
+        return services;
     }
 }

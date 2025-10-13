@@ -255,7 +255,13 @@ public class WebAppMetaRegistryParser {
         var scs = child.getFirstChild("commands-from-server");
         if (scs != null) {
             scs.getChildren().forEach(command -> {
-                //dd.getCommandsFromServer().add(CommonParserUtils.getIdAttribute(command));
+                var item = new WebElementCommandDescription();
+                item.setId(CommonParserUtils.getIdAttribute(command));
+                var ett = new CustomWebElementDescription("test");
+                updateBaseProperties(ett, command);
+                item.getProperties().putAll(ett.getServerManagedState().getProperties());
+                item.getCollections().putAll(ett.getServerManagedState().getCollections());
+                dd.getCommandsFromServer().add(item);
             });
         }
         var ccs = child.getFirstChild("commands-from-client");
@@ -268,6 +274,29 @@ public class WebAppMetaRegistryParser {
                 item.getProperties().putAll(ett.getServerManagedState().getProperties());
                 item.getCollections().putAll(ett.getServerManagedState().getCollections());
                 dd.getCommandsFromClient().add(item);
+            });
+        }
+        var ss = child.getFirstChild("services");
+        if (ss != null) {
+            ss.getChildren().forEach(command -> {
+                var item = new ServiceDescription();
+                item.setId(CommonParserUtils.getIdAttribute(command));
+                var req = command.getFirstChild("request");
+                if(req != null){
+                    var request = new WebAppEntity();
+                    var ett = new CustomWebElementDescription("test");
+                    updateBaseProperties(ett, command);
+                    request.getProperties().putAll(ett.getServerManagedState().getProperties());
+                    request.getCollections().putAll(ett.getServerManagedState().getCollections());
+                    item.setRequest(request);
+                }
+                var response = new WebAppEntity();
+                var ett = new CustomWebElementDescription("response");
+                updateBaseProperties(ett, command);
+                response.getProperties().putAll(ett.getServerManagedState().getProperties());
+                response.getCollections().putAll(ett.getServerManagedState().getCollections());
+                item.setResponse(response);
+                dd.getServices().add(item);
             });
         }
     }
