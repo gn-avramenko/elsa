@@ -84,6 +84,13 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     generatedFiles.add(file);
                 }
             }
+            for(var ett: WebAppMetadataHelper.getServicesClasses(elm)){
+                var gen = new TypeScriptCodeGenerator();
+                WebCodeGeneratorUtils.generateWebEntityCode(ett, null, gen);
+                var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(ett.getId() + ".ts", destDir));
+                generatedFiles.add(file);
+            }
+
             if(elm instanceof TableWebElementDescription td){
                 var dd = new EntityDescription();
                 dd.setId("%sRow".formatted(td.getClassName()));

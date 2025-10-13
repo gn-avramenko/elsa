@@ -27,8 +27,6 @@ import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppElemen
 import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.JavaWebAppEntityHelper;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
 import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
-import com.gridnine.platform.elsa.gradle.meta.common.StandardPropertyDescription;
-import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.webApp.CustomWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.TableWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
@@ -63,6 +61,9 @@ public class JavaWebAppCodeGenerator implements CodeGenerator<JavaWebAppCodeGenR
             }
             for(var cmd: WebAppMetadataHelper.getCommandsDescription(elm)){
                 JavaWebAppEntityHelper.generateJavaEntityCode(cmd, destDir, generatedFiles);
+            }
+            for(var serv: WebAppMetadataHelper.getServicesClasses(elm)){
+                JavaWebAppEntityHelper.generateJavaEntityCode(serv, destDir, generatedFiles);
             }
             if(elm instanceof TableWebElementDescription td){
                 var dd = new EntityDescription();

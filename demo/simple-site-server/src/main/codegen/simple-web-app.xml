@@ -69,15 +69,37 @@
                     <property id="contacts" type="STRING"/>
                     <collection id="menu" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
                 </row>
-                <commands-from-server>
-                    <command id="refreshData" />
-                </commands-from-server>
             </table>
         </children>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationEditor">
+        <children>
+            <button id="backButton" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorBackButton"/>
+            <button id="saveButton" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorSaveButton"/>
+            <label id="title" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorTitleLabel"/>
+            <text-field id="name" class-name="com.gridnine.platform.elsa.demo.ui.common.StandardTextField"/>
+            <text-field id="address" class-name="com.gridnine.platform.elsa.demo.ui.common.StandardTextField"/>
+            <autocomplete id="country" class-name="com.gridnine.platform.elsa.demo.ui.common.CountryAutocompleteField"/>
+            <text-field id="contacts" class-name="com.gridnine.platform.elsa.demo.ui.common.StandardTextField"/>
+        </children>
+        <commands-from-server>
+            <command id="resetChanges"/>
+        </commands-from-server>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.account.manager.ManagersSection">
+        <children>
+            <autocomplete id="organization" class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationAutocomplete"/>
+            <text-field id="search" class-name="com.gridnine.platform.elsa.demo.ui.common.SearchField"/>
+            <table id="managersList" class-name="com.gridnine.platform.elsa.demo.ui.manager.ManagersList"  managed-configuration="true">
+                <row>
+                    <property id="id" type="STRING" non-nullable="true"/>
+                    <property id="name" type="STRING"/>
+                    <property id="email" type="STRING"/>
+                    <property id="contacts" type="STRING"/>
+                    <collection id="menu" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+                </row>
+            </table>
+        </children>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.account.doctor.DoctorsSection">
     </container>

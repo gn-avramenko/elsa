@@ -60,15 +60,17 @@ public class WebWebAppElementsHelper {
                     if(elm.getInput() != null){
                         gen.addImport("{%s} from '%s'".formatted(inputValueSimpleClassName, inputValueImport));
                     }
+                    var rq = BuildTextUtils.joinToString(elm.getServices().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", ");
                     gen.wrapWithBlock("export abstract class %sSkeleton extends BaseReactUiElement".formatted(simpleClassName), () -> {
                         gen.wrapWithBlock("constructor(model: any)", () -> {
                             gen.printLine("""
                                     super({
                                        state: [%s],
                                        actionsFromClient: [%s],
-                                       input: %s
+                                       input: %s,
+                                       services: [%s]
                                     }, model);
-                                    """.formatted(stateStr, ca, elm.getInput() == null? "undefined": "'%s'".formatted(elm.getInput().getType().name())));
+                                    """.formatted(stateStr, ca, elm.getInput() == null? "undefined": "'%s'".formatted(elm.getInput().getType().name()), rq));
                             for (var prop : elm.getServerManagedState().getProperties().values()) {
                                 gen.printLine("this.state.set('%s', model.%s);".formatted(prop.getId(), prop.getId()));
                             }
@@ -132,11 +134,19 @@ public class WebWebAppElementsHelper {
                                 });
                             }
                         }
+                        for(var serv: elm.getServices()){
+                            var requestClassName = "%s%sRequest".formatted(elm.getClassName(),BuildTextUtils.capitalize(serv.getId()));
+                            var responseClassName = "%s%sResponse".formatted(elm.getClassName(),BuildTextUtils.capitalize(serv.getId()));
+                            gen.wrapWithBlock("async do%s(value: %s)".formatted(BuildTextUtils.capitalize(serv.getId()), getType(StandardValueType.ENTITY, registry, requestClassName, gen)), ()->{
+                                gen.printLine("return (await this.makeRequest('%s', value)) as %s;".formatted(serv.getId(), getType(StandardValueType.ENTITY, registry, responseClassName, gen)));
+                            });
+                        }
                         for(var command : elm.getCommandsFromServer()){
                             if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                                 gen.printLine("abstract process%s(): void;".formatted(BuildTextUtils.capitalize(command.getId())));
                             }
                         }
+
                     });
 
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(className + "Skeleton.tsx", destDir));
@@ -152,6 +162,8 @@ public class WebWebAppElementsHelper {
                     case TEXT_FIELD ->  WebTextFieldHelper.generateTextField((TextFieldWebElementDescription) element, sourceDir);
                     case NESTED_ROUTER -> WebNestedRouterHelper.generateNestedRouter((NestedRouterWebElementDescription) element, sourceDir);
                     case TABLE -> WebTableHelper.generateTable((TableWebElementDescription) element, sourceDir);
+                    case AUTOCOMPLETE -> WebAutocompleteHelper.generateAutocomplete((AutocompleteWebElementDescription) element, sourceDir);
+                    case LABEL -> WebLabelHelper.generateLabel((LabelWebElementDescription) element, sourceDir);
                 }
 
             });

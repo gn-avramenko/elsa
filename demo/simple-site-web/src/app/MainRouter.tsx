@@ -80,5 +80,6 @@ export class MainRouterComponent extends MainRouterSkeleton {
     setConfirmMessage(value?: string) {
         this.state.set('confirmMessage', value);
         this.stateSetters.get('confirmMessage')!(value);
+        this.sendPropertyChange('confirmMessage', value, true);
     }
 }

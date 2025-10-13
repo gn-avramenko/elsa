@@ -29,7 +29,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class WebContainerHelper {
-    public static void generateContainer(ContainerWebElementDescription descr, File destDir) throws IOException {
+    public static void generateContainer(ContainerWebElementDescription descr, File destDir) throws Exception {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
         var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
@@ -69,8 +69,9 @@ public class WebContainerHelper {
                     getProcessedChildren(): string[] {
                         return [];
                     }
+                    %s
                 }
-                """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
+                """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName, WebCommonHelper.getServerCommandBlock(descr));
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if(!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

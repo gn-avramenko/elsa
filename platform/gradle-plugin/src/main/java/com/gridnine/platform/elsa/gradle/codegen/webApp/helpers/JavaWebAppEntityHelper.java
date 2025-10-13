@@ -87,38 +87,37 @@ public class JavaWebAppEntityHelper {
                     gen.wrapWithBlock("public %s<%s> get%s()".formatted(cd.isUnique() ? "Set" : "List", className, BuildTextUtils.capitalize(cd.getId())), () -> gen.printLine("return %s;".formatted(cd.getId())));
                 }
             }
-            {
-                gen.blankLine();
-                gen.printLine("@Override");
-                gen.wrapWithBlock("public boolean equals(Object other)", ()->{
-                    gen.wrapWithBlock("if(!(other instanceof %s))".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())), ()->{
-                        gen.printLine("return false;");
-                    });
-                    gen.printLine("var casted = (%s) other;".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())));
-                    for (StandardPropertyDescription pd : ed.getProperties().values()) {
-                        if("true".equals(pd.getParameters().get("no-equals"))){
-                            continue;
-                        }
-                        gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
-                        gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(pd.getId(), pd.getId()), ()->{
-                            gen.printLine("return false;");
-                        });
-                    }
-                    for (var coll : ed.getCollections().values()) {
-                        gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
-                        gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(coll.getId(), coll.getId()), ()->{
-                            gen.printLine("return false;");
-                        });
-                    }
-                    gen.printLine("return true;");
-                });
-            }
-            {
-                gen.blankLine();
-                gen.printLine("@Override");
-                gen.wrapWithBlock("public int hashCode()", ()-> gen.printLine("return super.hashCode();"));
-            }
+            if(!"true".equals(ed.getParameters().get("no-equals"))) {
+                {
 
+                    gen.blankLine();
+                    gen.printLine("@Override");
+                    gen.wrapWithBlock("public boolean equals(Object other)", () -> {
+                        gen.wrapWithBlock("if(!(other instanceof %s))".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())), () -> {
+                            gen.printLine("return false;");
+                        });
+                        gen.printLine("var casted = (%s) other;".formatted(JavaCodeGeneratorUtils.getSimpleName(ed.getId())));
+                        for (StandardPropertyDescription pd : ed.getProperties().values()) {
+                            gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                            gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(pd.getId(), pd.getId()), () -> {
+                                gen.printLine("return false;");
+                            });
+                        }
+                        for (var coll : ed.getCollections().values()) {
+                            gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                            gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(coll.getId(), coll.getId()), () -> {
+                                gen.printLine("return false;");
+                            });
+                        }
+                        gen.printLine("return true;");
+                    });
+                }
+                {
+                    gen.blankLine();
+                    gen.printLine("@Override");
+                    gen.wrapWithBlock("public int hashCode()", () -> gen.printLine("return super.hashCode();"));
+                }
+            }
             if(!noSerialization) {
                 {
                     gen.blankLine();

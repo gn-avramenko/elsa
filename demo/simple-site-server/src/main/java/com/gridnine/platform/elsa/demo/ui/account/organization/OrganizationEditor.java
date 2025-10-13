@@ -24,17 +24,154 @@
 
 package com.gridnine.platform.elsa.demo.ui.account.organization;
 
+import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
+import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
+import com.gridnine.platform.elsa.common.core.search.SortOrder;
+import com.gridnine.platform.elsa.common.core.utils.TextUtils;
+import com.gridnine.platform.elsa.core.storage.Storage;
+import com.gridnine.platform.elsa.demo.domain.Country;
+import com.gridnine.platform.elsa.demo.domain.CountryFields;
+import com.gridnine.platform.elsa.demo.domain.Organization;
+import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
+import com.gridnine.platform.elsa.demo.ui.app.WebApp;
+import com.gridnine.platform.elsa.demo.ui.common.*;
+import com.gridnine.platform.elsa.demo.ui.components.test.TestOption;
+import com.gridnine.platform.elsa.demo.ui.components.test.TestWebApp;
+import com.gridnine.platform.elsa.demo.ui.components.test.TestWebAppRouter;
+import com.gridnine.platform.elsa.webApp.common.FlexDirection;
+import com.gridnine.platform.elsa.webApp.common.Option;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
+
+import java.util.UUID;
 
 public class OrganizationEditor extends OrganizationEditorSkeleton{
 
+    private UUID organizationId;
+
+    private Storage storage;
+
 	public OrganizationEditor(String tag, OperationUiContext ctx){
-		super(tag, ctx);
+        storage = ctx.getParameter(SimpleSiteWebAppServlet.BEAN_FACTORY).getBean(Storage.class);
+        String path = ctx.getParameter(TestWebAppRouter.ROUTER_PATH);
+        organizationId = UUID.fromString(path.substring(path.lastIndexOf('/') + 1));
+        super(tag, ctx);
 	}
 
     @Override
     protected OrganizationEditorConfiguration createConfiguration(OperationUiContext ctx) {
-        var  config = new OrganizationEditorConfiguration();
+        var org = storage.loadAsset(Organization.class, organizationId,false);
+        var config = new OrganizationEditorConfiguration();
+        config.setFlexDirection(FlexDirection.COLUMN);
+        {
+            var address = new StandardTextFieldConfiguration();
+            address.setDeferred(true);
+            var value = new StandardTextFieldInputValue();
+            value.setValue(org.getAddress());
+            address.setValue(value);
+            config.setAddress(address);
+        }
+        {
+            var contacts = new StandardTextFieldConfiguration();
+            contacts.setDeferred(true);
+            var value = new StandardTextFieldInputValue();
+            value.setValue(org.getContacts());
+            contacts.setValue(value);
+            config.setContacts(contacts);
+        }
+        {
+            var name = new StandardTextFieldConfiguration();
+            name.setDeferred(true);
+            var value = new StandardTextFieldInputValue();
+            value.setValue(org.getName());
+            name.setValue(value);
+            config.setName(name);
+        }
+        {
+            var country = new CountryAutocompleteFieldConfiguration();
+            country.setDeferred(true);
+            country.setDebounceTime(300);
+            country.setLimit(10);
+            country.setMultiple(false);
+            var value = new CountryAutocompleteFieldInputValue();
+            if(org.getCountry() != null){
+                var opt = new Option();
+                opt.setId(org.getCountry().getId().toString());
+                opt.setDisplayName(org.getCountry().toString());
+                value.getValues().add(opt);
+            }
+            country.setValue(value);
+            country.setGetDataServiceHandler((request, context) -> {
+                var limit = request.getLimit();
+                var query = request.getQuery();
+                var countries = storage.searchAssets(Country.class, new SearchQueryBuilder().limit(limit).orderBy(CountryFields.name, SortOrder.ASC).freeText(query).build(), false);
+                var items = countries.stream().map(it ->{
+                    var option = new Option();
+                    option.setId(it.getId().toString());
+                    option.setDisplayName(it.toString());
+                    return option;
+                }).toList();
+                var result = new CountryAutocompleteFieldGetDataResponse();
+                result.getItems().addAll(items);
+                return result;
+            });
+            config.setCountry(country);
+        }
+        {
+            var result = new EditorTitleLabelConfiguration();
+            result.setTitle(org.getName());
+            config.setTitle(result);
+        }
+        {
+            var result = new EditorBackButtonConfiguration();
+            result.setTitle("Back");
+            result.setClickListener(context ->{
+                WebApp.lookup(OrganizationEditor.this).navigate("/account/organizations", context);
+            });
+            config.setBackButton(result);
+        }
+        {
+            var saveButton = new EditorSaveButtonConfiguration();
+            saveButton.setTitle("Save");
+            saveButton.setDisabled(true);
+            saveButton.setClickListener((context)->{
+                boolean hasErrors = false;
+                getName().setValidationMessage(null, context);
+                getContacts().setValidationMessage(null, context);
+                getAddress().setValidationMessage(null, context);
+                getCountry().setValidationMessage(null, context);
+                if(getName().getValue() == null || TextUtils.isBlank(getName().getValue().getValue())){
+                    hasErrors = true;
+                    getName().setValidationMessage("Field is blank", context);
+                }
+                if(getContacts().getValue() == null || TextUtils.isBlank(getContacts().getValue().getValue())){
+                    hasErrors = true;
+                    getContacts().setValidationMessage("Field is blank", context);
+                }
+                if(getAddress().getValue() == null || TextUtils.isBlank(getAddress().getValue().getValue())){
+                    hasErrors = true;
+                    getAddress().setValidationMessage("Field is blank", context);
+                }
+                if(getCountry().getValue().getValues().isEmpty()){
+                    hasErrors = true;
+                    getCountry().setValidationMessage("Field is blank", context);
+                }
+                if(hasErrors){
+                    return;
+                }
+                var cnt = storage.loadAsset(Organization.class, organizationId, true);
+                cnt.setContacts(getContacts().getValue().getValue());
+                cnt.setAddress(getAddress().getValue().getValue());
+                cnt.setName(getName().getValue().getValue());
+                var opt = getCountry().getValue().getValues().get(0);
+                cnt.setCountry(new EntityReference<>(UUID.fromString(opt.getId()), Country.class, opt.getDisplayName()));
+                storage.saveAsset(cnt, "editor");
+                resetChanges(context, false);
+//              (false, ctx);
+//              TestWebApp.lookup(this).notify("Organization saved", ctx);
+                return;
+            });
+            config.setSaveButton(saveButton);
+        }
         return config;
     }
 }

@@ -23,13 +23,14 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
-import com.gridnine.platform.elsa.gradle.meta.webApp.TextFieldWebElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.LabelWebElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.TextAreaWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;
 
-public class WebTextFieldHelper {
-    public static void generateTextField(TextFieldWebElementDescription descr, File destDir) throws IOException {
+public class WebLabelHelper {
+    public static void generateLabel(LabelWebElementDescription descr, File destDir) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
         var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
@@ -38,50 +39,18 @@ public class WebTextFieldHelper {
         var result = """
                 import { WebComponentWrapper } from '@/common/wrapper';
                 import { initStateSetters } from '@/common/component';
-                import { debounce } from '@/common/debounce';
-                import { useEditor } from "@/common/editor";
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
                     initStateSetters(props.element);
-                    const editor = useEditor();
                     return (
                         <WebComponentWrapper element={props.element}>
-                            <input
-                               type="text"
-                               value={props.element.getValue()?.value??''}
-                               className={`webpeer-text-field${props.element.getValidationMessage() ? ' has-error' : ''}`}
-                               onChange={(e) => {
-                                        props.element.setValidationMessage(undefined);
-                                        if(editor) {
-                                           editor.setHasChanges(true);
-                                        }
-                                        const value = {
-                                          value: e.target.value
-                                        };
-                                        if(props.element.getDebounceTime()){
-                                            props.element.stateSetters.get('value')!(value);
-                                            props.element.debouncedSetValue(value);
-                                        } else {
-                                            props.element.setValue(value);
-                                        }
-                                       }}
-                            />
+                            {props.element.getTitle()}
                         </WebComponentWrapper>
                     );
                 }
                 export class %s extends %s {
                     functionalComponent = %s;
-                
-                    debouncedSetValue = debounce((value: any) => {
-                           this.sendCommand(
-                                'pc',
-                                {
-                                    pn: 'value',
-                                    pv: value,
-                                });
-                        }, this.getDebounceTime()??0);
-                
                     setValidationMessage(value?: string) {
                         this.stateSetters.get('validationMessage')!(value);
                     }

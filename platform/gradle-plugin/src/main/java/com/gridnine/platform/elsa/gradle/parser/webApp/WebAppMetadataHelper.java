@@ -41,6 +41,7 @@ public class WebAppMetadataHelper {
         result.getServerManagedState().getProperties().putAll(element.getServerManagedState().getProperties());
         result.getServerManagedState().getCollections().putAll(element.getServerManagedState().getCollections());
         result.getCommandsFromClient().addAll(element.getCommandsFromClient());
+        result.getCommandsFromServer().addAll(element.getCommandsFromServer());
         switch (element.getType()) {
             case MODAL -> {
             }
@@ -63,6 +64,12 @@ public class WebAppMetadataHelper {
                     var prop = new StandardPropertyDescription();
                     prop.setType(StandardValueType.STRING);
                     prop.setId("title");
+                    result.getServerManagedState().getProperties().put(prop.getId(), prop);
+                }
+                {
+                    var prop = new StandardPropertyDescription();
+                    prop.setType(StandardValueType.BOOLEAN);
+                    prop.setId("disabled");
                     result.getServerManagedState().getProperties().put(prop.getId(), prop);
                 }
             }
@@ -217,35 +224,71 @@ public class WebAppMetadataHelper {
                 }
             }
             case AUTOCOMPLETE -> {
-                var ac =  (AutocompleteWebElementDescription) element;
-                addDebounceTime(ac, result);
-                addDeferred(ac, result);
+                AutocompleteWebElementDescription sd = (AutocompleteWebElementDescription) element;
+                {
+                    var input = new InputDescription();
+                    result.setInput(input);
+                    input.setType(InputType.SELECT);
+                    var value = new WebAppEntity();
+                    input.setValue(value);
+                    var prop = new StandardCollectionDescription();
+                    prop.setId("values");
+                    prop.setElementType(StandardValueType.ENTITY);
+                    prop.setElementClassName("com.gridnine.platform.elsa.webApp.common.Option");
+                    value.getCollections().put(prop.getId(), prop);
+                }
                 {
                     var multiple = new StandardPropertyDescription();
                     multiple.setType(StandardValueType.BOOLEAN);
                     multiple.setId("multiple");
                     result.getServerManagedState().getProperties().put(multiple.getId(), multiple);
                 }
+                addDeferred(sd, result);
+                addDebounceTime(sd, result);
+                addValidation(sd, result);
                 {
                     var limit = new StandardPropertyDescription();
                     limit.setType(StandardValueType.INT);
                     limit.setId("limit");
+                    limit.setNonNullable(true);
                     result.getServerManagedState().getProperties().put(limit.getId(), limit);
                 }
-                addValidation(ac, result);
-                var input = new InputDescription();
-                result.setInput(input);
-                input.setType(InputType.AUTOCOMPLETE);
-                var value = new WebAppEntity();
-                input.setValue(value);
-                var field = new StandardCollectionDescription();
-                field.setId("value");
-                field.setElementType(StandardValueType.ENTITY);
-                field.setElementClassName("com.gridnine.platform.elsa.webApp.common.Option");
-                value.getCollections().put(field.getId(), field);
-                result.setInput(input);
+                {
+                    var getDataService = new ServiceDescription();
+                    getDataService.setId("getData");
+                    var request = new WebAppEntity();
+                    {
+                         var prop = new StandardPropertyDescription();
+                         prop.setType(StandardValueType.STRING);
+                         prop.setId("query");
+                         request.getProperties().put(prop.getId(), prop);
+                    }
+                    {
+                        var prop = new StandardPropertyDescription();
+                        prop.setType(StandardValueType.INT);
+                        prop.setId("limit");
+                        prop.setNonNullable(true);
+                        request.getProperties().put(prop.getId(), prop);
+                    }
+                    getDataService.setRequest(request);
+                    var response = new WebAppEntity();
+                    {
+                        var coll = new StandardCollectionDescription();
+                        coll.setElementType(StandardValueType.ENTITY);
+                        coll.setElementClassName("com.gridnine.platform.elsa.webApp.common.Option");
+                        coll.setId("items");
+                        response.getCollections().put(coll.getId(), coll);
+                    }
+                    getDataService.setResponse(response);
+                    result.getServices().add(getDataService);
+                }
             }
             case LABEL -> {
+                var tad = (LabelWebElementDescription) element;
+                var prop = new StandardPropertyDescription();
+                prop.setId("title");
+                prop.setType(StandardValueType.STRING);
+                result.getServerManagedState().getProperties().put(prop.getId(), prop);
             }
             case CUSTOM -> {
             }
@@ -314,11 +357,31 @@ public class WebAppMetadataHelper {
         }
         return result;
     }
+    public static List<EntityDescription> getServicesClasses(BaseWebElementDescription element) {
+        var result = new  ArrayList<EntityDescription>();
+        var ce = toCustomEntity(element);
+        for(var service :ce.getServices()) {
+            if(service.getRequest() != null){
+                var cn = "%s%sRequest".formatted(element.getClassName(),BuildTextUtils.capitalize(service.getId()));
+                var ed = new EntityDescription(cn);
+                ed.getProperties().putAll(service.getRequest().getProperties());
+                ed.getCollections().putAll(service.getRequest().getCollections());
+                result.add(ed);
+            }
+            var cn = "%s%sResponse".formatted(element.getClassName(),BuildTextUtils.capitalize(service.getId()));
+            var ed = new EntityDescription(cn);
+            ed.getProperties().putAll(service.getResponse().getProperties());
+            ed.getCollections().putAll(service.getResponse().getCollections());
+            result.add(ed);
+        }
+        return result;
+    }
     public static EntityDescription getConfigurationDescription(BaseWebElementDescription element) {
         var ce = toCustomEntity(element);
         var cn = "%sConfiguration".formatted(ce.getClassName());
         var ed = new EntityDescription(cn);
         ed.getParameters().put("no-serialization", "true");
+        ed.getParameters().put("no-equals", "true");
         ed.getProperties().putAll(ce.getServerManagedState().getProperties());
         ed.getCollections().putAll(ce.getServerManagedState().getCollections());
         for(var cmd: ce.getCommandsFromClient()){
@@ -349,6 +412,16 @@ public class WebAppMetadataHelper {
                 prop.setClassName(inputValueClass);
                 ed.getProperties().put(prop.getId(), prop);
             }
+        }
+        for(var service: ce.getServices()){
+            var prop = new StandardPropertyDescription();
+            prop.setType(StandardValueType.ENTITY);
+            prop.setId("%sServiceHandler".formatted(service.getId()));
+            prop.getParameters().put("no-equals", "true");
+            var requestClassName = "%s%sRequest".formatted(element.getClassName(), BuildTextUtils.capitalize(service.getId()));
+            var responseClassName = "%s%sResponse".formatted(element.getClassName(), BuildTextUtils.capitalize(service.getId()));
+            prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppServiceHandler<%s, %s>".formatted(requestClassName, responseClassName));
+            ed.getProperties().put(prop.getId(), prop);
         }
         if(element instanceof WebElementWithChildren hasChildren){
             for(var entry: hasChildren.getChildren().entrySet()){

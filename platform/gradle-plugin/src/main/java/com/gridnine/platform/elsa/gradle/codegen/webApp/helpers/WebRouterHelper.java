@@ -117,6 +117,7 @@ public class WebRouterHelper {
                     setConfirmMessage(value?: string) {
                        this.state.set('confirmMessage', value);
                        this.stateSetters.get('confirmMessage')!(value);
+                       this.sendPropertyChange('confirmMessage', value, true);
                     }
                 }
                 """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);

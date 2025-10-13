@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "net.java.xadisk", name = "xadisk", version = "1.2.2", ext = "jar")
+    implementation("net.java.xadisk:xadisk:1.2.2@jar")
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("org.springframework:spring-context:6.2.7")
     implementation("com.atomikos:transactions-jta:6.0.0:jakarta")

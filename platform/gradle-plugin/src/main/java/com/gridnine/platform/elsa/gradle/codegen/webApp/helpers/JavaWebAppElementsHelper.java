@@ -65,6 +65,11 @@ public class JavaWebAppElementsHelper {
                             fields.add(new Field("%sListener".formatted(command.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments<%s%sAction, com.gridnine.webpeer.core.ui.OperationUiContext>".formatted(element.getClassName(),BuildTextUtils.capitalize(command.getId())), false, FieldType.COMMAND_FROM_CLIENT, false));
                         }
                     }
+                    for(var serv: elm.getServices()){
+                        var requestClassName = "%s%sRequest".formatted(element.getClassName(), BuildTextUtils.capitalize(serv.getId()));
+                        var responseClassName = "%s%sResponse".formatted(element.getClassName(), BuildTextUtils.capitalize(serv.getId()));
+                        fields.add(new Field("%sServiceHandler".formatted(serv.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.webApp.WebAppServiceHandler<%s, %s>".formatted(requestClassName, responseClassName), false, FieldType.SERVICE, false));
+                    }
                     for (var property : elm.getServerManagedState().getProperties().values()) {
                         fields.add(new Field(property.getId(), property.getType(), property.getClassName(), false, FieldType.STANDARD, property.isNonNullable()));
                     }
@@ -97,7 +102,7 @@ public class JavaWebAppElementsHelper {
                         gen.addImport("com.gridnine.webpeer.core.ui.BaseUiElement");
                         for (var field : fields) {
                             switch (field.type) {
-                                case INPUT, INPUT_CHANGE_LISTENER, COMMAND_FROM_CLIENT -> {
+                                case INPUT, INPUT_CHANGE_LISTENER, COMMAND_FROM_CLIENT,SERVICE -> {
                                     if (field.collection) {
                                         gen.addImport("java.util.List");
                                         gen.addImport("java.util.ArrayList");
@@ -202,7 +207,7 @@ public class JavaWebAppElementsHelper {
 
                                 gen.blankLine();
                                 switch (field.type) {
-                                    case COMMAND_FROM_CLIENT -> {
+                                    case COMMAND_FROM_CLIENT, SERVICE -> {
                                         gen.blankLine();
                                         gen.wrapWithBlock("public %s %s%s()".formatted(JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen), field.valueType == StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(field.id)), () -> {
                                             gen.printLine("return this.%s;".formatted(field.id));
@@ -267,16 +272,12 @@ public class JavaWebAppElementsHelper {
                                         });
                                     }
                                 }
-
-
                             }
                         }
                         var inputs = fields.stream().filter(it -> it.type == FieldType.INPUT).toList();
-                        if (!elm.getCommandsFromClient().isEmpty() || !inputs.isEmpty()) {
                             gen.printLine("@Override");
                             gen.addImport("com.google.gson.JsonElement");
                             gen.wrapWithBlock("public void processCommand(OperationUiContext ctx, String commandId, JsonElement data)  throws Exception", () -> {
-                                if (!inputs.isEmpty()) {
                                     gen.wrapWithBlock("if(commandId.equals(\"pc\"))", () -> {
                                         gen.printLine("var obj = data.getAsJsonObject();");
                                         gen.addImport("com.gridnine.webpeer.core.utils.WebPeerUtils");
@@ -300,9 +301,27 @@ public class JavaWebAppElementsHelper {
                                                 gen.printLine("return;");
                                             });
                                         }
+                                        for(var prop: elm.getServerManagedState().getProperties().values()){
+                                            gen.wrapWithBlock("if(pn.equals(\"%s\"))".formatted(prop.getId()), () -> {
+                                                gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
+                                                gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                                gen.printLine("var value = WebAppUtils.fromJsonValue(pv, StandardValueType.%s, %s.class);".formatted(prop.getType(), getPropertyType(prop.getType(), prop.getClassName(), gen)));
+                                                gen.printLine("state.put(\"%s\", value);".formatted(prop.getId()));
+                                                gen.printLine("return;");
+                                            });
+                                        }
+                                        for(var coll: elm.getServerManagedState().getCollections().values()){
+                                            gen.wrapWithBlock("if(pn.equals(\"%s\"))".formatted(coll.getId()), () -> {
+                                                gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
+                                                gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                                gen.printLine("var value = WebAppUtils.fromJsonArrayValue(pv, StandardValueType.%s, %s.class);".formatted(coll.getElementType(), getPropertyType(coll.getElementType(), coll.getElementClassName(), gen)));
+                                                gen.printLine("state.put(\"%s\", value);".formatted(coll.getId()));
+                                                gen.printLine("return;");
+                                            });
+                                        }
                                     });
 
-                                }
+
                                 for (var action : elm.getCommandsFromClient()) {
                                         gen.wrapWithBlock("if(commandId.equals(\"%s\"))".formatted(action.getId()), () -> {
                                             if (action.getCollections().isEmpty() && action.getProperties().isEmpty()) {
@@ -319,17 +338,37 @@ public class JavaWebAppElementsHelper {
                                  }
                                 gen.printLine("super.processCommand(ctx, commandId, data);");
                             });
-                            for (var action : elm.getCommandsFromServer()) {
-                                if(action.getProperties().isEmpty() && action.getCollections().isEmpty()) {
-                                    gen.wrapWithBlock("public void %s(OperationUiContext ctx, boolean postProcess)".formatted(action.getId()), ()->{
-                                        gen.wrapWithBlock("if(postProcess)", ()->{
-                                            gen.printLine("sendPostProcessCommand(ctx, \"%s\", null);".formatted(action.getId()));
-                                            gen.printLine("return;");
-                                        });
-                                        gen.printLine("sendCommand(ctx, \"%s\", null);".formatted(action.getId()));
+                        for (var action : elm.getCommandsFromServer()) {
+                            if(action.getProperties().isEmpty() && action.getCollections().isEmpty()) {
+                                gen.wrapWithBlock("public void %s(OperationUiContext ctx, boolean postProcess)".formatted(action.getId()), ()->{
+                                    gen.wrapWithBlock("if(postProcess)", ()->{
+                                        gen.printLine("sendPostProcessCommand(ctx, \"%s\", null);".formatted(action.getId()));
+                                        gen.printLine("return;");
                                     });
-                                }
+                                    gen.printLine("sendCommand(ctx, \"%s\", null);".formatted(action.getId()));
+                                });
                             }
+                        }
+                        var services = fields.stream().filter(it -> it.type == FieldType.SERVICE).toList();
+                        if(!services.isEmpty()){
+                            gen.blankLine();
+                            gen.printLine("@Override");
+                            gen.addImport("com.google.gson.JsonElement");
+                            gen.wrapWithBlock("public JsonElement doService(String commandId, JsonElement request, OperationUiContext context) throws Exception", () -> {
+                               for(var serv: services){
+                                   var servId = serv.id.replace("ServiceHandler", "");
+                                   gen.wrapWithBlock("if(\"%s\".equals(commandId))".formatted(servId), ()->{
+                                       gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                       gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
+                                       var rqn = "%s%sRequest".formatted(element.getClassName(),BuildTextUtils.capitalize(servId));
+                                       gen.addImport(rqn);
+                                       gen.printLine("var req = WebAppUtils.fromJsonValue(request, StandardValueType.ENTITY, %s.class);".formatted(JavaCodeGeneratorUtils.getSimpleName(rqn)));
+                                       gen.printLine("var resp = %s.doService(req, context);".formatted(serv.id));
+                                       gen.printLine("return WebAppUtils.toJsonValue(resp, StandardValueType.ENTITY);");
+                                   });
+                               }
+                               gen.printLine("return super.doService(commandId, request, context);");
+                            });
                         }
                         gen.blankLine();
                         gen.printLine("@Override");
@@ -536,7 +575,8 @@ public class JavaWebAppElementsHelper {
         INPUT_HAS_CHANGE_LISTENER,
         CHILD,
         MANAGED_CHILD,
-        COMMAND_FROM_CLIENT
+        COMMAND_FROM_CLIENT,
+        SERVICE
     }
 
     public static String getPropertyType(StandardValueType type, String className, JavaCodeGenerator gen) {

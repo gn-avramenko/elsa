@@ -45,6 +45,7 @@ public class WebButtonHelper {
                     return (
                         <WebComponentWrapper element={props.element}>
                              <button
+                             disabled={!!props.element.getDisabled()}
                                                   className="webpeer-button"
                                                   onClick={() => props.element.sendClick()}
                                               >
@@ -56,6 +57,10 @@ public class WebButtonHelper {
                 
                 export class %s extends %s {
                     functionalComponent = %s;
+                
+                    setDisabled(value: boolean){
+                       this.stateSetters.get('disabled')!(value)
+                    }
                 }
                 """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);

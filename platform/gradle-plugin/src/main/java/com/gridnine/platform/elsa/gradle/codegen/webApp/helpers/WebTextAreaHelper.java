@@ -38,10 +38,12 @@ public class WebTextAreaHelper {
         var result = """
                 import { WebComponentWrapper } from '@/common/wrapper';
                 import { initStateSetters } from '@/common/component';
+                import { useEditor } from "@/common/editor";
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
                     initStateSetters(props.element);
+                    const editor = useEditor();
                     return (
                         <WebComponentWrapper element={props.element}>
                             <textarea
@@ -49,6 +51,9 @@ public class WebTextAreaHelper {
                                className={`webpeer-text-area${props.element.getValidationMessage() ? ' has-error' : ''}`}
                                onChange={(e) => {
                                         props.element.setValidationMessage(undefined);
+                                        if(editor) {
+                                           editor.setHasChanges(true);
+                                        }
                                         props.element.setValue({
                                           value: e.target.value
                                         });
