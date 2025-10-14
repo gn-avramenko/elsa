@@ -145,7 +145,7 @@ public class StandardStorage implements Storage {
     @Override
     public <D extends BaseDocument> D loadDocument(Class<D> cls, UUID id, boolean forModification) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadDocument(cls, id, forModification, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> loadDocument(cls, id, forModification, advices, 0));
     }
 
     @Override
@@ -177,24 +177,27 @@ public class StandardStorage implements Storage {
     @Override
     public <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query, boolean forModification) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchAssets(cls, query, forModification, advices, 0), true));
+        return ExceptionUtils.wrapException(() -> searchAssets(cls, query, forModification, advices, 0));
     }
 
     @Override
     public <VA extends BaseVirtualAsset> List<VA> searchVirtualAssets(Class<VA> cls, SearchQuery query) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchVirtualAssets(cls, query, advices, 0), true));
+        return ExceptionUtils.wrapException(()-> searchVirtualAssets(cls, query, advices, 0));
     }
 
     @Override
     public <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery query) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchVirtualAssets(cls, query, advices, 0), true));
+        return ExceptionUtils.wrapException(() -> searchVirtualAssets(cls, query, advices, 0));
     }
 
     private <VA extends BaseVirtualAsset> List<List<Object>> searchVirtualAssets(Class<VA> cls, AggregationQuery query, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            return database.searchVirtualAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            return transactionManager.withTransaction((tx) -> {
+                return database.searchVirtualAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            }, true);
+
         }
         return advices.get(idx).onSearchVirtualAssets(cls, query,  (cls2, query2)
                 -> searchVirtualAssets(cls2, query2, advices, idx + 1));
@@ -202,9 +205,12 @@ public class StandardStorage implements Storage {
 
     private <VA extends BaseVirtualAsset> List<VA> searchVirtualAssets(Class<VA> cls, SearchQuery query, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var result = database.searchVirtualAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
-            result.forEach(BaseVirtualAsset::seal);
-            return result;
+            return transactionManager.withTransaction((tx) -> {
+                var result = database.searchVirtualAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+                result.forEach(BaseVirtualAsset::seal);
+
+                return result;
+            }, true);
         }
         return advices.get(idx).onSearchVirtualAssets(cls, query,  (cls2, query2)
                 -> searchVirtualAssets(cls2, query2, advices, idx + 1));
@@ -219,26 +225,26 @@ public class StandardStorage implements Storage {
     @Override
     public <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadAssetVersion(cls, id, version, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> loadAssetVersion(cls, id, version, advices, 0));
     }
 
     @Override
     public <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id, boolean forModification) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadAsset(cls, id, forModification, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> loadAsset(cls, id, forModification, advices, 0));
     }
 
     @Override
     public <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, UUID id, int version) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadDocumentVersion(cls, id, version, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> loadDocumentVersion(cls, id, version, advices, 0));
     }
 
     @Override
     public <T, D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>>
     EntityReference<D> findUniqueDocumentReference(Class<I> projClass, E property, T propertyValue) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> findUniqueDocumentReference(projClass, property, propertyValue, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> findUniqueDocumentReference(projClass, property, propertyValue, advices, 0));
     }
 
     @Override
@@ -258,7 +264,7 @@ public class StandardStorage implements Storage {
     public <T, D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>>
     Set<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, T propertyValue) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> getAllDocumentReferences(projClass, property, propertyValue, advices, 0), false));
+        return ExceptionUtils.wrapException(() ->  getAllDocumentReferences(projClass, property, propertyValue, advices, 0));
     }
 
     @Override
@@ -271,19 +277,19 @@ public class StandardStorage implements Storage {
     @Override
     public <A extends BaseAsset> List<List<Object>> searchAssets(Class<A> cls, AggregationQuery query) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchAssets(cls, query, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> searchAssets(cls, query, advices, 0));
     }
 
     @Override
     public <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<I> searchDocuments(Class<I> cls, SearchQuery query) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchDocuments(cls, query, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> searchDocuments(cls, query, advices, 0));
     }
 
     @Override
     public <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<List<Object>> searchDocuments(Class<I> cls, AggregationQuery query) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> searchDocuments(cls, query, advices, 0), false));
+        return ExceptionUtils.wrapException(() -> searchDocuments(cls, query, advices, 0));
     }
 
     @Override
@@ -353,7 +359,7 @@ public class StandardStorage implements Storage {
                                                                                                                       T propertyValue,
                                                                                                                       boolean forModification) {
         init();
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> findUniqueAsset(cls, property, propertyValue, forModification, advices, 0), true));
+        return ExceptionUtils.wrapException(() -> findUniqueAsset(cls, property, propertyValue, forModification, advices, 0));
     }
 
     public<I extends BaseIdentity> void deleteCaption(I doc){
@@ -363,19 +369,21 @@ public class StandardStorage implements Storage {
     }
     @Override
     public <T, A extends BaseAsset, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>> Set<A> getAllAssets(Class<A> cls, E property, T propertyValue, boolean forModification) {
-        return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> getAllAssets(cls, property, propertyValue, forModification, advices, 0), false));
+        return ExceptionUtils.wrapException(() ->  getAllAssets(cls, property, propertyValue, forModification, advices, 0));
     }
 
     private <T, A extends BaseAsset, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>> Set<A> getAllAssets(Class<A> cls, E property, T propertyValue, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var query = new SearchQuery();
-            query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
-            if (propertyValue != null) {
-                query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
-            } else {
-                query.getCriterions().add(SearchCriterion.isNull(property));
-            }
-            return new HashSet<>(database.searchAssets(cls, query));
+            return transactionManager.withTransaction((tx) -> {
+                var query = new SearchQuery();
+                query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
+                if (propertyValue != null) {
+                    query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
+                } else {
+                    query.getCriterions().add(SearchCriterion.isNull(property));
+                }
+                return new HashSet<>(database.searchAssets(cls, query));
+            }, true);
         }
         return advices.get(idx).onGetAllAssets(cls, property, propertyValue, forModification, (asset2, property2, propertyValue2, forModification2) ->
                 getAllAssets(asset2, property2, propertyValue2, forModification2, advices, idx + 1));
@@ -385,19 +393,21 @@ public class StandardStorage implements Storage {
                                                                                                                        T propertyValue,
                                                                                                                        boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var query = new SearchQueryBuilder().where(propertyValue == null ?
-                    SearchCriterion.isNull(property) :
-                    SearchCriterion.eq(property, propertyValue)).build();
-            var lst = database.searchAssets(cls, query);
-            var size = lst.size();
-            if (size == 0) {
-                return null;
-            } else if (size == 1) {
-                return lst.get(0);
-            } else {
-                throw Xeption.forAdmin(CoreL10nMessagesRegistryFactory
-                        .Found_several_recordsMessage(cls.getName(), property.name, propertyValue == null ? null : propertyValue.toString()));
-            }
+            return transactionManager.withTransaction((tx) -> {
+                var query = new SearchQueryBuilder().where(propertyValue == null ?
+                        SearchCriterion.isNull(property) :
+                        SearchCriterion.eq(property, propertyValue)).build();
+                var lst = database.searchAssets(cls, query);
+                var size = lst.size();
+                if (size == 0) {
+                    return null;
+                } else if (size == 1) {
+                    return lst.get(0);
+                } else {
+                    throw Xeption.forAdmin(CoreL10nMessagesRegistryFactory
+                            .Found_several_recordsMessage(cls.getName(), property.name, propertyValue == null ? null : propertyValue.toString()));
+                }
+            }, true);
         }
         return advices.get(idx).onFindUniqueAsset(cls, property, propertyValue, forModification, (cls2, property2, propertyValue2, forModification2) ->
                 findUniqueAsset(cls2, property2, propertyValue2, forModification2, advices, idx + 1)
@@ -600,7 +610,9 @@ public class StandardStorage implements Storage {
 
     private <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<I> searchDocuments(Class<I> cls, SearchQuery query, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            return database.searchDocuments(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            return transactionManager.withTransaction((tx) -> {
+                return database.searchDocuments(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            }, true);
         }
         return advices.get(idx).onSearchDocuments(cls, query, (cls2, query2) ->
                 searchDocuments(cls2, query2, advices, idx + 1));
@@ -608,7 +620,9 @@ public class StandardStorage implements Storage {
 
     private <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<List<Object>> searchDocuments(Class<I> cls, AggregationQuery query, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            return database.searchDocuments(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            return transactionManager.withTransaction((tx) -> {
+                return database.searchDocuments(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            }, true);
         }
         return advices.get(idx).onSearchDocuments(cls, query, (cls2, query2) ->
                 searchDocuments(cls2, query2, advices, idx + 1));
@@ -616,7 +630,9 @@ public class StandardStorage implements Storage {
 
     private <A extends BaseAsset> List<List<Object>> searchAssets(Class<A> cls, AggregationQuery query, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            return database.searchAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            return transactionManager.withTransaction((tx) -> {
+                return database.searchAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            }, true);
         }
         return advices.get(idx).onSearchAssets(cls, query, (cls2, query2) ->
                 searchAssets(cls2, query2, advices, idx + 1));
@@ -625,15 +641,18 @@ public class StandardStorage implements Storage {
     private <T, D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>>
     Set<EntityReference<D>> getAllDocumentReferences(Class<I> projClass, E property, T propertyValue, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var query = new SearchQuery();
-            query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
-            if (propertyValue != null) {
-                query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
-            } else {
-                query.getCriterions().add(SearchCriterion.isNull(property));
-            }
-            return database.searchDocuments(projClass, query).stream().map(BaseSearchableProjection::getDocument).collect(Collectors.toSet());
+            return transactionManager.withTransaction((tx) -> {
+                var query = new SearchQuery();
+                query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
+                if (propertyValue != null) {
+                    query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
+                } else {
+                    query.getCriterions().add(SearchCriterion.isNull(property));
+                }
+                return database.searchDocuments(projClass, query).stream().map(BaseSearchableProjection::getDocument).collect(Collectors.toSet());
+            }, true);
         }
+
         return advices.get(idx).onGetAllDocumentReferences(projClass, property, propertyValue, (projClass2, property2, propertyValue2) ->
                 getAllDocumentReferences(projClass2, property2, propertyValue2, advices, idx + 1)
         );
@@ -642,23 +661,25 @@ public class StandardStorage implements Storage {
     private <T, D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>>
     EntityReference<D> findUniqueDocumentReference(Class<I> projClass, E property, T propertyValue, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var query = new SearchQuery();
-            query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
-            if (propertyValue != null) {
-                query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
-            } else {
-                query.getCriterions().add(SearchCriterion.isNull(property));
-            }
-            var lst = database.searchDocuments(projClass, query);
-            var size = lst.size();
-            if (size == 0) {
-                return null;
-            } else if (size == 1) {
-                return lst.get(0).getDocument();
-            } else {
-                throw Xeption.forAdmin(CoreL10nMessagesRegistryFactory
-                        .Found_several_recordsMessage(projClass.getName(), property.name, propertyValue == null ? null : propertyValue.toString()));
-            }
+            return transactionManager.withTransaction((tx) -> {
+                var query = new SearchQuery();
+                query.getPreferredFields().add(BaseSearchableProjection.Fields.document);
+                if (propertyValue != null) {
+                    query.getCriterions().add(SearchCriterion.eq(property, propertyValue));
+                } else {
+                    query.getCriterions().add(SearchCriterion.isNull(property));
+                }
+                var lst = database.searchDocuments(projClass, query);
+                var size = lst.size();
+                if (size == 0) {
+                    return null;
+                } else if (size == 1) {
+                    return lst.get(0).getDocument();
+                } else {
+                    throw Xeption.forAdmin(CoreL10nMessagesRegistryFactory
+                            .Found_several_recordsMessage(projClass.getName(), property.name, propertyValue == null ? null : propertyValue.toString()));
+                }
+            }, true);
         }
         return advices.get(idx).onFindUniqueDocumentReference(projClass, property, propertyValue, (projClass2, property2, propertyValue2) ->
                 findUniqueDocumentReference(projClass2, property2, propertyValue2, advices, idx + 1));
@@ -667,16 +688,18 @@ public class StandardStorage implements Storage {
     private <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, UUID objectId, int versionNumber,
                                                            List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var lastVersion = database.loadDocumentData(cls, objectId);
-            if (lastVersion == null) {
-                throw new IllegalArgumentException("document of type %s with id %s is not found".formatted(cls.getName(), objectId));
-            }
-            var data = IoUtils.gunzip(lastVersion.getData().content());
-            for (int n = lastVersion.getVersionNumber() - 1; n >= versionNumber; n--) {
-                var versionData = database.loadVersion(cls, objectId, n);
-                data = patcher.patch(data, IoUtils.gunzip(versionData.getData().content()));
-            }
-            return unmarshaller.unmarshal(cls, new ByteArrayInputStream(data), serializationParameters);
+            return transactionManager.withTransaction((tx) -> {
+                var lastVersion = database.loadDocumentData(cls, objectId);
+                if (lastVersion == null) {
+                    throw new IllegalArgumentException("document of type %s with id %s is not found".formatted(cls.getName(), objectId));
+                }
+                var data = IoUtils.gunzip(lastVersion.getData().content());
+                for (int n = lastVersion.getVersionNumber() - 1; n >= versionNumber; n--) {
+                    var versionData = database.loadVersion(cls, objectId, n);
+                    data = patcher.patch(data, IoUtils.gunzip(versionData.getData().content()));
+                }
+                return unmarshaller.unmarshal(cls, new ByteArrayInputStream(data), serializationParameters);
+            }, true);
         }
         return advices.get(idx).onLoadDocumentVersion(cls, objectId, versionNumber, (cls2, id2, versionNumber2) ->
                 loadDocumentVersion(cls2, id2, versionNumber2, advices, idx + 1));
@@ -684,7 +707,9 @@ public class StandardStorage implements Storage {
 
     private <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            return database.loadAsset(cls, id);
+            return transactionManager.withTransaction((tx) ->{
+                return database.loadAsset(cls, id);
+            }, true);
         }
         return advices.get(0).onLoadAsset(cls, id, forModification, (cls2, id2, forModification2) ->
                 loadAsset(cls2, id2, forModification2, advices, idx + 1)
@@ -693,9 +718,11 @@ public class StandardStorage implements Storage {
 
     private <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var data = database.loadVersion(cls, id, version);
-            var is = new GZIPInputStream(new ByteArrayInputStream(data.getData().content()));
-            return unmarshaller.unmarshal(cls, is, serializationParameters);
+            return transactionManager.withTransaction((tx) -> {
+                var data = database.loadVersion(cls, id, version);
+                var is = new GZIPInputStream(new ByteArrayInputStream(data.getData().content()));
+                return unmarshaller.unmarshal(cls, is, serializationParameters);
+            },  true);
         }
         return advices.get(idx).onLoadAssetVersion(cls, id, version, (cls2, uid2, version2) ->
                 loadAssetVersion(cls2, uid2, version2, advices, idx + 1)
@@ -704,7 +731,9 @@ public class StandardStorage implements Storage {
 
     private <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            return database.searchAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            return transactionManager.withTransaction((tx) ->{
+                return database.searchAssets(cls, criterionsUpdater.updateQuery(cls.getName(), query));
+            }, true);
         }
         return advices.get(idx).onSearchAssets(cls, query, forModification, (cls2, query2, forModification2)
                 -> searchAssets(cls2, query2, forModification2, advices, idx + 1));
@@ -890,13 +919,16 @@ public class StandardStorage implements Storage {
 
     private <D extends BaseDocument> D loadDocument(Class<D> cls, UUID id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
-            var documentData = database.loadDocumentData(cls, id);
-            if (documentData == null) {
-                return null;
-            }
-            try (var is = new GZIPInputStream(new ByteArrayInputStream(documentData.getData().content()))) {
-                return unmarshaller.unmarshal(cls, is, serializationParameters);
-            }
+            return transactionManager.withTransaction((tx) ->{
+                var documentData = database.loadDocumentData(cls, id);
+                if (documentData == null) {
+                    return null;
+                }
+                try (var is = new GZIPInputStream(new ByteArrayInputStream(documentData.getData().content()))) {
+                    return unmarshaller.unmarshal(cls, is, serializationParameters);
+                }
+            }, true);
+
         }
         return advices.get(idx).onLoadDocument(cls, id, forModification, (cls2, id2, forModificationInt2) ->
                 loadDocument(cls2, id2, forModificationInt2, advices, idx + 1));

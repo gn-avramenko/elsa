@@ -25,6 +25,8 @@ public enum GeneratorType {
     JAVA_DOMAIN,
     JAVA_CUSTOM,
     JAVA_REMOTING,
+    JAVA_WEB_APP,
+    WEB_WEB_APP,
     OPENAPI_REMOTING,
     JAVA_L10N,
     WEB_REMOTING,

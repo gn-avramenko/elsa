@@ -1,6 +1,7 @@
 plugins {
     id("java-test-fixtures")
     id("elsa-java")
+    id("java-library")
     java
 }
 

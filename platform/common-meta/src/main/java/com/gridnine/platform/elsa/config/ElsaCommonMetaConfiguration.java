@@ -25,6 +25,7 @@ import com.gridnine.platform.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.l10n.L10nMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
+import com.gridnine.platform.elsa.common.meta.webApp.WebAppMetaRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,4 +51,8 @@ public class ElsaCommonMetaConfiguration {
         return new RemotingMetaRegistry();
     }
 
+    @Bean
+    public WebAppMetaRegistry webAppMetaRegistry() {
+        return new WebAppMetaRegistry();
+    }
 }

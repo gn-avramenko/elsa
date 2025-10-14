@@ -22,11 +22,17 @@
 package com.gridnine.platform.elsa.gradle.codegen.common;
 
 import com.gridnine.platform.elsa.gradle.utils.BuildRunnableWithException;
+import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class TypeScriptCodeGenerator {
     private final StringBuffer buf = new StringBuffer();
 
     private int indent;
+
+    private final Set<String> imports = new HashSet<>();
 
     public void print(String line) {
         indent(buf);
@@ -41,6 +47,9 @@ public class TypeScriptCodeGenerator {
         buf.append(line);
     }
 
+    public void addImport(String importName) {
+        imports.add(importName);
+    }
     public void wrapWithBlock(String name, BuildRunnableWithException runnable) throws Exception {
         printLine(name == null ? "{" : "%s{".formatted(name));
         indent++;
@@ -66,7 +75,8 @@ public class TypeScriptCodeGenerator {
                  * This is generated code, don't modify it manually
                  **************************************************************** */
                  
-                 """;
+                 %s
+                 """.formatted(imports.isEmpty()? "": "\n%s\n".formatted(BuildTextUtils.joinToString(imports.stream().map("import %s;\n"::formatted).sorted().toList(), "")));
         return sb + buf;
     }
 }

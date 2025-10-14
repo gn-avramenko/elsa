@@ -788,7 +788,11 @@ public class JdbcDatabase implements Database {
         var result = new LinkedHashSet<String>();
         description.getFields().forEach((id, handler) -> {
             if (isIncluded(id, includedProperties, excludedProperties)) {
-                result.addAll(handler.getColumns().keySet());
+                if(id.equals("id")){
+                    result.add("%s.id".formatted(description.getName()));
+                } else {
+                    result.addAll(handler.getColumns().keySet());
+                }
             }
         });
         return result;
@@ -810,7 +814,7 @@ public class JdbcDatabase implements Database {
         var limitPart = prepareLimitPart(query);
         var selectSql = "select %s from %s ".formatted(TextUtils.join(getColumnNames(descr, properties, excludedProperties), ", ")
                 , JdbcUtils.getTableName(cls.getName())) +
-                joinPart +
+                joinPart + " " +
                 wherePart.sql +
                 orderPart +
                 limitPart;

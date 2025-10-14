@@ -221,7 +221,7 @@ public class RemotingHttpServlet extends HttpServlet {
                         if ((context.getHttpRequest().getParameter("filename") != null) && (field2part.size() == 1)) { // allow setting custom name for single file uploads
                             filename = context.getHttpRequest().getParameter("filename");
                         }
-                        bd.setName(clearFileName(filename));
+                        bd.setName(filename);
                         bd.setInputStream(is);
                         provider.setPropertyValue(rq, entry.getKey(), bd);
                     }
@@ -291,14 +291,6 @@ public class RemotingHttpServlet extends HttpServlet {
                 generator.flush();
             }
         }
-    }
-
-    private String clearFileName(String submittedFileName) {
-        if (!submittedFileName.contains("/")) {
-            return submittedFileName;
-        }
-        var parts = submittedFileName.split("/");
-        return parts[parts.length - 1];
     }
 
     private static Map<String, Part> extractBinaryDataParts(Collection<Part> parts) {

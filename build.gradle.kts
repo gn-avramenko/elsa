@@ -3,11 +3,11 @@ plugins {
 }
 java.testResultsDir.set(layout.buildDirectory.dir("junit-xml"))
 
-task("updateLocalGradlePlugins") {
+tasks.register("updateLocalGradlePlugins") {
     group = "elsa"
 }
 
-task("eCodeGen") {
+tasks.register("eCodeGen") {
     group = "elsa"
 }
 

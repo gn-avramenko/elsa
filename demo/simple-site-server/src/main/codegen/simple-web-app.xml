@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://vga.com/elsa/meta-web-app">
+    <entity id="com.gridnine.platform.elsa.demo.ui.app.MeasurementsDayData">
+        <property id="dayNumber" type="INT" non-nullable="true"/>
+        <property id="value" type="BIG_DECIMAL" non-nullable="true"/>
+    </entity>
+    <text-field class-name="com.gridnine.platform.elsa.demo.ui.common.SearchField"/>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.app.WebApp">
+        <children>
+            <container id="navigation" class-name="com.gridnine.platform.elsa.demo.ui.app.NavigationPanel">
+                <children>
+                    <button id="mainLink" class-name="com.gridnine.platform.elsa.demo.ui.app.StandardLink"/>
+                    <button id="historyLink" class-name="com.gridnine.platform.elsa.demo.ui.app.StandardLink"/>
+                    <button id="accountLink" class-name="com.gridnine.platform.elsa.demo.ui.app.AccountLink">
+                        <server-managed-state>
+                            <property id="loggedIn" type="BOOLEAN"/>
+                        </server-managed-state>
+                    </button>
+                    <select id="languageSelector" class-name="com.gridnine.platform.elsa.demo.ui.app.LanguageSelector"/>
+                </children>
+            </container>
+            <router id="mainRouter" class-name="com.gridnine.platform.elsa.demo.ui.app.MainRouter"/>
+            <modal id="mainModal" class-name="com.gridnine.platform.elsa.demo.ui.app.MainModal"/>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.main.MainPage">
+        <children>
+            <custom id="measurementsChart" class-name="com.gridnine.platform.elsa.demo.ui.main.MeasurementsChart">
+                <server-managed-state>
+                    <property id="nextMonthEnabled" type="BOOLEAN" non-nullable="true"/>
+                    <property id="previousMonthEnabled" type="BOOLEAN" non-nullable="true"/>
+                    <property id="month" type="STRING" non-nullable="true"/>
+                </server-managed-state>
+                <commands-from-client>
+                    <command id="showNextMonth"/>
+                    <command id="showPreviousMonth"/>
+                </commands-from-client>
+            </custom>
+            <text-area id="feedbackContent" class-name="com.gridnine.platform.elsa.demo.ui.main.FeedbackContent"/>
+            <button id="sendFeedback" class-name="com.gridnine.platform.elsa.demo.ui.main.SendFeedbackButton"/>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.history.HistoryPage">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.AccountPage">
+        <children>
+            <container id="navigation" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigation">
+                <children>
+                    <button id="organizationsLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="managersLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="doctorsLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="clientsLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="accountLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="securityLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                    <button id="exitLink" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountNavigationButton"/>
+                </children>
+            </container>
+            <nested-router id="router" class-name="com.gridnine.platform.elsa.demo.ui.account.AccountRouter"/>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationsSection">
+        <children>
+            <text-field id="search" class-name="com.gridnine.platform.elsa.demo.ui.common.SearchField"/>
+            <table id="organizationsList" class-name="com.gridnine.platform.elsa.demo.ui.organization.OrganizationsList"  managed-configuration="true">
+                <row>
+                    <property id="id" type="STRING" non-nullable="true"/>
+                    <property id="name" type="STRING"/>
+                    <property id="address" type="STRING"/>
+                    <property id="country" type="STRING"/>
+                    <property id="contacts" type="STRING"/>
+                    <collection id="menu" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+                </row>
+            </table>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationEditor">
+        <children>
+            <button id="backButton" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorBackButton"/>
+            <button id="saveButton" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorSaveButton"/>
+            <label id="title" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorTitleLabel"/>
+            <text-field id="name" class-name="com.gridnine.platform.elsa.demo.ui.common.StandardTextField"/>
+            <text-field id="address" class-name="com.gridnine.platform.elsa.demo.ui.common.StandardTextField"/>
+            <autocomplete id="country" class-name="com.gridnine.platform.elsa.demo.ui.common.CountryAutocompleteField"/>
+            <text-field id="contacts" class-name="com.gridnine.platform.elsa.demo.ui.common.StandardTextField"/>
+        </children>
+        <commands-from-server>
+            <command id="resetChanges"/>
+        </commands-from-server>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.manager.ManagersSection">
+        <children>
+            <autocomplete id="organization" class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationAutocomplete"/>
+            <text-field id="search" class-name="com.gridnine.platform.elsa.demo.ui.common.SearchField"/>
+            <table id="managersList" class-name="com.gridnine.platform.elsa.demo.ui.manager.ManagersList"  managed-configuration="true">
+                <row>
+                    <property id="id" type="STRING" non-nullable="true"/>
+                    <property id="name" type="STRING"/>
+                    <property id="email" type="STRING"/>
+                    <property id="contacts" type="STRING"/>
+                    <collection id="menu" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+                </row>
+            </table>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.doctor.DoctorsSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.client.ClientsSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.account.AccountSection">
+    </container>
+    <container class-name="com.gridnine.platform.elsa.demo.ui.account.security.SecuritySection">
+    </container>
+
+</web-app>

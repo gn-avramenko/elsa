@@ -73,6 +73,7 @@ public class JdbcEnumMapperImpl implements EnumMapper {
                                     ps.setString(idx, LocaleUtils.getLocalizedName(enumItem.getDisplayNames(), loc, enumItem.getId()));
                                     idx++;
                                 }
+                                ps.execute();
                                 return null;
                             }
                     );
@@ -82,20 +83,18 @@ public class JdbcEnumMapperImpl implements EnumMapper {
                     if (differs) {
                         template.execute("update enummapping set %s where enumconstant= ? and classname=?".formatted(
                                 TextUtils.join(supportedLocalesProvider.getSupportedLocales().stream()
-                                        .map(loc -> "%s = ?".formatted(loc.getLanguage())).toList(), ", ")), new PreparedStatementCallback<Void>() {
-                            @Override
-                            public Void doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                                var idx = 1;
-                                for(var loc: supportedLocalesProvider.getSupportedLocales()) {
-                                    ps.setString(idx, LocaleUtils.getLocalizedName(enumItem.getDisplayNames(), loc, enumItem.getId()));
-                                    idx++;
-                                }
-                                ps.setString(idx, enumItem.getId());
-                                idx++;
-                                ps.setString(idx, it.getId());
-                                return null;
-                            }
-                        });
+                                        .map(loc -> "%sName = ?".formatted(loc.getLanguage())).toList(), ", ")), (PreparedStatementCallback<Void>) ps -> {
+                                            var idx = 1;
+                                            for(var loc: supportedLocalesProvider.getSupportedLocales()) {
+                                                ps.setString(idx, LocaleUtils.getLocalizedName(enumItem.getDisplayNames(), loc, enumItem.getId()));
+                                                idx++;
+                                            }
+                                            ps.setString(idx, enumItem.getId());
+                                            idx++;
+                                            ps.setString(idx, it.getId());
+                                            ps.execute();
+                                            return null;
+                                        });
                     }
                     map.put(enumItem.getId(), (Integer) row.get("id"));
                 }

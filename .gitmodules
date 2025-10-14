@@ -1,0 +1,4 @@
+[submodule "submodules/webpeer"]
+	path = submodules/webpeer
+	branch = master
+	url = https://github.com/gn-avramenko/webpeer.git

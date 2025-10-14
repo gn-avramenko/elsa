@@ -27,6 +27,7 @@ import com.gridnine.platform.elsa.gradle.codegen.domain.JavaDomainCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.l10n.JavaL10nCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.remoting.JavaRemotingCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.remoting.OpenApiCodeGenRecord;
+import com.gridnine.platform.elsa.gradle.codegen.webApp.JavaWebAppCodeGenRecord;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,6 +115,15 @@ public class ElsaJavaCodeGenExtension {
         record.setDestinationDir(new File(projectDir, destDir));
         globalData.getRemotingRecords().computeIfAbsent(record.getDestinationDir().getCanonicalPath(), (i) -> new ArrayList<>()).add(record);
         globalData.setCurrentRemotingRecord(record);
+        codegenRecords.add(record);
+    }
+
+    public void webApp(String destDir, String sourceDir, String configurator,  List<String> sourcesFileNames) throws IOException {
+        var record = new JavaWebAppCodeGenRecord();
+        record.setRegistryConfigurator(configurator);
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.setDestinationDir(new File(projectDir, destDir));
+        record.setSourceDir(new File(projectDir, sourceDir));
         codegenRecords.add(record);
     }
 

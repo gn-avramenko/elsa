@@ -2,6 +2,7 @@ plugins {
     java
     id("java-test-fixtures")
     id("elsa-java")
+    id("java-library")
 }
 
 repositories {
@@ -32,6 +33,7 @@ elsa {
 dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("jakarta.transaction:jakarta.transaction-api:2.0.1")
+
     implementation("org.springframework:spring-webmvc:6.2.7")
     implementation("org.springframework:spring-context:6.2.7")
 //    implementation("org.springframework:spring-websocket:6.2.7")
@@ -44,10 +46,12 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
     implementation("com.nothome:javaxdelta:2.0.1")
     implementation("org.ehcache:ehcache:3.9.9")
-    implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
-    implementation("org.springframework:spring-jdbc:6.2.7")
-    implementation("org.springframework:spring-tx:6.2.7")
-    implementation("io.swagger.core.v3:swagger-models-jakarta:2.2.9")
+    api("jakarta.servlet:jakarta.servlet-api:6.0.0")
+    api("org.springframework:spring-jdbc:6.2.7")
+    api("org.springframework:spring-tx:6.2.7")
+    api("io.swagger.core.v3:swagger-models-jakarta:2.2.9")
+    api("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+    api("io.swagger.core.v3:swagger-models-jakarta:2.2.30")
     implementation("io.swagger.core.v3:swagger-core-jakarta:2.2.9")
     implementation(project(":platform:common-meta"))
     implementation(project(":platform:common-core"))

@@ -46,6 +46,11 @@ public class SearchQueryBuilder extends BaseQueryBuilder<SearchQueryBuilder, Sea
         query.getOrders().put(property.name, order);
         return this;
     }
+    public  SearchQueryBuilder addOrder(String propertyName, SortOrder order) {
+        query.getOrders().put(propertyName, order);
+        return this;
+    }
+
 
     public SearchQueryBuilder preferredFields(FieldNameSupport... fields) {
         query.getPreferredFields().clear();

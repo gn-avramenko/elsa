@@ -29,6 +29,9 @@ import com.gridnine.platform.elsa.gradle.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 public class WebCodeGeneratorUtils {
@@ -50,20 +53,20 @@ public class WebCodeGeneratorUtils {
         var imports = new HashSet<String>();
         for (var pd : ed.getProperties().values()) {
             if(pd.getType() == StandardValueType.ENTITY || pd.getType() == StandardValueType.ENUM){
-                imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getClassName()));
+                imports.add(pd.getClassName());
             }
         }
         for (var pd : ed.getCollections().values()) {
             if(pd.getElementType() == StandardValueType.ENTITY|| pd.getElementType() == StandardValueType.ENUM){
-                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getElementClassName()));
+                imports.add(pd.getElementClassName());
             }
         }
         for (var pd : ed.getMaps().values()) {
             if(pd.getKeyType() == StandardValueType.ENTITY|| pd.getKeyType() == StandardValueType.ENUM){
-                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getKeyClassName()));
+                imports.add(pd.getKeyClassName());
             }
             if(pd.getValueType() == StandardValueType.ENTITY|| pd.getValueType() == StandardValueType.ENUM){
-                    imports.add(JavaCodeGeneratorUtils.getSimpleName(pd.getValueClassName()));
+                imports.add(pd.getValueClassName());
             }
         }
         if(ed.getExtendsId() != null){
@@ -74,10 +77,10 @@ public class WebCodeGeneratorUtils {
                 gen.printLine("import { HasClassName } from 'elsa-web-core'");
             }
             imports.stream().sorted().forEach(it ->{
-                if("BinaryData".equals(it)){
+                if(it.contains("BinaryData")){
                     gen.printLine("import { BinaryData }  from 'elsa-web-core';");
                 } else if(!"Object".equals(it)) {
-                    gen.printLine("import { %s } from './%s';".formatted(it, it));
+                    gen.printLine("import { %s } from '%s';".formatted(JavaCodeGeneratorUtils.getSimpleName(it), getImportName(it)));
                 }
             });
             gen.blankLine();
@@ -103,9 +106,13 @@ public class WebCodeGeneratorUtils {
         if("Object".equals(it)){
             return true;
         }
+        if(metaRegistry == null){
+            return false;
+        }
         var ett = metaRegistry.getEntities().get(it);
         return ett != null && ett.isAbstract();
     }
+
 
     public static String getType(StandardValueType vt, RemotingMetaRegistry metaRegistry, String className) {
         return switch (vt) {
@@ -117,7 +124,7 @@ public class WebCodeGeneratorUtils {
                 if("Object".equals(className)){
                     yield  "HasClassName";
                 }
-                if(isAbstract(className, metaRegistry)){
+                if(metaRegistry != null && isAbstract(className, metaRegistry)){
                     yield  "%s & HasClassName".formatted(JavaCodeGeneratorUtils.getSimpleName(className));
                 }
                 yield JavaCodeGeneratorUtils.getSimpleName(className);
@@ -178,5 +185,57 @@ public class WebCodeGeneratorUtils {
         }
         gen.blankLine();
 
+    }
+
+    public static File getFile(String fileName, File destDir){
+        var parts = fileName.split("\\.");
+        var currentFile = destDir;
+        var length = parts.length;
+        for (int n = length - 3; n < length - 2; n++) {
+            currentFile = new File(currentFile, parts[n] + "/");
+            assert currentFile.exists() || currentFile.mkdirs();
+        }
+        return  new File(currentFile, parts[parts.length - 2] + "." + parts[parts.length - 1]);
+    }
+
+    public static File saveIfDiffers(String content, File currentFile) throws IOException {
+        if(currentFile.exists()){
+            var existing = Files.readString(currentFile.toPath(),  StandardCharsets.UTF_8);
+            var trim1 = trimContent(content);
+            var trim2 = trimContent(existing);
+            if(trim1.equals(trim2)){
+                return currentFile;
+            }
+        }
+        while (!currentFile.getParentFile().exists()) {
+            try {
+                //noinspection BusyWait
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //noops
+            }
+            //noinspection ResultOfMethodCallIgnored
+            currentFile.getParentFile().mkdirs();
+        }
+        Files.writeString(currentFile.toPath(), content);
+        return currentFile;
+    }
+
+    private static String trimContent(String content) {
+        return content.replaceAll("\\s+|,|;|\"|'|\\)|\\(", "");
+    }
+
+
+    public static String getImportName(String className) {
+        var parts = className.split("\\.");
+        StringBuilder s = new StringBuilder();
+        var length = parts.length;
+        for (int n = length - 2; n < length; n++) {
+            if(!s.isEmpty()){
+                s.append("/");
+            }
+            s.append(parts[n]);
+        }
+        return "@g/"+ s;
     }
 }
