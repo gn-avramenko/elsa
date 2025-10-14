@@ -6,13 +6,13 @@ function EditorSaveButtonFC(props: { element: EditorSaveButtonComponent }) {
     initStateSetters(props.element);
     return (
         <WebComponentWrapper element={props.element}>
-             <button
-             disabled={!!props.element.getDisabled()}
-                                  className="webpeer-button"
-                                  onClick={() => props.element.sendClick()}
-                              >
-                                  {props.element.getTitle()}
-                              </button>
+            <button
+                disabled={!!props.element.getDisabled()}
+                className="webpeer-button"
+                onClick={() => props.element.sendClick()}
+            >
+                {props.element.getTitle()}
+            </button>
         </WebComponentWrapper>
     );
 }
@@ -20,7 +20,7 @@ function EditorSaveButtonFC(props: { element: EditorSaveButtonComponent }) {
 export class EditorSaveButtonComponent extends EditorSaveButtonSkeleton {
     functionalComponent = EditorSaveButtonFC;
 
-    setDisabled(value: boolean){
-       this.stateSetters.get('disabled')!(value)
+    setDisabled(value: boolean) {
+        this.stateSetters.get('disabled')!(value);
     }
 }

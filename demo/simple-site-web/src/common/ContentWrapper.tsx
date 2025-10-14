@@ -31,5 +31,4 @@ export class ContentWrapperComponent extends ContentWrapperSkeleton {
     getProcessedChildren(): string[] {
         return [];
     }
-    
 }

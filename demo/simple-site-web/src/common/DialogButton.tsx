@@ -6,13 +6,13 @@ function DialogButtonFC(props: { element: DialogButtonComponent }) {
     initStateSetters(props.element);
     return (
         <WebComponentWrapper element={props.element}>
-             <button
-             disabled={!!props.element.getDisabled()}
-                                  className="webpeer-button"
-                                  onClick={() => props.element.sendClick()}
-                              >
-                                  {props.element.getTitle()}
-                              </button>
+            <button
+                disabled={!!props.element.getDisabled()}
+                className="webpeer-button"
+                onClick={() => props.element.sendClick()}
+            >
+                {props.element.getTitle()}
+            </button>
         </WebComponentWrapper>
     );
 }
@@ -20,7 +20,7 @@ function DialogButtonFC(props: { element: DialogButtonComponent }) {
 export class DialogButtonComponent extends DialogButtonSkeleton {
     functionalComponent = DialogButtonFC;
 
-    setDisabled(value: boolean){
-       this.stateSetters.get('disabled')!(value)
+    setDisabled(value: boolean) {
+        this.stateSetters.get('disabled')!(value);
     }
 }

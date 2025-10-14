@@ -6,13 +6,13 @@ function EditorBackButtonFC(props: { element: EditorBackButtonComponent }) {
     initStateSetters(props.element);
     return (
         <WebComponentWrapper element={props.element}>
-             <button
-             disabled={!!props.element.getDisabled()}
-                                  className="webpeer-button"
-                                  onClick={() => props.element.sendClick()}
-                              >
-                                  {props.element.getTitle()}
-                              </button>
+            <button
+                disabled={!!props.element.getDisabled()}
+                className="webpeer-button"
+                onClick={() => props.element.sendClick()}
+            >
+                {props.element.getTitle()}
+            </button>
         </WebComponentWrapper>
     );
 }
@@ -20,7 +20,7 @@ function EditorBackButtonFC(props: { element: EditorBackButtonComponent }) {
 export class EditorBackButtonComponent extends EditorBackButtonSkeleton {
     functionalComponent = EditorBackButtonFC;
 
-    setDisabled(value: boolean){
-       this.stateSetters.get('disabled')!(value)
+    setDisabled(value: boolean) {
+        this.stateSetters.get('disabled')!(value);
     }
 }
