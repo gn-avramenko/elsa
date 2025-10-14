@@ -58,14 +58,14 @@ public class JavaWebAppElementsHelper {
                             fields.add(new Field(entry.getKey(), StandardValueType.ENTITY, child.getClassName(), false, WebAppMetadataHelper.isManagedConfiguration(child) ? FieldType.MANAGED_CHILD : FieldType.CHILD, true));
                         }
                     }
-                    for (var command : elm.getCommandsFromClient()) {
+                    for (var command : elm.getCommandsFromClient().values()) {
                         if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                             fields.add(new Field("%sListener".formatted(command.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument<com.gridnine.webpeer.core.ui.OperationUiContext>", false, FieldType.COMMAND_FROM_CLIENT, false));
                         } else {
                             fields.add(new Field("%sListener".formatted(command.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments<%s%sAction, com.gridnine.webpeer.core.ui.OperationUiContext>".formatted(element.getClassName(),BuildTextUtils.capitalize(command.getId())), false, FieldType.COMMAND_FROM_CLIENT, false));
                         }
                     }
-                    for(var serv: elm.getServices()){
+                    for(var serv: elm.getServices().values()){
                         var requestClassName = "%s%sRequest".formatted(element.getClassName(), BuildTextUtils.capitalize(serv.getId()));
                         var responseClassName = "%s%sResponse".formatted(element.getClassName(), BuildTextUtils.capitalize(serv.getId()));
                         fields.add(new Field("%sServiceHandler".formatted(serv.getId()), StandardValueType.ENTITY, "com.gridnine.platform.elsa.webApp.WebAppServiceHandler<%s, %s>".formatted(requestClassName, responseClassName), false, FieldType.SERVICE, false));
@@ -322,7 +322,7 @@ public class JavaWebAppElementsHelper {
                                     });
 
 
-                                for (var action : elm.getCommandsFromClient()) {
+                                for (var action : elm.getCommandsFromClient().values()) {
                                         gen.wrapWithBlock("if(commandId.equals(\"%s\"))".formatted(action.getId()), () -> {
                                             if (action.getCollections().isEmpty() && action.getProperties().isEmpty()) {
                                                 gen.printLine("this.%sListener.run(ctx);".formatted(action.getId()));
@@ -338,7 +338,7 @@ public class JavaWebAppElementsHelper {
                                  }
                                 gen.printLine("super.processCommand(ctx, commandId, data);");
                             });
-                        for (var action : elm.getCommandsFromServer()) {
+                        for (var action : elm.getCommandsFromServer().values()) {
                             if(action.getProperties().isEmpty() && action.getCollections().isEmpty()) {
                                 gen.wrapWithBlock("public void %s(OperationUiContext ctx, boolean postProcess)".formatted(action.getId()), ()->{
                                     gen.wrapWithBlock("if(postProcess)", ()->{

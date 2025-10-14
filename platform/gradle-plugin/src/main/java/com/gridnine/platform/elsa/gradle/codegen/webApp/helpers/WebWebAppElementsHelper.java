@@ -53,14 +53,14 @@ public class WebWebAppElementsHelper {
                     }
                     stateStr.append(BuildTextUtils.joinToString(stateKeys.stream().map("\"%s\""::formatted).toList(), ", "));
                     var ca = new StringBuilder();
-                    ca.append(BuildTextUtils.joinToString(elm.getCommandsFromClient().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
+                    ca.append(BuildTextUtils.joinToString(elm.getCommandsFromClient().values().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", "));
                     gen.addImport("{BaseReactUiElement} from '@/common/component'");
                     var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
                     var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue");
                     if(elm.getInput() != null){
                         gen.addImport("{%s} from '%s'".formatted(inputValueSimpleClassName, inputValueImport));
                     }
-                    var rq = BuildTextUtils.joinToString(elm.getServices().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", ");
+                    var rq = BuildTextUtils.joinToString(elm.getServices().values().stream().map(it -> "\"%s\"".formatted(it.getId())).toList(), ", ");
                     gen.wrapWithBlock("export abstract class %sSkeleton extends BaseReactUiElement".formatted(simpleClassName), () -> {
                         gen.wrapWithBlock("constructor(model: any)", () -> {
                             gen.printLine("""
@@ -98,7 +98,7 @@ public class WebWebAppElementsHelper {
                         }
                         if(!elm.getCommandsFromServer().isEmpty()){
                             gen.wrapWithBlock("processCommandFromServer(commandId: string, data?: any)", ()->{
-                               for(var command : elm.getCommandsFromServer()){
+                               for(var command : elm.getCommandsFromServer().values()){
                                    gen.wrapWithBlock("if (commandId === '%s')".formatted(command.getId()), ()->{
                                        if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                                            gen.printLine("this.process%s();".formatted(BuildTextUtils.capitalize(command.getId())));
@@ -124,7 +124,7 @@ public class WebWebAppElementsHelper {
                                         }, !this.state.get('hasValueChangeListener') && !!this.state.get('deferred'));""");
                             });
                         }
-                        for(var action: elm.getCommandsFromClient()){
+                        for(var action: elm.getCommandsFromClient().values()){
                             if(action.getCollections().isEmpty() && action.getProperties().isEmpty()){
                                 gen.wrapWithBlock("async send%s()".formatted(BuildTextUtils.capitalize(action.getId())), ()->{
                                     gen.printLine("await this.sendCommand('%s');".formatted(action.getId()));
@@ -136,14 +136,14 @@ public class WebWebAppElementsHelper {
                                 });
                             }
                         }
-                        for(var serv: elm.getServices()){
+                        for(var serv: elm.getServices().values()){
                             var requestClassName = "%s%sRequest".formatted(elm.getClassName(),BuildTextUtils.capitalize(serv.getId()));
                             var responseClassName = "%s%sResponse".formatted(elm.getClassName(),BuildTextUtils.capitalize(serv.getId()));
                             gen.wrapWithBlock("async do%s(value: %s)".formatted(BuildTextUtils.capitalize(serv.getId()), getType(StandardValueType.ENTITY, registry, requestClassName, gen)), ()->{
                                 gen.printLine("return (await this.makeRequest('%s', value)) as %s;".formatted(serv.getId(), getType(StandardValueType.ENTITY, registry, responseClassName, gen)));
                             });
                         }
-                        for(var command : elm.getCommandsFromServer()){
+                        for(var command : elm.getCommandsFromServer().values()){
                             if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                                 gen.printLine("abstract process%s(): void;".formatted(BuildTextUtils.capitalize(command.getId())));
                             } else {

@@ -69,7 +69,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
-            for(var action: ce.getCommandsFromClient()){
+            for(var action: ce.getCommandsFromClient().values()){
                 if(action.getProperties().size()+action.getCollections().size()>0){
                     var dd = new EntityDescription();
                     dd.setId("%s%sAction".formatted(elm.getClassName(), BuildTextUtils.capitalize(action.getId())));
@@ -81,7 +81,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     generatedFiles.add(file);
                 }
             }
-            for(var action: ce.getCommandsFromServer()){
+            for(var action: ce.getCommandsFromServer().values()){
                 if(action.getProperties().size()+action.getCollections().size()>0){
                     var dd = new EntityDescription();
                     dd.setId("%s%sAction".formatted(elm.getClassName(), BuildTextUtils.capitalize(action.getId())));

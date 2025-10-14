@@ -40,8 +40,12 @@ public class WebAppMetadataHelper {
         var result = new CustomWebElementDescription(element.getClassName());
         result.getServerManagedState().getProperties().putAll(element.getServerManagedState().getProperties());
         result.getServerManagedState().getCollections().putAll(element.getServerManagedState().getCollections());
-        result.getCommandsFromClient().addAll(element.getCommandsFromClient());
-        result.getCommandsFromServer().addAll(element.getCommandsFromServer());
+        element.getCommandsFromClient().forEach((key, value) -> {
+            result.getCommandsFromClient().put(key, value);
+        });
+        element.getCommandsFromServer().forEach((key, value) -> {
+            result.getCommandsFromServer().put(key, value);
+        });
         switch (element.getType()) {
             case MODAL -> {
                 {
@@ -62,7 +66,7 @@ public class WebAppMetadataHelper {
                         prop.setNonNullable(true);
                         command.getProperties().put(prop.getId(), prop);
                     }
-                    result.getCommandsFromServer().add(command);
+                    result.getCommandsFromServer().put(command.getId(), command);
                 }
                 {
                     var prop = new StandardPropertyDescription();
@@ -87,7 +91,7 @@ public class WebAppMetadataHelper {
                 {
                     var command = new WebElementCommandDescription();
                     command.setId("close");
-                    result.getCommandsFromClient().add(command);
+                    result.getCommandsFromClient().put(command.getId(), command);
                 }
             }
             case CONTAINER -> {
@@ -103,7 +107,7 @@ public class WebAppMetadataHelper {
                 {
                     var command = new WebElementCommandDescription();
                     command.setId("click");
-                    result.getCommandsFromClient().add(command);
+                    result.getCommandsFromClient().put(command.getId(), command);
                 }
                 {
                     var prop = new StandardPropertyDescription();
@@ -214,7 +218,7 @@ public class WebAppMetadataHelper {
                 }
                 {
                     var action = new WebElementCommandDescription();
-                    result.getCommandsFromClient().add(action);
+                    result.getCommandsFromClient().put(action.getId(), action);
                     action.setId("action");
                     {
                         var arg = new  StandardPropertyDescription();
@@ -237,10 +241,11 @@ public class WebAppMetadataHelper {
                         arg.setNonNullable(true);
                         action.getProperties().put(arg.getId(), arg);
                     }
+                    result.getCommandsFromClient().put(action.getId(), action);
                 }
                 {
                     var sort = new WebElementCommandDescription();
-                    result.getCommandsFromClient().add(sort);
+                    result.getCommandsFromClient().put(sort.getId(), sort);
                     sort.setId("sort");
                     {
                         var arg = new  StandardPropertyDescription();
@@ -255,17 +260,17 @@ public class WebAppMetadataHelper {
                 {
                     var loadMore = new WebElementCommandDescription();
                     loadMore.setId("loadMore");
-                    result.getCommandsFromClient().add(loadMore);
+                    result.getCommandsFromClient().put(loadMore.getId(), loadMore);
                 }
                 {
                     var refreshData = new WebElementCommandDescription();
                     refreshData.setId("refreshData");
-                    result.getCommandsFromClient().add(refreshData);
+                    result.getCommandsFromClient().put(refreshData.getId(), refreshData);
                 }
                 {
                     var refreshData = new WebElementCommandDescription();
                     refreshData.setId("refreshData");
-                    result.getCommandsFromServer().add(refreshData);
+                    result.getCommandsFromServer().put(refreshData.getId(), refreshData);
                 }
             }
             case AUTOCOMPLETE -> {
@@ -325,7 +330,7 @@ public class WebAppMetadataHelper {
                         response.getCollections().put(coll.getId(), coll);
                     }
                     getDataService.setResponse(response);
-                    result.getServices().add(getDataService);
+                    result.getServices().put(getDataService.getId(), getDataService);
                 }
             }
             case LABEL -> {
@@ -336,6 +341,7 @@ public class WebAppMetadataHelper {
                 result.getServerManagedState().getProperties().put(prop.getId(), prop);
             }
             case CUSTOM -> {
+                //noops
             }
         }
         return result;
@@ -388,8 +394,8 @@ public class WebAppMetadataHelper {
         var result = new  ArrayList<EntityDescription>();
         var lst = new ArrayList<WebElementCommandDescription>();
         var ce = toCustomEntity(element);
-        lst.addAll(ce.getCommandsFromClient());
-        lst.addAll(ce.getCommandsFromServer());
+        lst.addAll(ce.getCommandsFromClient().values());
+        lst.addAll(ce.getCommandsFromServer().values());
         for(var command :lst) {
             if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                 continue;
@@ -405,7 +411,7 @@ public class WebAppMetadataHelper {
     public static List<EntityDescription> getServicesClasses(BaseWebElementDescription element) {
         var result = new  ArrayList<EntityDescription>();
         var ce = toCustomEntity(element);
-        for(var service :ce.getServices()) {
+        for(var service :ce.getServices().values()) {
             if(service.getRequest() != null){
                 var cn = "%s%sRequest".formatted(element.getClassName(),BuildTextUtils.capitalize(service.getId()));
                 var ed = new EntityDescription(cn);
@@ -429,7 +435,7 @@ public class WebAppMetadataHelper {
         ed.getParameters().put("no-equals", "true");
         ed.getProperties().putAll(ce.getServerManagedState().getProperties());
         ed.getCollections().putAll(ce.getServerManagedState().getCollections());
-        for(var cmd: ce.getCommandsFromClient()){
+        for(var cmd: ce.getCommandsFromClient().values()){
             var prop = new StandardPropertyDescription();
             prop.setType(StandardValueType.ENTITY);
             prop.setId("%sListener".formatted(cmd.getId()));
@@ -458,7 +464,7 @@ public class WebAppMetadataHelper {
                 ed.getProperties().put(prop.getId(), prop);
             }
         }
-        for(var service: ce.getServices()){
+        for(var service: ce.getServices().values()){
             var prop = new StandardPropertyDescription();
             prop.setType(StandardValueType.ENTITY);
             prop.setId("%sServiceHandler".formatted(service.getId()));

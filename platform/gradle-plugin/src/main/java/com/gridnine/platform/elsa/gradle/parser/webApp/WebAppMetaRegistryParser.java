@@ -290,7 +290,7 @@ public class WebAppMetaRegistryParser {
                 updateBaseProperties(ett, command);
                 item.getProperties().putAll(ett.getServerManagedState().getProperties());
                 item.getCollections().putAll(ett.getServerManagedState().getCollections());
-                dd.getCommandsFromServer().add(item);
+                dd.getCommandsFromServer().put(item.getId(), item);
             });
         }
         var ccs = child.getFirstChild("commands-from-client");
@@ -302,7 +302,7 @@ public class WebAppMetaRegistryParser {
                 updateBaseProperties(ett, command);
                 item.getProperties().putAll(ett.getServerManagedState().getProperties());
                 item.getCollections().putAll(ett.getServerManagedState().getCollections());
-                dd.getCommandsFromClient().add(item);
+                dd.getCommandsFromClient().put(item.getId(), item);
             });
         }
         var ss = child.getFirstChild("services");
@@ -325,7 +325,7 @@ public class WebAppMetaRegistryParser {
                 response.getProperties().putAll(ett.getServerManagedState().getProperties());
                 response.getCollections().putAll(ett.getServerManagedState().getCollections());
                 item.setResponse(response);
-                dd.getServices().add(item);
+                dd.getServices().put(item.getId(), item);
             });
         }
     }

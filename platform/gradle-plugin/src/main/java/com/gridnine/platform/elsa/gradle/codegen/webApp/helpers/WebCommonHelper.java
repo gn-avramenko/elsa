@@ -32,7 +32,7 @@ public class WebCommonHelper {
             return "";
         }
         var bldr = new StringBuilder();
-        for(var cmd: descr.getCommandsFromServer()){
+        for(var cmd: descr.getCommandsFromServer().values()){
             if(cmd.getProperties().isEmpty() && cmd.getCollections().isEmpty()){
                 continue;
             }
@@ -49,7 +49,7 @@ public class WebCommonHelper {
             return "";
         }
         var bldr = new StringBuilder();
-        for(var cmd: descr.getCommandsFromServer()){
+        for(var cmd: descr.getCommandsFromServer().values()){
             if(!bldr.isEmpty()){
                 bldr.append("\r\n");
             }

@@ -5,8 +5,10 @@
 
 package com.gridnine.platform.elsa.gradle.meta.webApp;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
 public abstract class BaseWebElementDescription {
@@ -15,11 +17,11 @@ public abstract class BaseWebElementDescription {
 
     private final WebAppEntity serverManagedState = new  WebAppEntity();
 
-    private final List<WebElementCommandDescription> commandsFromServer = new LinkedList<>();
+    private final Map<String, WebElementCommandDescription> commandsFromServer = new LinkedHashMap<>();
 
-    private final List<WebElementCommandDescription> commandsFromClient = new LinkedList<>();
+    private final Map<String, WebElementCommandDescription> commandsFromClient = new LinkedHashMap<>();
 
-    private final List<ServiceDescription> services = new LinkedList<>();
+    private final Map<String, ServiceDescription> services = new LinkedHashMap<>();
 
     private InputDescription input;
 
@@ -32,13 +34,6 @@ public abstract class BaseWebElementDescription {
         this.className = className;
     }
 
-    public List<WebElementCommandDescription> getCommandsFromClient() {
-        return commandsFromClient;
-    }
-
-    public List<WebElementCommandDescription> getCommandsFromServer() {
-        return commandsFromServer;
-    }
 
     public String getClassName() {
         return className;
@@ -60,7 +55,15 @@ public abstract class BaseWebElementDescription {
         this.input = input;
     }
 
-    public List<ServiceDescription> getServices() {
+    public Map<String, WebElementCommandDescription> getCommandsFromServer() {
+        return commandsFromServer;
+    }
+
+    public Map<String, WebElementCommandDescription> getCommandsFromClient() {
+        return commandsFromClient;
+    }
+
+    public Map<String, ServiceDescription> getServices() {
         return services;
     }
 }
