@@ -22,19 +22,16 @@
 package com.gridnine.platform.elsa.gradle.codegen.webApp;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
-import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.TypeScriptCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.webApp.helpers.*;
 import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
-import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.CustomWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.TableWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.WebAppMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
-import org.gradle.api.Project;
 
 import java.io.File;
 import java.util.ArrayList;

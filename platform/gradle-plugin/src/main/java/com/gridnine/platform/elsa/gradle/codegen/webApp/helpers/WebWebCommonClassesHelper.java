@@ -26,8 +26,6 @@ import com.gridnine.platform.elsa.gradle.utils.BuildIoUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Set;
 
 public class WebWebCommonClassesHelper {
     public static void generate(File sourceDir) throws Exception {

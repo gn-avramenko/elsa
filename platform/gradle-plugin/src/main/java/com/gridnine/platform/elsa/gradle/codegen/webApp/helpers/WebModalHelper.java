@@ -23,12 +23,10 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
-import com.gridnine.platform.elsa.gradle.meta.webApp.LabelWebElementDescription;
 import com.gridnine.platform.elsa.gradle.meta.webApp.ModalWebElementDescription;
 import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 
 import java.io.File;
-import java.io.IOException;
 
 public class WebModalHelper {
     public static void generateModal(ModalWebElementDescription descr, File destDir) throws Exception {

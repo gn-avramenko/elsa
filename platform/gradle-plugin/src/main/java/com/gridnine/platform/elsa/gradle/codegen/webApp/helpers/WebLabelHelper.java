@@ -24,7 +24,6 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.webApp.LabelWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.TextAreaWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;
