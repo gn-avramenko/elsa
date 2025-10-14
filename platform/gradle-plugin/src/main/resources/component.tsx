@@ -42,6 +42,7 @@ export type ReactElementDescription = {
     state: string[];
     actionsFromClient: string[];
     input?: InputType;
+    services: string[];
 };
 export abstract class BaseReactUiElement extends BaseUiElement {
     readonly description: ReactElementDescription;

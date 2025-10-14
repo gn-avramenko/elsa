@@ -37,6 +37,10 @@ public class WebWebCommonClassesHelper {
         copy("tabs.tsx", sourceDir);
         copy("wrapper.tsx", sourceDir);
         copy("debounce.ts", sourceDir);
+        copy("editor.tsx", sourceDir);
+        copy("notification.tsx", sourceDir);
+        copy("preloader.tsx", sourceDir);
+        copy("router.tsx", sourceDir);
     }
     private static void copy(String fileName, File sourceDir) throws IOException {
         var file =  new File(sourceDir, "common/%s".formatted(fileName));

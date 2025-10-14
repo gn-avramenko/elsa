@@ -347,6 +347,19 @@ public class JavaWebAppElementsHelper {
                                     });
                                     gen.printLine("sendCommand(ctx, \"%s\", null);".formatted(action.getId()));
                                 });
+                            } else {
+                                var cn = "%s%sAction".formatted(elm.getClassName(),BuildTextUtils.capitalize(action.getId()));
+                                gen.addImport(cn);
+                                gen.wrapWithBlock("public void %s(%s data, OperationUiContext ctx, boolean postProcess)".formatted(action.getId(), JavaCodeGeneratorUtils.getSimpleName(cn)), ()->{
+                                    gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                    gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
+                                    gen.printLine("var value = WebAppUtils.toJsonValue(data, StandardValueType.ENTITY);");
+                                    gen.wrapWithBlock("if(postProcess)", ()->{
+                                        gen.printLine("sendPostProcessCommand(ctx, \"%s\", value);".formatted(action.getId()));
+                                        gen.printLine("return;");
+                                    });
+                                    gen.printLine("sendCommand(ctx, \"%s\", value);".formatted(action.getId()));
+                                });
                             }
                         }
                         var services = fields.stream().filter(it -> it.type == FieldType.SERVICE).toList();
@@ -437,6 +450,9 @@ public class JavaWebAppElementsHelper {
                             gen.blankLine();
                             gen.wrapWithBlock(cns, () -> {
                                 gen.printLine(managedConfiguration ? "super(tag, config, ctx);" : "super(tag, ctx);");
+                                if(element.getType() == WebElementType.MODAL){
+                                    gen.printLine("setCloseListener(this::removeChildren, ctx);");
+                                }
                                 if (element.getType() == WebElementType.ROUTER || element.getType() == WebElementType.NESTED_ROUTER) {
                                     gen.printLine("factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);");
                                     if (element.getType() == WebElementType.ROUTER) {
@@ -540,6 +556,78 @@ public class JavaWebAppElementsHelper {
                                         gen.printLine("return result;");
                                     });
                                 }
+                            }
+                            if(element.getType() == WebElementType.MODAL) {
+                                gen.wrapWithBlock("public void closeDialog(OperationUiContext context)", ()->{
+                                    gen.printLine("removeChildren(context);");
+                                    gen.printLine("setVisible(false, context);");
+                                });
+                                gen.addImport("com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument");
+                                gen.wrapWithBlock("public void showConfirm(String message, RunnableWithExceptionAndArgument<OperationUiContext> okCallback, OperationUiContext context)", ()->{
+                                    gen.addImport("com.gridnine.platform.elsa.ui.common.ConfirmMessageConfiguration");;
+                                    gen.printLine("var confirmMessageConfig = new ConfirmMessageConfiguration();");
+                                    gen.printLine("confirmMessageConfig.setTitle(message);");
+                                    gen.addImport("com.gridnine.platform.elsa.ui.common.ConfirmMessage");
+                                    gen.printLine("var confirmMessage = new ConfirmMessage(\"message\", confirmMessageConfig, context);");
+                                    gen.addImport("com.gridnine.platform.elsa.ui.common.DialogButton");
+                                    gen.addImport("java.util.ArrayList");
+                                    gen.printLine("var buttons = new ArrayList<DialogButton>();");
+                                    gen.addImport("com.gridnine.platform.elsa.ui.common.DialogButtonConfiguration");
+                                    gen.wrapWithBlock("", ()->{
+                                        gen.printLine("var buttonConfig = new DialogButtonConfiguration();");
+                                        gen.printLine("buttonConfig.setTitle(\"OK\");");
+                                        gen.wrapWithBlock("buttonConfig.setClickListener(ctx ->", ()->{
+                                            gen.printLine("okCallback.run(ctx);");
+                                            gen.printLine("closeDialog(ctx);");
+                                        });
+                                        gen.printLine(");");
+                                        gen.printLine("var okButton = new DialogButton(\"ok\", buttonConfig, context);");
+                                        gen.printLine("buttons.add(okButton);");
+                                    });
+                                    gen.wrapWithBlock("", ()->{
+                                        gen.printLine("var buttonConfig = new DialogButtonConfiguration();");
+                                        gen.printLine("buttonConfig.setTitle(\"Cancel\");");
+                                        gen.wrapWithBlock("buttonConfig.setClickListener(ctx ->", ()->{
+                                            gen.printLine("closeDialog(ctx);");
+                                        });
+                                        gen.printLine(");");
+                                        gen.printLine("var cancelButton = new DialogButton(\"cancel\", buttonConfig, context);");
+                                        gen.printLine("buttons.add(cancelButton);");
+                                    });
+                                    gen.printLine("showDialog(\"Confirm\", confirmMessage, buttons, context);");
+                                });
+                                gen.addImport("com.gridnine.platform.elsa.webApp.common.FlexDirection");
+                                gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                gen.wrapWithBlock("private void removeChildren(OperationUiContext context)", ()->{
+                                    gen.printLine("var content = WebAppUtils.findChildByTag(this, \"content\");");
+                                    gen.wrapWithBlock("if(content != null)", ()->{
+                                        gen.printLine(" removeChild(context, content);");
+                                    });
+                                    gen.printLine("var buttons = WebAppUtils.findChildByTag(this, \"contebuttonsnt\");");
+                                    gen.wrapWithBlock("if(buttons != null)", ()->{
+                                        gen.printLine(" removeChild(context, buttons);");
+                                    });
+                                });
+                                gen.addImport("java.util.List");
+                                gen.addImport("com.gridnine.webpeer.core.ui.BaseUiElement");
+                                gen.addImport("com.gridnine.platform.elsa.ui.common.ContentWrapperConfiguration");
+                                gen.addImport("com.gridnine.platform.elsa.ui.common.ContentWrapper");
+                                gen.wrapWithBlock("public void showDialog(String title, BaseUiElement content, List<DialogButton> buttons, OperationUiContext context)", ()->{
+                                     gen.printLine("removeChildren(context);");
+                                     gen.printLine("var config = new ContentWrapperConfiguration();");
+                                     gen.printLine("config.setFlexDirection(FlexDirection.COLUMN);");
+                                     gen.printLine("var contentWrapper = new ContentWrapper(\"content\", config, context);");
+                                     gen.printLine("contentWrapper.addChild(context, content, 0);");
+                                     gen.printLine("var buttonsWrapper = new ContentWrapper(\"buttons\", config, context);");
+                                     gen.wrapWithBlock("for(var button : buttons)", ()->{
+                                         gen.printLine("buttonsWrapper.addChild(context, button, 0);");
+                                     });
+                                     gen.printLine("setTitle(title, context);");
+                                     gen.printLine("setVisible(true, context);");
+                                     gen.printLine("addChild(context, contentWrapper,0);");
+                                     gen.printLine("addChild(context, buttonsWrapper,0);");
+
+                                });
                             }
                         });
                         if (!sourceFile.getParentFile().exists()) {

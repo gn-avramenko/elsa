@@ -20,6 +20,7 @@
                 </children>
             </container>
             <router id="mainRouter" class-name="com.gridnine.platform.elsa.demo.ui.app.MainRouter"/>
+            <modal id="mainModal" class-name="com.gridnine.platform.elsa.demo.ui.app.MainModal"/>
         </children>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.main.MainPage">

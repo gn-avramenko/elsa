@@ -30,17 +30,10 @@ import com.gridnine.platform.elsa.demo.domain.Organization;
 import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.demo.ui.app.WebApp;
 import com.gridnine.platform.elsa.demo.ui.common.SearchFieldConfiguration;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestConfirmDeleteDialog;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestDialogButton;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestDialogButtonConfiguration;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestWebApp;
 import com.gridnine.platform.elsa.demo.ui.organization.OrganizationsListConfiguration;
 import com.gridnine.platform.elsa.demo.ui.organization.OrganizationsListRow;
 import com.gridnine.platform.elsa.webApp.common.*;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
-
-import java.util.ArrayList;
-import java.util.UUID;
 
 
 public class OrganizationsSection extends OrganizationsSectionSkeleton{
@@ -114,32 +107,9 @@ public class OrganizationsSection extends OrganizationsSectionSkeleton{
                     return;
                 }
                 if("delete".equals(act.getActionId())){
-                    System.out.println("delete");
-//                    var dialog = new TestConfirmDeleteDialog("delete-dialog", context);
-//                    var buttons = new ArrayList<TestDialogButton>();
-//                    {
-//                        var conf = new TestDialogButtonConfiguration();
-//                        conf.setTitle("Delete");
-//                        var deleteButton = new TestDialogButton("ok", conf, context);
-//                        deleteButton.setClickListener(ctx2 ->{
-//                            var org = storage.loadAsset(Organization.class, UUID.fromString(rowId), true);
-//                            storage.deleteAsset(org);
-//                            this.refreshData(ctx2);
-//                            TestWebApp.lookup(this).closeDialog(ctx2);
-//                            TestWebApp.lookup(this).notify("Organization deleted", ctx2);
-//                        });
-//                        buttons.add(deleteButton);
-//                    }
-//                    {
-//                        var conf = new TestDialogButtonConfiguration();
-//                        conf.setTitle("Cancel");
-//                        var deleteButton = new TestDialogButton("cancel", conf, context);
-//                        deleteButton.setClickListener(ctx2 ->{
-//                            TestWebApp.lookup(this).closeDialog(ctx2);
-//                        });
-//                        buttons.add(deleteButton);
-//                    }
-//                    TestWebApp.lookup(this).showDialog(dialog, buttons, context);
+                    WebApp.lookup(OrganizationsSection.this).confirm("Are you really want to delete?", (ctx2)->{
+                        WebApp.lookup(OrganizationsSection.this).showInfo("Deleted", ctx2);
+                    }, context);
                     return;
                 }
             });

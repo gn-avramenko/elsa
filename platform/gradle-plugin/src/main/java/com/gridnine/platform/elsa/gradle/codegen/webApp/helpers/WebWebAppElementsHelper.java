@@ -102,6 +102,8 @@ public class WebWebAppElementsHelper {
                                    gen.wrapWithBlock("if (commandId === '%s')".formatted(command.getId()), ()->{
                                        if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                                            gen.printLine("this.process%s();".formatted(BuildTextUtils.capitalize(command.getId())));
+                                       } else {
+                                           gen.printLine("this.process%s(data);".formatted(BuildTextUtils.capitalize(command.getId())));
                                        }
                                        gen.printLine("return;");
                                    });
@@ -144,6 +146,10 @@ public class WebWebAppElementsHelper {
                         for(var command : elm.getCommandsFromServer()){
                             if(command.getProperties().isEmpty() && command.getCollections().isEmpty()){
                                 gen.printLine("abstract process%s(): void;".formatted(BuildTextUtils.capitalize(command.getId())));
+                            } else {
+                                var cn = "%s%sAction".formatted(elm.getClassName(),BuildTextUtils.capitalize(command.getId()));
+                                var type = getType(StandardValueType.ENTITY, null, cn, gen);
+                                gen.printLine("abstract process%s(value: %s): void;".formatted(BuildTextUtils.capitalize(command.getId()), type));
                             }
                         }
 
@@ -164,6 +170,7 @@ public class WebWebAppElementsHelper {
                     case TABLE -> WebTableHelper.generateTable((TableWebElementDescription) element, sourceDir);
                     case AUTOCOMPLETE -> WebAutocompleteHelper.generateAutocomplete((AutocompleteWebElementDescription) element, sourceDir);
                     case LABEL -> WebLabelHelper.generateLabel((LabelWebElementDescription) element, sourceDir);
+                    case MODAL ->  WebModalHelper.generateModal((ModalWebElementDescription) element, sourceDir);
                 }
 
             });

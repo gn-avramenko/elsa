@@ -47,6 +47,19 @@ public class WebAppMetaRegistryParser {
             });
         }));
         {
+            var dialogButtonDescription = new ButtonWebElementDescription("com.gridnine.platform.elsa.ui.common.DialogButton");
+            registry.getElements().put(dialogButtonDescription.getClassName(), dialogButtonDescription);
+        }
+        {
+            var confirmMessage = new LabelWebElementDescription("com.gridnine.platform.elsa.ui.common.ConfirmMessage");
+            registry.getElements().put(confirmMessage.getClassName(), confirmMessage);
+        }
+        {
+            var wrapperCtr = new ContainerWebElementDescription("com.gridnine.platform.elsa.ui.common.ContentWrapper");
+            wrapperCtr.setManagedConfiguration(true);
+            registry.getElements().put(wrapperCtr.getClassName(), wrapperCtr);
+        }
+        {
             var flexDirectionEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.FlexDirection");
             {
                 var item = new EnumItemDescription("ROW");
@@ -89,6 +102,22 @@ public class WebAppMetaRegistryParser {
                 entityListColumnType.getItems().put(item.getId(), item);
             }
             registry.getEnums().put(entityListColumnType.getId(), entityListColumnType);
+        }
+        {
+            var notificationType = new EnumDescription("com.gridnine.platform.elsa.webApp.common.NotificationType");
+            {
+                var item = new EnumItemDescription("INFO");
+                notificationType.getItems().put(item.getId(), item);
+            }
+            {
+                var item = new EnumItemDescription("WARN");
+                notificationType.getItems().put(item.getId(), item);
+            }
+            {
+                var item = new EnumItemDescription("ERROR");
+                notificationType.getItems().put(item.getId(), item);
+            }
+            registry.getEnums().put(notificationType.getId(), notificationType);
         }
         {
             var sort = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Sort");

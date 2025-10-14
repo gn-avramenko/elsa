@@ -82,22 +82,24 @@ export const AdvancedModal: React.FC<ModalProps> = ({
 interface MainModalProps {
     isOpen: boolean;
     onClose: () => void;
+    title: string;
     content?: BaseReactUiElement;
     buttons?: BaseReactUiElement[];
 }
 
-export const MainModal: React.FC<MainModalProps> = ({
+export const Modal: React.FC<MainModalProps> = ({
     isOpen,
     onClose,
     content,
     buttons,
+    title,
 }) => {
     return isOpen ? (
         <ModalPortal>
             <div className="modal-overlay" onClick={onClose}>
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                     <div className="modal-header">
-                        <h2>Dialog</h2>
+                        <h2>{title}</h2>
                         <button
                             className="modal-close"
                             onClick={onClose}

@@ -24,9 +24,9 @@
 
 package com.gridnine.platform.elsa.demo.ui.app;
 
-import com.gridnine.platform.elsa.demo.ui.components.test.TestWebApp;
-import com.gridnine.platform.elsa.webApp.BaseTestWebAppUiElement;
+import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument;
 import com.gridnine.platform.elsa.webApp.common.FlexDirection;
+import com.gridnine.platform.elsa.webApp.common.NotificationType;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
@@ -40,12 +40,28 @@ public class WebApp extends WebAppSkeleton{
     protected WebAppConfiguration createConfiguration(OperationUiContext ctx) {
         var result = new WebAppConfiguration();
         result.setFlexDirection(FlexDirection.COLUMN);
+        {
+            var mainModal = new MainModalConfiguration();
+            mainModal.setNotificationDuration(1500);
+            result.setMainModal(mainModal);
+        }
         return result;
     }
 
     public void navigate(String path, OperationUiContext ctx) {
         getMainRouter().navigate(path, false, ctx);
     }
+    public void showInfo(String message, OperationUiContext ctx) {
+        var toastMessage = new MainModalNotifyAction();
+        toastMessage.setMessage(message);
+        toastMessage.setType(NotificationType.INFO);
+        getMainModal().notify(toastMessage, ctx, false);
+    }
+
+    public void confirm(String message, RunnableWithExceptionAndArgument<OperationUiContext> callback, OperationUiContext ctx) {
+        getMainModal().showConfirm(message, callback, ctx);
+    }
+
 
     public static WebApp lookup(BaseUiElement elm) {
         return lookupInternal(elm);

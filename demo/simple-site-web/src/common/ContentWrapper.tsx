@@ -1,13 +1,9 @@
 import { WebComponentWrapper } from '@/common/wrapper';
-import { WebAppSkeleton } from '@g/app/WebAppSkeleton';
-import { BaseReactUiElement, preloaderHolder } from '@/common/component';
-import { useState } from 'react';
-import { Loader } from '@/common/preloader';
+import { BaseReactUiElement, initStateSetters } from '@/common/component';
+import { ContentWrapperSkeleton } from '@g/common/ContentWrapperSkeleton';
 
-function WebAppFC(props: { element: WebAppComponent }) {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    preloaderHolder.hidePreloader = () => setIsLoading(false);
-    preloaderHolder.showPreloader = () => setIsLoading(true);
+function ContentWrapperFC(props: { element: ContentWrapperComponent }) {
+    initStateSetters(props.element);
     return (
         <WebComponentWrapper element={props.element}>
             <div
@@ -26,14 +22,14 @@ function WebAppFC(props: { element: WebAppComponent }) {
                     return null;
                 })}
             </div>
-            {isLoading ? <Loader /> : ''}
         </WebComponentWrapper>
     );
 }
 
-export class WebAppComponent extends WebAppSkeleton {
-    functionalComponent = WebAppFC;
+export class ContentWrapperComponent extends ContentWrapperSkeleton {
+    functionalComponent = ContentWrapperFC;
     getProcessedChildren(): string[] {
         return [];
     }
+    
 }

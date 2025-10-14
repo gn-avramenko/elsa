@@ -44,6 +44,51 @@ public class WebAppMetadataHelper {
         result.getCommandsFromServer().addAll(element.getCommandsFromServer());
         switch (element.getType()) {
             case MODAL -> {
+                {
+                    var command = new WebElementCommandDescription();
+                    command.setId("notify");
+                    {
+                        var prop = new StandardPropertyDescription();
+                        prop.setId("type");
+                        prop.setType(StandardValueType.ENUM);
+                        prop.setNonNullable(true);
+                        prop.setClassName("com.gridnine.platform.elsa.webApp.common.NotificationType");
+                        command.getProperties().put(prop.getId(), prop);
+                    }
+                    {
+                        var prop = new StandardPropertyDescription();
+                        prop.setId("message");
+                        prop.setType(StandardValueType.STRING);
+                        prop.setNonNullable(true);
+                        command.getProperties().put(prop.getId(), prop);
+                    }
+                    result.getCommandsFromServer().add(command);
+                }
+                {
+                    var prop = new StandardPropertyDescription();
+                    prop.setType(StandardValueType.INT);
+                    prop.setId("notificationDuration");
+                    result.getServerManagedState().getProperties().put(prop.getId(), prop);
+                }
+                {
+                    var prop = new StandardPropertyDescription();
+                    prop.setType(StandardValueType.BOOLEAN);
+                    prop.setId("visible");
+                    prop.setNonNullable(true);
+                    result.getServerManagedState().getProperties().put(prop.getId(), prop);
+                }
+                {
+                    var prop = new StandardPropertyDescription();
+                    prop.setId("title");
+                    prop.setType(StandardValueType.STRING);
+                    prop.setNonNullable(true);
+                    result.getServerManagedState().getProperties().put(prop.getId(), prop);
+                }
+                {
+                    var command = new WebElementCommandDescription();
+                    command.setId("close");
+                    result.getCommandsFromClient().add(command);
+                }
             }
             case CONTAINER -> {
                 var prop = new StandardPropertyDescription();

@@ -22,10 +22,28 @@
 package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.webApp.BaseWebElementDescription;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 public class WebCommonHelper {
+    public static String getServerCommandImport(BaseWebElementDescription descr) throws Exception {
+        if(descr.getCommandsFromServer().isEmpty()){
+            return "";
+        }
+        var bldr = new StringBuilder();
+        for(var cmd: descr.getCommandsFromServer()){
+            if(cmd.getProperties().isEmpty() && cmd.getCollections().isEmpty()){
+                continue;
+            }
+            bldr.append("\n\r");
+            var actionClassName = "%s%sAction".formatted(descr.getClassName(),BuildTextUtils.capitalize(cmd.getId()));
+            var cls = JavaCodeGeneratorUtils.getSimpleName(actionClassName);
+            var imp = WebCodeGeneratorUtils.getImportName(actionClassName);
+            bldr.append("import { %s } from '%s'".formatted(cls, imp));
+        }
+        return bldr.toString();
+    }
     public static String getServerCommandBlock(BaseWebElementDescription descr) throws Exception {
         if(descr.getCommandsFromServer().isEmpty()){
             return "";
@@ -41,7 +59,7 @@ public class WebCommonHelper {
                         }""".formatted(BuildTextUtils.capitalize(cmd.getId())));
             } else {
                 bldr.append("""
-                        process%s(value: %s%sValue){
+                        process%s(_value: %s%sAction){
                         }""".formatted(BuildTextUtils.capitalize(cmd.getId())
                         , JavaCodeGeneratorUtils.getSimpleName(descr.getClassName()),BuildTextUtils.capitalize(cmd.getId())));
             }

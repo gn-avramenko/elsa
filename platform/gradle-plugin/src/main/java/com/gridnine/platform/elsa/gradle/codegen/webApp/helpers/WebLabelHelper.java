@@ -51,9 +51,6 @@ public class WebLabelHelper {
                 }
                 export class %s extends %s {
                     functionalComponent = %s;
-                    setValidationMessage(value?: string) {
-                        this.stateSetters.get('validationMessage')!(value);
-                    }
                 }
                 """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);

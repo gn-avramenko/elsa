@@ -1,21 +1,21 @@
 // components/ToastNotification.tsx
 import React, { useEffect } from 'react';
-import './notification.css';
+import { NotificationType } from '@g/common/NotificationType';
 
-interface ToastNotificationProps {
+interface NotificationProps {
     isOpen: boolean;
     onClose: () => void;
     message: string;
     duration?: number;
-    type?: 'success' | 'error' | 'info' | 'warning';
+    type?: NotificationType;
 }
 
-const ToastNotification: React.FC<ToastNotificationProps> = ({
+export const NotificationFC: React.FC<NotificationProps> = ({
     isOpen,
     onClose,
     message,
     duration = 2000,
-    type = 'info',
+    type = 'INFO',
 }) => {
     useEffect(() => {
         if (!isOpen) return;
@@ -31,11 +31,11 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
 
     const getIcon = () => {
         switch (type) {
-            case 'success':
+            case 'INFO':
                 return '✅';
-            case 'error':
+            case 'ERROR':
                 return '❌';
-            case 'warning':
+            case 'WARN':
                 return '⚠️';
             default:
                 return '💡';
@@ -53,5 +53,3 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
         </div>
     );
 };
-
-export default ToastNotification;
