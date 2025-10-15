@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://vga.com/elsa/meta-web-app">
+    <entity id="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceItem">
+        <property id="name" type="STRING" non-nullable="true"/>
+        <property id="icon" type="STRING" />
+        <property id="link" type="STRING" non-nullable="true"/>
+    </entity>
+    <entity id="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceGroup">
+        <property id="name" type="STRING" non-nullable="true"/>
+        <property id="icon" type="STRING"/>
+        <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceItem"/>
+    </entity>
+    <container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame">
+        <server-managed-state>
+            <collection id="workspaceGroups" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceGroup"/>
+        </server-managed-state>
+        <children>
+            <router id="mainRouter" class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainRouter"/>
+        </children>
+    </container>
+    <container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.HomePage"/>
+</web-app>

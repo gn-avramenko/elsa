@@ -47,15 +47,15 @@ public class WebAppMetaRegistryParser {
             });
         }));
         {
-            var dialogButtonDescription = new ButtonWebElementDescription("com.gridnine.platform.elsa.ui.common.DialogButton");
+            var dialogButtonDescription = new ButtonWebElementDescription("com.gridnine.platform.elsa.webApp.common.DialogButton");
             registry.getElements().put(dialogButtonDescription.getClassName(), dialogButtonDescription);
         }
         {
-            var confirmMessage = new LabelWebElementDescription("com.gridnine.platform.elsa.ui.common.ConfirmMessage");
+            var confirmMessage = new LabelWebElementDescription("com.gridnine.platform.elsa.webApp.common.ConfirmMessage");
             registry.getElements().put(confirmMessage.getClassName(), confirmMessage);
         }
         {
-            var wrapperCtr = new ContainerWebElementDescription("com.gridnine.platform.elsa.ui.common.ContentWrapper");
+            var wrapperCtr = new ContainerWebElementDescription("com.gridnine.platform.elsa.webApp.common.ContentWrapper");
             wrapperCtr.setManagedConfiguration(true);
             registry.getElements().put(wrapperCtr.getClassName(), wrapperCtr);
         }

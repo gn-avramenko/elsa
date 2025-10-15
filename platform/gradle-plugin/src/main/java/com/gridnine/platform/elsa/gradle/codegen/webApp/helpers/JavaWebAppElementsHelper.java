@@ -564,15 +564,15 @@ public class JavaWebAppElementsHelper {
                                 });
                                 gen.addImport("com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument");
                                 gen.wrapWithBlock("public void showConfirm(String message, RunnableWithExceptionAndArgument<OperationUiContext> okCallback, OperationUiContext context)", ()->{
-                                    gen.addImport("com.gridnine.platform.elsa.ui.common.ConfirmMessageConfiguration");;
+                                    gen.addImport("com.gridnine.platform.elsa.webApp.common.ConfirmMessageConfiguration");;
                                     gen.printLine("var confirmMessageConfig = new ConfirmMessageConfiguration();");
                                     gen.printLine("confirmMessageConfig.setTitle(message);");
-                                    gen.addImport("com.gridnine.platform.elsa.ui.common.ConfirmMessage");
+                                    gen.addImport("com.gridnine.platform.elsa.webApp.common.ConfirmMessage");
                                     gen.printLine("var confirmMessage = new ConfirmMessage(\"message\", confirmMessageConfig, context);");
-                                    gen.addImport("com.gridnine.platform.elsa.ui.common.DialogButton");
+                                    gen.addImport("com.gridnine.platform.elsa.webApp.common.DialogButton");
                                     gen.addImport("java.util.ArrayList");
                                     gen.printLine("var buttons = new ArrayList<DialogButton>();");
-                                    gen.addImport("com.gridnine.platform.elsa.ui.common.DialogButtonConfiguration");
+                                    gen.addImport("com.gridnine.platform.elsa.webApp.common.DialogButtonConfiguration");
                                     gen.wrapWithBlock("", ()->{
                                         gen.printLine("var buttonConfig = new DialogButtonConfiguration();");
                                         gen.printLine("buttonConfig.setTitle(\"OK\");");
@@ -610,8 +610,8 @@ public class JavaWebAppElementsHelper {
                                 });
                                 gen.addImport("java.util.List");
                                 gen.addImport("com.gridnine.webpeer.core.ui.BaseUiElement");
-                                gen.addImport("com.gridnine.platform.elsa.ui.common.ContentWrapperConfiguration");
-                                gen.addImport("com.gridnine.platform.elsa.ui.common.ContentWrapper");
+                                gen.addImport("com.gridnine.platform.elsa.webApp.common.ContentWrapperConfiguration");
+                                gen.addImport("com.gridnine.platform.elsa.webApp.common.ContentWrapper");
                                 gen.wrapWithBlock("public void showDialog(String title, BaseUiElement content, List<DialogButton> buttons, OperationUiContext context)", ()->{
                                      gen.printLine("removeChildren(context);");
                                      gen.printLine("var config = new ContentWrapperConfiguration();");

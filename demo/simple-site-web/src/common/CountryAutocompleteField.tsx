@@ -79,7 +79,7 @@ function CountryAutocompleteFieldFC(props: {
     const handleInputChange = useCallback(
         (e: ChangeEvent<HTMLInputElement>): void => {
             if (editor) {
-                editor.setHasChanges();
+                editor.setHasChanges(true);
             }
             const value = e.target.value;
             setInputValue(value);

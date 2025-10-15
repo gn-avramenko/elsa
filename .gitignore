@@ -40,3 +40,4 @@ replay_pid*
 /openapi-schemas/gen-xdisk-webapp-openapi.yml
 /local-dev/xdisk/import/
 /demo/server/local-dev/pg-data/
+/demo/admin/local-dev/
