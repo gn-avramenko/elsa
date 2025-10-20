@@ -19,28 +19,19 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.demo.admin.country;
+package com.gridnine.platform.elsa.admin.list;
 
-import com.gridnine.platform.elsa.admin.list.BaseAssetUiListHandler;
-import com.gridnine.platform.elsa.admin.list.FieldHandler;
-import com.gridnine.platform.elsa.demo.admin.domain.Country;
-import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
+import com.gridnine.platform.elsa.admin.web.entityList.ColumnType;
+import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
 
-import java.util.List;
+public interface FieldHandler {
+    String getId();
 
-public class CountryUiListHandler extends BaseAssetUiListHandler<Country> {
+    String getTitle();
 
-    public CountryUiListHandler() {
-        super(Country.class);
-    }
+    ColumnType getColumnType();
 
-    @Override
-    protected String getSection() {
-        return "countries";
-    }
+    String getValueStr(BaseIntrospectableObject item);
 
-    @Override
-    protected List<FieldHandler> getColumns() {
-        return List.of(assetField(CountryFields.name.name));
-    }
+    boolean isSortable();
 }

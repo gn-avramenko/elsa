@@ -91,6 +91,14 @@
                     </sequence>
                 </complexType>
             </element>
+            <element name="services" minOccurs="0">
+                <complexType>
+                    <sequence>
+                        <element name="service" type="tns:Service"
+                                 maxOccurs="unbounded"/>
+                    </sequence>
+                </complexType>
+            </element>
         </sequence>
         <attribute name="class-name" type="string" use="required"/>
     </complexType>
@@ -132,6 +140,7 @@
                         </complexType>
                     </element>
                 </sequence>
+                <attribute name="managed-configuration"/>
             </extension>
         </complexContent>
     </complexType>
@@ -223,6 +232,8 @@
                 <element name="property" type="common:PropertyType" minOccurs="0"
                          maxOccurs="unbounded"/>
                 <element name="collection" type="common:CollectionType" minOccurs="0"
+                         maxOccurs="unbounded"/>
+                <element name="map" type="common:MapType" minOccurs="0"
                          maxOccurs="unbounded"/>
             </sequence>
     </complexType>

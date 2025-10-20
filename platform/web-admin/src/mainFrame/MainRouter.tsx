@@ -1,4 +1,3 @@
-import { WebComponentWrapper } from '@/common/wrapper';
 import { RouterContext } from '@/common/router';
 import { useEffect, useState } from 'react';
 import { MainRouterSkeleton } from '@g/mainFrame/MainRouterSkeleton';
@@ -40,18 +39,7 @@ function MainRouterFC(props: { element: MainRouterComponent }) {
                     props.element.setConfirmMessage(message),
             }}
         >
-            <WebComponentWrapper element={props.element}>
-                <div
-                    className="webpeer-container-content"
-                    key="content"
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }}
-                >
-                    {props.element.findByTag('content').createReactElement()}
-                </div>
-            </WebComponentWrapper>
+            {props.element.findByTag('content').createReactElement()}
         </RouterContext.Provider>
     );
 }

@@ -17,33 +17,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
+ *
+ *****************************************************************
+ * This is generated code, don't modify it manually
+ *****************************************************************/
 
-package com.gridnine.platform.elsa.gradle.meta.webApp;
+package com.gridnine.platform.elsa.admin.web.entityList;
 
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-import com.gridnine.platform.elsa.gradle.meta.common.*;
+public class EntityList extends EntityListSkeleton{
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-public class WebAppEntity {
-
-    private final Map<String, StandardPropertyDescription> properties = new LinkedHashMap<>();
-
-    private final Map<String, StandardCollectionDescription> collections = new LinkedHashMap<>();
-
-    private final Map<String, StandardMapDescription> maps = new LinkedHashMap<>();
-
-    public Map<String, StandardPropertyDescription> getProperties() {
-        return properties;
-    }
-
-    public Map<String, StandardCollectionDescription> getCollections() {
-        return collections;
-    }
-
-    public Map<String, StandardMapDescription> getMaps() {
-        return maps;
-    }
+	public EntityList(String tag, EntityListConfiguration config, OperationUiContext ctx){
+		super(tag, config, ctx);
+	}
 }

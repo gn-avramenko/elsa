@@ -313,17 +313,16 @@ public class WebAppMetaRegistryParser {
                 var req = command.getFirstChild("request");
                 if(req != null){
                     var request = new WebAppEntity();
-                    var ett = new CustomWebElementDescription("test");
-                    updateBaseProperties(ett, command);
-                    request.getProperties().putAll(ett.getServerManagedState().getProperties());
-                    request.getCollections().putAll(ett.getServerManagedState().getCollections());
+                    var ett = getElementExtension(req);
+                    request.getProperties().putAll(ett.getProperties());
+                    request.getCollections().putAll(ett.getCollections());
                     item.setRequest(request);
                 }
+                var rsp = command.getFirstChild("response");
+                var ett = getElementExtension(rsp);
                 var response = new WebAppEntity();
-                var ett = new CustomWebElementDescription("response");
-                updateBaseProperties(ett, command);
-                response.getProperties().putAll(ett.getServerManagedState().getProperties());
-                response.getCollections().putAll(ett.getServerManagedState().getCollections());
+                response.getProperties().putAll(ett.getProperties());
+                response.getCollections().putAll(ett.getCollections());
                 item.setResponse(response);
                 dd.getServices().put(item.getId(), item);
             });
@@ -350,6 +349,14 @@ public class WebAppMetaRegistryParser {
             cd.setElementType(StandardValueType.valueOf(coll.getAttribute("element-type")));
             cd.setUnique("true".equals(coll.getAttribute("unique")));
             result.getCollections().put(id, cd);
+        });
+        child.getChildren("map").forEach(map -> {
+            var md = new StandardMapDescription(CommonParserUtils.getIdAttribute(map));
+            result.getMaps().put(md.getId(), md);
+            md.setKeyClassName(map.getAttribute("key-class-name"));
+            md.setKeyType(StandardValueType.valueOf(map.getAttribute("key-type")));
+            md.setValueClassName(map.getAttribute("value-class-name"));
+            md.setValueType(StandardValueType.valueOf(map.getAttribute("key-type")));
         });
         return result;
     }

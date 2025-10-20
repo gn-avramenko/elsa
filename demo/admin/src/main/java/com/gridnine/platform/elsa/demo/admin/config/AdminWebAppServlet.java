@@ -22,7 +22,9 @@
 package com.gridnine.platform.elsa.demo.admin.config;
 
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
+import com.gridnine.platform.elsa.demo.admin.auth.AuthInterceptor;
 import com.gridnine.webpeer.core.servlet.BaseWebAppServlet;
+import com.gridnine.webpeer.core.servlet.UiServletInterceptor;
 import com.gridnine.webpeer.core.servlet.WebAppModule;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.TypedParameter;
@@ -65,4 +67,8 @@ public class AdminWebAppServlet extends BaseWebAppServlet<MainFrame> {
         return "Demo Admin";
     }
 
+    @Override
+    protected List<UiServletInterceptor<MainFrame>> getInterceptors() {
+        return List.of(new AuthInterceptor());
+    }
 }

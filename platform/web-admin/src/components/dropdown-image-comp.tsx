@@ -23,7 +23,7 @@ export function DropDownImageComp(props: {
         hs.alignItems = 'center';
     }
     hs.verticalAlign = 'center';
-    const items: MenuProps['items'] =props.menuItems.map((mi: ImageMenuItem) => ({
+    const items: MenuProps['items'] = props.menuItems.map((mi: ImageMenuItem) => ({
         label: (
             <div
                 style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}

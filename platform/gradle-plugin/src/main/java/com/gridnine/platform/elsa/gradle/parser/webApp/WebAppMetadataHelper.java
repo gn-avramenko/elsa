@@ -46,6 +46,9 @@ public class WebAppMetadataHelper {
         element.getCommandsFromServer().forEach((key, value) -> {
             result.getCommandsFromServer().put(key, value);
         });
+        element.getServices().forEach((key, value) -> {
+            result.getServices().put(key, value);
+        });
         switch (element.getType()) {
             case MODAL -> {
                 {

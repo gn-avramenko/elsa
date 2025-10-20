@@ -107,6 +107,15 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                 Admin
             </div>
             <div style={{ flexGrow: 1 }} />
+            <div
+                style={{
+                    fontSize: token.fontSizeHeading3,
+                    fontWeight: token.fontWeightStrong,
+                    padding: token.padding,
+                }}
+                dangerouslySetInnerHTML={{ __html: props.element.getTitle() ?? '' }}
+            />
+            <div style={{ flexGrow: 1 }} />
             <DropDownImageComp
                 style={{ padding: token.padding }}
                 menuItems={[

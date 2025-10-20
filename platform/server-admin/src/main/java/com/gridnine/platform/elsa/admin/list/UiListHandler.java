@@ -22,8 +22,9 @@
 package com.gridnine.platform.elsa.admin.list;
 
 import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
+import com.gridnine.platform.elsa.admin.web.mainFrame.RouterPathHandler;
 
-public interface UiListHandler {
+public interface UiListHandler extends RouterPathHandler {
     String getListId();
     String getLink(ListWorkspaceItem item);
 }

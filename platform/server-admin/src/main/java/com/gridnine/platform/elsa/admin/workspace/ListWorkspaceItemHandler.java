@@ -54,10 +54,11 @@ public class ListWorkspaceItemHandler implements WorkspaceItemHandler<ListWorksp
         }
         synchronized (this) {
             if(uiListHandlers==null){
-                uiListHandlers = new HashMap<>();
+                var handlers = new HashMap<String, UiListHandler>();
                 factory.getBeansOfType(UiListHandler.class).values().forEach(handler -> {
-                    uiListHandlers.put(handler.getListId(), handler);
+                    handlers.put(handler.getListId(), handler);
                 });
+                uiListHandlers = handlers;
             }
         }
     }

@@ -21,9 +21,9 @@
 
 package com.gridnine.platform.elsa.demo.admin.config;
 
+import com.gridnine.platform.elsa.demo.admin.Organization.OrganizationUiListHandler;
 import com.gridnine.platform.elsa.demo.admin.boot.AdminActivator;
 import com.gridnine.platform.elsa.demo.admin.country.CountryUiListHandler;
-import com.gridnine.platform.elsa.demo.admin.organization.OrganizationUiListHandler;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,17 +50,13 @@ public class DemoAdminConfiguration {
     }
 
     @Bean
-    public AuthFilter authFilter(){
-        return new AuthFilter();
-    }
-
-    @Bean
     public CountryUiListHandler countryUiListHandler(){
         return new CountryUiListHandler();
     }
 
     @Bean
-    public OrganizationUiListHandler organizationUiListHandler(){
+    public OrganizationUiListHandler  organizationUiListHandler(){
         return new OrganizationUiListHandler();
     }
+
 }

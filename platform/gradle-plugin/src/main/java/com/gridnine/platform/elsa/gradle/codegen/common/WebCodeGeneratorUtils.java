@@ -95,8 +95,7 @@ public class WebCodeGeneratorUtils {
                 gen.printLine("%s: %s[],".formatted(cd.getId(), getType(cd.getElementType(), metaRegistry, cd.getElementClassName())));
             }
             for (var md : ed.getMaps().values()) {
-                gen.printLine("%s: Map<%s, %s>,".formatted(md.getId(), getType(md.getKeyType(), metaRegistry, md.getKeyClassName()),
-                        getType(md.getValueType(), metaRegistry, md.getValueClassName())));
+                gen.printLine("%s: any,".formatted(md.getId()));
             }
         });
         gen.print(";\n");

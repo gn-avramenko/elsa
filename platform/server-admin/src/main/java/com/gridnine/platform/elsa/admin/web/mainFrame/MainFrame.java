@@ -25,7 +25,6 @@
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
 import com.gridnine.platform.elsa.admin.domain.BaseWorkspaceItem;
-import com.gridnine.platform.elsa.admin.domain.WorkspaceItemType;
 import com.gridnine.platform.elsa.admin.domain.WorkspaceProjection;
 import com.gridnine.platform.elsa.admin.domain.WorkspaceProjectionFields;
 import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
@@ -33,6 +32,7 @@ import com.gridnine.platform.elsa.core.auth.AuthContext;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.platform.elsa.webApp.common.FlexDirection;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.ListableBeanFactory;
 
@@ -44,10 +44,11 @@ public class MainFrame extends MainFrameSkeleton{
     private Storage storage;
 
     private ListableBeanFactory factory;
-    private volatile Map<Class<?>, WorkspaceItemHandler<?>> itemHandlers;
+    private volatile Map<String, WorkspaceItemHandler<?>> itemHandlers;
 
 	public MainFrame(String tag, OperationUiContext ctx){
 		super(tag, ctx);
+        setTitle(getMainRouter().getTitle(), ctx);
 	}
 
     @Override
@@ -72,10 +73,21 @@ public class MainFrame extends MainFrameSkeleton{
             var workspaceItem = new WorkspaceItem();
             workspaceItem.setName(item.getName());
             workspaceItem.setIcon(item.getIcon());
-            workspaceItem.setLink(((WorkspaceItemHandler<BaseWorkspaceItem>) itemHandlers.get(item.getClass())).getLink(item));
+            workspaceItem.setLink(((WorkspaceItemHandler<BaseWorkspaceItem>) itemHandlers.get(item.getClass().getName())).getLink(item));
             result.getItems().add(workspaceItem);
         }
         return result;
+    }
+
+    public static MainFrame lookup(BaseUiElement elm) {
+        return lookupInternal(elm);
+    }
+
+    private static MainFrame lookupInternal(BaseUiElement elm) {
+        if (elm instanceof MainFrame) {
+            return (MainFrame) elm;
+        }
+        return lookupInternal(elm.getParent());
     }
 
     private void init() {
@@ -84,10 +96,11 @@ public class MainFrame extends MainFrameSkeleton{
         }
         synchronized (this) {
             if(itemHandlers==null){
-                itemHandlers = new HashMap<>();
+                var handlers = new HashMap<String, WorkspaceItemHandler<?>>();
                 factory.getBeansOfType(WorkspaceItemHandler.class).values().forEach(handler -> {
-                    itemHandlers.put(handler.getType(), handler);
+                    handlers.put(handler.getType().getName(), handler);
                 });
+                itemHandlers = handlers;
             }
         }
     }

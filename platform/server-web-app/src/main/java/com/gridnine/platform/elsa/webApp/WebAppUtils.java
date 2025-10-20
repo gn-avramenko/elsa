@@ -47,6 +47,16 @@ public class WebAppUtils {
         });
         return result;
     }
+    public static JsonElement toJsonValue(Map<?, ?> value, StandardValueType valueType) {
+        if(value == null || value.isEmpty()) {
+            return JsonNull.INSTANCE;
+        }
+        var result= new JsonObject();
+        value.forEach((k,v)->{
+            result.add(k.toString(), toJsonValue(v, valueType));
+        });
+        return result;
+    }
     public static JsonElement toJsonValue(Object value, StandardValueType type) {
         if(value == null){
             return JsonNull.INSTANCE;

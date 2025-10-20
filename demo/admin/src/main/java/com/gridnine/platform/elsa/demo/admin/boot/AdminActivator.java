@@ -21,13 +21,21 @@
 
 package com.gridnine.platform.elsa.demo.admin.boot;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.admin.domain.*;
 import com.gridnine.platform.elsa.common.core.boot.ElsaActivator;
+import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
+import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.demo.admin.domain.Country;
+import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
 import com.gridnine.platform.elsa.demo.admin.domain.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminActivator implements ElsaActivator {
@@ -37,6 +45,18 @@ public class AdminActivator implements ElsaActivator {
     @Override
     public void activate() throws Exception {
         checkAdminWorkspace();
+        if(storage.searchAssets(Country.class, new SearchQueryBuilder().limit(1).build()).isEmpty()){
+            {
+                var country = new Country();
+                country.setName("Russia");
+                storage.saveAsset(country, "init");
+            }
+            {
+                var country = new Country();
+                country.setName("Japan");
+                storage.saveAsset(country, "init");
+            }
+        }
     }
 
     private void checkAdminWorkspace() {

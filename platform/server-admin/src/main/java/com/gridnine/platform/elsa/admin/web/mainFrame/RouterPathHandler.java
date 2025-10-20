@@ -19,28 +19,13 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.demo.admin.country;
+package com.gridnine.platform.elsa.admin.web.mainFrame;
 
-import com.gridnine.platform.elsa.admin.list.BaseAssetUiListHandler;
-import com.gridnine.platform.elsa.admin.list.FieldHandler;
-import com.gridnine.platform.elsa.demo.admin.domain.Country;
-import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-import java.util.List;
-
-public class CountryUiListHandler extends BaseAssetUiListHandler<Country> {
-
-    public CountryUiListHandler() {
-        super(Country.class);
-    }
-
-    @Override
-    protected String getSection() {
-        return "countries";
-    }
-
-    @Override
-    protected List<FieldHandler> getColumns() {
-        return List.of(assetField(CountryFields.name.name));
-    }
+public interface RouterPathHandler {
+    boolean canHandle(String path);
+    BaseUiElement createElement(String path, OperationUiContext context) throws Exception;
+    String getTitle();
 }

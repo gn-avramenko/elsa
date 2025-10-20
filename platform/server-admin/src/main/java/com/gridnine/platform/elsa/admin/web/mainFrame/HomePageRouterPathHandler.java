@@ -19,21 +19,25 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.demo.admin.config;
+package com.gridnine.platform.elsa.admin.web.mainFrame;
 
-import com.gridnine.platform.elsa.core.auth.AuthContext;
-import jakarta.servlet.*;
+import com.gridnine.platform.elsa.common.core.utils.TextUtils;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-import java.io.IOException;
-
-public class AuthFilter implements Filter {
+public class HomePageRouterPathHandler implements RouterPathHandler{
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        AuthContext.setCurrentUser("admin");
-        try{
-            chain.doFilter(request,response);
-        } finally {
-            AuthContext.resetCurrentUser();
-        }
+    public boolean canHandle(String path) {
+        return path==null || TextUtils.isBlank(path) || path.startsWith("home") ;
+    }
+
+    @Override
+    public BaseUiElement createElement(String path, OperationUiContext context) throws Exception {
+        return new HomePage("content", context);
+    }
+
+    @Override
+    public String getTitle() {
+        return "Home";
     }
 }

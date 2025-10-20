@@ -19,21 +19,30 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.demo.admin.organization;
+package com.gridnine.platform.elsa.demo.admin.Organization;
 
-import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
-import com.gridnine.platform.elsa.admin.list.UiListHandler;
+import com.gridnine.platform.elsa.admin.list.BaseAssetUiListHandler;
+import com.gridnine.platform.elsa.admin.list.FieldHandler;
 import com.gridnine.platform.elsa.demo.admin.domain.Country;
+import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
 import com.gridnine.platform.elsa.demo.admin.domain.Organization;
+import com.gridnine.platform.elsa.demo.admin.domain.OrganizationFields;
 
-public class OrganizationUiListHandler implements UiListHandler {
-    @Override
-    public String getListId() {
-        return Organization.class.getName();
+import java.util.List;
+
+public class OrganizationUiListHandler extends BaseAssetUiListHandler<Organization> {
+
+    public OrganizationUiListHandler() {
+        super(Organization.class);
     }
 
     @Override
-    public String getLink(ListWorkspaceItem item) {
-        return "/organizations";
+    protected String getSection() {
+        return "organizations";
+    }
+
+    @Override
+    protected List<FieldHandler> getColumns() {
+        return List.of(assetField(OrganizationFields.name.name));
     }
 }

@@ -25,6 +25,8 @@
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
 import com.google.gson.JsonElement;
+import com.gridnine.platform.elsa.common.core.model.common.Xeption;
+import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.webApp.NestedRouter;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
@@ -32,27 +34,34 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 
 public class MainRouter extends MainRouterSkeleton{
-	private String currentPath;
+	private RouterPathHandler lastHandler;
 	private final ListableBeanFactory factory;
-
+    private volatile List<RouterPathHandler> routerPathHandlers;
 	public MainRouter(String tag, OperationUiContext ctx){
 		super(tag, ctx);
 		factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
-		currentPath = getPath();
-		ctx.setParameter(StandardParameters.ROUTER_PATH, currentPath);
-		var viewId = getViewId(getPath());
-		var elm = createElement(viewId, ctx);
+        var path = ctx.getParameter(OperationUiContext.PARAMS).get("initPath").getAsString();
+        setPath(path, ctx);
+		ctx.setParameter(StandardParameters.ROUTER_PATH, getPath());
+		var handler =getRouterPathHandler(getPath());
+        lastHandler = handler;
+		var elm = ExceptionUtils.wrapException(()-> handler.createElement(getPath(), ctx));
 		addChild(ctx, elm, 0);
+
 	}
-	private String getViewId(String path){
-		return "home";
-	}
-	private BaseUiElement createElement(String viewId, OperationUiContext ctx){
-		return new HomePage("content", ctx);
-	}
+    private RouterPathHandler getRouterPathHandler(String path){
+        init();
+        var cp = path.startsWith("/") ? path.substring(1): path;
+        var handler = routerPathHandlers.stream().filter(it -> it.canHandle(cp)).findFirst().orElse(null);
+        if(handler == null){
+            throw Xeption.forDeveloper("Unable to find handler for view id " + path);
+        }
+        return handler;
+    }
 	@Override
 	public void processCommand(OperationUiContext ctx, String commandId, JsonElement data) throws Exception{
 		if("navigate".equals(commandId)){
@@ -86,29 +95,40 @@ public class MainRouter extends MainRouterSkeleton{
 
 	public void navigate(String path, boolean force, OperationUiContext ctx){
 		ctx.setParameter(StandardParameters.ROUTER_PATH, path);
-		if(path.equals(currentPath)){
+        var handler = getRouterPathHandler(path);
+		if(lastHandler != null && lastHandler.equals(handler)){
 			return;
 		}
-		if(Boolean.TRUE.equals(isHasChanges()) && !force){
+        if(Boolean.TRUE.equals(isHasChanges()) && !force){
 			confirm();
 			return;
 		}
 		setPath(path, ctx);
 		setHasChanges(false, ctx);
-		var viewId = getViewId(path);
-		var oldViewId = getViewId(currentPath);
-		currentPath = path;
-		if(viewId.equals(oldViewId)){
-			var nestedRouters = new ArrayList<NestedRouter>();
-			collectNestedRouters(nestedRouters, this);
-			for(var nestedRouter : nestedRouters){
-				nestedRouter.navigate(path, ctx);
-			}
-			return;
-		}
+        lastHandler = handler;
+        MainFrame.lookup(this).setTitle(lastHandler.getTitle(), ctx);
 		var elm = getUnmodifiableListOfChildren().getFirst();
 		removeChild(ctx, elm);
-		elm = createElement(viewId, ctx);
+		elm = ExceptionUtils.wrapException(()->handler.createElement(path, ctx));
 		addChild(ctx, elm, 0);
 	}
+
+    private void init() {
+        if(routerPathHandlers!=null){
+            return;
+        }
+        synchronized (this) {
+            if(routerPathHandlers==null){
+                var handlers = new ArrayList<RouterPathHandler>();
+                factory.getBeansOfType(RouterPathHandler.class).values().forEach(handler -> {
+                    handlers.add(handler);
+                });
+                routerPathHandlers = handlers;
+            }
+        }
+    }
+
+    public String getTitle(){
+        return lastHandler.getTitle();
+    }
 }
