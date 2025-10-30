@@ -4,6 +4,11 @@
         <enum-item id="STRING"/>
         <enum-item id="NUMBER"/>
     </enum>
+    <enum id="com.gridnine.platform.elsa.admin.web.entityList.SelectionType">
+        <enum-item id="NONE"/>
+        <enum-item id="SINGLE"/>
+        <enum-item id="MULTIPLE"/>
+    </enum>
     <entity id="com.gridnine.platform.elsa.admin.web.entityList.ColumnDescription">
         <property id="id" type="STRING" non-nullable="true"/>
         <property id="title" type="STRING" non-nullable="true"/>
@@ -24,31 +29,41 @@
         <map id="fields" key-type="STRING" value-type="STRING"/>
         <property id="mobileContent" type="STRING"/>
     </entity>
+    <button class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListButton"/>
+    <autocomplete class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityFilter">
+        <server-managed-state>
+            <property id="title" type="STRING" non-nullable="true"/>
+        </server-managed-state>
+    </autocomplete>
     <container class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityList" managed-configuration="true">
         <commands-from-client>
             <command id="loadMore"/>
+            <command id="refreshData">
+                <property id="breakPoint" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.common.BreakPoint"/>
+            </command>
+            <command id="changeSort">
+                <property id="field" type="STRING" non-nullable="true"/>
+                <property id="sortOrder" type="ENUM" non-nullable="true" class-name="com.gridnine.platform.elsa.admin.web.entityList.SortOrder"/>
+            </command>
+            <command id="doubleClick">
+                <property id="id" type="STRING" non-nullable="true"/>
+            </command>
         </commands-from-client>
         <commands-from-server>
             <command id="refreshData"/>
         </commands-from-server>
         <server-managed-state>
+            <property id="filtersTitle" type="STRING" non-nullable="true"/>
+            <property id="sort" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.entityList.Sort" non-nullable="true"/>
+            <property id="loading" type="BOOLEAN" non-nullable="true"/>
+            <property id="hasMore" type="BOOLEAN" non-nullable="true"/>
+            <property id="selectionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityList.SelectionType" non-nullable="true"/>
+            <collection id="selectedItems" element-type="STRING" />
             <collection id="columns" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.ColumnDescription"/>
-            <property id="defaultSort" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.entityList.Sort" non-nullable="true"/>
-            <property id="limit" type="INT" non-nullable="true"/>
+            <collection id="data" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.RowData"/>
         </server-managed-state>
-        <services>
-            <service id="getData">
-                <request>
-                    <property id="sort" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.entityList.Sort" non-nullable="true"/>
-                    <property id="limit" type="INT" non-nullable="true"/>
-                    <property id="freeText" type="STRING"/>
-                    <property id="breakPoint" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.common.BreakPoint" non-nullable="true"/>
-                </request>
-                <response>
-                    <property id="hasMore" type="BOOLEAN" non-nullable="true"/>
-                    <collection id="data" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.RowData"/>
-                </response>
-            </service>
-        </services>
+        <children>
+            <text-field id="searchField" class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListSearchField"/>
+        </children>
     </container>
 </web-app>

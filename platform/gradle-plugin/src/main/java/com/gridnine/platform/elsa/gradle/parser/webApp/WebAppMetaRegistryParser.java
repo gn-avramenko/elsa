@@ -60,6 +60,10 @@ public class WebAppMetaRegistryParser {
             registry.getElements().put(wrapperCtr.getClassName(), wrapperCtr);
         }
         {
+            var glueCtr = new ContainerWebElementDescription("com.gridnine.platform.elsa.webApp.common.Glue");
+            registry.getElements().put(glueCtr.getClassName(), glueCtr);
+        }
+        {
             var flexDirectionEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.FlexDirection");
             {
                 var item = new EnumItemDescription("ROW");
@@ -287,9 +291,9 @@ public class WebAppMetaRegistryParser {
                 var item = new WebElementCommandDescription();
                 item.setId(CommonParserUtils.getIdAttribute(command));
                 var ett = new CustomWebElementDescription("test");
-                updateBaseProperties(ett, command);
-                item.getProperties().putAll(ett.getServerManagedState().getProperties());
-                item.getCollections().putAll(ett.getServerManagedState().getCollections());
+                var ext = getElementExtension(command);
+                item.getProperties().putAll(ext.getProperties());
+                item.getCollections().putAll(ext.getCollections());
                 dd.getCommandsFromServer().put(item.getId(), item);
             });
         }
@@ -299,9 +303,9 @@ public class WebAppMetaRegistryParser {
                 var item = new WebElementCommandDescription();
                 item.setId(CommonParserUtils.getIdAttribute(command));
                 var ett = new CustomWebElementDescription("test");
-                updateBaseProperties(ett, command);
-                item.getProperties().putAll(ett.getServerManagedState().getProperties());
-                item.getCollections().putAll(ett.getServerManagedState().getCollections());
+                var ext = getElementExtension(command);
+                item.getProperties().putAll(ext.getProperties());
+                item.getCollections().putAll(ext.getCollections());
                 dd.getCommandsFromClient().put(item.getId(), item);
             });
         }

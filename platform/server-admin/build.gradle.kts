@@ -19,6 +19,8 @@ dependencies {
 
 elsa {
     codegen {
+        l10n("src/main/java-gen", "com.gridnine.platform.elsa.admin.AdminL10nConfigurator",
+            "com.gridnine.platform.elsa.admin.AdminL10nFactory", listOf("src/main/codegen/admin-l10n-messages.xml"))
         domain("src/main/java-gen", "com.gridnine.platform.elsa.admin.AdminDomainConfigurator",
             listOf("src/main/codegen/admin-domain.xml"))
         webApp("src/main/java-gen", "src/main/java","com.gridnine.platform.elsa.admin.AdminWebAppConfigurator",

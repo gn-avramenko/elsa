@@ -66,7 +66,7 @@
             <element name="server-managed-state" minOccurs="0">
                 <complexType>
                     <sequence>
-                        <choice>
+                        <choice minOccurs="0" maxOccurs="unbounded">
                             <element name="property" type="common:PropertyType" minOccurs="0"
                                      maxOccurs="unbounded"/>
                             <element name="collection" type="common:CollectionType" minOccurs="0"
@@ -123,6 +123,8 @@
             <element type="tns:RootModalType" name="modal"/>
             <element type="tns:RootContainerType" name="container"/>
             <element type="tns:RootTextFieldType" name="text-field"/>
+            <element type="tns:RootButtonType" name="button"/>
+            <element type="tns:RootAutocompleteType" name="autocomplete"/>
         </choice>
     </group>
 
@@ -198,6 +200,16 @@
         </complexContent>
     </complexType>
     <complexType name="RootTextFieldType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="RootAutocompleteType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="RootButtonType">
         <complexContent>
             <extension base="tns:BaseRootElementType"/>
         </complexContent>

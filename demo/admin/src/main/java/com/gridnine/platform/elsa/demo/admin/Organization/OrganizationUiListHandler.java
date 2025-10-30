@@ -22,11 +22,13 @@
 package com.gridnine.platform.elsa.demo.admin.Organization;
 
 import com.gridnine.platform.elsa.admin.list.BaseAssetUiListHandler;
+import com.gridnine.platform.elsa.admin.list.EntityListFilter;
 import com.gridnine.platform.elsa.admin.list.FieldHandler;
-import com.gridnine.platform.elsa.demo.admin.domain.Country;
-import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
+import com.gridnine.platform.elsa.admin.list.ListToolHandler;
+import com.gridnine.platform.elsa.admin.web.entityList.EntityList;
 import com.gridnine.platform.elsa.demo.admin.domain.Organization;
 import com.gridnine.platform.elsa.demo.admin.domain.OrganizationFields;
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 import java.util.List;
 
@@ -43,6 +45,34 @@ public class OrganizationUiListHandler extends BaseAssetUiListHandler<Organizati
 
     @Override
     protected List<FieldHandler> getColumns() {
-        return List.of(assetField(OrganizationFields.name.name));
+        return List.of(assetField(OrganizationFields.name.name), assetField(OrganizationFields.address.name), assetField(OrganizationFields.country.name), assetField(OrganizationFields.contacts.name));
+    }
+
+    @Override
+    protected List<?> getTools() {
+        return List.of(new AddOrganizationToolHandler());
+    }
+
+    @Override
+    protected List<EntityListFilter> getFilters(OperationUiContext context) throws Exception {
+        return List.of(assetFilter(OrganizationFields.country.name, context));
+    }
+
+    static class AddOrganizationToolHandler implements ListToolHandler {
+
+        @Override
+        public String getIcon() {
+            return "PlusCircleOutlined";
+        }
+
+        @Override
+        public String getTooltip() {
+            return "Add";
+        }
+
+        @Override
+        public void onClicked(OperationUiContext context, EntityList entityList) throws Exception {
+            System.out.println("Adding organization" + entityList.getSelectedItems());
+        }
     }
 }

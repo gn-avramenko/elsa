@@ -120,6 +120,12 @@ public class WebAppMetadataHelper {
                 }
                 {
                     var prop = new StandardPropertyDescription();
+                    prop.setType(StandardValueType.STRING);
+                    prop.setId("icon");
+                    result.getServerManagedState().getProperties().put(prop.getId(), prop);
+                }
+                {
+                    var prop = new StandardPropertyDescription();
                     prop.setType(StandardValueType.BOOLEAN);
                     prop.setId("disabled");
                     result.getServerManagedState().getProperties().put(prop.getId(), prop);

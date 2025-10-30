@@ -84,7 +84,7 @@ public class WebWebAppElementsHelper {
                         });
                         gen.blankLine();
                         for (var prop : elm.getServerManagedState().getProperties().values()) {
-                            gen.wrapWithBlock("get%s()".formatted(BuildTextUtils.capitalize(prop.getId())), () -> {
+                            gen.wrapWithBlock("%s%s()".formatted(prop.getType() == StandardValueType.BOOLEAN && prop.isNonNullable()? "is": "get",BuildTextUtils.capitalize(prop.getId())), () -> {
                                 gen.printLine("return this.state.get('%s') as %s%s".formatted(prop.getId(),
                                         getType(prop.getType(), registry, prop.getClassName(), gen),
                                         prop.isNonNullable() ? "" : " | undefined"));

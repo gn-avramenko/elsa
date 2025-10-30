@@ -564,7 +564,7 @@ public class JavaWebAppElementsHelper {
                                 });
                                 gen.addImport("com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument");
                                 gen.wrapWithBlock("public void showConfirm(String message, RunnableWithExceptionAndArgument<OperationUiContext> okCallback, OperationUiContext context)", ()->{
-                                    gen.addImport("com.gridnine.platform.elsa.webApp.common.ConfirmMessageConfiguration");;
+                                    gen.addImport("com.gridnine.platform.elsa.webApp.common.ConfirmMessageConfiguration");
                                     gen.printLine("var confirmMessageConfig = new ConfirmMessageConfiguration();");
                                     gen.printLine("confirmMessageConfig.setTitle(message);");
                                     gen.addImport("com.gridnine.platform.elsa.webApp.common.ConfirmMessage");

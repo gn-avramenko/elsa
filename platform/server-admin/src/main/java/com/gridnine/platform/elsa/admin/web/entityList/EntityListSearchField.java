@@ -26,19 +26,9 @@ package com.gridnine.platform.elsa.admin.web.entityList;
 
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class EntityList extends EntityListSkeleton{
+public class EntityListSearchField extends EntityListSearchFieldSkeleton{
 
-    private int limit;
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
-    public EntityList(String tag, EntityListConfiguration config, OperationUiContext ctx){
+	public EntityListSearchField(String tag, EntityListSearchFieldConfiguration config, OperationUiContext ctx){
 		super(tag, config, ctx);
 	}
 }

@@ -23,8 +23,11 @@ package com.gridnine.platform.elsa.demo.admin.country;
 
 import com.gridnine.platform.elsa.admin.list.BaseAssetUiListHandler;
 import com.gridnine.platform.elsa.admin.list.FieldHandler;
+import com.gridnine.platform.elsa.admin.list.ListToolHandler;
+import com.gridnine.platform.elsa.admin.web.entityList.EntityList;
 import com.gridnine.platform.elsa.demo.admin.domain.Country;
 import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 import java.util.List;
 
@@ -43,4 +46,28 @@ public class CountryUiListHandler extends BaseAssetUiListHandler<Country> {
     protected List<FieldHandler> getColumns() {
         return List.of(assetField(CountryFields.name.name));
     }
+
+    @Override
+    protected List<?> getTools() {
+        return List.of(new AddCountryToolHandler());
+    }
+
+    static class AddCountryToolHandler implements ListToolHandler {
+
+        @Override
+        public String getIcon() {
+            return "PlusCircleOutlined";
+        }
+
+        @Override
+        public String getTooltip() {
+            return "Add";
+        }
+
+        @Override
+        public void onClicked(OperationUiContext context, EntityList entityList) throws Exception {
+            System.out.println("Adding country");
+        }
+    }
 }
+

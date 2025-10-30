@@ -22,23 +22,18 @@
  * This is generated code, don't modify it manually
  *****************************************************************/
 
-package com.gridnine.platform.elsa.admin.web.entityList;
+package com.gridnine.platform.elsa.webApp.common;
 
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class EntityList extends EntityListSkeleton{
+public class Glue extends GlueSkeleton{
 
-    private int limit;
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
-    public EntityList(String tag, EntityListConfiguration config, OperationUiContext ctx){
-		super(tag, config, ctx);
+	public Glue(String tag, OperationUiContext ctx){
+		super(tag, ctx);
 	}
+
+    @Override
+    protected GlueConfiguration createConfiguration(OperationUiContext ctx) {
+        return new GlueConfiguration();
+    }
 }

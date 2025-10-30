@@ -1,64 +1,34 @@
-import { initStateSetters } from '@/common/component';
+import { BaseReactUiElement, initStateSetters } from '@/common/component';
 import { EntityListSkeleton } from '@g/entityList/EntityListSkeleton';
 import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from '@/common/extension';
 import React, { useEffect, useState } from 'react';
 import { ColumnDescription } from '@g/entityList/ColumnDescription';
-import { Table, theme } from 'antd';
+import { Button, Drawer, Table, theme } from 'antd';
 import { onVisible } from '@/common/utils';
 import { RowData } from '@g/entityList/RowData';
-import { Sort } from '@g/entityList/Sort';
-import Input from 'antd/es/input/Input';
-import { debounce } from '@/common/debounce';
-import { generateUUID } from 'webpeer-core';
+import { BreakPoint } from '@g/common/BreakPoint';
+import { ColumnsType } from 'antd/es/table';
+import { EyeOutlined, FilterOutlined } from '@ant-design/icons';
 
 function EntityListFC(props: { element: EntityListComponent }) {
     initStateSetters(props.element);
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<RowData[]>([]);
-    const [sort, setSort] = useState<Sort>(props.element.getDefaultSort());
-    const [hasMore, setHasMore] = useState(false);
     const parentRef = React.createRef() as any;
-    const reqId = React.createRef<string>();
     const { token } = theme.useToken();
     const [tableHeight, setTableHeight] = useState<number | undefined>(
         parentRef?.current?.clientHeight
     );
-    const [freeText, setFreeText] = useState<string>('');
     const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
+    props.element.breakPoint = breakpoint as BreakPoint;
     const [tableWidth, setTableWidth] = useState<number | undefined>(1000);
     const [augmented, setAugmented] = useState(false);
-    const debouncedSearch = debounce((freeText?: string) => {
-        updateData(freeText);
-    }, 300);
-    const updateData = async (freeText?: string) => {
-        const id = generateUUID();
-        reqId.current = id;
-        setLoading(true);
-        const result = await props.element.doGetData({
-            sort,
-            breakPoint: breakpoint === 'mobile' ? 'MOBILE' : 'DESKTOP',
-            freeText,
-            limit: props.element.getLimit(),
-        });
-        if (reqId.current !== id) {
-            return;
-        }
-        setHasMore(result.hasMore);
-        setData(result.data || []);
-        setLoading(false);
-    };
-    props.element.processRefreshData = () => {
-        updateData(freeText);
-    };
+    const [drawerVisible, setDrawerVisible] = useState(false);
+    props.element.augmentedSetter = setAugmented;
     useEffect(() => {
         if (!parentRef?.current) return;
         setTableHeight(parentRef.current.clientHeight - 70);
         setTableWidth(parentRef.current.clientWidth);
     }, [parentRef]);
-    useEffect(() => {
-        updateData();
-    }, [props.element]);
     const renderContent = (value: any | undefined, cd: ColumnDescription) => {
         if (value === undefined || value === null) {
             return '';
@@ -76,55 +46,180 @@ function EntityListFC(props: { element: EntityListComponent }) {
                 return 'left';
         }
     };
+    const columns: ColumnsType<RowData> = props.element.getColumns().map((c) => ({
+        title: c.title,
+        align: getAlignment(c),
+        dataIndex: c.id,
+        sorter: c.sortable,
+        sortOrder:
+            props.element.getSort().field === c.id
+                ? props.element.getSort().order === 'DESC'
+                    ? 'descend'
+                    : 'ascend'
+                : undefined,
+        width: c.width,
+        render: (_value, record: RowData) => {
+            return renderContent((record.fields as any)[c.id], c);
+        },
+    }));
+    columns.push({
+        title: '',
+        sorter: false,
+        width: '60px',
+        render: (_value, record) => {
+            return (
+                <Button
+                    type="primary"
+                    onClick={() => {
+                        props.element.sendDoubleClick({
+                            id: record.id,
+                        });
+                    }}
+                >
+                    <EyeOutlined />
+                </Button>
+            );
+        },
+    });
+    const filters = (props.element.findByTag('filters')?.findByTag('filters')
+        ?.children || []) as BaseReactUiElement[];
+    const buttons = (props.element.findByTag('filters')?.findByTag('buttons')
+        ?.children || []) as BaseReactUiElement[];
     return (
-        <div ref={parentRef as any} key={props.element.id} style={{}}>
+        <div
+            ref={parentRef as any}
+            key={props.element.id}
+            style={{ height: 'calc(100% - 25px)' }}
+        >
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <div style={{ flexGrow: 1 }} />
-                <div style={{ flexGrow: 0, padding: token.paddingSM }}>
-                    <Input
-                        key="search-field"
-                        autoFocus
-                        value={freeText}
-                        allowClear
-                        onChange={(e) => {
-                            setFreeText(e.target.value);
-                            debouncedSearch(e.target.value);
-                        }}
-                    />
+                <div key="tools" style={{ flexGrow: 1, padding: token.paddingSM }}>
+                    {props.element
+                        .findByTag('tools')
+                        .children?.map((it) =>
+                            (it as BaseReactUiElement).createReactElement()
+                        )}
                 </div>
+                <div
+                    key="glue1"
+                    style={{ flexGrow: 1, padding: token.paddingSM }}
+                ></div>
+                <div
+                    key="searchField"
+                    style={{ flexGrow: 0, padding: token.paddingSM, paddingRight: 5 }}
+                >
+                    {props.element.findByTag('searchField').createReactElement()}
+                </div>
+                {filters.length ? (
+                    <div
+                        key="showFilters"
+                        style={{
+                            flexGrow: 0,
+                            padding: token.paddingSM,
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                        }}
+                    >
+                        <Button
+                            style={{ padding: 0 }}
+                            id="showFilter"
+                            onClick={() => setDrawerVisible(!drawerVisible)}
+                            icon={<FilterOutlined />}
+                        ></Button>
+                    </div>
+                ) : null}
             </div>
+            {filters.length ? (
+                <Drawer
+                    title={props.element.getFiltersTitle()}
+                    styles={{
+                        header: { padding: 5 },
+                        content: { padding: 0 },
+                        body: { padding: 5 },
+                    }}
+                    open={drawerVisible}
+                    closable={{ 'aria-label': 'Close Button' }}
+                    onClose={() => setDrawerVisible(false)}
+                >
+                    <div
+                        key="filters"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            height: '100%',
+                        }}
+                    >
+                        <div
+                            key="filters"
+                            style={{
+                                flexGrow: 1,
+                                overflowY: 'auto',
+                            }}
+                        >
+                            {filters.map((it) => it.createReactElement())}
+                        </div>
+                        <div
+                            key="buttons"
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                flexGrow: 0,
+                            }}
+                        >
+                            <div key="glue" style={{ flexGrow: 1 }} />
+                            {buttons.map((it) => {
+                                return (
+                                    <div
+                                        key={it.id}
+                                        style={{ flexGrow: 0, padding: 5 }}
+                                    >
+                                        {' '}
+                                        {it.createReactElement()}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </Drawer>
+            ) : null}
             <Table
                 size="small"
                 key={props.element.id}
-                loading={loading}
-                dataSource={data}
+                loading={props.element.isLoading()}
+                dataSource={props.element.getData()}
                 pagination={false}
                 rowKey="id"
                 showSorterTooltip={false}
-                rowSelection={{
-                    type: 'checkbox',
-                    hideSelectAll: false,
+                onRow={(record) => {
+                    return {
+                        onDoubleClick: () => {
+                            props.element.sendDoubleClick({
+                                id: record.id,
+                            });
+                        },
+                    };
                 }}
+                rowSelection={
+                    props.element.getSelectionType() === 'NONE'
+                        ? undefined
+                        : {
+                              onChange: (keys) => {
+                                  props.element.setSelectedItems(keys as string[]);
+                              },
+                              type:
+                                  props.element.getSelectionType() === 'SINGLE'
+                                      ? 'radio'
+                                      : 'checkbox',
+                              hideSelectAll: false,
+                          }
+                }
                 style={{ width: tableWidth }}
                 scroll={{
-                    y: data.length > 10 ? tableHeight || 200 : undefined,
-                }}
-                columns={props.element.getColumns().map((c) => ({
-                    title: c.title,
-                    align: getAlignment(c),
-                    dataIndex: c.id,
-                    sorter: c.sortable,
-                    sortOrder:
-                        sort.field === c.id
-                            ? sort.order === 'DESC'
-                                ? 'descend'
-                                : 'ascend'
+                    y:
+                        props.element.getData().length > 10
+                            ? tableHeight || 200
                             : undefined,
-                    width: c.width,
-                    render: (_value, record: RowData) => {
-                        return renderContent((record.fields as any)[c.id], c);
-                    },
-                }))}
+                }}
+                columns={columns}
                 onScroll={() => {
                     const elms = document.getElementsByClassName('the-last-row');
                     if (elms.length) {
@@ -132,34 +227,26 @@ function EntityListFC(props: { element: EntityListComponent }) {
                         if (!augmented) {
                             setAugmented(true);
                             onVisible(lastRow, () => {
-                                if (hasMore) {
-                                    setTimeout(async () => {
-                                        await updateData();
-                                        setTimeout(() => setAugmented(false), 10);
-                                    });
+                                if (props.element.isHasMore()) {
+                                    props.element.sendLoadMore();
                                 }
                             });
                         }
                     }
                 }}
                 rowClassName={(_record, index) => {
-                    const length = data.length as number;
+                    const length = props.element.getData().length as number;
                     if (length && index === length - 1) {
                         return 'the-last-row';
                     }
                     return '';
                 }}
                 onChange={(_pagination, _filter, sorter: any) => {
-                    setTimeout(async () => {
-                        setLoading(true);
-                        setSort({
-                            field: sorter.field ?? sort.field,
-                            order: sorter.order === 'descend' ? 'DESC' : 'ASC',
+                    setTimeout(() => {
+                        props.element.sendChangeSort({
+                            field: sorter.field ?? props.element.getSort().field,
+                            sortOrder: sorter.order === 'descend' ? 'DESC' : 'ASC',
                         });
-                        setTimeout(async () => {
-                            await updateData();
-                            setAugmented(false);
-                        }, 10);
                     });
                 }}
             />
@@ -168,8 +255,25 @@ function EntityListFC(props: { element: EntityListComponent }) {
 }
 
 export class EntityListComponent extends EntityListSkeleton {
+    breakPoint: BreakPoint = 'DESKTOP';
+    augmentedSetter: React.Dispatch<React.SetStateAction<boolean>> = (_value) => {};
+
+    setSelectedItems(items: string[]): void {
+        this.sendPropertyChange('selectedItems', items, true);
+    }
+
     processRefreshData(): void {
-        throw new Error('Method not implemented.');
+        this.sendRefreshData({
+            breakPoint: this.breakPoint,
+        });
+    }
+    protected updatePropertyValue(pn: string, pv: any) {
+        if (pn === 'data') {
+            super.updatePropertyValue(pn, pv);
+            setTimeout(() => this.augmentedSetter(false), 10);
+            return;
+        }
+        super.updatePropertyValue(pn, pv);
     }
     functionalComponent = EntityListFC;
 }

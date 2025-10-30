@@ -22,6 +22,8 @@
 package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.AdminDomainConfigurator;
+import com.gridnine.platform.elsa.admin.AdminL10nConfigurator;
+import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,5 +34,15 @@ public class AdminBasicConfiguration {
     @Bean
     public AdminDomainConfigurator adminDomainConfigurator(){
         return new AdminDomainConfigurator();
+    }
+
+    @Bean
+    public AdminL10nConfigurator adminL10nConfigurator(){
+        return new AdminL10nConfigurator();
+    }
+
+    @Bean
+    public AdminL10nFactory adminL10nFactory(){
+        return new AdminL10nFactory();
     }
 }

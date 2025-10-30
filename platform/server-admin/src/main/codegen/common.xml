@@ -4,4 +4,5 @@
         <enum-item id="MOBILE"/>
         <enum-item id="DESKTOP"/>
     </enum>
+    <button class-name="com.gridnine.platform.elsa.admin.web.components.Button"/>
 </web-app>

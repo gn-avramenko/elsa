@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.admin.domain.*;
 import com.gridnine.platform.elsa.common.core.boot.ElsaActivator;
 import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
+import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.demo.admin.domain.Country;
@@ -45,7 +46,7 @@ public class AdminActivator implements ElsaActivator {
     @Override
     public void activate() throws Exception {
         checkAdminWorkspace();
-        if(storage.searchAssets(Country.class, new SearchQueryBuilder().limit(1).build()).isEmpty()){
+        if (storage.searchAssets(Country.class, new SearchQueryBuilder().limit(1).build()).isEmpty()) {
             {
                 var country = new Country();
                 country.setName("Russia");
@@ -57,10 +58,32 @@ public class AdminActivator implements ElsaActivator {
                 storage.saveAsset(country, "init");
             }
         }
+        if (storage.searchAssets(Organization.class, new SearchQueryBuilder().limit(1).build()).isEmpty()) {
+            var words = new ArrayList<String>();
+            try (var is = getClass().getClassLoader().getResourceAsStream("words.json")) {
+                var isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                var obj = new Gson().fromJson(isr, JsonObject.class);
+                var size = obj.size();
+                var idx = 9 + Math.round(Math.random() * (size - 10));
+                var arr = obj.getAsJsonArray(String.valueOf(idx));
+                arr.forEach(it -> words.add(it.getAsString()));
+            }
+            var countries = storage.searchAssets(Country.class, new SearchQuery(), false);
+            for (var country : countries) {
+                for (int n = 0; n < 100; n++) {
+                    var org = new Organization();
+                    org.setName(getRandomString(words));
+                    org.setContacts(getRandomString(words));
+                    org.setCountry(country.toReference());
+                    org.setAddress(getRandomString(words));
+                    storage.saveAsset(org, false, "test data");
+                }
+            }
+        }
     }
 
     private void checkAdminWorkspace() {
-        if(storage.findUniqueDocument(WorkspaceProjection.class, WorkspaceProjectionFields.userLogin, "admin", false) != null){
+        if (storage.findUniqueDocument(WorkspaceProjection.class, WorkspaceProjectionFields.userLogin, "admin", false) != null) {
             return;
         }
         var adminWorkspace = new Workspace();
