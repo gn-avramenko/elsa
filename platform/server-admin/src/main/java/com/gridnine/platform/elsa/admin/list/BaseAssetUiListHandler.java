@@ -130,7 +130,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         if(!filters.isEmpty()){
             var filtersPanels = new ContentWrapper("filters", new ContentWrapperConfiguration(), context);
             var filtersContainer = new ContentWrapper("filters", new ContentWrapperConfiguration(), context);
-            filtersPanels.addChild(context, filtersContainer, 0);;
+            filtersPanels.addChild(context, filtersContainer, 0);
             filters.forEach(filter -> {
                 filtersContainer.addChild(context, filter.getElement(), 0);
             });

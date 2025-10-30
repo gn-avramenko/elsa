@@ -25,12 +25,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.gridnine.platform.elsa.admin.domain.*;
 import com.gridnine.platform.elsa.common.core.boot.ElsaActivator;
-import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.demo.admin.domain.Country;
-import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
 import com.gridnine.platform.elsa.demo.admin.domain.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
 

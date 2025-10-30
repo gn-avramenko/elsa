@@ -31,5 +31,4 @@ export class GlueComponent extends GlueSkeleton {
     getProcessedChildren(): string[] {
         return [];
     }
-    
 }
