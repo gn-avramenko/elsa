@@ -27,7 +27,6 @@ import com.gridnine.platform.elsa.admin.list.ListToolHandler;
 import com.gridnine.platform.elsa.admin.web.entityList.EntityList;
 import com.gridnine.platform.elsa.demo.admin.domain.Country;
 import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
-import com.gridnine.platform.elsa.demo.admin.domain.Organization;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 import java.util.List;

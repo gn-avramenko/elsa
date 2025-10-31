@@ -26,8 +26,8 @@
     </entity>
     <entity id="com.gridnine.platform.elsa.admin.web.entityList.RowData">
         <property id="id" type="STRING" non-nullable="true"/>
-        <map id="fields" key-type="STRING" value-type="STRING"/>
         <property id="mobileContent" type="STRING"/>
+        <map id="fields" key-type="STRING" value-type="STRING"/>
     </entity>
     <button class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListButton"/>
     <autocomplete class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityFilter">
@@ -36,6 +36,21 @@
         </server-managed-state>
     </autocomplete>
     <container class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityList" managed-configuration="true">
+        <server-managed-state>
+            <property id="contentTitle" type="STRING" non-nullable="true"/>
+            <property id="filtersTitle" type="STRING" non-nullable="true"/>
+            <property id="sort" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.entityList.Sort" non-nullable="true"/>
+            <property id="loading" type="BOOLEAN" non-nullable="true"/>
+            <property id="hasMore" type="BOOLEAN" non-nullable="true"/>
+            <property id="selectionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityList.SelectionType" non-nullable="true"/>
+            <collection id="selectedItems" element-type="STRING" />
+            <collection id="columns" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.ColumnDescription"/>
+            <collection id="data" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.RowData"/>
+        </server-managed-state>
+        <commands-from-server>
+            <command id="refreshData"/>
+            <command id="hideFilters"/>
+        </commands-from-server>
         <commands-from-client>
             <command id="loadMore"/>
             <command id="refreshData">
@@ -50,21 +65,6 @@
             </command>
             <command id="restoreCommittedFilterValues"/>
         </commands-from-client>
-        <commands-from-server>
-            <command id="refreshData"/>
-            <command id="hideFilters"/>
-        </commands-from-server>
-        <server-managed-state>
-            <property id="contentTitle" type="STRING" non-nullable="true"/>
-            <property id="filtersTitle" type="STRING" non-nullable="true"/>
-            <property id="sort" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.entityList.Sort" non-nullable="true"/>
-            <property id="loading" type="BOOLEAN" non-nullable="true"/>
-            <property id="hasMore" type="BOOLEAN" non-nullable="true"/>
-            <property id="selectionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityList.SelectionType" non-nullable="true"/>
-            <collection id="selectedItems" element-type="STRING" />
-            <collection id="columns" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.ColumnDescription"/>
-            <collection id="data" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.RowData"/>
-        </server-managed-state>
         <children>
             <text-field id="searchField" class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListSearchField"/>
         </children>

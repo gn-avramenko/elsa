@@ -26,11 +26,7 @@ package com.gridnine.platform.elsa.demo.ui.app;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.demo.ui.account.AccountPage;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestAccountContainerPage;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestHistoryPage;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestMainPage;
 import com.gridnine.platform.elsa.demo.ui.history.HistoryPage;
 import com.gridnine.platform.elsa.demo.ui.main.MainPage;
 import com.gridnine.platform.elsa.webApp.NestedRouter;

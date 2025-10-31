@@ -24,7 +24,6 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.webApp.AutocompleteWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.SelectWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;

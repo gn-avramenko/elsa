@@ -24,7 +24,6 @@
 
 package com.gridnine.platform.elsa.demo.ui.account;
 
-import com.gridnine.platform.elsa.demo.ui.main.MainPageConfiguration;
 import com.gridnine.platform.elsa.webApp.common.FlexDirection;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
