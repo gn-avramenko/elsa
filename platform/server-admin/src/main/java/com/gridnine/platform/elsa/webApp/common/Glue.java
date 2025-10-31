@@ -33,7 +33,7 @@ public class Glue extends GlueSkeleton{
 	}
 
     @Override
-    protected GlueConfiguration createConfiguration(OperationUiContext ctx) {
+    protected GlueConfiguration createConfiguration() {
         return new GlueConfiguration();
     }
 }

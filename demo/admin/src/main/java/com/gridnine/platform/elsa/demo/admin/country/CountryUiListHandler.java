@@ -27,6 +27,7 @@ import com.gridnine.platform.elsa.admin.list.ListToolHandler;
 import com.gridnine.platform.elsa.admin.web.entityList.EntityList;
 import com.gridnine.platform.elsa.demo.admin.domain.Country;
 import com.gridnine.platform.elsa.demo.admin.domain.CountryFields;
+import com.gridnine.platform.elsa.demo.admin.domain.Organization;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 import java.util.List;
@@ -50,6 +51,19 @@ public class CountryUiListHandler extends BaseAssetUiListHandler<Country> {
     @Override
     protected List<?> getTools() {
         return List.of(new AddCountryToolHandler());
+    }
+
+    @Override
+    protected String getMobileRowContent(Country asset) {
+        return """
+                <div class="rf">
+                    <div class="lp">
+                        <div class="b">
+                            %s
+                        </div>
+                    </div>
+                </div>
+                """.formatted(asset.getName());
     }
 
     static class AddCountryToolHandler implements ListToolHandler {

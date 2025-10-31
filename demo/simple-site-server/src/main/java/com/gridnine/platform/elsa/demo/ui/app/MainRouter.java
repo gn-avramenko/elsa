@@ -48,6 +48,9 @@ public class MainRouter extends MainRouterSkeleton{
 
 	public MainRouter(String tag, OperationUiContext ctx){
 		super(tag, ctx);
+        JsonObject params = ctx.getParameter(OperationUiContext.PARAMS);
+        setPath(WebPeerUtils.getString(params, "initPath"), ctx);
+        setConfirmMessage("Are you sure you want to quit the page?", ctx);
 		factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
 		currentPath = getPath();
 		ctx.setParameter(StandardParameters.ROUTER_PATH, currentPath);
@@ -57,11 +60,8 @@ public class MainRouter extends MainRouterSkeleton{
 	}
 
     @Override
-    protected MainRouterConfiguration createConfiguration(OperationUiContext ctx) {
+    protected MainRouterConfiguration createConfiguration() {
         var result = new MainRouterConfiguration();
-        JsonObject params = ctx.getParameter(OperationUiContext.PARAMS);
-        result.setPath(WebPeerUtils.getString(params, "initPath"));
-        result.setConfirmMessage("Are you sure you want to quit the page?");
         return result;
     }
 

@@ -50,7 +50,7 @@ public class OrganizationsSection extends OrganizationsSectionSkeleton{
 	}
 
     @Override
-    protected OrganizationsSectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected OrganizationsSectionConfiguration createConfiguration() {
         var config = new OrganizationsSectionConfiguration();
         config.setFlexDirection(FlexDirection.COLUMN);
         {

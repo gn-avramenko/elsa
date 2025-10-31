@@ -34,7 +34,7 @@ public class HistoryPage extends HistoryPageSkeleton{
 	}
 
     @Override
-    protected HistoryPageConfiguration createConfiguration(OperationUiContext ctx) {
+    protected HistoryPageConfiguration createConfiguration() {
         var result = new HistoryPageConfiguration();
         result.setFlexDirection(FlexDirection.COLUMN);
         return result;

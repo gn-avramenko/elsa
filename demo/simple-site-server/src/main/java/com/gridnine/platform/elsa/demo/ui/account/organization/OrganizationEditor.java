@@ -58,7 +58,7 @@ public class OrganizationEditor extends OrganizationEditorSkeleton{
 	}
 
     @Override
-    protected OrganizationEditorConfiguration createConfiguration(OperationUiContext ctx) {
+    protected OrganizationEditorConfiguration createConfiguration() {
         var org = storage.loadAsset(Organization.class, organizationId,false);
         var config = new OrganizationEditorConfiguration();
         config.setFlexDirection(FlexDirection.COLUMN);

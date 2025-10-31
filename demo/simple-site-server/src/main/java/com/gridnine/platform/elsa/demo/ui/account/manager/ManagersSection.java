@@ -61,7 +61,7 @@ public class ManagersSection extends ManagersSectionSkeleton{
     }
 
     @Override
-    protected ManagersSectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected ManagersSectionConfiguration createConfiguration() {
         var config = new ManagersSectionConfiguration();
         config.setFlexDirection(FlexDirection.COLUMN);
         {

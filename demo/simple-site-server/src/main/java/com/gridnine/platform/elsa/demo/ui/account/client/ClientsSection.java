@@ -33,7 +33,7 @@ public class ClientsSection extends ClientsSectionSkeleton{
 	}
 
     @Override
-    protected ClientsSectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected ClientsSectionConfiguration createConfiguration() {
         var config = new ClientsSectionConfiguration();
         return config;
     }

@@ -28,5 +28,7 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 public interface EntityListFilter {
     BaseUiElement getElement();
     void reset(OperationUiContext context);
+    void commitValue(OperationUiContext context);
+    void restoreCommitedValue(OperationUiContext context);
     SearchCriterion getSearchCriterion();
 }

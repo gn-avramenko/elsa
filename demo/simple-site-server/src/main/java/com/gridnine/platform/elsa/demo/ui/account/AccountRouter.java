@@ -48,7 +48,10 @@ public class AccountRouter extends AccountRouterSkeleton{
 	public AccountRouter(String tag, OperationUiContext ctx){
 		super(tag, ctx);
 		factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
-		var config = createConfiguration(ctx);
+		var config = createConfiguration();
+        var params = ctx.getParameter(OperationUiContext.PARAMS);
+        var path = ctx.getParameter(StandardParameters.ROUTER_PATH);
+        config.setPath(path == null? WebPeerUtils.getString(params, "initPath"): path);
 		currentPath = config.getPath();
 		ctx.setParameter(StandardParameters.ROUTER_PATH, currentPath);
 		var viewId = getViewId(config.getPath());
@@ -124,11 +127,8 @@ public class AccountRouter extends AccountRouterSkeleton{
 	}
 
 	@Override
-	protected AccountRouterConfiguration createConfiguration(OperationUiContext ctx){
+	protected AccountRouterConfiguration createConfiguration(){
 		var result = new AccountRouterConfiguration();
-		var params = ctx.getParameter(OperationUiContext.PARAMS);
-		var path = ctx.getParameter(StandardParameters.ROUTER_PATH);
-		 result.setPath(path == null? WebPeerUtils.getString(params, "initPath"): path);
 		return result;
 	}
 }

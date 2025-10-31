@@ -28,4 +28,5 @@ public interface RouterPathHandler {
     boolean canHandle(String path);
     BaseUiElement createElement(String path, OperationUiContext context) throws Exception;
     String getTitle();
+    String getDefaultBackUrl();
 }

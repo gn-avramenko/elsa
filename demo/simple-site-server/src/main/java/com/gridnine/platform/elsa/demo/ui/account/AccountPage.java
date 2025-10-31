@@ -35,7 +35,7 @@ public class AccountPage extends AccountPageSkeleton{
 	}
 
     @Override
-    protected AccountPageConfiguration createConfiguration(OperationUiContext ctx) {
+    protected AccountPageConfiguration createConfiguration() {
         var result = new AccountPageConfiguration();
         result.setFlexDirection(FlexDirection.ROW);
         return result;

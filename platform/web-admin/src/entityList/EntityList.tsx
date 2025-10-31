@@ -4,12 +4,20 @@ import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from '@/common/extension';
 import React, { useEffect, useState } from 'react';
 import { ColumnDescription } from '@g/entityList/ColumnDescription';
-import { Button, Drawer, Table, theme } from 'antd';
+import { Button, Drawer, Dropdown, Table, theme } from 'antd';
 import { onVisible } from '@/common/utils';
 import { RowData } from '@g/entityList/RowData';
 import { BreakPoint } from '@g/common/BreakPoint';
 import { ColumnsType } from 'antd/es/table';
-import { EyeOutlined, FilterOutlined } from '@ant-design/icons';
+import {
+    ArrowDownOutlined,
+    ArrowUpOutlined,
+    EyeOutlined,
+    FilterOutlined,
+    SortAscendingOutlined,
+} from '@ant-design/icons';
+import '@/common/admin.css';
+import { MenuProps } from 'antd/lib';
 
 function EntityListFC(props: { element: EntityListComponent }) {
     initStateSetters(props.element);
@@ -19,11 +27,12 @@ function EntityListFC(props: { element: EntityListComponent }) {
         parentRef?.current?.clientHeight
     );
     const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
-    props.element.breakPoint = breakpoint as BreakPoint;
+    props.element.breakPoint = breakpoint === 'mobile' ? 'MOBILE' : 'DESKTOP';
     const [tableWidth, setTableWidth] = useState<number | undefined>(1000);
     const [augmented, setAugmented] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
     props.element.augmentedSetter = setAugmented;
+    props.element.drawerVisibleSetter = setDrawerVisible;
     useEffect(() => {
         if (!parentRef?.current) return;
         setTableHeight(parentRef.current.clientHeight - 70);
@@ -46,24 +55,90 @@ function EntityListFC(props: { element: EntityListComponent }) {
                 return 'left';
         }
     };
-    const columns: ColumnsType<RowData> = props.element.getColumns().map((c) => ({
-        title: c.title,
-        align: getAlignment(c),
-        dataIndex: c.id,
-        sorter: c.sortable,
-        sortOrder:
-            props.element.getSort().field === c.id
-                ? props.element.getSort().order === 'DESC'
-                    ? 'descend'
-                    : 'ascend'
-                : undefined,
-        width: c.width,
-        render: (_value, record: RowData) => {
-            return renderContent((record.fields as any)[c.id], c);
-        },
-    }));
+    const columns: ColumnsType<RowData> =
+        breakpoint === 'mobile'
+            ? [
+                  {
+                      title: props.element.getContentTitle(),
+                      align: 'left',
+                      dataIndex: 'id',
+                      sorter: false,
+                      render: (_value, record: RowData) => {
+                          return (
+                              <div
+                                  dangerouslySetInnerHTML={{
+                                      __html: record.mobileContent!,
+                                  }}
+                              />
+                          );
+                      },
+                  },
+              ]
+            : props.element.getColumns().map((c) => ({
+                  title: c.title,
+                  align: getAlignment(c),
+                  dataIndex: c.id,
+                  sorter: c.sortable,
+                  sortOrder:
+                      props.element.getSort().field === c.id
+                          ? props.element.getSort().order === 'DESC'
+                              ? 'descend'
+                              : 'ascend'
+                          : undefined,
+                  width: c.width,
+                  render: (_value, record: RowData) => {
+                      return renderContent((record.fields as any)[c.id], c);
+                  },
+              }));
+    const items: MenuProps['items'] = [];
+    if (breakpoint === 'mobile') {
+        props.element
+            .getColumns()
+            .filter((c) => c.sortable)
+            .forEach((c) => {
+                items.push({
+                    key: `${c.id}-ASC`,
+                    label: (
+                        <div>
+                            <span>{c.title}&nbsp;</span>
+                            <ArrowUpOutlined />
+                        </div>
+                    ),
+                });
+                items.push({
+                    key: `${c.id}-DESC`,
+                    label: (
+                        <div>
+                            <span>{c.title}&nbsp;</span>
+                            <ArrowDownOutlined />
+                        </div>
+                    ),
+                });
+            });
+    }
     columns.push({
-        title: '',
+        title:
+            breakpoint === 'mobile' ? (
+                <Dropdown
+                    menu={{
+                        items,
+                        onClick: (e) => {
+                            const key = e.key;
+                            const idx = key.lastIndexOf('-');
+                            const field = key.substring(0, idx);
+                            const dir = key.substring(idx + 1);
+                            props.element.sendChangeSort({
+                                field,
+                                sortOrder: dir === 'ASC' ? 'ASC' : 'DESC',
+                            });
+                        },
+                    }}
+                >
+                    <SortAscendingOutlined />
+                </Dropdown>
+            ) : (
+                ''
+            ),
         sorter: false,
         width: '60px',
         render: (_value, record) => {
@@ -138,7 +213,10 @@ function EntityListFC(props: { element: EntityListComponent }) {
                     }}
                     open={drawerVisible}
                     closable={{ 'aria-label': 'Close Button' }}
-                    onClose={() => setDrawerVisible(false)}
+                    onClose={() => {
+                        setDrawerVisible(false);
+                        props.element.sendRestoreCommittedFilterValues();
+                    }}
                 >
                     <div
                         key="filters"
@@ -257,15 +335,22 @@ function EntityListFC(props: { element: EntityListComponent }) {
 export class EntityListComponent extends EntityListSkeleton {
     breakPoint: BreakPoint = 'DESKTOP';
     augmentedSetter: React.Dispatch<React.SetStateAction<boolean>> = (_value) => {};
+    drawerVisibleSetter: React.Dispatch<React.SetStateAction<boolean>> = (_value) => {};
 
     setSelectedItems(items: string[]): void {
         this.sendPropertyChange('selectedItems', items, true);
     }
 
+    processHideFilters() {
+        this.drawerVisibleSetter(false);
+    }
+
     processRefreshData(): void {
-        this.sendRefreshData({
-            breakPoint: this.breakPoint,
-        });
+        setTimeout(() => {
+            this.sendRefreshData({
+                breakPoint: this.breakPoint,
+            });
+        }, 10);
     }
     protected updatePropertyValue(pn: string, pv: any) {
         if (pn === 'data') {

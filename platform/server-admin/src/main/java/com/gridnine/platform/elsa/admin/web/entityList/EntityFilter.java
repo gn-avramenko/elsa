@@ -42,6 +42,8 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
     private final String fieldId;
     private final Class<?> entityClass;
     private final Storage storage;
+    private EntityFilterInputValue commitedValue;
+
 	public EntityFilter(String fieldId, String title, Class<? extends BaseIdentity> entityClass, Storage storage, OperationUiContext operationUiContext) {
 		super("filter-%s".formatted(fieldId), new EntityFilterConfiguration(), operationUiContext);
         this.fieldId = fieldId;
@@ -63,7 +65,7 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
                 return opt;
             }).toList());
             return result;
-        }, operationUiContext);
+        });
 	}
 
     @Override
@@ -74,6 +76,16 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
     @Override
     public void reset(OperationUiContext context) {
         setValue(new EntityFilterInputValue(), context);
+    }
+
+    @Override
+    public void commitValue(OperationUiContext context) {
+        commitedValue = getValue();
+    }
+
+    @Override
+    public void restoreCommitedValue(OperationUiContext context) {
+        setValue(commitedValue, context);
     }
 
 

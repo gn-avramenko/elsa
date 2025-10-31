@@ -36,7 +36,7 @@ public class MainModal extends MainModalSkeleton{
 
 	public MainModal(String tag, MainModalConfiguration config, OperationUiContext ctx){
 		super(tag, config, ctx);
-		setCloseListener(this::removeChildren, ctx);
+		setCloseListener(this::removeChildren);
 	}
 	public void closeDialog(OperationUiContext context){
 		removeChildren(context);

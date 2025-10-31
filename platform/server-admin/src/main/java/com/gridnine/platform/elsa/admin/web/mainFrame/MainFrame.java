@@ -49,18 +49,19 @@ public class MainFrame extends MainFrameSkeleton{
 	public MainFrame(String tag, OperationUiContext ctx){
 		super(tag, ctx);
         setTitle(getMainRouter().getTitle(), ctx);
-	}
-
-    @Override
-    protected MainFrameConfiguration createConfiguration(OperationUiContext ctx) {
-        var mainFrameConfiguration = new MainFrameConfiguration();
-        mainFrameConfiguration.setFlexDirection(FlexDirection.COLUMN);
+        setBackUrl(getMainRouter().getInitBackUrl(), ctx);
         factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
         storage = factory.getBean(Storage.class);
         var workspace = storage.findUniqueDocument(WorkspaceProjection.class, WorkspaceProjectionFields.userLogin, AuthContext.getCurrentUser(), false);
         for(var group : workspace.getGroups()){
-            mainFrameConfiguration.getWorkspaceGroups().add(toWorkspaceGroup(group));
+            getWorkspaceGroups().add(toWorkspaceGroup(group));
         }
+	}
+
+    @Override
+    protected MainFrameConfiguration createConfiguration() {
+        var mainFrameConfiguration = new MainFrameConfiguration();
+        mainFrameConfiguration.setFlexDirection(FlexDirection.COLUMN);
         return mainFrameConfiguration;
     }
 

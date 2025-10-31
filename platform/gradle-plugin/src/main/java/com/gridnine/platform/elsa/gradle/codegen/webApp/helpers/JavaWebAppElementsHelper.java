@@ -123,7 +123,7 @@ public class JavaWebAppElementsHelper {
                         gen.wrapWithBlock(cns, () -> {
                             gen.printLine("super(\"%s\", tag, ctx);".formatted(className));
                             if (!managedConfiguration) {
-                                gen.printLine("var config = createConfiguration(ctx);");
+                                gen.printLine("var config = createConfiguration();");
                             }
                             var childrenCount = 0;
                             for (var field : fields) {
@@ -140,6 +140,9 @@ public class JavaWebAppElementsHelper {
                                     }
                                     case INPUT_HAS_CHANGE_LISTENER -> {
                                         //noops
+                                    }
+                                    case COMMAND_FROM_CLIENT,SERVICE -> {
+                                        gen.printLine("set%s(config.%s%s());".formatted(BuildTextUtils.capitalize(field.id), field.valueType == StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(field.id)));
                                     }
                                     default ->
                                             gen.printLine("set%s(config.%s%s(), ctx);".formatted(BuildTextUtils.capitalize(field.id), field.valueType == StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(field.id)));
@@ -213,7 +216,7 @@ public class JavaWebAppElementsHelper {
                                             gen.printLine("return this.%s;".formatted(field.id));
                                         });
                                         gen.blankLine();
-                                        gen.wrapWithBlock("public void set%s(%s value, OperationUiContext context)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
+                                        gen.wrapWithBlock("public void set%s(%s value)".formatted(BuildTextUtils.capitalize(field.id), JavaCodeGeneratorUtils.getPropertyType(field.valueType, field.className, field.nonNullable, gen)), () -> {
                                             gen.printLine("this.%s = value;".formatted(field.id));
                                         });
                                     }
@@ -422,7 +425,7 @@ public class JavaWebAppElementsHelper {
                         });
                         if (!managedConfiguration) {
                             gen.blankLine();
-                            gen.printLine("protected abstract %sConfiguration createConfiguration(OperationUiContext ctx);".formatted(simpleClassName));
+                            gen.printLine("protected abstract %sConfiguration createConfiguration();".formatted(simpleClassName));
                         }
                     });
                     var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), className + "Skeleton.java", destDir);
@@ -451,14 +454,14 @@ public class JavaWebAppElementsHelper {
                             gen.wrapWithBlock(cns, () -> {
                                 gen.printLine(managedConfiguration ? "super(tag, config, ctx);" : "super(tag, ctx);");
                                 if(element.getType() == WebElementType.MODAL){
-                                    gen.printLine("setCloseListener(this::removeChildren, ctx);");
+                                    gen.printLine("setCloseListener(this::removeChildren);");
                                 }
                                 if (element.getType() == WebElementType.ROUTER || element.getType() == WebElementType.NESTED_ROUTER) {
                                     gen.printLine("factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);");
                                     if (element.getType() == WebElementType.ROUTER) {
                                         gen.printLine("currentPath = getPath();");
                                     } else {
-                                        gen.printLine("var config = createConfiguration(ctx);");
+                                        gen.printLine("var config = createConfiguration();");
                                         gen.printLine("currentPath = config.getPath();");
                                     }
                                     gen.printLine("ctx.setParameter(StandardParameters.ROUTER_PATH, currentPath);");
@@ -546,7 +549,7 @@ public class JavaWebAppElementsHelper {
                                 if (element.getType() == WebElementType.NESTED_ROUTER) {
                                     gen.blankLine();
                                     gen.printLine("@Override");
-                                    gen.wrapWithBlock("protected %sConfiguration createConfiguration(OperationUiContext ctx)".formatted(simpleClassName), () -> {
+                                    gen.wrapWithBlock("protected %sConfiguration createConfiguration()".formatted(simpleClassName), () -> {
                                         gen.printLine("var result = new %sConfiguration();".formatted(simpleClassName));
                                         gen.addImport("com.gridnine.platform.elsa.webApp.StandardParameters");
                                         gen.printLine("var params = ctx.getParameter(OperationUiContext.PARAMS);");

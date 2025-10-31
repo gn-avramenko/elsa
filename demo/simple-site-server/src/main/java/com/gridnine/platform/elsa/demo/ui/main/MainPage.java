@@ -34,7 +34,7 @@ public class MainPage extends MainPageSkeleton{
 	}
 
     @Override
-    protected MainPageConfiguration createConfiguration(OperationUiContext ctx) {
+    protected MainPageConfiguration createConfiguration() {
         var result = new MainPageConfiguration();
         result.setFlexDirection(FlexDirection.COLUMN);
         {

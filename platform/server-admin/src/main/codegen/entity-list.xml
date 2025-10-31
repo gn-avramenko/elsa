@@ -48,11 +48,14 @@
             <command id="doubleClick">
                 <property id="id" type="STRING" non-nullable="true"/>
             </command>
+            <command id="restoreCommittedFilterValues"/>
         </commands-from-client>
         <commands-from-server>
             <command id="refreshData"/>
+            <command id="hideFilters"/>
         </commands-from-server>
         <server-managed-state>
+            <property id="contentTitle" type="STRING" non-nullable="true"/>
             <property id="filtersTitle" type="STRING" non-nullable="true"/>
             <property id="sort" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.entityList.Sort" non-nullable="true"/>
             <property id="loading" type="BOOLEAN" non-nullable="true"/>

@@ -37,7 +37,7 @@ public class WebApp extends WebAppSkeleton{
 	}
 
     @Override
-    protected WebAppConfiguration createConfiguration(OperationUiContext ctx) {
+    protected WebAppConfiguration createConfiguration() {
         var result = new WebAppConfiguration();
         result.setFlexDirection(FlexDirection.COLUMN);
         {

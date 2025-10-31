@@ -35,7 +35,7 @@ public class NavigationPanel extends NavigationPanelSkeleton{
 	}
 
     @Override
-    protected NavigationPanelConfiguration createConfiguration(OperationUiContext ctx) {
+    protected NavigationPanelConfiguration createConfiguration() {
         var result = new NavigationPanelConfiguration();
         result.setFlexDirection(FlexDirection.ROW);
         {

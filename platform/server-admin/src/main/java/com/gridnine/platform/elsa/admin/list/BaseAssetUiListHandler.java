@@ -23,6 +23,7 @@ package com.gridnine.platform.elsa.admin.list;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
+import com.gridnine.platform.elsa.admin.web.common.BreakPoint;
 import com.gridnine.platform.elsa.admin.web.components.Button;
 import com.gridnine.platform.elsa.admin.web.components.ButtonConfiguration;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
@@ -103,6 +104,8 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         searchFieldConfiguration.setValue(new EntityListSearchFieldInputValue());
         entityListConfiguration.setSearchField(searchFieldConfiguration);
         entityListConfiguration.setFiltersTitle(aL10nFactory.Filters());
+        entityListConfiguration.setContentTitle(aL10nFactory.Content());
+
         entityListConfiguration.setDoubleClickListener(((action, context1) -> {
             System.out.println("clicked  " + action.getId());
         }));
@@ -115,7 +118,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         entityList.setLoadMoreListener((ctx) -> {
             entityList.setLimit(entityList.getLimit() + 30);
             entityList.refreshData(ctx, true);
-        }, context);
+        });
         entityList.setChangeSortListener((action, ctx) -> {
             var newSort = new Sort();
             newSort.setOrder(action.getSortOrder());
@@ -124,10 +127,15 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             entityList.setLimit(30);
             entityList.setLoading(true, ctx);
             entityList.refreshData(ctx, true);
-        }, context );
+        } );
         entityList.setData(Collections.emptyList(), context);
         var filters = getFilters(context);
         if(!filters.isEmpty()){
+            entityList.setRestoreCommittedFilterValuesListener((context1) ->{
+                filters.forEach(filter -> {
+                    filter.restoreCommitedValue(context1);
+                });
+            });
             var filtersPanels = new ContentWrapper("filters", new ContentWrapperConfiguration(), context);
             var filtersContainer = new ContentWrapper("filters", new ContentWrapperConfiguration(), context);
             filtersPanels.addChild(context, filtersContainer, 0);
@@ -141,7 +149,11 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 var buttonConfig  = new ButtonConfiguration();
                 buttonConfig.setTitle(aL10nFactory.Apply());
                 buttonConfig.setClickListener((context1) -> {
+                    filters.forEach(filter -> {
+                        filter.commitValue(context1);
+                    });
                     entityList.setLoading(true,  context1);
+                    entityList.hideFilters(context1, true);
                     entityList.refreshData(context1, true);
                 });
                 var button = new Button("apply", buttonConfig, context);
@@ -153,7 +165,9 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 buttonConfig.setClickListener((context1) -> {
                     filters.forEach(filter -> {
                         filter.reset(context1);
+                        filter.commitValue(context1);
                     });
+                    entityList.hideFilters(context1, true);
                     entityList.setLoading(true,  context1);
                     entityList.refreshData(context1, true);
                 });
@@ -185,14 +199,18 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 var rowData = new RowData();
                 result.add(rowData);
                 rowData.setId(item.getId().toString());
-                columns.forEach(c -> {
-                    rowData.getFields().put(c.getId(), c.getValueStr(item));
-                });
+                if(action.getBreakPoint() == BreakPoint.MOBILE){
+                    rowData.setMobileContent(getMobileRowContent(item));
+                } else {
+                    columns.forEach(c -> {
+                        rowData.getFields().put(c.getId(), c.getValueStr(item));
+                    });
+                }
             }
             entityList.setHasMore(hasMore, ctx);
             entityList.setData(result, ctx);
             entityList.setLoading(false, ctx);
-        }, context);
+        });
         var tools = new ContentWrapper("tools", new ContentWrapperConfiguration(), context);
         var idx = 0;
         for (var tool : getTools()) {
@@ -333,5 +351,12 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
     protected List<EntityListFilter> getFilters(OperationUiContext context) throws Exception{
         return List.of();
+    }
+
+    protected abstract String getMobileRowContent(T asset);
+
+    @Override
+    public String getDefaultBackUrl() {
+        return "/home";
     }
 }

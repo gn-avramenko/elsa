@@ -34,7 +34,7 @@ public class AccountSection extends AccountSectionSkeleton{
 	}
 
     @Override
-    protected AccountSectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected AccountSectionConfiguration createConfiguration() {
         var config = new AccountSectionConfiguration();
         return config;
     }

@@ -58,6 +58,24 @@ public class OrganizationUiListHandler extends BaseAssetUiListHandler<Organizati
         return List.of(assetFilter(OrganizationFields.country.name, context));
     }
 
+    @Override
+    protected String getMobileRowContent(Organization asset) {
+        return """
+                <div class="rf">
+                    <div class="lp">
+                        <div class="b">
+                            %s
+                        </div>
+                    </div>
+                    <div class="rp">
+                        <div class="st">
+                            %s
+                        </div>
+                    </div>
+                </div>
+                """.formatted(asset.getName(), asset.getContacts());
+    }
+
     static class AddOrganizationToolHandler implements ListToolHandler {
 
         @Override

@@ -3,4 +3,5 @@
     <message id="Apply"/>
     <message id="Clear"/>
     <message id="Filters"/>
+    <message id="Content"/>
 </messages-bundle>

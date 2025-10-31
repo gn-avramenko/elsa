@@ -1,6 +1,6 @@
 import { initStateSetters } from '@/common/component';
 import { MainFrameSkeleton } from '@g/mainFrame/MainFrameSkeleton';
-import { ConfigProvider, Drawer, Layout, theme } from 'antd';
+import { Button, ConfigProvider, Drawer, Layout, theme } from 'antd';
 import {
     adminWebPeerExt,
     BREAKPOINTS,
@@ -16,6 +16,7 @@ import useTheme from 'antd/es/config-provider/hooks/useTheme';
 import { MenuComp } from '@/components/menu-comp';
 import { MainRouterComponent } from '@/mainFrame/MainRouter';
 import Sider from 'antd/es/layout/Sider';
+import { BackwardFilled } from '@ant-design/icons';
 
 function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) {
     initStateSetters(props.element);
@@ -160,6 +161,78 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             />
         </div>
     );
+    const drawMobileHeaderContent = () => (
+        <div
+            style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                lineHeight: '20px',
+                height: '50px',
+                padding: token.padding,
+                paddingLeft: '5px',
+            }}
+        >
+            <img
+                alt=""
+                src="/_resources/classpath/admin/logo.svg"
+                style={{ display: 'inline-block', height: '45px' }}
+            />
+            <div
+                style={{
+                    fontSize: token.fontSizeHeading2,
+                    fontWeight: token.fontWeightStrong,
+                    padding: token.padding,
+                }}
+            >
+                Admin
+            </div>
+            <div style={{ flexGrow: 1 }} />
+            <DropDownImageComp
+                style={{ padding: token.padding }}
+                menuItems={[
+                    {
+                        src: '/_resources/classpath/admin/en-flag.png',
+                        imageHeight: '20px',
+                        name: 'English',
+                        id: 'en',
+                    },
+                    {
+                        src: '/_resources/classpath/admin/ru-flag.png',
+                        imageHeight: '20px',
+                        name: 'Russian',
+                        id: 'ru',
+                    },
+                ]}
+                selectedId={lang}
+                callback={(item) => {
+                    setWebPeerParam('lang', item);
+                    window.location.reload();
+                }}
+            />
+            <DropDownIconComp
+                menuItems={[
+                    {
+                        name: 'Light',
+                        icon: 'SunOutlined',
+                        id: 'light',
+                    },
+                    {
+                        name: 'Dark',
+                        icon: 'MoonOutlined',
+                        id: 'dark',
+                    },
+                ]}
+                style={{ padding: token.padding }}
+                selectedId={darkTheme ? 'dark' : 'light'}
+                callback={(item) => {
+                    setWebPeerParam('useDarkTheme', item === 'dark');
+                    window.location.reload();
+                }}
+            />
+        </div>
+    );
     return (
         <ConfigProvider theme={th}>
             {breakpoint === 'mobile' ? (
@@ -173,25 +246,78 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                             alignItems: 'center',
                         }}
                     >
-                        <div
-                            style={{ lineHeight: '35px', padding: token.padding }}
-                            onClick={() => {
-                                setDrawerOpened(true);
-                            }}
-                        >
-                            {DynamicIcon('MenuFoldOutlined')}
-                        </div>
-                        {drawHeaderContent()}
+                        {props.element.getBackUrl() ? (
+                            <div
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    lineHeight: '20px',
+                                    height: '50px',
+                                    padding: token.padding,
+                                    paddingLeft: '5px',
+                                }}
+                            >
+                                <div style={{ flexGrow: 0 }}>
+                                    <Button
+                                        icon={<BackwardFilled />}
+                                        onClick={() => {
+                                            (
+                                                props.element.findByTag(
+                                                    'mainRouter'
+                                                ) as MainRouterComponent
+                                            ).navigate({
+                                                path: props.element.getBackUrl()!!,
+                                                force: false,
+                                            });
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ flexGrow: 1 }} />
+                                <div
+                                    style={{
+                                        fontSize: token.fontSizeHeading3,
+                                        fontWeight: token.fontWeightStrong,
+                                        padding: token.padding,
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: props.element.getTitle() ?? '',
+                                    }}
+                                />
+                                <div style={{ flexGrow: 1 }} />
+                            </div>
+                        ) : (
+                            <>
+                                <div
+                                    style={{
+                                        lineHeight: '35px',
+                                        padding: token.paddingSM,
+                                    }}
+                                    onClick={() => {
+                                        setDrawerOpened(true);
+                                    }}
+                                >
+                                    {DynamicIcon('MenuFoldOutlined')}
+                                </div>
+                                {drawMobileHeaderContent()}
+                            </>
+                        )}
                     </Header>
                     <Content style={{ height: '100%' }}>
                         <Drawer
+                            styles={{
+                                header: { padding: 5 },
+                                content: { padding: 0 },
+                                body: { padding: 5 },
+                            }}
                             closable
                             onClose={() => setDrawerOpened(false)}
                             open={drawerOpened}
                         >
                             {drawMenu()}
                         </Drawer>
-                        <Layout>
+                        <Layout style={{ height: '100%' }}>
                             <Content>
                                 {props.element
                                     .findByTag('mainRouter')

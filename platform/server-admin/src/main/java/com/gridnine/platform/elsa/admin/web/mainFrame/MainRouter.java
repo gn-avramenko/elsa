@@ -50,9 +50,12 @@ public class MainRouter extends MainRouterSkeleton{
 		var handler =getRouterPathHandler(getPath());
         lastHandler = handler;
 		var elm = ExceptionUtils.wrapException(()-> handler.createElement(getPath(), ctx));
-		addChild(ctx, elm, 0);
-
+        addChild(ctx, elm, 0);
 	}
+
+    public String getInitBackUrl(){
+        return lastHandler.getDefaultBackUrl();
+    }
     private RouterPathHandler getRouterPathHandler(String path){
         init();
         var cp = path.startsWith("/") ? path.substring(1): path;
@@ -74,7 +77,7 @@ public class MainRouter extends MainRouterSkeleton{
 	}
 
     @Override
-    protected MainRouterConfiguration createConfiguration(OperationUiContext ctx) {
+    protected MainRouterConfiguration createConfiguration() {
         var mainRouterConfiguration = new MainRouterConfiguration();
         mainRouterConfiguration.setPath("/home");
         mainRouterConfiguration.setConfirmMessage("Are you sure you want to go back?");
@@ -94,9 +97,10 @@ public class MainRouter extends MainRouterSkeleton{
 	}
 
 	public void navigate(String path, boolean force, OperationUiContext ctx){
-		ctx.setParameter(StandardParameters.ROUTER_PATH, path);
+        ctx.setParameter(StandardParameters.ROUTER_PATH, path);
         var handler = getRouterPathHandler(path);
-		if(lastHandler != null && lastHandler.equals(handler)){
+        MainFrame.lookup(this).setBackUrl(handler.getDefaultBackUrl(), ctx);
+        if(lastHandler != null && lastHandler.equals(handler)){
 			return;
 		}
         if(Boolean.TRUE.equals(isHasChanges()) && !force){

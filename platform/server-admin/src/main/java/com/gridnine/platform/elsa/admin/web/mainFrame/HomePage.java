@@ -34,7 +34,7 @@ public class HomePage extends HomePageSkeleton{
 	}
 
     @Override
-    protected HomePageConfiguration createConfiguration(OperationUiContext ctx) {
+    protected HomePageConfiguration createConfiguration() {
         var result = new  HomePageConfiguration();
         result.setFlexDirection(FlexDirection.ROW);
         return result;

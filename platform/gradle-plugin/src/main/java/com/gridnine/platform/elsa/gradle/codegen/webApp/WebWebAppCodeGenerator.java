@@ -64,10 +64,12 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
             CustomWebElementDescription ce = WebAppMetadataHelper.toCustomEntity(elm);
             if(ce.getInput() != null){
                 var id = WebAppMetadataHelper.getInputValueDescription(ce);
-                var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen);
-                var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
-                generatedFiles.add(file);
+                if(id.getProperties().size()+id.getCollections().size()>1) {
+                    var gen = new TypeScriptCodeGenerator();
+                    WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen);
+                    var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
+                    generatedFiles.add(file);
+                }
             }
             for(var action: ce.getCommandsFromClient().values()){
                 if(action.getProperties().size()+action.getCollections().size()>0){

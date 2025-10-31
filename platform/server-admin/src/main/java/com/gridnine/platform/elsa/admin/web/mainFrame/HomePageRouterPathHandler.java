@@ -40,4 +40,9 @@ public class HomePageRouterPathHandler implements RouterPathHandler{
     public String getTitle() {
         return "Home";
     }
+
+    @Override
+    public String getDefaultBackUrl() {
+        return null;
+    }
 }
