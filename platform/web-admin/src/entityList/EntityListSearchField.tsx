@@ -10,11 +10,8 @@ function EntityListSearchFieldFC(props: { element: EntityListSearchFieldComponen
             allowClear
             id="search"
             onSearch={(text) => {
-                const value = {
-                    value: text,
-                };
-                props.element.stateSetters.get('value')!(value);
-                props.element.setValue(value);
+                props.element.stateSetters.get('value')!(text);
+                props.element.setValue(text);
             }}
             onChange={(e) => {
                 const value = {

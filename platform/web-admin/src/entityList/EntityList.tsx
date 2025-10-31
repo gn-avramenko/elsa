@@ -334,7 +334,9 @@ function EntityListFC(props: { element: EntityListComponent }) {
 
 export class EntityListComponent extends EntityListSkeleton {
     breakPoint: BreakPoint = 'DESKTOP';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     augmentedSetter: React.Dispatch<React.SetStateAction<boolean>> = (_value) => {};
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     drawerVisibleSetter: React.Dispatch<React.SetStateAction<boolean>> = (_value) => {};
 
     setSelectedItems(items: string[]): void {

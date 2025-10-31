@@ -20,7 +20,7 @@ function EntityFilterFC(props: { element: EntityFilterComponent }) {
                 allowClear
                 debounceTimeout={props.element.getDebounceTime() ?? 300}
                 value={
-                    props.element.getValue()?.values?.map((it) => ({
+                    props.element.getValue()?.map((it) => ({
                         key: it.id,
                         label: it.displayName,
                         value: it.id,
@@ -40,12 +40,12 @@ function EntityFilterFC(props: { element: EntityFilterComponent }) {
                 style={{ width: '100%', paddingTop: 5 }}
                 onChange={(newValue) => {
                     if (Array.isArray(newValue)) {
-                        props.element.setValue({
-                            values: (newValue as any[]).map((it) => ({
+                        props.element.setValue(
+                            (newValue as any[]).map((it) => ({
                                 id: it.value,
                                 displayName: it.label,
-                            })),
-                        });
+                            }))
+                        );
                     }
                 }}
             />

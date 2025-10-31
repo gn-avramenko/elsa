@@ -101,7 +101,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         var searchFieldConfiguration = new EntityListSearchFieldConfiguration();
         searchFieldConfiguration.setDebounceTime(300);
         searchFieldConfiguration.setDeferred(false);
-        searchFieldConfiguration.setValue(new EntityListSearchFieldInputValue());
+        searchFieldConfiguration.setValue(null);
         entityListConfiguration.setSearchField(searchFieldConfiguration);
         entityListConfiguration.setFiltersTitle(aL10nFactory.Filters());
         entityListConfiguration.setContentTitle(aL10nFactory.Content());
@@ -178,7 +178,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         entityList.setRefreshDataListener((action, ctx) -> {
             var query = new SearchQuery();
             query.setLimit(entityList.getLimit() + 1);
-            query.setFreeText(entityList.getSearchField().getValue().getValue());
+            query.setFreeText(entityList.getSearchField().getValue());
             filters.forEach(filter -> {
                 var crit = filter.getSearchCriterion();
                 if(crit != null){

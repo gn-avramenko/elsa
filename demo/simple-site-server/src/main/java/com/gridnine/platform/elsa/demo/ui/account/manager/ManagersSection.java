@@ -192,16 +192,16 @@ public class ManagersSection extends ManagersSectionSkeleton{
         } catch (InterruptedException e) {
             //noops
         }
-        if(getOrganization().getValue() == null || getOrganization().getValue().getValues().isEmpty()){
+        if(getOrganization().getValue() == null || getOrganization().getValue().isEmpty()){
             getManagersList().setData(List.of(), context);
             getManagersList().setLoading(false, context);
             return;
         }
         var listSort = getManagersList().getSort();
-        var org= getOrganization().getValue().getValues().get(0);
+        var org= getOrganization().getValue().get(0);
         var assets=storage.searchAssets(Manager.class, new SearchQueryBuilder().where(SearchCriterion.eq(ManagerFields.organization,
                         new EntityReference<>(UUID.fromString(org.getId()), Organization.class, null))).addOrder(listSort.getField(),  listSort.getSortOrder() == SortOrder.ASC? com.gridnine.platform.elsa.common.core.search.SortOrder.ASC: com.gridnine.platform.elsa.common.core.search.SortOrder.DESC)
-                .freeText(getSearch().getValue()== null? null: getSearch().getValue().getValue()).limit(limit).build(), false);
+                .freeText(getSearch().getValue()== null? null: getSearch().getValue()).limit(limit).build(), false);
         var data = assets.stream().map(it ->{
             var entity = new ManagersListRow();
             entity.setEmail(it.getEmail());

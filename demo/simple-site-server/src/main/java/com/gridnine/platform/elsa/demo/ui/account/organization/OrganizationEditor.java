@@ -65,25 +65,19 @@ public class OrganizationEditor extends OrganizationEditorSkeleton{
         {
             var address = new StandardTextFieldConfiguration();
             address.setDeferred(true);
-            var value = new StandardTextFieldInputValue();
-            value.setValue(org.getAddress());
-            address.setValue(value);
+            address.setValue(org.getAddress());
             config.setAddress(address);
         }
         {
             var contacts = new StandardTextFieldConfiguration();
             contacts.setDeferred(true);
-            var value = new StandardTextFieldInputValue();
-            value.setValue(org.getContacts());
-            contacts.setValue(value);
+            contacts.setValue(org.getContacts());
             config.setContacts(contacts);
         }
         {
             var name = new StandardTextFieldConfiguration();
             name.setDeferred(true);
-            var value = new StandardTextFieldInputValue();
-            value.setValue(org.getName());
-            name.setValue(value);
+            name.setValue(org.getName());
             config.setName(name);
         }
         {
@@ -92,14 +86,12 @@ public class OrganizationEditor extends OrganizationEditorSkeleton{
             country.setDebounceTime(300);
             country.setLimit(10);
             country.setMultiple(false);
-            var value = new CountryAutocompleteFieldInputValue();
             if(org.getCountry() != null){
                 var opt = new Option();
                 opt.setId(org.getCountry().getId().toString());
                 opt.setDisplayName(org.getCountry().toString());
-                value.getValues().add(opt);
+                country.getValue().add(opt);
             }
-            country.setValue(value);
             country.setGetDataServiceHandler((request, context) -> {
                 var limit = request.getLimit();
                 var query = request.getQuery();
@@ -139,19 +131,19 @@ public class OrganizationEditor extends OrganizationEditorSkeleton{
                 getContacts().setValidationMessage(null, context);
                 getAddress().setValidationMessage(null, context);
                 getCountry().setValidationMessage(null, context);
-                if(getName().getValue() == null || TextUtils.isBlank(getName().getValue().getValue())){
+                if(getName().getValue() == null || TextUtils.isBlank(getName().getValue())){
                     hasErrors = true;
                     getName().setValidationMessage("Field is blank", context);
                 }
-                if(getContacts().getValue() == null || TextUtils.isBlank(getContacts().getValue().getValue())){
+                if(getContacts().getValue() == null || TextUtils.isBlank(getContacts().getValue())){
                     hasErrors = true;
                     getContacts().setValidationMessage("Field is blank", context);
                 }
-                if(getAddress().getValue() == null || TextUtils.isBlank(getAddress().getValue().getValue())){
+                if(getAddress().getValue() == null || TextUtils.isBlank(getAddress().getValue())){
                     hasErrors = true;
                     getAddress().setValidationMessage("Field is blank", context);
                 }
-                if(getCountry().getValue().getValues().isEmpty()){
+                if(getCountry().getValue().isEmpty()){
                     hasErrors = true;
                     getCountry().setValidationMessage("Field is blank", context);
                 }
@@ -159,10 +151,10 @@ public class OrganizationEditor extends OrganizationEditorSkeleton{
                     return;
                 }
                 var cnt = storage.loadAsset(Organization.class, organizationId, true);
-                cnt.setContacts(getContacts().getValue().getValue());
-                cnt.setAddress(getAddress().getValue().getValue());
-                cnt.setName(getName().getValue().getValue());
-                var opt = getCountry().getValue().getValues().get(0);
+                cnt.setContacts(getContacts().getValue());
+                cnt.setAddress(getAddress().getValue());
+                cnt.setName(getName().getValue());
+                var opt = getCountry().getValue().get(0);
                 cnt.setCountry(new EntityReference<>(UUID.fromString(opt.getId()), Country.class, opt.getDisplayName()));
                 storage.saveAsset(cnt, "editor");
                 resetChanges(context, false);

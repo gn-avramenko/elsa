@@ -456,21 +456,42 @@ public class WebAppMetadataHelper {
             ed.getProperties().put(prop.getId(), prop);
         }
         if(ce.getInput() != null){
-            var inputValueClass = "%sInputValue".formatted(ce.getClassName());
-            {
-                var prop = new StandardPropertyDescription();
-                prop.setType(StandardValueType.ENTITY);
-                prop.setId("valueChangeListener");
-                prop.getParameters().put("no-equals", "true");
-                prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(inputValueClass));
-                ed.getProperties().put(prop.getId(), prop);
-            }
-            {
-                var prop = new StandardPropertyDescription();
-                prop.setType(StandardValueType.ENTITY);
-                prop.setId("value");
-                prop.setClassName(inputValueClass);
-                ed.getProperties().put(prop.getId(), prop);
+            if(ce.getInput().getValue().getProperties().size()+ce.getInput().getValue().getCollections().size() > 1) {
+                var inputValueClass = "%sInputValue".formatted(ce.getClassName());
+                {
+                    var prop = new StandardPropertyDescription();
+                    prop.setType(StandardValueType.ENTITY);
+                    prop.setId("valueChangeListener");
+                    prop.getParameters().put("no-equals", "true");
+                    prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(inputValueClass));
+                    ed.getProperties().put(prop.getId(), prop);
+                }
+                {
+                    var prop = new StandardPropertyDescription();
+                    prop.setType(StandardValueType.ENTITY);
+                    prop.setId("value");
+                    prop.setClassName(inputValueClass);
+                    ed.getProperties().put(prop.getId(), prop);
+                }
+            } else {
+                var sid = getSimpleInputValueDescription(ce.getInput());
+                {
+                    var prop = new StandardPropertyDescription();
+                    prop.setType(StandardValueType.ENTITY);
+                    prop.setId("valueChangeListener");
+                    prop.getParameters().put("no-equals", "true");
+                    if(sid.collection) {
+                        prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<java.util.List<%s>>".formatted(sid.valueClassName));
+                    } else {
+                        prop.setClassName("com.gridnine.platform.elsa.webApp.WebAppValueChangeListener<%s>".formatted(sid.valueClassName));
+                    }
+                    ed.getProperties().put(prop.getId(), prop);
+                }
+                if(sid.collection){
+                    ed.getCollections().put(sid.coll.getId(), sid.coll);
+                } else {
+                    ed.getProperties().put(sid.prop.getId(), sid.prop);
+                }
             }
         }
         for(var service: ce.getServices().values()){
@@ -545,6 +566,37 @@ public class WebAppMetadataHelper {
             }
             default -> throw new IllegalStateException("Unknown property type: " + type);
         };
+    }
+
+    public static SimpleInputValueDescription getSimpleInputValueDescription(InputDescription ed){
+        boolean collection = false;
+        var valueClassName = "";
+        StandardPropertyDescription prop = null;
+        StandardCollectionDescription coll = null;
+        if (ed.getValue().getProperties().size()==1){
+            var pr = ed.getValue().getProperties().values().iterator().next();
+            valueClassName = getPropertyType(pr.getType(), pr.getClassName());
+            {
+                prop = new StandardPropertyDescription();
+                prop.setType(pr.getType());
+                prop.setId("value");
+                prop.setClassName(pr.getClassName());
+            }
+        } else {
+            collection = true;
+            var cl = ed.getValue().getCollections().values().iterator().next();
+            valueClassName = getPropertyType(cl.getElementType(), cl.getElementClassName());
+            {
+                coll = new StandardCollectionDescription();
+                coll.setElementType(cl.getElementType());
+                coll.setId("value");
+                coll.setElementClassName(cl.getElementClassName());;
+            }
+        }
+        return new SimpleInputValueDescription(collection, valueClassName, prop, coll);
+    }
+    public record SimpleInputValueDescription(boolean collection, String valueClassName, StandardPropertyDescription prop, StandardCollectionDescription coll) {
+
     }
 
 }

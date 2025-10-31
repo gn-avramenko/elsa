@@ -138,9 +138,7 @@ public class WebAutocompleteHelper {
                                   props.element.setValidationMessage(undefined);
                 
                                   // Колбэк при изменении выбранных элементов
-                                  props.element.setValue({
-                                      values: newSelectedItems,
-                                  });
+                                  props.element.setValue(newSelectedItems);
                 
                                   inputRef.current?.focus();
                               }
@@ -154,9 +152,7 @@ public class WebAutocompleteHelper {
                               setSelectedItems(newSelectedItems);
                 
                               // Колбэк при изменении выбранных элементов
-                              props.element.setValue({
-                                  values: newSelectedItems,
-                              });
+                              props.element.setValue(newSelectedItems);
                               props.element.setValidationMessage(undefined);
                           };
                 

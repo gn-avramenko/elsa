@@ -42,14 +42,14 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
     private final String fieldId;
     private final Class<?> entityClass;
     private final Storage storage;
-    private EntityFilterInputValue commitedValue;
+    private List<Option> commitedValue;
 
 	public EntityFilter(String fieldId, String title, Class<? extends BaseIdentity> entityClass, Storage storage, OperationUiContext operationUiContext) {
 		super("filter-%s".formatted(fieldId), new EntityFilterConfiguration(), operationUiContext);
         this.fieldId = fieldId;
         this.entityClass = entityClass;
         this.storage = storage;
-        setValue(new EntityFilterInputValue(), operationUiContext);
+        setValue(List.of(), operationUiContext);
         setLimit(10, operationUiContext);
         setMultiple(true, operationUiContext);
         setTitle(title, operationUiContext);
@@ -75,7 +75,7 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
 
     @Override
     public void reset(OperationUiContext context) {
-        setValue(new EntityFilterInputValue(), context);
+        setValue(List.of(), context);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
 
     @Override
     public SearchCriterion getSearchCriterion() {
-        List<Option> values = getValue().getValues();
+        List<Option> values = getValue();
         if(values.isEmpty()){
             return null;
         }
