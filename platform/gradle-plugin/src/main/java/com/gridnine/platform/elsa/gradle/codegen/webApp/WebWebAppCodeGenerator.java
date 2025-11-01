@@ -46,8 +46,10 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
         var coll = new ArrayList<>(record.getSources());
         coll.addAll(record.getExternalInjections());
         var metaRegistry = new WebAppMetaRegistry();
-        parser.updateMetaRegistry(metaRegistry, coll);
-        WebWebCommonClassesHelper.generate(record.getSourceDir());
+        parser.updateMetaRegistry(metaRegistry, record.isSkipCommonClasses(), coll);
+        if(!record.isSkipCommonClasses()) {
+            WebWebCommonClassesHelper.generate(record.getSourceDir());
+        }
         for(var item: metaRegistry.getEnums().values()) {
             var gen = new TypeScriptCodeGenerator();
             WebCodeGeneratorUtils.generateWebEnumCode(item, gen);
@@ -114,6 +116,6 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
             }
         }
         WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), record.getCommonPackageName(), generatedFiles);
-        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles, record.getCommonPackageName());
+        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles, record.getConfigurator(), record.getCommonPackageName());
     }
 }

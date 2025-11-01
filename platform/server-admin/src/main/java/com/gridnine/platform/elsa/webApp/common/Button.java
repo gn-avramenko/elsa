@@ -22,7 +22,7 @@
  * This is generated code, don't modify it manually
  *****************************************************************/
 
-package com.gridnine.platform.elsa.admin.web.components;
+package com.gridnine.platform.elsa.webApp.common;
 
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 

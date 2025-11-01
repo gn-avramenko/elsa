@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.demo.admin.Organization;
+package com.gridnine.platform.elsa.demo.admin.organization;
 
 import com.gridnine.platform.elsa.admin.list.BaseAssetUiListHandler;
 import com.gridnine.platform.elsa.admin.list.EntityListFilter;

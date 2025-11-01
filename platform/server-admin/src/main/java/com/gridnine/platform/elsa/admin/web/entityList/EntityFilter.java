@@ -51,10 +51,8 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
         this.storage = storage;
         setValue(List.of(), operationUiContext);
         setLimit(10, operationUiContext);
-        setMultiple(true, operationUiContext);
         setTitle(title, operationUiContext);
         setDebounceTime(300, operationUiContext);
-        setDeferred(true, operationUiContext);
         setGetDataServiceHandler((request, context) -> {
             List<? extends EntityReference<? extends BaseIdentity>> items = storage.searchCaptions(entityClass, request.getQuery(), request.getLimit());
             var result = new EntityFilterGetDataResponse();

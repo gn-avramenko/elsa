@@ -118,9 +118,10 @@ public class ElsaJavaCodeGenExtension {
         codegenRecords.add(record);
     }
 
-    public void webApp(String destDir, String sourceDir, String configurator,  List<String> sourcesFileNames) throws IOException {
+    public void webApp(String destDir, String sourceDir, String configurator,  boolean skipCommonClasses, List<String> sourcesFileNames) throws IOException {
         var record = new JavaWebAppCodeGenRecord();
         record.setRegistryConfigurator(configurator);
+        record.setSkipCommonClasses(skipCommonClasses);
         sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
         record.setSourceDir(new File(projectDir, sourceDir));

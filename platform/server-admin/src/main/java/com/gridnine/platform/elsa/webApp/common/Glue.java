@@ -28,9 +28,9 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public class Glue extends GlueSkeleton{
 
-	public Glue(String tag, OperationUiContext ctx){
-		super(tag, ctx);
-	}
+    public Glue(String tag, OperationUiContext ctx){
+        super(tag, ctx);
+    }
 
     @Override
     protected GlueConfiguration createConfiguration() {

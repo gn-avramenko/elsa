@@ -31,7 +31,6 @@ import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
 import com.gridnine.platform.elsa.core.auth.AuthContext;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
-import com.gridnine.platform.elsa.webApp.common.FlexDirection;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -61,7 +60,6 @@ public class MainFrame extends MainFrameSkeleton{
     @Override
     protected MainFrameConfiguration createConfiguration() {
         var mainFrameConfiguration = new MainFrameConfiguration();
-        mainFrameConfiguration.setFlexDirection(FlexDirection.COLUMN);
         return mainFrameConfiguration;
     }
 

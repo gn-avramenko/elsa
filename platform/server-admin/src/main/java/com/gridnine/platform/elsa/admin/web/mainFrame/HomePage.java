@@ -24,7 +24,6 @@
 
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
-import com.gridnine.platform.elsa.webApp.common.FlexDirection;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public class HomePage extends HomePageSkeleton{
@@ -36,7 +35,6 @@ public class HomePage extends HomePageSkeleton{
     @Override
     protected HomePageConfiguration createConfiguration() {
         var result = new  HomePageConfiguration();
-        result.setFlexDirection(FlexDirection.ROW);
         return result;
     }
 }

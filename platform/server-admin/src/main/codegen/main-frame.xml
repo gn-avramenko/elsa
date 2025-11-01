@@ -10,7 +10,7 @@
         <property id="icon" type="STRING"/>
         <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceItem"/>
     </entity>
-    <container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame">
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame">
         <server-managed-state>
             <collection id="workspaceGroups" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceGroup"/>
             <property id="title" type="STRING"/>
@@ -19,6 +19,6 @@
         <children>
             <router id="mainRouter" class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainRouter"/>
         </children>
-    </container>
-    <container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.HomePage"/>
+    </custom-container>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.HomePage"/>
 </web-app>

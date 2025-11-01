@@ -30,6 +30,8 @@ public class JavaWebAppCodeGenRecord extends BaseCodeGenRecord {
 
     private String registryConfigurator;
 
+    private boolean skipCommonClasses;
+
     private File sourceDir;
 
     @Override
@@ -54,4 +56,12 @@ public class JavaWebAppCodeGenRecord extends BaseCodeGenRecord {
         this.sourceDir = sourceDir;
     }
 
+
+    public boolean isSkipCommonClasses() {
+        return skipCommonClasses;
+    }
+
+    public void setSkipCommonClasses(boolean skipCommonClasses) {
+        this.skipCommonClasses = skipCommonClasses;
+    }
 }

@@ -46,6 +46,7 @@ public class JavaWebAppElementsHelper {
                 var elm = WebAppMetadataHelper.toCustomEntity(element);
                 var managedConfiguration = switch (element.getType()) {
                     case CONTAINER -> ((ContainerWebElementDescription) element).isManagedConfiguration();
+                    case CUSTOM_CONTAINER -> ((CustomContainerWebElementDescription) element).isManagedConfiguration();
                     case TABLE -> ((TableWebElementDescription) element).isManagedConfiguration();
                     case ROUTER, NESTED_ROUTER -> false;
                     default -> true;

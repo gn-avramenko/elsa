@@ -1,7 +1,7 @@
 import { initStateSetters } from '@/common/component';
-import { debounce } from '@/common/debounce';
 import { EntityListSearchFieldSkeleton } from '@g/entityList/EntityListSearchFieldSkeleton';
 import Search from 'antd/es/input/Search';
+import debounce from 'lodash/debounce';
 
 function EntityListSearchFieldFC(props: { element: EntityListSearchFieldComponent }) {
     initStateSetters(props.element);

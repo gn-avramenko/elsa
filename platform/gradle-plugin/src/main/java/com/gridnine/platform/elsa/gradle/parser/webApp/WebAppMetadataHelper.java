@@ -46,6 +46,7 @@ public class WebAppMetadataHelper {
         element.getCommandsFromServer().forEach((key, value) -> {
             result.getCommandsFromServer().put(key, value);
         });
+        result.setInput(element.getInput());
         element.getServices().forEach((key, value) -> {
             result.getServices().put(key, value);
         });
@@ -532,6 +533,10 @@ public class WebAppMetadataHelper {
         return switch (child.getType()) {
             case CONTAINER -> {
                 var ctr = (ContainerWebElementDescription)child;
+                yield ctr.isManagedConfiguration();
+            }
+            case CUSTOM_CONTAINER -> {
+                var ctr = (CustomContainerWebElementDescription)child;
                 yield ctr.isManagedConfiguration();
             }
             case  TABLE -> {

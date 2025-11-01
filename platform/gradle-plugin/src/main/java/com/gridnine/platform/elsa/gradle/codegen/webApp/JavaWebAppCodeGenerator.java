@@ -44,7 +44,7 @@ public class JavaWebAppCodeGenerator implements CodeGenerator<JavaWebAppCodeGenR
         var coll = new ArrayList<>(record.getSources());
         coll.addAll(record.getExternalInjections());
         var metaRegistry = new WebAppMetaRegistry();
-        parser.updateMetaRegistry(metaRegistry, coll);
+        parser.updateMetaRegistry(metaRegistry, record.isSkipCommonClasses(), coll);
         for (EnumDescription ed : metaRegistry.getEnums().values()) {
             JavaCodeGeneratorUtils.generateJavaEnumCode(ed, destDir, generatedFiles);
         }

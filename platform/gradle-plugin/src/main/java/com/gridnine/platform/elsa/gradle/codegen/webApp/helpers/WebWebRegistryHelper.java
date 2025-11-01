@@ -31,7 +31,7 @@ import java.io.File;
 import java.util.Set;
 
 public class WebWebRegistryHelper {
-    public static void generate(WebAppMetaRegistry registry, File destDir, Set<File> generatedFiles, String commonPackageName) throws Exception {
+    public static void generate(WebAppMetaRegistry registry, File destDir, Set<File> generatedFiles, String configurator, String commonPackageName) throws Exception {
         var gen = new TypeScriptCodeGenerator();
         registry.getElements().values().forEach(element -> {
             BuildExceptionUtils.wrapException(() -> {
@@ -47,7 +47,7 @@ public class WebWebRegistryHelper {
                         """.formatted(className, simpleClassName));
             });
         });
-        var file = WebCodeGeneratorUtils.getFile("registry.RegistryConfigurator.ts", destDir);
+        var file = WebCodeGeneratorUtils.getFile(configurator, destDir);
         WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), file);
         generatedFiles.add(file);
     }

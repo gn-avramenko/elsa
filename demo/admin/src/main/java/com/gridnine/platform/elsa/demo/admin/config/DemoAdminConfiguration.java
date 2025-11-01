@@ -21,7 +21,7 @@
 
 package com.gridnine.platform.elsa.demo.admin.config;
 
-import com.gridnine.platform.elsa.demo.admin.Organization.OrganizationUiListHandler;
+import com.gridnine.platform.elsa.demo.admin.organization.OrganizationUiListHandler;
 import com.gridnine.platform.elsa.demo.admin.boot.AdminActivator;
 import com.gridnine.platform.elsa.demo.admin.country.CountryUiListHandler;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;

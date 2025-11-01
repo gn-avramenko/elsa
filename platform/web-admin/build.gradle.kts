@@ -7,7 +7,8 @@ plugins {
 
 elsa {
     codegen {
-        webApp("src-gen", "src", "com.gridnine.platform.elsa.admin.web", arrayListOf<String>("../server-admin/src/main/codegen/main-frame.xml","../server-admin/src/main/codegen/entity-list.xml","../server-admin/src/main/codegen/common.xml"))
+        webApp("src-gen", "src", "registry.AdminConfigurator.ts", "com.gridnine.platform.elsa.admin.web", true, arrayListOf<String>("../server-admin/src/main/codegen/main-frame.xml","../server-admin/src/main/codegen/entity-list.xml"))
+        webApp("src-gen", "src",  "registry.CommonConfigurator.ts","com.gridnine.platform.elsa.webApp", true, arrayListOf<String>("../server-admin/src/main/codegen/common.xml"))
     }
 }
 

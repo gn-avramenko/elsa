@@ -1,5 +1,5 @@
 import { initStateSetters } from '@/common/component';
-import { ButtonSkeleton } from '@g/components/ButtonSkeleton';
+import { ButtonSkeleton } from '@g/common/ButtonSkeleton';
 import { Button } from 'antd';
 import { DynamicIcon } from '@/common/extension';
 

@@ -57,7 +57,7 @@ public class WebWebAppElementsHelper {
                     gen.addImport("{BaseReactUiElement} from '@/common/component'");
 
                     if(elm.getInput() != null){
-                        if(elm.getInput().getValue().getProperties().size()+elm.getInput().getValue().getProperties().size() > 1){
+                        if(elm.getInput().getValue().getProperties().size()+elm.getInput().getValue().getCollections().size() > 1){
                             var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
                             var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue", commonPackageName);
                             gen.addImport("{%s} from '%s'".formatted(inputValueSimpleClassName, inputValueImport));
@@ -130,7 +130,7 @@ public class WebWebAppElementsHelper {
                             });
                         }
                         if(elm.getInput() != null){
-                            if(elm.getInput().getValue().getProperties().size()+elm.getInput().getValue().getProperties().size() > 1){
+                            if(elm.getInput().getValue().getProperties().size()+elm.getInput().getValue().getCollections().size() > 1){
                                 var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
                                 var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue", commonPackageName);
                                 gen.wrapWithBlock("getValue()", () -> {
@@ -196,6 +196,7 @@ public class WebWebAppElementsHelper {
                 }
                 switch (element.getType()) {
                     case CONTAINER -> WebContainerHelper.generateContainer((ContainerWebElementDescription) element, sourceDir, commonPackageName);
+                    case CUSTOM_CONTAINER -> WebCustomContainerHelper.generateContainer((CustomContainerWebElementDescription) element, sourceDir, commonPackageName);
                     case BUTTON -> WebButtonHelper.generateButton((ButtonWebElementDescription) element, sourceDir, commonPackageName);
                     case SELECT -> WebSelectHelper.generateSelect((SelectWebElementDescription) element, sourceDir, commonPackageName);
                     case ROUTER -> WebRouterHelper.generateRouter((RouterWebElementDescription)  element, sourceDir, commonPackageName);

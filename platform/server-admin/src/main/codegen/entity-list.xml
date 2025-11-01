@@ -30,12 +30,30 @@
         <map id="fields" key-type="STRING" value-type="STRING"/>
     </entity>
     <button class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListButton"/>
-    <autocomplete class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityFilter">
+    <custom class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityFilter">
         <server-managed-state>
             <property id="title" type="STRING" non-nullable="true"/>
+            <property id="debounceTime" type="INT" non-nullable="true"/>
+            <property id="limit" type="INT" non-nullable="true"/>
         </server-managed-state>
-    </autocomplete>
-    <container class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityList" managed-configuration="true">
+        <input-value>
+            <collection id="value" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+        </input-value>
+        <services>
+            <service id="getData">
+                <request>
+                    <property id="query" type="STRING"/>
+                    <property id="limit" type="INT" non-nullable="true"/>
+                </request>
+                <response>
+                    <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+                </response>
+            </service>
+        </services>
+    </custom>
+
+
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityList" managed-configuration="true">
         <server-managed-state>
             <property id="contentTitle" type="STRING" non-nullable="true"/>
             <property id="filtersTitle" type="STRING" non-nullable="true"/>
@@ -68,5 +86,5 @@
         <children>
             <text-field id="searchField" class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListSearchField"/>
         </children>
-    </container>
+    </custom-container>
 </web-app>

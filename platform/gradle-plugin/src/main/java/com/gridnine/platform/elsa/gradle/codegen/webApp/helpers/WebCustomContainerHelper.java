@@ -24,11 +24,12 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.webApp.CustomContainerWebElementDescription;
 
 import java.io.File;
-import java.io.IOException;
-public class WebContainerHelper {
-    public static void generateContainer(ContainerWebElementDescription descr, File destDir, String commonPackageName) throws Exception {
+
+public class WebCustomContainerHelper {
+    public static void generateContainer(CustomContainerWebElementDescription descr, File destDir, String commonPackageName) throws Exception {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
         var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
@@ -48,8 +49,7 @@ public class WebContainerHelper {
                                 key="content"
                                 style={{
                                     display: 'flex',
-                                    flexDirection:
-                                        props.element.getFlexDirection() === 'ROW' ? 'row' : 'column',
+                                    flexDirection: 'column',
                                 }}
                             >
                                 {(props.element.children || []).map((it) => {

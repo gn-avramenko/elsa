@@ -1,1 +1,2 @@
-import '../src-gen/registry/RegistryConfigurator';
+import '../src-gen/registry/AdminConfigurator';
+import '../src-gen/registry/CommonConfigurator';
