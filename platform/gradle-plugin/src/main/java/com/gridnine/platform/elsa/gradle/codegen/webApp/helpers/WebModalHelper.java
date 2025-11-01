@@ -29,11 +29,11 @@ import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import java.io.File;
 
 public class WebModalHelper {
-    public static void generateModal(ModalWebElementDescription descr, File destDir) throws Exception {
+    public static void generateModal(ModalWebElementDescription descr, File destDir, String commonPackageName) throws Exception {
         var ett = WebAppMetadataHelper.toCustomEntity(descr);
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
@@ -86,7 +86,7 @@ public class WebModalHelper {
                     functionalComponent = %s;
                     %s
                 }
-        """.formatted(skeletonName, skeletonImport,WebCommonHelper.getServerCommandImport(ett), functionalComponentName, componentName, componentName, skeletonName, functionalComponentName, WebCommonHelper.getServerCommandBlock(ett));
+        """.formatted(skeletonName, skeletonImport,WebCommonHelper.getServerCommandImport(ett, commonPackageName), functionalComponentName, componentName, componentName, skeletonName, functionalComponentName, WebCommonHelper.getServerCommandBlock(ett));
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if(!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

@@ -29,10 +29,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class WebContainerHelper {
-    public static void generateContainer(ContainerWebElementDescription descr, File destDir) throws Exception {
+    public static void generateContainer(ContainerWebElementDescription descr, File destDir, String commonPackageName) throws Exception {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """

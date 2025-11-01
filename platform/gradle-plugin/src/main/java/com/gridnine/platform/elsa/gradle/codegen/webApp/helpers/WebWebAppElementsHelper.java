@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class WebWebAppElementsHelper {
-    public static void generate(WebAppMetaRegistry registry, File destDir, File sourceDir, Set<File> generatedFiles) throws Exception {
+    public static void generate(WebAppMetaRegistry registry, File destDir, File sourceDir, String commonPackageName, Set<File> generatedFiles) throws Exception {
         registry.getElements().values().forEach(element -> {
             BuildExceptionUtils.wrapException(() -> {
                 var elm = WebAppMetadataHelper.toCustomEntity(element);
@@ -59,20 +59,20 @@ public class WebWebAppElementsHelper {
                     if(elm.getInput() != null){
                         if(elm.getInput().getValue().getProperties().size()+elm.getInput().getValue().getProperties().size() > 1){
                             var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
-                            var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue");
+                            var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue", commonPackageName);
                             gen.addImport("{%s} from '%s'".formatted(inputValueSimpleClassName, inputValueImport));
                         } else {
                            var id = WebAppMetadataHelper.getSimpleInputValueDescription(elm.getInput());
                            if(id.collection()){
                                if(id.coll().getElementType() == StandardValueType.ENTITY){
                                    var inputValueClassName = id.coll().getElementClassName();
-                                   var inputValueImport = WebCodeGeneratorUtils.getImportName(inputValueClassName);
+                                   var inputValueImport = WebCodeGeneratorUtils.getImportName(inputValueClassName, commonPackageName);
                                    gen.addImport("{%s} from '%s'".formatted(JavaCodeGeneratorUtils.getSimpleName(inputValueClassName), inputValueImport));
                                }
                            } else {
                                if(id.prop().getType() == StandardValueType.ENTITY){
                                    var inputValueClassName = id.prop().getClassName();
-                                   var inputValueImport = WebCodeGeneratorUtils.getImportName(inputValueClassName);
+                                   var inputValueImport = WebCodeGeneratorUtils.getImportName(inputValueClassName, commonPackageName);
                                    gen.addImport("{%s} from '%s'".formatted(JavaCodeGeneratorUtils.getSimpleName(inputValueClassName), inputValueImport));
                                }
                            }
@@ -104,14 +104,14 @@ public class WebWebAppElementsHelper {
                         for (var prop : elm.getServerManagedState().getProperties().values()) {
                             gen.wrapWithBlock("%s%s()".formatted(prop.getType() == StandardValueType.BOOLEAN && prop.isNonNullable()? "is": "get",BuildTextUtils.capitalize(prop.getId())), () -> {
                                 gen.printLine("return this.state.get('%s') as %s%s".formatted(prop.getId(),
-                                        getType(prop.getType(), registry, prop.getClassName(), gen),
+                                        getType(prop.getType(), registry, prop.getClassName(), gen, commonPackageName),
                                         prop.isNonNullable() ? "" : " | undefined"));
                             });
                         }
                         for (var coll : elm.getServerManagedState().getCollections().values()) {
                             gen.wrapWithBlock("get%s()".formatted(BuildTextUtils.capitalize(coll.getId())), () -> {
                                 gen.printLine("return this.state.get('%s') as %s[] || [] ".formatted(coll.getId(),
-                                        getType(coll.getElementType(), registry, coll.getElementClassName(), gen)));
+                                        getType(coll.getElementType(), registry, coll.getElementClassName(), gen, commonPackageName)));
                             });
                         }
                         if(!elm.getCommandsFromServer().isEmpty()){
@@ -132,7 +132,7 @@ public class WebWebAppElementsHelper {
                         if(elm.getInput() != null){
                             if(elm.getInput().getValue().getProperties().size()+elm.getInput().getValue().getProperties().size() > 1){
                                 var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
-                                var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue");
+                                var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue", commonPackageName);
                                 gen.wrapWithBlock("getValue()", () -> {
                                     gen.printLine("return this.state.get('value') as %s".formatted(inputValueSimpleClassName));
                                 });
@@ -167,7 +167,7 @@ public class WebWebAppElementsHelper {
                                 });
                             } else {
                                 var actionClassName = "%s%sAction".formatted(elm.getClassName(),BuildTextUtils.capitalize(action.getId()));
-                                gen.wrapWithBlock("async send%s(value: %s)".formatted(BuildTextUtils.capitalize(action.getId()), getType(StandardValueType.ENTITY, registry, actionClassName, gen)), ()->{
+                                gen.wrapWithBlock("async send%s(value: %s)".formatted(BuildTextUtils.capitalize(action.getId()), getType(StandardValueType.ENTITY, registry, actionClassName, gen, commonPackageName)), ()->{
                                     gen.printLine("await this.sendCommand('%s', value);".formatted(action.getId()));
                                 });
                             }
@@ -175,8 +175,8 @@ public class WebWebAppElementsHelper {
                         for(var serv: elm.getServices().values()){
                             var requestClassName = "%s%sRequest".formatted(elm.getClassName(),BuildTextUtils.capitalize(serv.getId()));
                             var responseClassName = "%s%sResponse".formatted(elm.getClassName(),BuildTextUtils.capitalize(serv.getId()));
-                            gen.wrapWithBlock("async do%s(value: %s)".formatted(BuildTextUtils.capitalize(serv.getId()), getType(StandardValueType.ENTITY, registry, requestClassName, gen)), ()->{
-                                gen.printLine("return (await this.makeRequest('%s', value)) as %s;".formatted(serv.getId(), getType(StandardValueType.ENTITY, registry, responseClassName, gen)));
+                            gen.wrapWithBlock("async do%s(value: %s)".formatted(BuildTextUtils.capitalize(serv.getId()), getType(StandardValueType.ENTITY, registry, requestClassName, gen, commonPackageName)), ()->{
+                                gen.printLine("return (await this.makeRequest('%s', value)) as %s;".formatted(serv.getId(), getType(StandardValueType.ENTITY, registry, responseClassName, gen, commonPackageName)));
                             });
                         }
                         for(var command : elm.getCommandsFromServer().values()){
@@ -184,7 +184,7 @@ public class WebWebAppElementsHelper {
                                 gen.printLine("abstract process%s(): void;".formatted(BuildTextUtils.capitalize(command.getId())));
                             } else {
                                 var cn = "%s%sAction".formatted(elm.getClassName(),BuildTextUtils.capitalize(command.getId()));
-                                var type = getType(StandardValueType.ENTITY, null, cn, gen);
+                                var type = getType(StandardValueType.ENTITY, null, cn, gen, commonPackageName);
                                 gen.printLine("abstract process%s(value: %s): void;".formatted(BuildTextUtils.capitalize(command.getId()), type));
                             }
                         }
@@ -195,18 +195,18 @@ public class WebWebAppElementsHelper {
                     generatedFiles.add(file);
                 }
                 switch (element.getType()) {
-                    case CONTAINER -> WebContainerHelper.generateContainer((ContainerWebElementDescription) element, sourceDir);
-                    case BUTTON -> WebButtonHelper.generateButton((ButtonWebElementDescription) element, sourceDir);
-                    case SELECT -> WebSelectHelper.generateSelect((SelectWebElementDescription) element, sourceDir);
-                    case ROUTER -> WebRouterHelper.generateRouter((RouterWebElementDescription)  element, sourceDir);
-                    case CUSTOM -> WebCustomHelper.generateCustom((CustomWebElementDescription) element, sourceDir);
-                    case TEXT_AREA ->  WebTextAreaHelper.generateTextArea((TextAreaWebElementDescription) element, sourceDir);
-                    case TEXT_FIELD ->  WebTextFieldHelper.generateTextField((TextFieldWebElementDescription) element, sourceDir);
-                    case NESTED_ROUTER -> WebNestedRouterHelper.generateNestedRouter((NestedRouterWebElementDescription) element, sourceDir);
-                    case TABLE -> WebTableHelper.generateTable((TableWebElementDescription) element, sourceDir);
-                    case AUTOCOMPLETE -> WebAutocompleteHelper.generateAutocomplete((AutocompleteWebElementDescription) element, sourceDir);
-                    case LABEL -> WebLabelHelper.generateLabel((LabelWebElementDescription) element, sourceDir);
-                    case MODAL ->  WebModalHelper.generateModal((ModalWebElementDescription) element, sourceDir);
+                    case CONTAINER -> WebContainerHelper.generateContainer((ContainerWebElementDescription) element, sourceDir, commonPackageName);
+                    case BUTTON -> WebButtonHelper.generateButton((ButtonWebElementDescription) element, sourceDir, commonPackageName);
+                    case SELECT -> WebSelectHelper.generateSelect((SelectWebElementDescription) element, sourceDir, commonPackageName);
+                    case ROUTER -> WebRouterHelper.generateRouter((RouterWebElementDescription)  element, sourceDir, commonPackageName);
+                    case CUSTOM -> WebCustomHelper.generateCustom((CustomWebElementDescription) element, sourceDir, commonPackageName);
+                    case TEXT_AREA ->  WebTextAreaHelper.generateTextArea((TextAreaWebElementDescription) element, sourceDir, commonPackageName);
+                    case TEXT_FIELD ->  WebTextFieldHelper.generateTextField((TextFieldWebElementDescription) element, sourceDir, commonPackageName);
+                    case NESTED_ROUTER -> WebNestedRouterHelper.generateNestedRouter((NestedRouterWebElementDescription) element, sourceDir, commonPackageName);
+                    case TABLE -> WebTableHelper.generateTable((TableWebElementDescription) element, sourceDir, commonPackageName);
+                    case AUTOCOMPLETE -> WebAutocompleteHelper.generateAutocomplete((AutocompleteWebElementDescription) element, sourceDir, commonPackageName);
+                    case LABEL -> WebLabelHelper.generateLabel((LabelWebElementDescription) element, sourceDir, commonPackageName);
+                    case MODAL ->  WebModalHelper.generateModal((ModalWebElementDescription) element, sourceDir, commonPackageName);
                 }
 
             });
@@ -224,7 +224,7 @@ public class WebWebAppElementsHelper {
         return new File(currentFile, parts[parts.length - 1] + ".java");
     }
 
-    private static String getType(StandardValueType vt, WebAppMetaRegistry metaRegistry, String className, TypeScriptCodeGenerator gen) throws Exception {
+    private static String getType(StandardValueType vt, WebAppMetaRegistry metaRegistry, String className, TypeScriptCodeGenerator gen, String commonPackageName) throws Exception {
         return switch (vt) {
             case LONG, INT, BIG_DECIMAL -> "number";
             case UUID, STRING, CLASS, LOCAL_DATE, INSTANT, LOCAL_DATE_TIME -> "string";
@@ -233,7 +233,7 @@ public class WebWebAppElementsHelper {
                 if("Object".equals(simpleName)){
                     yield "any";
                 }
-                var importName = WebCodeGeneratorUtils.getImportName(className);
+                var importName = WebCodeGeneratorUtils.getImportName(className, commonPackageName);
                 gen.addImport("{%s} from '%s'".formatted(simpleName, importName));
                 yield  simpleName;
             }

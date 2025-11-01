@@ -56,7 +56,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
         }
         for(var item: metaRegistry.getEntities().values()) {
             var gen = new TypeScriptCodeGenerator();
-            WebCodeGeneratorUtils.generateWebEntityCode(item, null, gen);
+            WebCodeGeneratorUtils.generateWebEntityCode(item, null, gen, record.getCommonPackageName());
             var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(item.getId() + ".ts", destDir));
             generatedFiles.add(file);
         }
@@ -66,7 +66,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                 var id = WebAppMetadataHelper.getInputValueDescription(ce);
                 if(id.getProperties().size()+id.getCollections().size()>1) {
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen);
+                    WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen, record.getCommonPackageName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
@@ -78,7 +78,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     dd.getProperties().putAll(action.getProperties());
                     dd.getCollections().putAll(action.getCollections());
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
@@ -90,14 +90,14 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     dd.getProperties().putAll(action.getProperties());
                     dd.getCollections().putAll(action.getCollections());
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
             }
             for(var ett: WebAppMetadataHelper.getServicesClasses(elm)){
                 var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(ett, null, gen);
+                WebCodeGeneratorUtils.generateWebEntityCode(ett, null, gen, record.getCommonPackageName());
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(ett.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
@@ -108,12 +108,12 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                 dd.getProperties().putAll(td.getRow().getProperties());
                 dd.getCollections().putAll(td.getRow().getCollections());
                 var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
         }
-        WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), generatedFiles);
-        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles);
+        WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), record.getCommonPackageName(), generatedFiles);
+        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles, record.getCommonPackageName());
     }
 }

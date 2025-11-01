@@ -31,14 +31,14 @@ import java.io.File;
 import java.util.Set;
 
 public class WebWebRegistryHelper {
-    public static void generate(WebAppMetaRegistry registry, File destDir, Set<File> generatedFiles) throws Exception {
+    public static void generate(WebAppMetaRegistry registry, File destDir, Set<File> generatedFiles, String commonPackageName) throws Exception {
         var gen = new TypeScriptCodeGenerator();
         registry.getElements().values().forEach(element -> {
             BuildExceptionUtils.wrapException(() -> {
                 var className = element.getClassName();
                 var simpleClassName = JavaCodeGeneratorUtils.getSimpleName(className);
                 gen.addImport("{registerFactory} from '@/common/component'");
-                gen.addImport("{%sComponent} from '%s'".formatted(simpleClassName, WebCodeGeneratorUtils.getImportName(className)).replace("@g", "@"));
+                gen.addImport("{%sComponent} from '%s'".formatted(simpleClassName, WebCodeGeneratorUtils.getImportName(className, commonPackageName)).replace("@g", "@"));
                 gen.blankLine();
                 gen.printLine("""
                         registerFactory('%s', {

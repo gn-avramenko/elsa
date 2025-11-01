@@ -30,6 +30,8 @@ public class WebWebAppCodeGenRecord extends BaseCodeGenRecord {
 
     private File sourceDir;
 
+    private String commonPackageName;
+
     @Override
     public GeneratorType getGeneratorType() {
         return GeneratorType.WEB_WEB_APP;
@@ -43,4 +45,11 @@ public class WebWebAppCodeGenRecord extends BaseCodeGenRecord {
         this.sourceDir = sourceDir;
     }
 
+    public String getCommonPackageName() {
+        return commonPackageName;
+    }
+
+    public void setCommonPackageName(String commonPackageName) {
+        this.commonPackageName = commonPackageName;
+    }
 }
