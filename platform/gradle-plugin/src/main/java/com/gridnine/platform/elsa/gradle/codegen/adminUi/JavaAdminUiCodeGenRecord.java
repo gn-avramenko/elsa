@@ -19,17 +19,26 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.codegen.common;
+package com.gridnine.platform.elsa.gradle.codegen.adminUi;
 
-public enum GeneratorType {
-    JAVA_DOMAIN,
-    JAVA_CUSTOM,
-    JAVA_REMOTING,
-    JAVA_ADMIN_UI,
-    JAVA_WEB_APP,
-    WEB_WEB_APP,
-    OPENAPI_REMOTING,
-    JAVA_L10N,
-    WEB_REMOTING,
-    WEB_L10N,
+import com.gridnine.platform.elsa.gradle.codegen.common.BaseCodeGenRecord;
+import com.gridnine.platform.elsa.gradle.codegen.common.GeneratorType;
+
+public class JavaAdminUiCodeGenRecord extends BaseCodeGenRecord {
+
+    private String registryConfigurator;
+
+    @Override
+    public GeneratorType getGeneratorType() {
+        return GeneratorType.JAVA_ADMIN_UI;
+    }
+
+    public String getRegistryConfigurator() {
+        return registryConfigurator;
+    }
+
+    public void setRegistryConfigurator(String registryConfigurator) {
+        this.registryConfigurator = registryConfigurator;
+    }
+
 }

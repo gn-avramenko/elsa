@@ -17,19 +17,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
+ *
+ *****************************************************************
+ * This is generated code, don't modify it manually
+ *****************************************************************/
 
-package com.gridnine.platform.elsa.gradle.codegen.common;
+package com.gridnine.platform.elsa.admin.web.form;
 
-public enum GeneratorType {
-    JAVA_DOMAIN,
-    JAVA_CUSTOM,
-    JAVA_REMOTING,
-    JAVA_ADMIN_UI,
-    JAVA_WEB_APP,
-    WEB_WEB_APP,
-    OPENAPI_REMOTING,
-    JAVA_L10N,
-    WEB_REMOTING,
-    WEB_L10N,
+import com.gridnine.webpeer.core.ui.OperationUiContext;
+
+public class FormContainer extends FormContainerSkeleton{
+
+	public FormContainer(String tag, OperationUiContext ctx){
+		super(tag, ctx);
+	}
+
+    @Override
+    protected FormContainerConfiguration createConfiguration() {
+        return new FormContainerConfiguration();
+    }
 }

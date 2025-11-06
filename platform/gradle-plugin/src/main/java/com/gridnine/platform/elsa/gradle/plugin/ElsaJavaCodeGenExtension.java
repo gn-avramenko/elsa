@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.plugin;
 
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.JavaAdminUiCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.common.HasCodeGenType;
 import com.gridnine.platform.elsa.gradle.codegen.custom.JavaCustomCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.domain.JavaDomainCodeGenRecord;
@@ -95,6 +96,14 @@ public class ElsaJavaCodeGenExtension {
         record.setDestinationDir(new File(projectDir, destDir));
         globalData.getRemotingRecords().computeIfAbsent(record.getDestinationDir().getCanonicalPath(), (i) -> new ArrayList<>()).add(record);
         globalData.setCurrentRemotingRecord(record);
+        codegenRecords.add(record);
+    }
+
+    public void adminUi(String destDir, String configurator, List<String> sourcesFileNames) throws IOException {
+        var record = new JavaAdminUiCodeGenRecord();
+        record.setRegistryConfigurator(configurator);
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }
 

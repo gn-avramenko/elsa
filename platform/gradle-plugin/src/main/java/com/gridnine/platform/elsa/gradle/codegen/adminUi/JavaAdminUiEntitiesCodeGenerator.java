@@ -19,17 +19,24 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.codegen.common;
+package com.gridnine.platform.elsa.gradle.codegen.adminUi;
 
-public enum GeneratorType {
-    JAVA_DOMAIN,
-    JAVA_CUSTOM,
-    JAVA_REMOTING,
-    JAVA_ADMIN_UI,
-    JAVA_WEB_APP,
-    WEB_WEB_APP,
-    OPENAPI_REMOTING,
-    JAVA_L10N,
-    WEB_REMOTING,
-    WEB_L10N,
+import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.AdminUiMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
+import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
+
+import java.io.File;
+import java.util.Set;
+
+public class JavaAdminUiEntitiesCodeGenerator {
+    public static void generate(AdminUiMetaRegistry registry, File destDir, Set<File> generatedFiles) throws Exception {
+        for (EnumDescription ed : registry.getEnums().values()) {
+            JavaCodeGeneratorUtils.generateJavaEnumCode(ed, destDir, generatedFiles);
+        }
+        for (EntityDescription ed : registry.getEntities().values()) {
+            JavaCodeGeneratorUtils.generateJavaEntityCode(ed, destDir, null, false, generatedFiles);
+        }
+    }
 }

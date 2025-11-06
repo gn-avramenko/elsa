@@ -19,17 +19,31 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.codegen.common;
 
-public enum GeneratorType {
-    JAVA_DOMAIN,
-    JAVA_CUSTOM,
-    JAVA_REMOTING,
-    JAVA_ADMIN_UI,
-    JAVA_WEB_APP,
-    WEB_WEB_APP,
-    OPENAPI_REMOTING,
-    JAVA_L10N,
-    WEB_REMOTING,
-    WEB_L10N,
+package com.gridnine.platform.elsa.gradle.meta.adminUi;
+
+
+import com.gridnine.platform.elsa.gradle.meta.common.EntityDescription;
+import com.gridnine.platform.elsa.gradle.meta.common.EnumDescription;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+
+public class AdminUiMetaRegistry {
+    private final Map<String, EnumDescription> enums = new LinkedHashMap<>();
+    private final Map<String, EntityDescription> entities = new LinkedHashMap<>();
+    private final Map<String, BaseAdminUiContainerDescription> containers = new LinkedHashMap<>();
+
+    public Map<String, EnumDescription> getEnums() {
+        return enums;
+    }
+
+    public Map<String, EntityDescription> getEntities() {
+        return entities;
+    }
+
+    public Map<String, BaseAdminUiContainerDescription> getContainers() {
+        return containers;
+    }
 }

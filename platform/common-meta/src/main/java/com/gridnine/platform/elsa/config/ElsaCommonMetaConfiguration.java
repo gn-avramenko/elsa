@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.config;
 
+import com.gridnine.platform.elsa.common.meta.adminUi.AdminUiMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.custom.CustomMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.l10n.L10nMetaRegistry;
@@ -54,5 +55,10 @@ public class ElsaCommonMetaConfiguration {
     @Bean
     public WebAppMetaRegistry webAppMetaRegistry() {
         return new WebAppMetaRegistry();
+    }
+
+    @Bean
+    public AdminUiMetaRegistry adminUiMetaRegistry() {
+        return new AdminUiMetaRegistry();
     }
 }

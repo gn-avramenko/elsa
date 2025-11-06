@@ -24,7 +24,7 @@ elsa {
         domain("src/main/java-gen", "com.gridnine.platform.elsa.admin.AdminDomainConfigurator",
             listOf("src/main/codegen/admin-domain.xml"))
         webApp("src/main/java-gen", "src/main/java","com.gridnine.platform.elsa.admin.AdminWebAppConfigurator",
-            true, listOf("src/main/codegen/common.xml","src/main/codegen/main-frame.xml", "src/main/codegen/entity-list.xml"))
+            true, listOf("src/main/codegen/common.xml","src/main/codegen/main-frame.xml", "src/main/codegen/entity-list.xml", "src/main/codegen/form.xml"))
     }
 }
 

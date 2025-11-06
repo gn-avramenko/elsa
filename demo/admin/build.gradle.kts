@@ -32,5 +32,7 @@ elsa {
     codegen {
         domain("src/main/java-gen", "com.gridnine.platform.elsa.demo.admin.DemoAdminDomainConfigurator",
             listOf("src/main/codegen/demo-admin-domain.xml"))
+        adminUi("src/main/java-gen", "com.gridnine.platform.elsa.demo.admin.DemoAdminUiConfigurator",
+            listOf("src/main/codegen/demo-admin-ui.xml"))
     }
 }

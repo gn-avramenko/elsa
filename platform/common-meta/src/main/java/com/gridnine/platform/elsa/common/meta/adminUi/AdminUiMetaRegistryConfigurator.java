@@ -19,17 +19,8 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.codegen.common;
+package com.gridnine.platform.elsa.common.meta.adminUi;
 
-public enum GeneratorType {
-    JAVA_DOMAIN,
-    JAVA_CUSTOM,
-    JAVA_REMOTING,
-    JAVA_ADMIN_UI,
-    JAVA_WEB_APP,
-    WEB_WEB_APP,
-    OPENAPI_REMOTING,
-    JAVA_L10N,
-    WEB_REMOTING,
-    WEB_L10N,
+public interface AdminUiMetaRegistryConfigurator {
+    void updateMetaRegistry(AdminUiMetaRegistry registry);
 }
