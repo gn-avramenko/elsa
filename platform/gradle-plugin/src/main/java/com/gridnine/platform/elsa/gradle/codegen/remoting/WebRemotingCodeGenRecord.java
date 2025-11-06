@@ -27,9 +27,18 @@ import com.gridnine.platform.elsa.gradle.codegen.common.GeneratorType;
 public class WebRemotingCodeGenRecord extends BaseCodeGenRecord {
 
 
+    private String commonPackageName;
+
     @Override
     public GeneratorType getGeneratorType() {
         return GeneratorType.WEB_REMOTING;
     }
 
+    public void setCommonPackageName(String commonPackageName) {
+        this.commonPackageName = commonPackageName;
+    }
+
+    public String getCommonPackageName() {
+        return commonPackageName;
+    }
 }

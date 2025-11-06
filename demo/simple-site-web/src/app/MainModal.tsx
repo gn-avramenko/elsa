@@ -47,5 +47,6 @@ function MainModalFC(props: { element: MainModalComponent }) {
 }
 export class MainModalComponent extends MainModalSkeleton {
     functionalComponent = MainModalFC;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     processNotify(_value: MainModalNotifyAction) {}
 }

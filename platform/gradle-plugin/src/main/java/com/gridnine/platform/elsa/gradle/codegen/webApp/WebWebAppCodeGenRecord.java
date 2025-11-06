@@ -30,6 +30,12 @@ public class WebWebAppCodeGenRecord extends BaseCodeGenRecord {
 
     private File sourceDir;
 
+    private String commonPackageName;
+
+    private String configurator;
+
+    private boolean skipCommonClasses;
+
     @Override
     public GeneratorType getGeneratorType() {
         return GeneratorType.WEB_WEB_APP;
@@ -43,4 +49,27 @@ public class WebWebAppCodeGenRecord extends BaseCodeGenRecord {
         this.sourceDir = sourceDir;
     }
 
+    public String getCommonPackageName() {
+        return commonPackageName;
+    }
+
+    public void setCommonPackageName(String commonPackageName) {
+        this.commonPackageName = commonPackageName;
+    }
+
+    public void setSkipCommonClasses(boolean skipCommonClasses) {
+        this.skipCommonClasses = skipCommonClasses;
+    }
+
+    public boolean isSkipCommonClasses() {
+        return skipCommonClasses;
+    }
+
+    public String getConfigurator() {
+        return configurator;
+    }
+
+    public void setConfigurator(String configurator) {
+        this.configurator = configurator;
+    }
 }

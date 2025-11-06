@@ -71,12 +71,19 @@ public class JavaWebAppEntityHelper {
                 gen.addImport("java.util.*");
                 gen.printLine("private final %s<%s> %s = new %s<>();".formatted(cd.isUnique() ? "Set" : "List", className, cd.getId(), cd.isUnique() ? "HashSet" : "ArrayList"));
             }
-
+            for (StandardMapDescription md : ed.getMaps().values()) {
+                gen.blankLine();
+                gen.addImport("java.util.Map");
+                gen.addImport("java.util.HashMap");
+                String keyClassName = JavaCodeGeneratorUtils.getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen);
+                String valueClassName = JavaCodeGeneratorUtils.getPropertyType(md.getValueType(), md.getValueClassName(), false, gen);
+                gen.printLine("private final Map<%s,%s> %s = new HashMap<>();".formatted(keyClassName, valueClassName, md.getId()));
+            }
             {
                 for (StandardPropertyDescription pd : ed.getProperties().values()) {
                     gen.blankLine();
                     String className = JavaCodeGeneratorUtils.getPropertyType(pd.getType(), pd.getClassName(), pd.isNonNullable(), gen);
-                    gen.wrapWithBlock("public %s %s%s()".formatted(className, pd.getType() ==StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(pd.getId())), () -> gen.printLine("return %s;".formatted(pd.getId())));
+                    gen.wrapWithBlock("public %s %s%s()".formatted(className, pd.getType() == StandardValueType.BOOLEAN ? "is" : "get", BuildTextUtils.capitalize(pd.getId())), () -> gen.printLine("return %s;".formatted(pd.getId())));
                     gen.blankLine();
                     gen.wrapWithBlock("public void set%s(%s value)".formatted(BuildTextUtils.capitalize(pd.getId()), className), () -> gen.printLine("this.%s = value;".formatted(pd.getId())));
                 }
@@ -85,6 +92,14 @@ public class JavaWebAppEntityHelper {
                     gen.addImport("java.util.*");
                     String className = JavaCodeGeneratorUtils.getPropertyType(cd.getElementType(), cd.getElementClassName(), false, gen);
                     gen.wrapWithBlock("public %s<%s> get%s()".formatted(cd.isUnique() ? "Set" : "List", className, BuildTextUtils.capitalize(cd.getId())), () -> gen.printLine("return %s;".formatted(cd.getId())));
+                }
+                for (StandardMapDescription md : ed.getMaps().values()) {
+                    gen.blankLine();
+                    gen.addImport("java.util.Map");
+                    gen.addImport("java.util.HashMap");
+                    String keyClassName = JavaCodeGeneratorUtils.getPropertyType(md.getKeyType(), md.getKeyClassName(), false, gen);
+                    String valueClassName = JavaCodeGeneratorUtils.getPropertyType(md.getValueType(), md.getValueClassName(), false, gen);
+                    gen.wrapWithBlock("public Map<%s,%s> get%s()".formatted(keyClassName, valueClassName, BuildTextUtils.capitalize(md.getId())), () -> gen.printLine("return %s;".formatted(md.getId())));
                 }
             }
             if(!"true".equals(ed.getParameters().get("no-equals"))) {
@@ -106,6 +121,12 @@ public class JavaWebAppEntityHelper {
                         for (var coll : ed.getCollections().values()) {
                             gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
                             gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(coll.getId(), coll.getId()), () -> {
+                                gen.printLine("return false;");
+                            });
+                        }
+                        for (var map : ed.getMaps().values()) {
+                            gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                            gen.wrapWithBlock("if(!WebAppUtils.equals(this.%s, casted.%s))".formatted(map.getId(), map.getId()), () -> {
                                 gen.printLine("return false;");
                             });
                         }
@@ -150,6 +171,13 @@ public class JavaWebAppEntityHelper {
                                     gen.printLine("coll.add(WebAppUtils.toJsonValue(elm,  StandardValueType.%s));".formatted(cd.getElementType().name()));
                                 });
                                 gen.printLine("obj.add(\"%s\", coll);".formatted(cd.getId()));
+                            });
+                        }
+                        for (var md : ed.getMaps().values()) {
+                            gen.wrapWithBlock("if(!%s.isEmpty())".formatted(md.getId()), () -> {
+                                gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
+                                gen.printLine("obj.add(\"%s\", WebAppUtils.toJsonValue(%s, StandardValueType.%s));".formatted(md.getId(), md.getId(), md.getValueType().name()));
                             });
                         }
                         gen.printLine("return obj;");

@@ -24,16 +24,15 @@ package com.gridnine.platform.elsa.gradle.codegen.webApp.helpers;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.WebCodeGeneratorUtils;
 import com.gridnine.platform.elsa.gradle.meta.webApp.AutocompleteWebElementDescription;
-import com.gridnine.platform.elsa.gradle.meta.webApp.SelectWebElementDescription;
 
 import java.io.File;
 import java.io.IOException;
 
 public class WebAutocompleteHelper {
-    public static void generateAutocomplete(AutocompleteWebElementDescription descr, File destDir) throws IOException {
+    public static void generateAutocomplete(AutocompleteWebElementDescription descr, File destDir, String commonPackageName) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton");
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
@@ -138,9 +137,7 @@ public class WebAutocompleteHelper {
                                   props.element.setValidationMessage(undefined);
                 
                                   // Колбэк при изменении выбранных элементов
-                                  props.element.setValue({
-                                      values: newSelectedItems,
-                                  });
+                                  props.element.setValue(newSelectedItems);
                 
                                   inputRef.current?.focus();
                               }
@@ -154,9 +151,7 @@ public class WebAutocompleteHelper {
                               setSelectedItems(newSelectedItems);
                 
                               // Колбэк при изменении выбранных элементов
-                              props.element.setValue({
-                                  values: newSelectedItems,
-                              });
+                              props.element.setValue(newSelectedItems);
                               props.element.setValidationMessage(undefined);
                           };
                 

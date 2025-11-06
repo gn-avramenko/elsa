@@ -26,11 +26,7 @@ package com.gridnine.platform.elsa.demo.ui.app;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.gridnine.platform.elsa.demo.ui.SimpleSiteWebAppServlet;
 import com.gridnine.platform.elsa.demo.ui.account.AccountPage;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestAccountContainerPage;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestHistoryPage;
-import com.gridnine.platform.elsa.demo.ui.components.test.TestMainPage;
 import com.gridnine.platform.elsa.demo.ui.history.HistoryPage;
 import com.gridnine.platform.elsa.demo.ui.main.MainPage;
 import com.gridnine.platform.elsa.webApp.NestedRouter;
@@ -48,6 +44,9 @@ public class MainRouter extends MainRouterSkeleton{
 
 	public MainRouter(String tag, OperationUiContext ctx){
 		super(tag, ctx);
+        JsonObject params = ctx.getParameter(OperationUiContext.PARAMS);
+        setPath(WebPeerUtils.getString(params, "initPath"), ctx);
+        setConfirmMessage("Are you sure you want to quit the page?", ctx);
 		factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
 		currentPath = getPath();
 		ctx.setParameter(StandardParameters.ROUTER_PATH, currentPath);
@@ -57,11 +56,8 @@ public class MainRouter extends MainRouterSkeleton{
 	}
 
     @Override
-    protected MainRouterConfiguration createConfiguration(OperationUiContext ctx) {
+    protected MainRouterConfiguration createConfiguration() {
         var result = new MainRouterConfiguration();
-        JsonObject params = ctx.getParameter(OperationUiContext.PARAMS);
-        result.setPath(WebPeerUtils.getString(params, "initPath"));
-        result.setConfirmMessage("Are you sure you want to quit the page?");
         return result;
     }
 

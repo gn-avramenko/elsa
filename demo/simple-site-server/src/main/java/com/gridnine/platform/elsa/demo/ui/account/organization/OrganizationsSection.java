@@ -50,7 +50,7 @@ public class OrganizationsSection extends OrganizationsSectionSkeleton{
 	}
 
     @Override
-    protected OrganizationsSectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected OrganizationsSectionConfiguration createConfiguration() {
         var config = new OrganizationsSectionConfiguration();
         config.setFlexDirection(FlexDirection.COLUMN);
         {
@@ -137,7 +137,7 @@ public class OrganizationsSection extends OrganizationsSectionSkeleton{
         }
         var listSort = getOrganizationsList().getSort();
         var assets=storage.searchAssets(Organization.class, new SearchQueryBuilder().addOrder(listSort.getField(),  listSort.getSortOrder() == SortOrder.ASC? com.gridnine.platform.elsa.common.core.search.SortOrder.ASC: com.gridnine.platform.elsa.common.core.search.SortOrder.DESC)
-                .freeText(getSearch().getValue()== null? null: getSearch().getValue().getValue()).limit(limit).build(), false);
+                .freeText(getSearch().getValue()== null? null: getSearch().getValue()).limit(limit).build(), false);
         var data = assets.stream().map(it ->{
             var entity = new OrganizationsListRow();
             entity.setAddress(it.getAddress());

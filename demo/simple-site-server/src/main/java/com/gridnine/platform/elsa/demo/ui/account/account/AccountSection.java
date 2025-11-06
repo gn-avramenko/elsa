@@ -24,7 +24,6 @@
 
 package com.gridnine.platform.elsa.demo.ui.account.account;
 
-import com.gridnine.platform.elsa.demo.ui.account.security.SecuritySectionConfiguration;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public class AccountSection extends AccountSectionSkeleton{
@@ -34,7 +33,7 @@ public class AccountSection extends AccountSectionSkeleton{
 	}
 
     @Override
-    protected AccountSectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected AccountSectionConfiguration createConfiguration() {
         var config = new AccountSectionConfiguration();
         return config;
     }

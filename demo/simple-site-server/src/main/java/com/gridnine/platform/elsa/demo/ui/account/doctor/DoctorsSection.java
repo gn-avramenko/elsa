@@ -33,7 +33,7 @@ public class DoctorsSection extends DoctorsSectionSkeleton{
 	}
 
     @Override
-    protected DoctorsSectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected DoctorsSectionConfiguration createConfiguration() {
         var config = new DoctorsSectionConfiguration();
         return config;
     }

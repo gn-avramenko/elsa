@@ -1,0 +1,24 @@
+.ant-table-wrapper .rf {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}
+
+.ant-table-wrapper .lp {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: flex-start;
+}
+.ant-table-wrapper .rp {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: flex-end;
+}
+.ant-table-wrapper .b {
+    font-weight: bolder;
+}
+.ant-table-wrapper .st {
+
+}

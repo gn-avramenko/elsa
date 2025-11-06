@@ -24,7 +24,6 @@
 
 package com.gridnine.platform.elsa.demo.ui.account;
 
-import com.gridnine.platform.elsa.demo.ui.main.MainPageConfiguration;
 import com.gridnine.platform.elsa.webApp.common.FlexDirection;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
@@ -35,7 +34,7 @@ public class AccountPage extends AccountPageSkeleton{
 	}
 
     @Override
-    protected AccountPageConfiguration createConfiguration(OperationUiContext ctx) {
+    protected AccountPageConfiguration createConfiguration() {
         var result = new AccountPageConfiguration();
         result.setFlexDirection(FlexDirection.ROW);
         return result;

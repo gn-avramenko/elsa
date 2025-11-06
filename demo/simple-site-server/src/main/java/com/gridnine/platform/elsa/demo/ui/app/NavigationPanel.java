@@ -35,7 +35,7 @@ public class NavigationPanel extends NavigationPanelSkeleton{
 	}
 
     @Override
-    protected NavigationPanelConfiguration createConfiguration(OperationUiContext ctx) {
+    protected NavigationPanelConfiguration createConfiguration() {
         var result = new NavigationPanelConfiguration();
         result.setFlexDirection(FlexDirection.ROW);
         {
@@ -77,12 +77,10 @@ public class NavigationPanel extends NavigationPanelSkeleton{
                 languageSelector.getOptions().add(option);
             }
             {
-                var value = new LanguageSelectorInputValue();
-                value.getValues().add("en");
-                languageSelector.setValue(value);
+                languageSelector.getValue().add("en");
             }
             languageSelector.setValueChangeListener(((oldValue, newValue, context) ->
-              System.out.println("new value = %s".formatted(newValue.getValues().get(0)))
+              System.out.printf("new value = %s%n", newValue)
             ));
             result.setLanguageSelector(languageSelector);
         }

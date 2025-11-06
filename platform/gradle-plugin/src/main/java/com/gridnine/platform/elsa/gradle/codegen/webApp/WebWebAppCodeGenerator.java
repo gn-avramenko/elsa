@@ -46,8 +46,10 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
         var coll = new ArrayList<>(record.getSources());
         coll.addAll(record.getExternalInjections());
         var metaRegistry = new WebAppMetaRegistry();
-        parser.updateMetaRegistry(metaRegistry, coll);
-        WebWebCommonClassesHelper.generate(record.getSourceDir());
+        parser.updateMetaRegistry(metaRegistry, record.isSkipCommonClasses(), coll);
+        if(!record.isSkipCommonClasses()) {
+            WebWebCommonClassesHelper.generate(record.getSourceDir());
+        }
         for(var item: metaRegistry.getEnums().values()) {
             var gen = new TypeScriptCodeGenerator();
             WebCodeGeneratorUtils.generateWebEnumCode(item, gen);
@@ -56,7 +58,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
         }
         for(var item: metaRegistry.getEntities().values()) {
             var gen = new TypeScriptCodeGenerator();
-            WebCodeGeneratorUtils.generateWebEntityCode(item, null, gen);
+            WebCodeGeneratorUtils.generateWebEntityCode(item, null, gen, record.getCommonPackageName());
             var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(item.getId() + ".ts", destDir));
             generatedFiles.add(file);
         }
@@ -64,10 +66,12 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
             CustomWebElementDescription ce = WebAppMetadataHelper.toCustomEntity(elm);
             if(ce.getInput() != null){
                 var id = WebAppMetadataHelper.getInputValueDescription(ce);
-                var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen);
-                var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
-                generatedFiles.add(file);
+                if(id.getProperties().size()+id.getCollections().size()>1) {
+                    var gen = new TypeScriptCodeGenerator();
+                    WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen, record.getCommonPackageName());
+                    var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
+                    generatedFiles.add(file);
+                }
             }
             for(var action: ce.getCommandsFromClient().values()){
                 if(action.getProperties().size()+action.getCollections().size()>0){
@@ -76,7 +80,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     dd.getProperties().putAll(action.getProperties());
                     dd.getCollections().putAll(action.getCollections());
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
@@ -88,14 +92,14 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     dd.getProperties().putAll(action.getProperties());
                     dd.getCollections().putAll(action.getCollections());
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
             }
             for(var ett: WebAppMetadataHelper.getServicesClasses(elm)){
                 var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(ett, null, gen);
+                WebCodeGeneratorUtils.generateWebEntityCode(ett, null, gen, record.getCommonPackageName());
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(ett.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
@@ -106,12 +110,12 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                 dd.getProperties().putAll(td.getRow().getProperties());
                 dd.getCollections().putAll(td.getRow().getCollections());
                 var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen);
+                WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
         }
-        WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), generatedFiles);
-        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles);
+        WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), record.getCommonPackageName(), generatedFiles);
+        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles, record.getConfigurator(), record.getCommonPackageName());
     }
 }

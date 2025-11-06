@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages-bundle xmlns="http://vga.com/elsa/meta-l10n" id="core">
+    <message id="Apply"/>
+    <message id="Clear"/>
+    <message id="Filters"/>
+    <message id="Content"/>
+</messages-bundle>

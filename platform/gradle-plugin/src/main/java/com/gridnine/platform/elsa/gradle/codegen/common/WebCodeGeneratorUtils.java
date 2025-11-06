@@ -49,7 +49,7 @@ public class WebCodeGeneratorUtils {
         gen.print(";\n");
     }
 
-    public static void generateWebEntityCode(EntityDescription ed, RemotingMetaRegistry metaRegistry, TypeScriptCodeGenerator gen) throws Exception {
+    public static void generateWebEntityCode(EntityDescription ed, RemotingMetaRegistry metaRegistry, TypeScriptCodeGenerator gen, String commonPackage) throws Exception {
         var imports = new HashSet<String>();
         for (var pd : ed.getProperties().values()) {
             if(pd.getType() == StandardValueType.ENTITY || pd.getType() == StandardValueType.ENUM){
@@ -80,7 +80,7 @@ public class WebCodeGeneratorUtils {
                 if(it.contains("BinaryData")){
                     gen.printLine("import { BinaryData }  from 'elsa-web-core';");
                 } else if(!"Object".equals(it)) {
-                    gen.printLine("import { %s } from '%s';".formatted(JavaCodeGeneratorUtils.getSimpleName(it), getImportName(it)));
+                    gen.printLine("import { %s } from '%s';".formatted(JavaCodeGeneratorUtils.getSimpleName(it), getImportName(it, commonPackage)));
                 }
             });
             gen.blankLine();
@@ -95,8 +95,7 @@ public class WebCodeGeneratorUtils {
                 gen.printLine("%s: %s[],".formatted(cd.getId(), getType(cd.getElementType(), metaRegistry, cd.getElementClassName())));
             }
             for (var md : ed.getMaps().values()) {
-                gen.printLine("%s: Map<%s, %s>,".formatted(md.getId(), getType(md.getKeyType(), metaRegistry, md.getKeyClassName()),
-                        getType(md.getValueType(), metaRegistry, md.getValueClassName())));
+                gen.printLine("%s: any,".formatted(md.getId()));
             }
         });
         gen.print(";\n");
@@ -226,15 +225,19 @@ public class WebCodeGeneratorUtils {
     }
 
 
-    public static String getImportName(String className) {
-        var parts = className.split("\\.");
+    public static String getImportName(String className, String commonPackage) {
+        var classNameParts = className.split("\\.");
+        var commonPackageParts = commonPackage.split("\\.");
         StringBuilder s = new StringBuilder();
-        var length = parts.length;
-        for (int n = length - 2; n < length; n++) {
+        var length = classNameParts.length;
+        for (int n = 0; n < length; n++) {
+            if(commonPackageParts.length > n){
+                continue;
+            }
             if(!s.isEmpty()){
                 s.append("/");
             }
-            s.append(parts[n]);
+            s.append(classNameParts[n]);
         }
         return "@g/"+ s;
     }

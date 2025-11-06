@@ -7,7 +7,7 @@ plugins {
 
 elsa {
     codegen {
-        webApp("src-gen", "src", arrayListOf<String>("../simple-site-server/src/main/codegen/simple-web-app.xml"))
+        webApp("src-gen", "src", "registry.RegistryConfigurator.ts", "com.gridnine.platform.elsa.demo.ui", false, arrayListOf<String>("../simple-site-server/src/main/codegen/simple-web-app.xml"))
     }
 }
 

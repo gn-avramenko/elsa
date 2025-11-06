@@ -1,0 +1,8 @@
+<admin-ui xmlns="http://vga.com/elsa/meta-admin-ui">
+    <form class-name="com.gridnine.platform.elsa.demo.admin.organization.OrganizationEditorForm">
+        <text-field id="name" title="ru:Имя|en:Name"/>
+        <remote-select id="country" title="ru:Стана|en:Country"/>
+        <text-field id="address" title="ru:Адрес|en:Address"/>
+        <text-field id="contacts" title="ru:Контакты|en:Contacts"/>
+    </form>
+</admin-ui>

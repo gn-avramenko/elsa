@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.plugin;
 
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.JavaAdminUiCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.common.HasCodeGenType;
 import com.gridnine.platform.elsa.gradle.codegen.custom.JavaCustomCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.domain.JavaDomainCodeGenRecord;
@@ -98,6 +99,14 @@ public class ElsaJavaCodeGenExtension {
         codegenRecords.add(record);
     }
 
+    public void adminUi(String destDir, String configurator, List<String> sourcesFileNames) throws IOException {
+        var record = new JavaAdminUiCodeGenRecord();
+        record.setRegistryConfigurator(configurator);
+        sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
+        record.setDestinationDir(new File(projectDir, destDir));
+        codegenRecords.add(record);
+    }
+
     public void remotingInjection(String destDir,  List<String> sourcesFileNames) throws IOException {
         List<File> files = sourcesFileNames.stream().map(it -> new File(projectDir, it)).toList();
         if(globalData.getCurrentRemotingRecord() != null) {
@@ -118,9 +127,10 @@ public class ElsaJavaCodeGenExtension {
         codegenRecords.add(record);
     }
 
-    public void webApp(String destDir, String sourceDir, String configurator,  List<String> sourcesFileNames) throws IOException {
+    public void webApp(String destDir, String sourceDir, String configurator,  boolean skipCommonClasses, List<String> sourcesFileNames) throws IOException {
         var record = new JavaWebAppCodeGenRecord();
         record.setRegistryConfigurator(configurator);
+        record.setSkipCommonClasses(skipCommonClasses);
         sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
         record.setSourceDir(new File(projectDir, sourceDir));

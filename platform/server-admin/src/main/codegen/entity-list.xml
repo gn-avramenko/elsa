@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://vga.com/elsa/meta-web-app">
+    <enum id="com.gridnine.platform.elsa.admin.web.entityList.ColumnType">
+        <enum-item id="STRING"/>
+        <enum-item id="NUMBER"/>
+    </enum>
+    <enum id="com.gridnine.platform.elsa.admin.web.entityList.SelectionType">
+        <enum-item id="NONE"/>
+        <enum-item id="SINGLE"/>
+        <enum-item id="MULTIPLE"/>
+    </enum>
+    <entity id="com.gridnine.platform.elsa.admin.web.entityList.ColumnDescription">
+        <property id="id" type="STRING" non-nullable="true"/>
+        <property id="title" type="STRING" non-nullable="true"/>
+        <property id="sortable" type="BOOLEAN" non-nullable="true"/>
+        <property id="width" type="INT"/>
+        <property id="columnType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityList.ColumnType" non-nullable="true"/>
+    </entity>
+    <enum id="com.gridnine.platform.elsa.admin.web.entityList.SortOrder">
+        <enum-item id="ASC"/>
+        <enum-item id="DESC"/>
+    </enum>
+    <entity id="com.gridnine.platform.elsa.admin.web.entityList.Sort">
+        <property id="field" type="STRING" non-nullable="true"/>
+        <property id="order" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityList.SortOrder" non-nullable="true"/>
+    </entity>
+    <entity id="com.gridnine.platform.elsa.admin.web.entityList.RowData">
+        <property id="id" type="STRING" non-nullable="true"/>
+        <property id="mobileContent" type="STRING"/>
+        <map id="fields" key-type="STRING" value-type="STRING"/>
+    </entity>
+    <button class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListButton"/>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityFilter">
+        <server-managed-state>
+            <property id="title" type="STRING" non-nullable="true"/>
+            <property id="debounceTime" type="INT" non-nullable="true"/>
+            <property id="limit" type="INT" non-nullable="true"/>
+        </server-managed-state>
+        <input-value>
+            <collection id="value" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+        </input-value>
+        <services>
+            <service id="getData">
+                <request>
+                    <property id="query" type="STRING"/>
+                    <property id="limit" type="INT" non-nullable="true"/>
+                </request>
+                <response>
+                    <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+                </response>
+            </service>
+        </services>
+    </custom>
+
+
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityList" managed-configuration="true">
+        <server-managed-state>
+            <property id="contentTitle" type="STRING" non-nullable="true"/>
+            <property id="filtersTitle" type="STRING" non-nullable="true"/>
+            <property id="sort" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.entityList.Sort" non-nullable="true"/>
+            <property id="loading" type="BOOLEAN" non-nullable="true"/>
+            <property id="hasMore" type="BOOLEAN" non-nullable="true"/>
+            <property id="selectionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityList.SelectionType" non-nullable="true"/>
+            <collection id="selectedItems" element-type="STRING" />
+            <collection id="columns" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.ColumnDescription"/>
+            <collection id="data" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.entityList.RowData"/>
+        </server-managed-state>
+        <commands-from-server>
+            <command id="refreshData"/>
+            <command id="hideFilters"/>
+        </commands-from-server>
+        <commands-from-client>
+            <command id="loadMore"/>
+            <command id="refreshData">
+                <property id="breakPoint" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.common.BreakPoint"/>
+            </command>
+            <command id="changeSort">
+                <property id="field" type="STRING" non-nullable="true"/>
+                <property id="sortOrder" type="ENUM" non-nullable="true" class-name="com.gridnine.platform.elsa.admin.web.entityList.SortOrder"/>
+            </command>
+            <command id="doubleClick">
+                <property id="id" type="STRING" non-nullable="true"/>
+            </command>
+            <command id="restoreCommittedFilterValues"/>
+        </commands-from-client>
+        <children>
+            <text-field id="searchField" class-name="com.gridnine.platform.elsa.admin.web.entityList.EntityListSearchField"/>
+        </children>
+    </custom-container>
+</web-app>

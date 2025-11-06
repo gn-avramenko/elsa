@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://vga.com/elsa/meta-admin-ui"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://vga.com/elsa/meta-admin-ui"
+        xmlns:common="http://vga.com/elsa/meta-common">
+    <element name="admin-ui">
+        <complexType>
+            <sequence>
+                <choice maxOccurs="unbounded" minOccurs="0">
+                    <group ref="tns:AllRootElementsGroup"/>
+                    <element name="enum">
+                        <complexType>
+                            <complexContent>
+                                <extension base="common:MetaElementType">
+                                    <sequence>
+                                        <element name="enum-item" maxOccurs="unbounded"
+                                                 minOccurs="0" type="common:MetaElementType"/>
+                                    </sequence>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                    <element name="entity" type="tns:EntityWithId"/>
+                </choice>
+            </sequence>
+        </complexType>
+    </element>
+    <group name="AllRootElementsGroup">
+        <choice>
+            <element name="form" type="tns:RootForm"/>
+        </choice>
+    </group>
+    <complexType name="RootForm">
+        <sequence minOccurs="0" maxOccurs="unbounded">
+            <group ref="tns:AllFormControls"/>
+        </sequence>
+        <attribute name="class-name" type="string" use="required"/>
+    </complexType>
+    <group name="AllFormControls">
+        <choice>
+            <element type="tns:FormSelectType" name="select"/>
+            <element type="tns:FormTextFieldType" name="text-field"/>
+            <element type="tns:FormRemoteSelectType" name="remote-select"/>
+            <element type="tns:FormCustomType" name="custom"/>
+        </choice>
+    </group>
+    <complexType name="EntityWithId">
+        <complexContent>
+            <extension base="tns:Entity">
+                <attribute name="id" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="Entity">
+        <sequence>
+            <element name="property" type="common:PropertyType" minOccurs="0"
+                     maxOccurs="unbounded"/>
+            <element name="collection" type="common:CollectionType" minOccurs="0"
+                     maxOccurs="unbounded"/>
+            <element name="map" type="common:MapType" minOccurs="0"
+                     maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <complexType name="BaseFormElementType">
+        <complexContent>
+            <extension base="common:MetaElementType">
+                <attribute name="title" type="string"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="FormSelectType">
+            <complexContent>
+                <extension base="tns:BaseFormElementType"/>
+            </complexContent>
+    </complexType>
+    <complexType name="FormTextFieldType">
+        <complexContent>
+            <extension base="tns:BaseFormElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="FormRemoteSelectType">
+        <complexContent>
+            <extension base="tns:BaseFormElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="FormCustomType">
+        <complexContent>
+            <extension base="common:MetaElementType">
+            <attribute name="class-name" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="BaseRootElementType">
+        <attribute name="class-name" type="string" use="required"/>
+    </complexType>
+</schema>

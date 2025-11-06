@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <schema targetNamespace="http://vga.com/elsa/meta-web-app"
         elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
@@ -66,7 +65,7 @@
             <element name="server-managed-state" minOccurs="0">
                 <complexType>
                     <sequence>
-                        <choice>
+                        <choice minOccurs="0" maxOccurs="unbounded">
                             <element name="property" type="common:PropertyType" minOccurs="0"
                                      maxOccurs="unbounded"/>
                             <element name="collection" type="common:CollectionType" minOccurs="0"
@@ -91,6 +90,15 @@
                     </sequence>
                 </complexType>
             </element>
+            <element name="input-value" minOccurs="0" type="tns:Entity"/>
+            <element name="services" minOccurs="0">
+                <complexType>
+                    <sequence>
+                        <element name="service" type="tns:Service"
+                                 maxOccurs="unbounded"/>
+                    </sequence>
+                </complexType>
+            </element>
         </sequence>
         <attribute name="class-name" type="string" use="required"/>
     </complexType>
@@ -98,6 +106,7 @@
         <choice>
             <element type="tns:ModalType" name="modal"/>
             <element type="tns:ContainerType" name="container"/>
+            <element type="tns:CustomContainerType" name="custom-container"/>
             <element type="tns:ButtonType" name="button"/>
             <element type="tns:SelectType" name="select"/>
             <element type="tns:RouterType" name="router"/>
@@ -114,7 +123,11 @@
         <choice>
             <element type="tns:RootModalType" name="modal"/>
             <element type="tns:RootContainerType" name="container"/>
+            <element type="tns:RootCustomContainerType" name="custom-container"/>
             <element type="tns:RootTextFieldType" name="text-field"/>
+            <element type="tns:RootButtonType" name="button"/>
+            <element type="tns:RootAutocompleteType" name="autocomplete"/>
+            <element type="tns:RootCustomType" name="custom"/>
         </choice>
     </group>
 
@@ -132,10 +145,47 @@
                         </complexType>
                     </element>
                 </sequence>
+                <attribute name="managed-configuration"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="RootCustomContainerType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType">
+                <sequence minOccurs="0">
+                    <element name="children">
+                        <complexType>
+                            <sequence>
+                                <choice maxOccurs="unbounded" minOccurs="0">
+                                    <group ref="tns:AllElementsGroup"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="managed-configuration"/>
             </extension>
         </complexContent>
     </complexType>
     <complexType name="ContainerType">
+        <complexContent>
+            <extension base="tns:BaseElementType">
+                <sequence minOccurs="0">
+                    <element name="children">
+                        <complexType>
+                            <sequence>
+                                <choice>
+                                    <group ref="tns:AllElementsGroup"/>
+                                </choice>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="managed-configuration" type="boolean" default="false"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="CustomContainerType">
         <complexContent>
             <extension base="tns:BaseElementType">
                 <sequence minOccurs="0">
@@ -193,6 +243,16 @@
             <extension base="tns:BaseRootElementType"/>
         </complexContent>
     </complexType>
+    <complexType name="RootAutocompleteType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="RootButtonType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType"/>
+        </complexContent>
+    </complexType>
     <complexType name="TextFieldType">
         <complexContent>
             <extension base="tns:BaseElementType"/>
@@ -224,6 +284,8 @@
                          maxOccurs="unbounded"/>
                 <element name="collection" type="common:CollectionType" minOccurs="0"
                          maxOccurs="unbounded"/>
+                <element name="map" type="common:MapType" minOccurs="0"
+                         maxOccurs="unbounded"/>
             </sequence>
     </complexType>
     <complexType name="EntityWithId">
@@ -236,6 +298,11 @@
     <complexType name="CustomType">
         <complexContent>
             <extension base="tns:BaseElementType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="RootCustomType">
+        <complexContent>
+            <extension base="tns:BaseRootElementType"/>
         </complexContent>
     </complexType>
     <complexType name="Service">

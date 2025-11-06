@@ -41,15 +41,19 @@ public class ElsaWebCodeGenExtension {
         this.projectDir = projectDir;
     }
 
-    public void remoting(String destDir,  List<String> sourcesFileNames) {
+    public void remoting(String destDir,  String commonPackageName, List<String> sourcesFileNames) {
         var record = new WebRemotingCodeGenRecord();
+        record.setCommonPackageName(commonPackageName);
         sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
         codegenRecords.add(record);
     }
 
-    public void webApp(String destDir, String sourceDir, List<String> sourcesFileNames) {
+    public void webApp(String destDir, String sourceDir, String configurator, String commonPackageName, boolean skipCommonClasses, List<String> sourcesFileNames) {
         var record = new WebWebAppCodeGenRecord();
+        record.setCommonPackageName(commonPackageName);
+        record.setConfigurator(configurator);
+        record.setSkipCommonClasses(skipCommonClasses);
         sourcesFileNames.forEach(it -> record.getSources().add(new File(projectDir, it)));
         record.setDestinationDir(new File(projectDir, destDir));
         record.setSourceDir(new File(projectDir, sourceDir));

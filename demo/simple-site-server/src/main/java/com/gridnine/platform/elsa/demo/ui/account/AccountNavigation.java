@@ -35,7 +35,7 @@ public class AccountNavigation extends AccountNavigationSkeleton{
 	}
 
     @Override
-    protected AccountNavigationConfiguration createConfiguration(OperationUiContext ctx) {
+    protected AccountNavigationConfiguration createConfiguration() {
         var result = new AccountNavigationConfiguration();
         result.setFlexDirection(FlexDirection.COLUMN);
         {

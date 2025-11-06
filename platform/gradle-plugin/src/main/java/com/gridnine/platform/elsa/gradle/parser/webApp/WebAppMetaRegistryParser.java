@@ -32,7 +32,7 @@ import java.util.List;
 
 public class WebAppMetaRegistryParser {
 
-    public void updateMetaRegistry(WebAppMetaRegistry registry, List<File> sources) {
+    public void updateMetaRegistry(WebAppMetaRegistry registry, boolean skipCommonClasses, List<File> sources) {
         sources.forEach(it -> BuildExceptionUtils.wrapException(() -> {
             MetaDataParsingResult pr = CommonParserUtils.parse(it);
             XmlNode node = pr.node();
@@ -46,145 +46,151 @@ public class WebAppMetaRegistryParser {
                 }
             });
         }));
-        {
-            var dialogButtonDescription = new ButtonWebElementDescription("com.gridnine.platform.elsa.ui.common.DialogButton");
-            registry.getElements().put(dialogButtonDescription.getClassName(), dialogButtonDescription);
-        }
-        {
-            var confirmMessage = new LabelWebElementDescription("com.gridnine.platform.elsa.ui.common.ConfirmMessage");
-            registry.getElements().put(confirmMessage.getClassName(), confirmMessage);
-        }
-        {
-            var wrapperCtr = new ContainerWebElementDescription("com.gridnine.platform.elsa.ui.common.ContentWrapper");
-            wrapperCtr.setManagedConfiguration(true);
-            registry.getElements().put(wrapperCtr.getClassName(), wrapperCtr);
-        }
-        {
-            var flexDirectionEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.FlexDirection");
+        if(!skipCommonClasses) {
             {
-                var item = new EnumItemDescription("ROW");
-                flexDirectionEnum.getItems().put(item.getId(), item);
+                var dialogButtonDescription = new ButtonWebElementDescription("com.gridnine.platform.elsa.webApp.common.DialogButton");
+                registry.getElements().put(dialogButtonDescription.getClassName(), dialogButtonDescription);
             }
             {
-                var item = new EnumItemDescription("COLUMN");
-                flexDirectionEnum.getItems().put(item.getId(), item);
-            }
-            registry.getEnums().put(flexDirectionEnum.getId(), flexDirectionEnum);
-        }
-        {
-            var sortOrderEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.SortOrder");
-            {
-                var item = new EnumItemDescription("ASC");
-                sortOrderEnum.getItems().put(item.getId(), item);
+                var confirmMessage = new LabelWebElementDescription("com.gridnine.platform.elsa.webApp.common.ConfirmMessage");
+                registry.getElements().put(confirmMessage.getClassName(), confirmMessage);
             }
             {
-                var item = new EnumItemDescription("DESC");
-                sortOrderEnum.getItems().put(item.getId(), item);
-            }
-            registry.getEnums().put(sortOrderEnum.getId(), sortOrderEnum);
-        }
-        {
-            var entityListColumnType = new EnumDescription("com.gridnine.platform.elsa.webApp.common.EntityListColumnType");
-            {
-                var item = new EnumItemDescription("TEXT");
-                entityListColumnType.getItems().put(item.getId(), item);
+                var wrapperCtr = new ContainerWebElementDescription("com.gridnine.platform.elsa.webApp.common.ContentWrapper");
+                wrapperCtr.setManagedConfiguration(true);
+                registry.getElements().put(wrapperCtr.getClassName(), wrapperCtr);
             }
             {
-                var item = new EnumItemDescription("MENU");
-                entityListColumnType.getItems().put(item.getId(), item);
+                var glueCtr = new ContainerWebElementDescription("com.gridnine.platform.elsa.webApp.common.Glue");
+                registry.getElements().put(glueCtr.getClassName(), glueCtr);
             }
             {
-                var item = new EnumItemDescription("CUSTOM");
-                entityListColumnType.getItems().put(item.getId(), item);
+                var flexDirectionEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.FlexDirection");
+                {
+                    var item = new EnumItemDescription("ROW");
+                    flexDirectionEnum.getItems().put(item.getId(), item);
+                }
+                {
+                    var item = new EnumItemDescription("COLUMN");
+                    flexDirectionEnum.getItems().put(item.getId(), item);
+                }
+                registry.getEnums().put(flexDirectionEnum.getId(), flexDirectionEnum);
             }
             {
-                var item = new EnumItemDescription("OPTION");
-                entityListColumnType.getItems().put(item.getId(), item);
-            }
-            registry.getEnums().put(entityListColumnType.getId(), entityListColumnType);
-        }
-        {
-            var notificationType = new EnumDescription("com.gridnine.platform.elsa.webApp.common.NotificationType");
-            {
-                var item = new EnumItemDescription("INFO");
-                notificationType.getItems().put(item.getId(), item);
-            }
-            {
-                var item = new EnumItemDescription("WARN");
-                notificationType.getItems().put(item.getId(), item);
+                var sortOrderEnum = new EnumDescription("com.gridnine.platform.elsa.webApp.common.SortOrder");
+                {
+                    var item = new EnumItemDescription("ASC");
+                    sortOrderEnum.getItems().put(item.getId(), item);
+                }
+                {
+                    var item = new EnumItemDescription("DESC");
+                    sortOrderEnum.getItems().put(item.getId(), item);
+                }
+                registry.getEnums().put(sortOrderEnum.getId(), sortOrderEnum);
             }
             {
-                var item = new EnumItemDescription("ERROR");
-                notificationType.getItems().put(item.getId(), item);
-            }
-            registry.getEnums().put(notificationType.getId(), notificationType);
-        }
-        {
-            var sort = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Sort");
-            {
-                var item = new StandardPropertyDescription("field");
-                item.setType(StandardValueType.STRING);
-                item.setNonNullable(true);
-                sort.getProperties().put(item.getId(), item);
-            }
-            {
-                var item = new StandardPropertyDescription("sortOrder");
-                item.setType(StandardValueType.ENUM);
-                item.setNonNullable(true);
-                item.setClassName("com.gridnine.platform.elsa.webApp.common.SortOrder");
-                sort.getProperties().put(item.getId(), item);
-            }
-            registry.getEntities().put(sort.getId(), sort);
-        }
-        {
-            var optionEntity = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Option");
-            {
-                var item = new StandardPropertyDescription("id");
-                item.setType(StandardValueType.STRING);
-                item.setNonNullable(true);
-                optionEntity.getProperties().put(item.getId(), item);
+                var entityListColumnType = new EnumDescription("com.gridnine.platform.elsa.webApp.common.EntityListColumnType");
+                {
+                    var item = new EnumItemDescription("TEXT");
+                    entityListColumnType.getItems().put(item.getId(), item);
+                }
+                {
+                    var item = new EnumItemDescription("MENU");
+                    entityListColumnType.getItems().put(item.getId(), item);
+                }
+                {
+                    var item = new EnumItemDescription("CUSTOM");
+                    entityListColumnType.getItems().put(item.getId(), item);
+                }
+                {
+                    var item = new EnumItemDescription("OPTION");
+                    entityListColumnType.getItems().put(item.getId(), item);
+                }
+                registry.getEnums().put(entityListColumnType.getId(), entityListColumnType);
             }
             {
-                var item = new StandardPropertyDescription("displayName");
-                item.setType(StandardValueType.STRING);
-                item.setNonNullable(true);
-                optionEntity.getProperties().put(item.getId(), item);
-            }
-            registry.getEntities().put(optionEntity.getId(), optionEntity);
-        }
-        {
-            var entityListColumnDescription = new EntityDescription("com.gridnine.platform.elsa.webApp.common.EntityListColumnDescription");
-            {
-                var item = new StandardPropertyDescription("id");
-                item.setType(StandardValueType.STRING);
-                item.setNonNullable(true);
-                entityListColumnDescription.getProperties().put(item.getId(), item);
-            }
-            {
-                var item = new StandardPropertyDescription("title");
-                item.setType(StandardValueType.STRING);
-                item.setNonNullable(true);
-                entityListColumnDescription.getProperties().put(item.getId(), item);
+                var notificationType = new EnumDescription("com.gridnine.platform.elsa.webApp.common.NotificationType");
+                {
+                    var item = new EnumItemDescription("INFO");
+                    notificationType.getItems().put(item.getId(), item);
+                }
+                {
+                    var item = new EnumItemDescription("WARN");
+                    notificationType.getItems().put(item.getId(), item);
+                }
+                {
+                    var item = new EnumItemDescription("ERROR");
+                    notificationType.getItems().put(item.getId(), item);
+                }
+                registry.getEnums().put(notificationType.getId(), notificationType);
             }
             {
-                var item = new StandardPropertyDescription("columnType");
-                item.setType(StandardValueType.ENUM);
-                item.setNonNullable(true);
-                item.setClassName("com.gridnine.platform.elsa.webApp.common.EntityListColumnType");
-                entityListColumnDescription.getProperties().put(item.getId(), item);
+                var sort = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Sort");
+                {
+                    var item = new StandardPropertyDescription("field");
+                    item.setType(StandardValueType.STRING);
+                    item.setNonNullable(true);
+                    sort.getProperties().put(item.getId(), item);
+                }
+                {
+                    var item = new StandardPropertyDescription("sortOrder");
+                    item.setType(StandardValueType.ENUM);
+                    item.setNonNullable(true);
+                    item.setClassName("com.gridnine.platform.elsa.webApp.common.SortOrder");
+                    sort.getProperties().put(item.getId(), item);
+                }
+                registry.getEntities().put(sort.getId(), sort);
             }
             {
-                var item = new StandardPropertyDescription("customSubtype");
-                item.setType(StandardValueType.STRING);
-                entityListColumnDescription.getProperties().put(item.getId(), item);
+                var optionEntity = new EntityDescription("com.gridnine.platform.elsa.webApp.common.Option");
+                {
+                    var item = new StandardPropertyDescription("id");
+                    item.setType(StandardValueType.STRING);
+                    item.setNonNullable(true);
+                    optionEntity.getProperties().put(item.getId(), item);
+                }
+                {
+                    var item = new StandardPropertyDescription("displayName");
+                    item.setType(StandardValueType.STRING);
+                    item.setNonNullable(true);
+                    optionEntity.getProperties().put(item.getId(), item);
+                }
+                registry.getEntities().put(optionEntity.getId(), optionEntity);
             }
             {
-                var item = new StandardPropertyDescription("sortable");
-                item.setType(StandardValueType.BOOLEAN);
-                item.setNonNullable(true);
-                entityListColumnDescription.getProperties().put(item.getId(), item);
+                var entityListColumnDescription = new EntityDescription("com.gridnine.platform.elsa.webApp.common.EntityListColumnDescription");
+                {
+                    var item = new StandardPropertyDescription("id");
+                    item.setType(StandardValueType.STRING);
+                    item.setNonNullable(true);
+                    entityListColumnDescription.getProperties().put(item.getId(), item);
+                }
+                {
+                    var item = new StandardPropertyDescription("title");
+                    item.setType(StandardValueType.STRING);
+                    item.setNonNullable(true);
+                    entityListColumnDescription.getProperties().put(item.getId(), item);
+                }
+                {
+                    var item = new StandardPropertyDescription("columnType");
+                    item.setType(StandardValueType.ENUM);
+                    item.setNonNullable(true);
+                    item.setClassName("com.gridnine.platform.elsa.webApp.common.EntityListColumnType");
+                    entityListColumnDescription.getProperties().put(item.getId(), item);
+                }
+                {
+                    var item = new StandardPropertyDescription("customSubtype");
+                    item.setType(StandardValueType.STRING);
+                    entityListColumnDescription.getProperties().put(item.getId(), item);
+                }
+                {
+                    var item = new StandardPropertyDescription("sortable");
+                    item.setType(StandardValueType.BOOLEAN);
+                    item.setNonNullable(true);
+                    entityListColumnDescription.getProperties().put(item.getId(), item);
+                }
+                registry.getEntities().put(entityListColumnDescription.getId(), entityListColumnDescription);
             }
-            registry.getEntities().put(entityListColumnDescription.getId(), entityListColumnDescription);
         }
 
     }
@@ -203,6 +209,18 @@ public class WebAppMetaRegistryParser {
             }
             case "container" -> {
                 var result = new ContainerWebElementDescription(className);
+                updateBaseProperties(result, child);
+                result.setManagedConfiguration("true".equals(child.getAttribute("managed-configuration")));
+                var children = child.getFirstChild("children");
+                if(children != null){
+                    children.getChildren().forEach(it -> {
+                        result.getChildren().put(CommonParserUtils.getIdAttribute(it), processElement(it, registry));
+                    });
+                }
+                yield result;
+            }
+            case "custom-container" -> {
+                var result = new CustomContainerWebElementDescription(className);
                 updateBaseProperties(result, child);
                 result.setManagedConfiguration("true".equals(child.getAttribute("managed-configuration")));
                 var children = child.getFirstChild("children");
@@ -287,9 +305,9 @@ public class WebAppMetaRegistryParser {
                 var item = new WebElementCommandDescription();
                 item.setId(CommonParserUtils.getIdAttribute(command));
                 var ett = new CustomWebElementDescription("test");
-                updateBaseProperties(ett, command);
-                item.getProperties().putAll(ett.getServerManagedState().getProperties());
-                item.getCollections().putAll(ett.getServerManagedState().getCollections());
+                var ext = getElementExtension(command);
+                item.getProperties().putAll(ext.getProperties());
+                item.getCollections().putAll(ext.getCollections());
                 dd.getCommandsFromServer().put(item.getId(), item);
             });
         }
@@ -299,9 +317,9 @@ public class WebAppMetaRegistryParser {
                 var item = new WebElementCommandDescription();
                 item.setId(CommonParserUtils.getIdAttribute(command));
                 var ett = new CustomWebElementDescription("test");
-                updateBaseProperties(ett, command);
-                item.getProperties().putAll(ett.getServerManagedState().getProperties());
-                item.getCollections().putAll(ett.getServerManagedState().getCollections());
+                var ext = getElementExtension(command);
+                item.getProperties().putAll(ext.getProperties());
+                item.getCollections().putAll(ext.getCollections());
                 dd.getCommandsFromClient().put(item.getId(), item);
             });
         }
@@ -313,20 +331,30 @@ public class WebAppMetaRegistryParser {
                 var req = command.getFirstChild("request");
                 if(req != null){
                     var request = new WebAppEntity();
-                    var ett = new CustomWebElementDescription("test");
-                    updateBaseProperties(ett, command);
-                    request.getProperties().putAll(ett.getServerManagedState().getProperties());
-                    request.getCollections().putAll(ett.getServerManagedState().getCollections());
+                    var ett = getElementExtension(req);
+                    request.getProperties().putAll(ett.getProperties());
+                    request.getCollections().putAll(ett.getCollections());
                     item.setRequest(request);
                 }
+                var rsp = command.getFirstChild("response");
+                var ett = getElementExtension(rsp);
                 var response = new WebAppEntity();
-                var ett = new CustomWebElementDescription("response");
-                updateBaseProperties(ett, command);
-                response.getProperties().putAll(ett.getServerManagedState().getProperties());
-                response.getCollections().putAll(ett.getServerManagedState().getCollections());
+                response.getProperties().putAll(ett.getProperties());
+                response.getCollections().putAll(ett.getCollections());
                 item.setResponse(response);
                 dd.getServices().put(item.getId(), item);
             });
+        }
+        var iv = child.getFirstChild("input-value");
+        if (iv != null) {
+            var item = new InputDescription();
+            dd.setInput(item);
+            item.setType(InputType.TEXT_FIELD);
+            var ext = getElementExtension(iv);
+            var ett = new WebAppEntity();
+            item.setValue(ett);;
+            ett.getProperties().putAll(ext.getProperties());
+            ett.getCollections().putAll(ext.getCollections());
         }
     }
 
@@ -350,6 +378,14 @@ public class WebAppMetaRegistryParser {
             cd.setElementType(StandardValueType.valueOf(coll.getAttribute("element-type")));
             cd.setUnique("true".equals(coll.getAttribute("unique")));
             result.getCollections().put(id, cd);
+        });
+        child.getChildren("map").forEach(map -> {
+            var md = new StandardMapDescription(CommonParserUtils.getIdAttribute(map));
+            result.getMaps().put(md.getId(), md);
+            md.setKeyClassName(map.getAttribute("key-class-name"));
+            md.setKeyType(StandardValueType.valueOf(map.getAttribute("key-type")));
+            md.setValueClassName(map.getAttribute("value-class-name"));
+            md.setValueType(StandardValueType.valueOf(map.getAttribute("key-type")));
         });
         return result;
     }

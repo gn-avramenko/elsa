@@ -27,7 +27,7 @@ import com.gridnine.platform.elsa.gradle.meta.webApp.BaseWebElementDescription;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 public class WebCommonHelper {
-    public static String getServerCommandImport(BaseWebElementDescription descr) throws Exception {
+    public static String getServerCommandImport(BaseWebElementDescription descr, String commonPackageName) throws Exception {
         if(descr.getCommandsFromServer().isEmpty()){
             return "";
         }
@@ -39,7 +39,7 @@ public class WebCommonHelper {
             bldr.append("\n\r");
             var actionClassName = "%s%sAction".formatted(descr.getClassName(),BuildTextUtils.capitalize(cmd.getId()));
             var cls = JavaCodeGeneratorUtils.getSimpleName(actionClassName);
-            var imp = WebCodeGeneratorUtils.getImportName(actionClassName);
+            var imp = WebCodeGeneratorUtils.getImportName(actionClassName,commonPackageName);
             bldr.append("import { %s } from '%s'".formatted(cls, imp));
         }
         return bldr.toString();

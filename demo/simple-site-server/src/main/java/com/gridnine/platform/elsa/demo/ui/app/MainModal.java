@@ -25,14 +25,8 @@
 package com.gridnine.platform.elsa.demo.ui.app;
 
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument;
-import com.gridnine.platform.elsa.ui.common.ConfirmMessage;
-import com.gridnine.platform.elsa.ui.common.ConfirmMessageConfiguration;
-import com.gridnine.platform.elsa.ui.common.ContentWrapper;
-import com.gridnine.platform.elsa.ui.common.ContentWrapperConfiguration;
-import com.gridnine.platform.elsa.ui.common.DialogButton;
-import com.gridnine.platform.elsa.ui.common.DialogButtonConfiguration;
 import com.gridnine.platform.elsa.webApp.WebAppUtils;
-import com.gridnine.platform.elsa.webApp.common.FlexDirection;
+import com.gridnine.platform.elsa.webApp.common.*;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import java.util.ArrayList;
@@ -42,7 +36,7 @@ public class MainModal extends MainModalSkeleton{
 
 	public MainModal(String tag, MainModalConfiguration config, OperationUiContext ctx){
 		super(tag, config, ctx);
-		setCloseListener(this::removeChildren, ctx);
+		setCloseListener(this::removeChildren);
 	}
 	public void closeDialog(OperationUiContext context){
 		removeChildren(context);

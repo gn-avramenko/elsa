@@ -22,18 +22,21 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/demo" />
+            <option value="$PROJECT_DIR$/demo/admin" />
             <option value="$PROJECT_DIR$/demo/simple-site-server" />
             <option value="$PROJECT_DIR$/demo/simple-site-web" />
             <option value="$PROJECT_DIR$/platform" />
             <option value="$PROJECT_DIR$/platform/common-core" />
             <option value="$PROJECT_DIR$/platform/common-meta" />
             <option value="$PROJECT_DIR$/platform/gradle-plugin" />
+            <option value="$PROJECT_DIR$/platform/server-admin" />
             <option value="$PROJECT_DIR$/platform/server-atomikos" />
             <option value="$PROJECT_DIR$/platform/server-core" />
             <option value="$PROJECT_DIR$/platform/server-file-storage" />
             <option value="$PROJECT_DIR$/platform/server-mongo" />
             <option value="$PROJECT_DIR$/platform/server-postgres" />
             <option value="$PROJECT_DIR$/platform/server-web-app" />
+            <option value="$PROJECT_DIR$/platform/web-admin" />
             <option value="$PROJECT_DIR$/platform/web-core" />
             <option value="$PROJECT_DIR$/submodules" />
             <option value="$PROJECT_DIR$/submodules/webpeer" />

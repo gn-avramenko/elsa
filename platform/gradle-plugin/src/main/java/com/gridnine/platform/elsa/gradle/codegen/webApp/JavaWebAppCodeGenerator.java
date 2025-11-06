@@ -44,7 +44,7 @@ public class JavaWebAppCodeGenerator implements CodeGenerator<JavaWebAppCodeGenR
         var coll = new ArrayList<>(record.getSources());
         coll.addAll(record.getExternalInjections());
         var metaRegistry = new WebAppMetaRegistry();
-        parser.updateMetaRegistry(metaRegistry, coll);
+        parser.updateMetaRegistry(metaRegistry, record.isSkipCommonClasses(), coll);
         for (EnumDescription ed : metaRegistry.getEnums().values()) {
             JavaCodeGeneratorUtils.generateJavaEnumCode(ed, destDir, generatedFiles);
         }
@@ -57,7 +57,9 @@ public class JavaWebAppCodeGenerator implements CodeGenerator<JavaWebAppCodeGenR
             CustomWebElementDescription ce = WebAppMetadataHelper.toCustomEntity(elm);
             if(ce.getInput() != null){
                 var id = WebAppMetadataHelper.getInputValueDescription(ce);
-                JavaWebAppEntityHelper.generateJavaEntityCode(id, destDir, generatedFiles);
+                if(id.getProperties().size()+id.getCollections().size()>1){
+                    JavaWebAppEntityHelper.generateJavaEntityCode(id, destDir, generatedFiles);
+                }
             }
             for(var cmd: WebAppMetadataHelper.getCommandsDescription(elm)){
                 JavaWebAppEntityHelper.generateJavaEntityCode(cmd, destDir, generatedFiles);

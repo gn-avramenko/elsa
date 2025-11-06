@@ -53,7 +53,7 @@ public class WebRemotingCodeGenerator implements CodeGenerator<WebRemotingCodeGe
                 }
                 for (var ett : metaRegistry.getEntities().values()) {
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(ett, metaRegistry, gen);
+                    WebCodeGeneratorUtils.generateWebEntityCode(ett, metaRegistry, gen, record.getCommonPackageName());
                     var file = JavaCodeGeneratorUtils.saveIfDiffers(gen.toString(), "%s.ts".formatted(JavaCodeGeneratorUtils.getSimpleName(ett.getId())), modelsDir);
                     generatedFiles.add(file);
                 }

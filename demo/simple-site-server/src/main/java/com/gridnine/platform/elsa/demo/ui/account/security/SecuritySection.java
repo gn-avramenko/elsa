@@ -33,7 +33,7 @@ public class SecuritySection extends SecuritySectionSkeleton{
 	}
 
     @Override
-    protected SecuritySectionConfiguration createConfiguration(OperationUiContext ctx) {
+    protected SecuritySectionConfiguration createConfiguration() {
         var config = new SecuritySectionConfiguration();
         return config;
     }

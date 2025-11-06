@@ -34,7 +34,7 @@ public class MainPage extends MainPageSkeleton{
 	}
 
     @Override
-    protected MainPageConfiguration createConfiguration(OperationUiContext ctx) {
+    protected MainPageConfiguration createConfiguration() {
         var result = new MainPageConfiguration();
         result.setFlexDirection(FlexDirection.COLUMN);
         {
@@ -59,7 +59,7 @@ public class MainPage extends MainPageSkeleton{
             var sendFeedback = new SendFeedbackButtonConfiguration();
             sendFeedback.setTitle("Send");
             sendFeedback.setClickListener((ct) ->{
-                var value = getFeedbackContent().getValue().getValue();
+                var value = getFeedbackContent().getValue();
                 System.out.println(value);
             });
             result.setSendFeedback(sendFeedback);

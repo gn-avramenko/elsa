@@ -33,6 +33,8 @@ public class WebAppEntity {
 
     private final Map<String, StandardCollectionDescription> collections = new LinkedHashMap<>();
 
+    private final Map<String, StandardMapDescription> maps = new LinkedHashMap<>();
+
     public Map<String, StandardPropertyDescription> getProperties() {
         return properties;
     }
@@ -41,4 +43,7 @@ public class WebAppEntity {
         return collections;
     }
 
+    public Map<String, StandardMapDescription> getMaps() {
+        return maps;
+    }
 }

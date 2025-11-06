@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.plugin;
 
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.JavaAdminUiCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.BaseCodeGenRecord;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.GeneratorType;
@@ -126,6 +127,7 @@ public class ElsaCodeGenTask extends DefaultTask {
         }));
         gens.forEach(entry -> {
             var codeGen = (CodeGenerator) switch (entry.getKey()) {
+                case JAVA_ADMIN_UI -> new JavaAdminUiCodeGenerator();
                 case JAVA_WEB_APP -> new JavaWebAppCodeGenerator();
                 case JAVA_DOMAIN -> new JavaDomainCodeGenerator();
                 case JAVA_CUSTOM -> new JavaCustomCodeGenerator();
