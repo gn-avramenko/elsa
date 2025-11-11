@@ -1,7 +1,7 @@
-import { initStateSetters } from '@/common/component';
-import { ButtonSkeleton } from '@g/common/ButtonSkeleton';
+import { initStateSetters } from 'admin/src/common/component';
+import { ButtonSkeleton } from 'admin/src-gen/common/ButtonSkeleton';
 import { Button } from 'antd';
-import { DynamicIcon } from '@/common/extension';
+import { DynamicIcon } from 'admin/src/common/extension';
 
 function ButtonFC(props: { element: ButtonComponent }) {
     initStateSetters(props.element);

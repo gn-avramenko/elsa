@@ -24,20 +24,26 @@ package com.gridnine.platform.elsa.gradle.codegen.domain;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.domain.DomainMetaRegistryParser;
+import com.gridnine.platform.elsa.gradle.plugin.ElsaGlobalData;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
 public class JavaDomainCodeGenerator implements CodeGenerator<JavaDomainCodeGenRecord> {
     @Override
-    public void generate(JavaDomainCodeGenRecord record, File destDir, Set<File> generatedFiles, Map<Object, Object> context) {
+    public void generate(JavaDomainCodeGenRecord record, File destDir, Set<File> generatedFiles, Map<Object, Object> context) throws IOException {
         var parser = new DomainMetaRegistryParser();
-        {
+        String dir = record.getDestinationDir().getCanonicalPath();
+        ElsaGlobalData elsaGlobalData = (ElsaGlobalData) context.get("elsa-global-data");
+        if(!record.getSources().isEmpty()){
             var coll = new ArrayList<>(record.getSources());
-            coll.addAll(record.getExternalInjections());
+            if(elsaGlobalData.getDomainInjections().containsKey(dir)){
+                coll.addAll(elsaGlobalData.getDomainInjections().get(dir));
+            }
             var metaRegistry = new DomainMetaRegistry();
             parser.updateMetaRegistry(metaRegistry, coll);
             BuildExceptionUtils.wrapException(() -> JavaDomainEntitiesCodeGenerator.generate(metaRegistry, destDir, generatedFiles, context));

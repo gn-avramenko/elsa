@@ -24,9 +24,11 @@
 
 package com.gridnine.platform.elsa.webApp.common;
 
+import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
+import com.gridnine.platform.elsa.admin.web.common.ContentWrapperSkeleton;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class ContentWrapper extends ContentWrapperSkeleton{
+public class ContentWrapper extends ContentWrapperSkeleton {
 
 	public ContentWrapper(String tag, ContentWrapperConfiguration config, OperationUiContext ctx){
 		super(tag, config, ctx);

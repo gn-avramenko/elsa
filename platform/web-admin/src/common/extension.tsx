@@ -1,5 +1,5 @@
 import { webpeerExt } from 'webpeer-core';
-import { ReactWebPeerExtension } from '@/common/component';
+import { ReactWebPeerExtension } from 'admin/src/common/component';
 import * as AntdIcons from '@ant-design/icons';
 
 export type AdminWebPeerExtension = ReactWebPeerExtension & {

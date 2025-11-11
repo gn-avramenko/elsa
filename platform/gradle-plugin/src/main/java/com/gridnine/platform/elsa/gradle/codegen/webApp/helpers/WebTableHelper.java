@@ -29,17 +29,17 @@ import java.io.File;
 import java.io.IOException;
 
 public class WebTableHelper {
-    public static void generateTable(TableWebElementDescription descr, File destDir, String commonPackageName) throws IOException {
+    public static void generateTable(TableWebElementDescription descr, File destDir, String commonPackageName, String moduleName) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName, moduleName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
-                import { WebComponentWrapper } from '@/common/wrapper';
-                import { initStateSetters } from '@/common/component';
-                import { EntityListColumnDescription } from '@g/common/EntityListColumnDescription';
-                import { Option } from '@g/common/Option';
+                import { WebComponentWrapper } from '%s/src/common/wrapper';
+                import { initStateSetters } from '%s/src/common/component';
+                import { EntityListColumnDescription } from '%s/src-gen/common/EntityListColumnDescription';
+                import { Option } from '%s/src-gen/common/Option';
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
@@ -150,7 +150,7 @@ public class WebTableHelper {
                        this.sendRefreshData();
                     }
                 }
-                """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
+                """.formatted(moduleName, moduleName, moduleName, moduleName, skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if(!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

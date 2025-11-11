@@ -29,20 +29,20 @@ import com.gridnine.platform.elsa.gradle.parser.webApp.WebAppMetadataHelper;
 import java.io.File;
 
 public class WebModalHelper {
-    public static void generateModal(ModalWebElementDescription descr, File destDir, String commonPackageName) throws Exception {
+    public static void generateModal(ModalWebElementDescription descr, File destDir, String commonPackageName, String moduleName) throws Exception {
         var ett = WebAppMetadataHelper.toCustomEntity(descr);
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName, moduleName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
-        import { BaseReactUiElement, initStateSetters } from '@/common/component';
+        import { BaseReactUiElement, initStateSetters } from '%s/src/common/component';
         import { %s } from '%s';
         import { useState } from 'react';
-        import { NotificationType } from '@g/common/NotificationType'; %s
-        import { NotificationFC } from '@/common/notification';
-        import { Modal } from '@/common/modal';
+        import { NotificationType } from '%s/src-gen/common/NotificationType'; %s
+        import { NotificationFC } from '%s/src/common/notification';
+        import { Modal } from '%s/src/common/modal';
         
                 function %s(props: { element: %s }) {
                     initStateSetters(props.element);
@@ -86,7 +86,7 @@ public class WebModalHelper {
                     functionalComponent = %s;
                     %s
                 }
-        """.formatted(skeletonName, skeletonImport,WebCommonHelper.getServerCommandImport(ett, commonPackageName), functionalComponentName, componentName, componentName, skeletonName, functionalComponentName, WebCommonHelper.getServerCommandBlock(ett));
+        """.formatted(moduleName, moduleName, moduleName, moduleName, skeletonName, skeletonImport,WebCommonHelper.getServerCommandImport(ett, commonPackageName, moduleName), functionalComponentName, componentName, componentName, skeletonName, functionalComponentName, WebCommonHelper.getServerCommandBlock(ett));
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if(!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

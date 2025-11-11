@@ -1,5 +1,5 @@
-import { initStateSetters } from '@/common/component';
-import { HomePageSkeleton } from '@g/mainFrame/HomePageSkeleton';
+import { initStateSetters } from 'admin/src/common/component';
+import { HomePageSkeleton } from 'admin/src-gen/mainFrame/HomePageSkeleton';
 
 function HomePageFC(props: { element: HomePageComponent }) {
     initStateSetters(props.element);

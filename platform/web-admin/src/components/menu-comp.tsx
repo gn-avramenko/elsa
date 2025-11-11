@@ -1,6 +1,6 @@
 import { MenuProps } from 'antd/lib';
 import { Menu } from 'antd';
-import { DynamicIcon } from '@/common/extension';
+import { DynamicIcon } from 'admin/src/common/extension';
 
 export type MenuItem = {
     id: string;

@@ -1,20 +1,20 @@
-import { initStateSetters } from '@/common/component';
-import { MainFrameSkeleton } from '@g/mainFrame/MainFrameSkeleton';
+import { initStateSetters } from 'admin/src/common/component';
+import { MainFrameSkeleton } from 'admin/src-gen/mainFrame/MainFrameSkeleton';
 import { Button, ConfigProvider, Drawer, Layout, theme } from 'antd';
 import {
     adminWebPeerExt,
     BREAKPOINTS,
     DynamicIcon,
     setWebPeerParam,
-} from '@/common/extension';
+} from 'admin/src/common/extension';
 import useBreakpoint from 'use-breakpoint';
 import { Content, Header } from 'antd/es/layout/layout';
 import { PropsWithChildren, useState } from 'react';
-import { DropDownImageComp } from '@/components/dropdown-image-comp';
-import { DropDownIconComp } from '@/components/dropdown-icon-comp';
+import { DropDownImageComp } from 'admin/src/components/dropdown-image-comp';
+import { DropDownIconComp } from 'admin/src/components/dropdown-icon-comp';
 import useTheme from 'antd/es/config-provider/hooks/useTheme';
-import { MenuComp } from '@/components/menu-comp';
-import { MainRouterComponent } from '@/mainFrame/MainRouter';
+import { MenuComp } from 'admin/src/components/menu-comp';
+import { MainRouterComponent } from 'admin/src/mainFrame/MainRouter';
 import Sider from 'antd/es/layout/Sider';
 import { BackwardFilled } from '@ant-design/icons';
 

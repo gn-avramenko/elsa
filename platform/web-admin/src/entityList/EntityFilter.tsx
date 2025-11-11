@@ -1,6 +1,6 @@
-import { initStateSetters } from '@/common/component';
-import { EntityFilterSkeleton } from '@g/entityList/EntityFilterSkeleton';
-import { DebounceSelect } from '@/components/DebounceSelect';
+import { initStateSetters } from 'admin/src/common/component';
+import { EntityFilterSkeleton } from 'admin/src-gen/entityList/EntityFilterSkeleton';
+import { DebounceSelect } from 'admin/src/components/DebounceSelect';
 
 function EntityFilterFC(props: { element: EntityFilterComponent }) {
     initStateSetters(props.element);

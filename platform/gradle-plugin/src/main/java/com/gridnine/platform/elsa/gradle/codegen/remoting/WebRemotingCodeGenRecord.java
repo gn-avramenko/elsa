@@ -29,6 +29,8 @@ public class WebRemotingCodeGenRecord extends BaseCodeGenRecord {
 
     private String commonPackageName;
 
+    private String moduleName;
+
     @Override
     public GeneratorType getGeneratorType() {
         return GeneratorType.WEB_REMOTING;
@@ -40,5 +42,13 @@ public class WebRemotingCodeGenRecord extends BaseCodeGenRecord {
 
     public String getCommonPackageName() {
         return commonPackageName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public String getModuleName() {
+        return moduleName;
     }
 }

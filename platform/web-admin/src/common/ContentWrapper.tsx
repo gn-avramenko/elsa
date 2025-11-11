@@ -1,5 +1,5 @@
-import { BaseReactUiElement, initStateSetters } from '@/common/component';
-import { ContentWrapperSkeleton } from '@g/common/ContentWrapperSkeleton';
+import { BaseReactUiElement, initStateSetters } from 'admin/src/common/component';
+import { ContentWrapperSkeleton } from 'admin/src-gen/common/ContentWrapperSkeleton';
 
 function ContentWrapperFC(props: { element: ContentWrapperComponent }) {
     initStateSetters(props.element);

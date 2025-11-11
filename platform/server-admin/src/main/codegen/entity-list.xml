@@ -37,7 +37,7 @@
             <property id="limit" type="INT" non-nullable="true"/>
         </server-managed-state>
         <input-value>
-            <collection id="value" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+            <collection id="value" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
         </input-value>
         <services>
             <service id="getData">
@@ -46,7 +46,7 @@
                     <property id="limit" type="INT" non-nullable="true"/>
                 </request>
                 <response>
-                    <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+                    <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
                 </response>
             </service>
         </services>

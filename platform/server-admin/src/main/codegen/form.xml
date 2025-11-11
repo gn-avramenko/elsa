@@ -13,7 +13,7 @@
             <property id="title" type="STRING"/>
         </server-managed-state>
         <input-value>
-            <property id="value" type="ENTITY" class-name="com.gridnine.platform.elsa.webApp.common.Option"/>
+            <property id="value" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
         </input-value>
     </custom>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.form.FormContainer"/>

@@ -30,8 +30,7 @@
     "baseUrl": "./",
     "paths": {
       "webpeer-core": ["../../submodules/webpeer/web/core/src/index"],
-      "@/*": ["src/*"],
-      "@g/*": ["src-gen/*"]
+      "admin/*": ["./*"],
     }
   },
   "include": ["src", "src-gen"],

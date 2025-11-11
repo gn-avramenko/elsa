@@ -42,7 +42,6 @@ public class JavaWebAppCodeGenerator implements CodeGenerator<JavaWebAppCodeGenR
     public void generate(JavaWebAppCodeGenRecord record, File destDir, Set<File> generatedFiles, Map<Object, Object> context) throws Exception {
         var parser = new WebAppMetaRegistryParser();
         var coll = new ArrayList<>(record.getSources());
-        coll.addAll(record.getExternalInjections());
         var metaRegistry = new WebAppMetaRegistry();
         parser.updateMetaRegistry(metaRegistry, record.isSkipCommonClasses(), coll);
         for (EnumDescription ed : metaRegistry.getEnums().values()) {

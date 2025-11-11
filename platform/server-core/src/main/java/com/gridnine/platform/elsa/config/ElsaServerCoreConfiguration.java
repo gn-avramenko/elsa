@@ -28,8 +28,6 @@ import com.gridnine.platform.elsa.core.codec.AesCodec;
 import com.gridnine.platform.elsa.core.migration.MigrationProcessor;
 import com.gridnine.platform.elsa.core.remoting.standard.GetL10nBundleHandler;
 import com.gridnine.platform.elsa.core.storage.StorageFactory;
-import com.gridnine.platform.elsa.core.storage.database.DatabaseFactory;
-import com.gridnine.platform.elsa.core.storage.database.jdbc.SimpleJdbcDatabaseFactory;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcDatabaseMetadataProvider;
 import com.gridnine.platform.elsa.core.storage.standard.CacheStorageAdvice;
 import com.gridnine.platform.elsa.core.storage.standard.InvalidateCacheStorageInterceptor;
@@ -78,16 +76,6 @@ public class ElsaServerCoreConfiguration {
     @Bean
     public GetL10nBundleHandler getL10nBundleHandler() {
         return new GetL10nBundleHandler();
-    }
-
-    @Bean
-    public StorageFactory standardStorageFactory(){
-        return new StandardStorageFactory();
-    }
-
-    @Bean
-    public DatabaseFactory simpleJdbcDatabaseFactory(){
-        return new SimpleJdbcDatabaseFactory();
     }
 
     @Bean

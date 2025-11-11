@@ -22,20 +22,13 @@
  * This is generated code, don't modify it manually
  *****************************************************************/
 
-package com.gridnine.platform.elsa.webApp.common;
+package com.gridnine.platform.elsa.admin.web.common;
 
-import com.gridnine.platform.elsa.admin.web.common.GlueConfiguration;
-import com.gridnine.platform.elsa.admin.web.common.GlueSkeleton;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class Glue extends GlueSkeleton {
+public class Button extends ButtonSkeleton{
 
-    public Glue(String tag, OperationUiContext ctx){
-        super(tag, ctx);
-    }
-
-    @Override
-    protected GlueConfiguration createConfiguration() {
-        return new GlueConfiguration();
-    }
+	public Button(String tag, ButtonConfiguration config, OperationUiContext ctx){
+		super(tag, config, ctx);
+	}
 }

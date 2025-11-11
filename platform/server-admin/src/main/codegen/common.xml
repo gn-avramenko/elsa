@@ -4,11 +4,11 @@
         <enum-item id="MOBILE"/>
         <enum-item id="DESKTOP"/>
     </enum>
-    <button class-name="com.gridnine.platform.elsa.webApp.common.Button"/>
-    <entity id="com.gridnine.platform.elsa.webApp.common.Option">
+    <button class-name="com.gridnine.platform.elsa.admin.web.common.Button"/>
+    <entity id="com.gridnine.platform.elsa.admin.web.common.Option">
         <property id="id" type="STRING" non-nullable="true"/>
         <property id="displayName" type="STRING" non-nullable="true"/>
     </entity>
-    <custom-container class-name="com.gridnine.platform.elsa.webApp.common.ContentWrapper" managed-configuration="true"/>
-    <custom-container class-name="com.gridnine.platform.elsa.webApp.common.Glue"/>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.ContentWrapper" managed-configuration="true"/>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.Glue"/>
 </web-app>

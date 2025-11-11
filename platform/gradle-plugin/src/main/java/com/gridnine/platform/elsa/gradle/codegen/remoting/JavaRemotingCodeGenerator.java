@@ -24,20 +24,26 @@ package com.gridnine.platform.elsa.gradle.codegen.remoting;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.remoting.RemotingMetaRegistry;
 import com.gridnine.platform.elsa.gradle.parser.remoting.RemotingMetaRegistryParser;
+import com.gridnine.platform.elsa.gradle.plugin.ElsaGlobalData;
 import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
 public class JavaRemotingCodeGenerator implements CodeGenerator<JavaRemotingCodeGenRecord> {
     @Override
-    public void generate(JavaRemotingCodeGenRecord record, File destDir, Set<File> generatedFiles, Map<Object, Object> context) {
+    public void generate(JavaRemotingCodeGenRecord record, File destDir, Set<File> generatedFiles, Map<Object, Object> context) throws IOException {
         var parser = new RemotingMetaRegistryParser();
+        String dir = record.getDestinationDir().getCanonicalPath();
+        ElsaGlobalData elsaGlobalData = (ElsaGlobalData) context.get("elsa-global-data");
         {
             var coll = new ArrayList<>(record.getSources());
-            coll.addAll(record.getExternalInjections());
+            if(elsaGlobalData.getRemotingInjections().containsKey(dir)){
+                coll.addAll(elsaGlobalData.getRemotingInjections().get(dir));
+            }
             var metaRegistry = new RemotingMetaRegistry();
             parser.updateMetaRegistry(metaRegistry, coll);
             if (!record.isNoModelClasses()) {

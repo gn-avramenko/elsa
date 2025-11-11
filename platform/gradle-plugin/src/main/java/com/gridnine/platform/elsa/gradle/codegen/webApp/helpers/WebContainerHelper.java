@@ -28,15 +28,15 @@ import com.gridnine.platform.elsa.gradle.meta.webApp.ContainerWebElementDescript
 import java.io.File;
 import java.io.IOException;
 public class WebContainerHelper {
-    public static void generateContainer(ContainerWebElementDescription descr, File destDir, String commonPackageName) throws Exception {
+    public static void generateContainer(ContainerWebElementDescription descr, File destDir, String commonPackageName, String moduleName) throws Exception {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName, moduleName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
-                import { WebComponentWrapper } from '@/common/wrapper';
-                import { BaseReactUiElement, initStateSetters } from '@/common/component';
+                import { WebComponentWrapper } from '%s/src/common/wrapper';
+                import { BaseReactUiElement, initStateSetters } from '%s/src/common/component';
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
@@ -70,7 +70,7 @@ public class WebContainerHelper {
                     }
                     %s
                 }
-                """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName, WebCommonHelper.getServerCommandBlock(descr));
+                """.formatted(moduleName,moduleName,skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName, WebCommonHelper.getServerCommandBlock(descr));
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if(!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

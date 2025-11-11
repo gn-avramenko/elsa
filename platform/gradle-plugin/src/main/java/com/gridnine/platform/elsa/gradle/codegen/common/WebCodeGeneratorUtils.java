@@ -49,7 +49,7 @@ public class WebCodeGeneratorUtils {
         gen.print(";\n");
     }
 
-    public static void generateWebEntityCode(EntityDescription ed, RemotingMetaRegistry metaRegistry, TypeScriptCodeGenerator gen, String commonPackage) throws Exception {
+    public static void generateWebEntityCode(EntityDescription ed, RemotingMetaRegistry metaRegistry, TypeScriptCodeGenerator gen, String commonPackage, String moduleName) throws Exception {
         var imports = new HashSet<String>();
         for (var pd : ed.getProperties().values()) {
             if(pd.getType() == StandardValueType.ENTITY || pd.getType() == StandardValueType.ENUM){
@@ -80,7 +80,7 @@ public class WebCodeGeneratorUtils {
                 if(it.contains("BinaryData")){
                     gen.printLine("import { BinaryData }  from 'elsa-web-core';");
                 } else if(!"Object".equals(it)) {
-                    gen.printLine("import { %s } from '%s';".formatted(JavaCodeGeneratorUtils.getSimpleName(it), getImportName(it, commonPackage)));
+                    gen.printLine("import { %s } from '%s';".formatted(JavaCodeGeneratorUtils.getSimpleName(it), getImportName(it, commonPackage, moduleName)));
                 }
             });
             gen.blankLine();
@@ -225,7 +225,7 @@ public class WebCodeGeneratorUtils {
     }
 
 
-    public static String getImportName(String className, String commonPackage) {
+    public static String getImportName(String className, String commonPackage, String moduleName) {
         var classNameParts = className.split("\\.");
         var commonPackageParts = commonPackage.split("\\.");
         StringBuilder s = new StringBuilder();
@@ -239,6 +239,6 @@ public class WebCodeGeneratorUtils {
             }
             s.append(classNameParts[n]);
         }
-        return "@g/"+ s;
+        return "%s/src-gen/%s".formatted(moduleName, s);
     }
 }

@@ -36,6 +36,8 @@ public class WebWebAppCodeGenRecord extends BaseCodeGenRecord {
 
     private boolean skipCommonClasses;
 
+    private String moduleName;
+
     @Override
     public GeneratorType getGeneratorType() {
         return GeneratorType.WEB_WEB_APP;
@@ -71,5 +73,13 @@ public class WebWebAppCodeGenRecord extends BaseCodeGenRecord {
 
     public void setConfigurator(String configurator) {
         this.configurator = configurator;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public String getModuleName() {
+        return moduleName;
     }
 }

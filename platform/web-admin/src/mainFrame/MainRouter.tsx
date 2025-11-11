@@ -1,6 +1,6 @@
-import { RouterContext } from '@/common/router';
+import { RouterContext } from 'admin/src/common/router';
 import { useEffect, useState } from 'react';
-import { MainRouterSkeleton } from '@g/mainFrame/MainRouterSkeleton';
+import { MainRouterSkeleton } from 'admin/src-gen/mainFrame/MainRouterSkeleton';
 
 function MainRouterFC(props: { element: MainRouterComponent }) {
     for (const prop of props.element.state.keys()) {

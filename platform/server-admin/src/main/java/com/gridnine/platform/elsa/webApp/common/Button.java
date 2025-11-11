@@ -24,9 +24,11 @@
 
 package com.gridnine.platform.elsa.webApp.common;
 
+import com.gridnine.platform.elsa.admin.web.common.ButtonConfiguration;
+import com.gridnine.platform.elsa.admin.web.common.ButtonSkeleton;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class Button extends ButtonSkeleton{
+public class Button extends ButtonSkeleton {
 
 	public Button(String tag, ButtonConfiguration config, OperationUiContext ctx){
 		super(tag, config, ctx);

@@ -25,12 +25,12 @@
 package com.gridnine.platform.elsa.admin.web.entityList;
 
 import com.gridnine.platform.elsa.admin.list.EntityListFilter;
+import com.gridnine.platform.elsa.admin.web.common.Option;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
 import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
 import com.gridnine.platform.elsa.common.core.search.InCriterion;
 import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
 import com.gridnine.platform.elsa.core.storage.Storage;
-import com.gridnine.platform.elsa.webApp.common.Option;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
@@ -41,14 +41,12 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
 
     private final String fieldId;
     private final Class<?> entityClass;
-    private final Storage storage;
     private List<Option> commitedValue;
 
 	public EntityFilter(String fieldId, String title, Class<? extends BaseIdentity> entityClass, Storage storage, OperationUiContext operationUiContext) {
 		super("filter-%s".formatted(fieldId), new EntityFilterConfiguration(), operationUiContext);
         this.fieldId = fieldId;
         this.entityClass = entityClass;
-        this.storage = storage;
         setValue(List.of(), operationUiContext);
         setLimit(10, operationUiContext);
         setTitle(title, operationUiContext);

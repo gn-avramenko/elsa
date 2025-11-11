@@ -9,6 +9,9 @@
     <entity  id="com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem" extends="com.gridnine.platform.elsa.admin.domain.BaseWorkspaceItem">
         <property id="id" type="STRING"/>
     </entity>
+    <entity id="com.gridnine.platform.elsa.admin.domain.LinkWorkspaceItem" extends="com.gridnine.platform.elsa.admin.domain.BaseWorkspaceItem">
+        <property id="link" type="STRING" non-nullable="true"/>
+    </entity>
     <entity id="com.gridnine.platform.elsa.admin.domain.WorkspaceGroup">
         <property id="name" type="STRING"/>
         <property id="icon" type="STRING"/>

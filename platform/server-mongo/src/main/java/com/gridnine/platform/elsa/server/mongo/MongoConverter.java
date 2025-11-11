@@ -308,15 +308,15 @@ public class MongoConverter {
                 return o instanceof Date ? ((Date) o).toInstant() : null;
             }
             case ENTITY_REFERENCE -> {
-                var doc = (BsonDocument) o;
-                return new EntityReference<>(UUID.fromString(((BsonString) doc.get("id")).getValue()),
-                        reflectionFactory.getClass(((BsonString) doc.get("type")).getValue()), ((BsonString) doc.get("caption")).getValue());
+                var doc = (Document) o;
+                return new EntityReference<>(UUID.fromString(doc.getString("id")),
+                        reflectionFactory.getClass(doc.getString("type")), doc.getString("caption"));
             }
         }
         throw Xeption.forDeveloper("unsupported property type " + type);
     }
 
-    public <A extends BaseIdentity> Document toDocument(A object, Document existingDocument) {
+    public <A> Document toDocument(A object, Document existingDocument) {
         Document document = existingDocument != null ? existingDocument : new Document();
         ExceptionUtils.wrapException(() ->
                 marshal(document, object, false, existingDocument, new HashSet<>()));

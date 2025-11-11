@@ -30,8 +30,6 @@ public abstract class BaseCodeGenRecord implements HasCodeGenType{
 
     private final List<File> localInjections = new ArrayList<>();
 
-    private final List<File> externalInjections = new ArrayList<>();
-
     private File destinationDir;
 
     public List<File> getSources() {
@@ -44,10 +42,6 @@ public abstract class BaseCodeGenRecord implements HasCodeGenType{
 
     public List<File> getLocalInjections() {
         return localInjections;
-    }
-
-    public List<File> getExternalInjections() {
-        return externalInjections;
     }
 
     public void setDestinationDir(File destinationDir) {

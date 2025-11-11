@@ -76,9 +76,7 @@ public class ElsaJavaCodeGenExtension {
         if(globalData.getCurrentDomainRecord() != null) {
             globalData.getCurrentDomainRecord().getLocalInjections().addAll(files);
         }
-        Object record = globalData.getDomainRecords().get(new File(projectDir, destDir).getCanonicalPath());
-        var extensions = record.getClass().getMethod("getExternalInjections").invoke(record);
-        extensions.getClass().getMethod("addAll", Collection.class).invoke(extensions, files);
+        globalData.getDomainInjections().put(new File(projectDir, destDir).getCanonicalPath(), files);
     }
 
     public void custom(String destDir, String configurator, List<String> sourcesFileNames) {
@@ -112,7 +110,7 @@ public class ElsaJavaCodeGenExtension {
         if(globalData.getCurrentRemotingRecord() != null) {
             globalData.getCurrentRemotingRecord().getLocalInjections().addAll(files);
         }
-        globalData.getRemotingRecords().get(new File(projectDir, destDir).getCanonicalPath()).get(0).getExternalInjections().addAll(files);
+        globalData.getDomainInjections().put(new File(projectDir, destDir).getCanonicalPath(), files);
     }
 
     public void remoting(String destDir, String configurator,  String constants, boolean noModelClasses, List<String> sourcesFileNames) throws IOException {

@@ -36,7 +36,6 @@ public class JavaAdminUiCodeGenerator implements CodeGenerator<JavaAdminUiCodeGe
         var parser = new AdminUiMetaRegistryParser();
         {
             var coll = new ArrayList<>(record.getSources());
-            coll.addAll(record.getExternalInjections());
             var metaRegistry = new AdminUiMetaRegistry();
             parser.updateMetaRegistry(metaRegistry, coll);
             JavaAdminUiEntitiesCodeGenerator.generate(metaRegistry, destDir, generatedFiles);

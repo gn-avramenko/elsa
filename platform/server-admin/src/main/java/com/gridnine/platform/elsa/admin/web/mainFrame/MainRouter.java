@@ -61,7 +61,7 @@ public class MainRouter extends MainRouterSkeleton{
         var cp = path.startsWith("/") ? path.substring(1): path;
         var handler = routerPathHandlers.stream().filter(it -> it.canHandle(cp)).findFirst().orElse(null);
         if(handler == null){
-            throw Xeption.forDeveloper("Unable to find handler for view id " + path);
+            throw Xeption.forDeveloper("Unable to find handler for path " + path);
         }
         return handler;
     }

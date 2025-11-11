@@ -19,30 +19,27 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.admin.web.mainFrame;
+package com.gridnine.platform.elsa.admin.workspace;
 
-import com.gridnine.platform.elsa.common.core.utils.TextUtils;
-import com.gridnine.webpeer.core.ui.BaseUiElement;
-import com.gridnine.webpeer.core.ui.OperationUiContext;
+import com.gridnine.platform.elsa.admin.domain.LinkWorkspaceItem;
+import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
+import com.gridnine.platform.elsa.admin.list.UiListHandler;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class HomePageRouterPathHandler implements RouterPathHandler{
+import java.util.HashMap;
+import java.util.Map;
+
+public class LinkWorkspaceItemHandler implements WorkspaceItemHandler<LinkWorkspaceItem> {
+
     @Override
-    public boolean canHandle(String path) {
-        return path !=null && path.startsWith("home") ;
+    public Class<LinkWorkspaceItem> getType() {
+        return LinkWorkspaceItem.class;
     }
 
     @Override
-    public BaseUiElement createElement(String path, OperationUiContext context) throws Exception {
-        return new HomePage("content", context);
+    public String getLink(LinkWorkspaceItem item) {
+        return item.getLink();
     }
 
-    @Override
-    public String getTitle() {
-        return "Home";
-    }
-
-    @Override
-    public String getDefaultBackUrl() {
-        return null;
-    }
 }

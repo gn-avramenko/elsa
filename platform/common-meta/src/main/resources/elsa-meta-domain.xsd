@@ -13,6 +13,7 @@
                                 <extension base="common:MetaElementType">
                                     <sequence>
                                         <choice maxOccurs="unbounded" minOccurs="0">
+                                            <element name="parameter" type="common:ParameterType"/>
                                             <element name="property" type="common:PropertyType"/>
                                             <element name="collection" type="common:CollectionType"/>
                                             <element name="map" type="common:MapType"/>

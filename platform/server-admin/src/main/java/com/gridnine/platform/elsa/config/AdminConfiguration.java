@@ -23,8 +23,8 @@ package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.storage.WorkspaceProjectionHandler;
 import com.gridnine.platform.elsa.admin.web.mainFrame.HomePageRouterPathHandler;
+import com.gridnine.platform.elsa.admin.workspace.LinkWorkspaceItemHandler;
 import com.gridnine.platform.elsa.admin.workspace.ListWorkspaceItemHandler;
-import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,8 +42,12 @@ public class AdminConfiguration {
     }
 
     @Bean
-    public HomePageRouterPathHandler homePageRouterPathHandler(){
-        return new HomePageRouterPathHandler();
+    public LinkWorkspaceItemHandler linkWorkspaceItemHandler(){
+        return new LinkWorkspaceItemHandler();
     }
 
+    @Bean
+    public HomePageRouterPathHandler  homePageRouterPathHandler(){
+        return new HomePageRouterPathHandler();
+    }
 }

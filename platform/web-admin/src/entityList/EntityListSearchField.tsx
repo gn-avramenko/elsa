@@ -1,5 +1,5 @@
-import { initStateSetters } from '@/common/component';
-import { EntityListSearchFieldSkeleton } from '@g/entityList/EntityListSearchFieldSkeleton';
+import { initStateSetters } from 'admin/src/common/component';
+import { EntityListSearchFieldSkeleton } from 'admin/src-gen/entityList/EntityListSearchFieldSkeleton';
 import Search from 'antd/es/input/Search';
 import debounce from 'lodash/debounce';
 

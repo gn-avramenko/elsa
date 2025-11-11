@@ -1,13 +1,13 @@
-import { BaseReactUiElement, initStateSetters } from '@/common/component';
-import { EntityListSkeleton } from '@g/entityList/EntityListSkeleton';
+import { BaseReactUiElement, initStateSetters } from 'admin/src/common/component';
+import { EntityListSkeleton } from 'admin/src-gen/entityList/EntityListSkeleton';
 import useBreakpoint from 'use-breakpoint';
-import { BREAKPOINTS } from '@/common/extension';
+import { BREAKPOINTS } from 'admin/src/common/extension';
 import React, { useEffect, useState } from 'react';
-import { ColumnDescription } from '@g/entityList/ColumnDescription';
+import { ColumnDescription } from 'admin/src-gen/entityList/ColumnDescription';
 import { Button, Drawer, Dropdown, Table, theme } from 'antd';
-import { onVisible } from '@/common/utils';
-import { RowData } from '@g/entityList/RowData';
-import { BreakPoint } from '@g/common/BreakPoint';
+import { onVisible } from 'admin/src/common/utils';
+import { RowData } from 'admin/src-gen/entityList/RowData';
+import { BreakPoint } from 'admin/src-gen/common/BreakPoint';
 import { ColumnsType } from 'antd/es/table';
 import {
     ArrowDownOutlined,
@@ -16,7 +16,7 @@ import {
     FilterOutlined,
     SortAscendingOutlined,
 } from '@ant-design/icons';
-import '@/common/admin.css';
+import 'admin/src/common/admin.css';
 import { MenuProps } from 'antd/lib';
 
 function EntityListFC(props: { element: EntityListComponent }) {

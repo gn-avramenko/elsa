@@ -29,17 +29,17 @@ import java.io.File;
 import java.io.IOException;
 
 public class WebAutocompleteHelper {
-    public static void generateAutocomplete(AutocompleteWebElementDescription descr, File destDir, String commonPackageName) throws IOException {
+    public static void generateAutocomplete(AutocompleteWebElementDescription descr, File destDir, String commonPackageName, String moduleName) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName, moduleName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
                 import { WebComponentWrapper } from '@/common/wrapper';
                 import { initStateSetters } from '@/common/component';
-                import {Option} from "@g/common/Option";
-                import { useEditor } from "@/common/editor";
+                import {Option} from "%s/src-gen/common/Option";
+                import { useEditor } from "%s/src/common/editor";
                 import {
                     ChangeEvent,
                     KeyboardEvent,
@@ -280,7 +280,7 @@ public class WebAutocompleteHelper {
                        this.stateSetters.get('validationMessage')!(value);
                     }
                 }
-                """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
+                """.formatted(moduleName, moduleName, skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if(!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

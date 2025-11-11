@@ -29,15 +29,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class WebRouterHelper {
-    public static void generateRouter(RouterWebElementDescription descr, File destDir, String commonPackageName) throws IOException {
+    public static void generateRouter(RouterWebElementDescription descr, File destDir, String commonPackageName, String moduleName) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName() + "Skeleton", commonPackageName);
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName() + "Skeleton", commonPackageName, moduleName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
-                import { WebComponentWrapper } from '@/common/wrapper';
-                import { RouterContext } from '@/common/router';
+                import { WebComponentWrapper } from '%s/src/common/wrapper';
+                import { RouterContext } from '%s/src/common/router';
                 import {useEffect, useState} from "react";
                 import { %s } from '%s';
                 
@@ -120,7 +120,7 @@ public class WebRouterHelper {
                        this.sendPropertyChange('confirmMessage', value, true);
                     }
                 }
-                """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
+                """.formatted(moduleName, moduleName, skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if (!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

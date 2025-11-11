@@ -44,7 +44,6 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
     public void generate(WebWebAppCodeGenRecord record, File destDir, Set<File> generatedFiles, Map<Object, Object> context) throws Exception {
         var parser = new WebAppMetaRegistryParser();
         var coll = new ArrayList<>(record.getSources());
-        coll.addAll(record.getExternalInjections());
         var metaRegistry = new WebAppMetaRegistry();
         parser.updateMetaRegistry(metaRegistry, record.isSkipCommonClasses(), coll);
         if(!record.isSkipCommonClasses()) {
@@ -58,7 +57,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
         }
         for(var item: metaRegistry.getEntities().values()) {
             var gen = new TypeScriptCodeGenerator();
-            WebCodeGeneratorUtils.generateWebEntityCode(item, null, gen, record.getCommonPackageName());
+            WebCodeGeneratorUtils.generateWebEntityCode(item, null, gen, record.getCommonPackageName(), record.getModuleName());
             var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(item.getId() + ".ts", destDir));
             generatedFiles.add(file);
         }
@@ -68,7 +67,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                 var id = WebAppMetadataHelper.getInputValueDescription(ce);
                 if(id.getProperties().size()+id.getCollections().size()>1) {
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen, record.getCommonPackageName());
+                    WebCodeGeneratorUtils.generateWebEntityCode(id, null, gen, record.getCommonPackageName(), record.getModuleName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(id.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
@@ -80,7 +79,7 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     dd.getProperties().putAll(action.getProperties());
                     dd.getCollections().putAll(action.getCollections());
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
+                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName(), record.getModuleName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
@@ -92,14 +91,14 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                     dd.getProperties().putAll(action.getProperties());
                     dd.getCollections().putAll(action.getCollections());
                     var gen = new TypeScriptCodeGenerator();
-                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
+                    WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName(), record.getModuleName());
                     var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                     generatedFiles.add(file);
                 }
             }
             for(var ett: WebAppMetadataHelper.getServicesClasses(elm)){
                 var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(ett, null, gen, record.getCommonPackageName());
+                WebCodeGeneratorUtils.generateWebEntityCode(ett, null, gen, record.getCommonPackageName(), record.getModuleName());
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(ett.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
@@ -110,12 +109,12 @@ public class WebWebAppCodeGenerator implements CodeGenerator<WebWebAppCodeGenRec
                 dd.getProperties().putAll(td.getRow().getProperties());
                 dd.getCollections().putAll(td.getRow().getCollections());
                 var gen = new TypeScriptCodeGenerator();
-                WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName());
+                WebCodeGeneratorUtils.generateWebEntityCode(dd, null, gen, record.getCommonPackageName(), record.getModuleName());
                 var file = WebCodeGeneratorUtils.saveIfDiffers(gen.toString(), WebCodeGeneratorUtils.getFile(dd.getId() + ".ts", destDir));
                 generatedFiles.add(file);
             }
         }
-        WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), record.getCommonPackageName(), generatedFiles);
-        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles, record.getConfigurator(), record.getCommonPackageName());
+        WebWebAppElementsHelper.generate(metaRegistry, destDir, record.getSourceDir(), record.getCommonPackageName(), record.getModuleName(), generatedFiles);
+        WebWebRegistryHelper.generate(metaRegistry, destDir, generatedFiles, record.getConfigurator(), record.getCommonPackageName(),record.getModuleName());
     }
 }

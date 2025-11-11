@@ -74,6 +74,9 @@
         </children>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.account.organization.OrganizationEditor">
+        <commands-from-server>
+            <command id="resetChanges"/>
+        </commands-from-server>
         <children>
             <button id="backButton" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorBackButton"/>
             <button id="saveButton" class-name="com.gridnine.platform.elsa.demo.ui.common.EditorSaveButton"/>
@@ -83,9 +86,6 @@
             <autocomplete id="country" class-name="com.gridnine.platform.elsa.demo.ui.common.CountryAutocompleteField"/>
             <text-field id="contacts" class-name="com.gridnine.platform.elsa.demo.ui.common.StandardTextField"/>
         </children>
-        <commands-from-server>
-            <command id="resetChanges"/>
-        </commands-from-server>
     </container>
     <container class-name="com.gridnine.platform.elsa.demo.ui.account.manager.ManagersSection">
         <children>

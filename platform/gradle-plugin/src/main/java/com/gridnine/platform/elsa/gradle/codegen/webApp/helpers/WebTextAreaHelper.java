@@ -29,16 +29,16 @@ import java.io.File;
 import java.io.IOException;
 
 public class WebTextAreaHelper {
-    public static void generateTextArea(TextAreaWebElementDescription descr, File destDir, String commonPackageName) throws IOException {
+    public static void generateTextArea(TextAreaWebElementDescription descr, File destDir, String commonPackageName, String moduleName) throws IOException {
         var basicName = JavaCodeGeneratorUtils.getSimpleName(descr.getClassName());
         var skeletonName = "%sSkeleton".formatted(basicName);
-        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName);
+        var skeletonImport = WebCodeGeneratorUtils.getImportName(descr.getClassName()+"Skeleton", commonPackageName, moduleName);
         var functionalComponentName = "%sFC".formatted(basicName);
         var componentName = "%sComponent".formatted(basicName);
         var result = """
-                import { WebComponentWrapper } from '@/common/wrapper';
-                import { initStateSetters } from '@/common/component';
-                import { useEditor } from "@/common/editor";
+                import { WebComponentWrapper } from '%s/src/common/wrapper';
+                import { initStateSetters } from '%s/src/common/component';
+                import { useEditor } from %s/src/common/editor";
                 import { %s } from '%s';
                 
                 function %s(props: { element: %s }) {
@@ -68,7 +68,7 @@ public class WebTextAreaHelper {
                         this.stateSetters.get('validationMessage')!(value);
                     }
                 }
-                """.formatted(skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
+                """.formatted(moduleName, moduleName, moduleName, skeletonName, skeletonImport, functionalComponentName, componentName, componentName, skeletonName, functionalComponentName);
         var file = WebCodeGeneratorUtils.getFile(descr.getClassName() + ".tsx", destDir);
         if(!file.exists()) {
             WebCodeGeneratorUtils.saveIfDiffers(result, file);

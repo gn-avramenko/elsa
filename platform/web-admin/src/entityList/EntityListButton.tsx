@@ -1,7 +1,7 @@
-import { initStateSetters } from '@/common/component';
-import { EntityListButtonSkeleton } from '@g/entityList/EntityListButtonSkeleton';
+import { initStateSetters } from 'admin/src/common/component';
+import { EntityListButtonSkeleton } from 'admin/src-gen/entityList/EntityListButtonSkeleton';
 import { Button, Tooltip } from 'antd';
-import { DynamicIcon } from '@/common/extension';
+import { DynamicIcon } from 'admin/src/common/extension';
 
 function EntityListButtonFC(props: { element: EntityListButtonComponent }) {
     initStateSetters(props.element);

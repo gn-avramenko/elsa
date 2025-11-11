@@ -9,12 +9,11 @@ repositories {
 dependencies {
     implementation("org.springframework:spring-context:6.2.7")
     implementation("com.google.code.gson:gson:2.12.1")
-    implementation(project(":platform:common-meta"))
-    implementation(project(":platform:common-core"))
-    implementation(project(":platform:server-core"))
-    implementation(project(":platform:server-web-app"))
-    implementation(project(":platform:server-postgres"))
-    implementation(project(":submodules:webpeer:server:core"))
+    implementation(project(":common-meta"))
+    implementation(project(":common-core"))
+    implementation(project(":server-core"))
+    implementation(project(":server-web-app"))
+    implementation(project(":webpeer-server-core"))
 }
 
 elsa {

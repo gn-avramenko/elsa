@@ -13,6 +13,6 @@ dependencies {
     implementation("com.mchange:c3p0:0.9.5.5")
     implementation("org.springframework:spring-jdbc:6.2.7")
     implementation("org.springframework:spring-context:6.2.7")
-    implementation(project(":platform:server-core"))
-    implementation(project(":platform:common-core"))
+    implementation(project(":server-core"))
+    implementation(project(":common-core"))
 }

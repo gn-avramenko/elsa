@@ -118,8 +118,6 @@ export const registerFactory = (type: string, factory: ReactUiElementFactory) =>
     reactWebPeerExt.elementHandlersFactories.set(type, factory);
 };
 
-let root: Root | null = null;
-
 export const preloaderHolder = {
     showPreloader: () => {},
     hidePreloader: () => {},
@@ -140,6 +138,7 @@ reactWebPeerExt.setMiddleware([
         }
     ),
 ]);
+let root: Root | null = null;
 reactWebPeerExt.uiHandler = {
     drawUi(rootElm: BaseReactUiElement) {
         if (!root) {

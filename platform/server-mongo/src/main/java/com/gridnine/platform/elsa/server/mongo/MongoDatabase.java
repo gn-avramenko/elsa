@@ -17,6 +17,7 @@ import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.search.SimpleCriterion;
 import com.gridnine.platform.elsa.common.core.serialization.meta.ObjectMetadataProvidersFactory;
+import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.storage.database.DatabaseAssetWrapper;
 import com.gridnine.platform.elsa.core.storage.database.DatabaseSearchableProjectionWrapper;
 import com.mongodb.client.MongoCursor;
@@ -27,10 +28,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MongoDatabase {
@@ -42,10 +40,22 @@ public class MongoDatabase {
 
     private final Map<String, String> collectionsMapping = new ConcurrentHashMap<>();
 
-    public MongoDatabase(Map<String, Object> customParameters, MongoTemplate mongoTemplate,  ObjectMetadataProvidersFactory providersFactory, ReflectionFactory reflectionFactory) {
+
+    public MongoDatabase(Map<String, Object> customParameters, MongoTemplate mongoTemplate, ObjectMetadataProvidersFactory providersFactory, ReflectionFactory reflectionFactory, DomainMetaRegistry domainMetaRegistry) {
         this.mongoTemplate = mongoTemplate;
         this.customizer = (MongoStorageCustomizer) customParameters.get(MongoStorageCustomizer.KEY);
         this.converter = new MongoConverter(providersFactory, reflectionFactory);
+        var types =  new ArrayList<String>(domainMetaRegistry.getAssets().keySet());
+        types.addAll(domainMetaRegistry.getDocuments().keySet());
+        types.addAll(domainMetaRegistry.getSearchableProjections().keySet());
+        var collectionNames = types.stream().map(it -> customizer.getCollectionName(reflectionFactory.getClass(it))).filter(Objects::nonNull).toList();
+        ensureAllCollectionsExists(collectionNames);
+    }
+
+    public void ensureAllCollectionsExists(List<String> collections) {
+        var toCreate = new  ArrayList<String>(collections);
+        toCreate.removeAll(mongoTemplate.getCollectionNames());
+        toCreate.forEach(mongoTemplate::createCollection);
     }
 
     private String getCollectionName(Class<?> cls) {
@@ -107,11 +117,16 @@ public class MongoDatabase {
     }
 
     public <D extends BaseDocument> D loadDocument(Class<D> aClass, UUID id) {
-        return converter.fromDocument(mongoTemplate.findOne(new Query().addCriteria(Criteria.where("id").is(id)), Document.class, getCollectionName(aClass)), aClass);
+        return converter.fromDocument(mongoTemplate.findOne(new Query().addCriteria(Criteria.where("id").is(id.toString())), Document.class, getCollectionName(aClass)), aClass);
     }
 
     public void updateProjections(Class<BaseSearchableProjection<BaseDocument>> projectionClass, UUID id, ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>> wrappers, boolean update) {
         mongoTemplate.remove(new Query().addCriteria(Criteria.where("document.id").is(id)), getCollectionName(projectionClass));
+        for(var wrapper : wrappers){
+            Document doc = converter.toDocument(wrapper.getProjection(), null);
+            doc.put("aggregatedData", wrapper.getAggregatedData());
+            mongoTemplate.insert(doc, getCollectionName(wrapper.getProjection().getClass()));
+        }
     }
 
     public <D extends BaseDocument, I extends BaseSearchableProjection<D>> List<I> searchDocuments(Class<I> cls, SearchQuery updateQuery) {

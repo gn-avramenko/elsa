@@ -114,7 +114,7 @@ public class MongoStorage implements Storage {
         var client = MongoClients.create(settings);
         var template = new MongoTemplate(client, db);
         mongoFacade.setMongoTemplate(template);
-        database = new MongoDatabase(customParameters, template, metadataProvidersFactory, reflectionFactory);
+        database = new MongoDatabase(customParameters, template, metadataProvidersFactory, reflectionFactory, domainMetaRegistry);
         classMapper = new ClassMapper() {
             private final AtomicInteger counter = new AtomicInteger(0);
             private final Map<Integer, String> classNames = new ConcurrentHashMap<>();
@@ -769,6 +769,7 @@ public class MongoStorage implements Storage {
                         lst.add(h);
                     });
                     advices = factory.getBeansOfType(StorageAdvice.class).values().stream().sorted(Comparator.comparing(StorageAdvice::getPriority)).toList();
+
                 }
             }
         }
