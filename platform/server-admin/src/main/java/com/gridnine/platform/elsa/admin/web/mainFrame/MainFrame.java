@@ -44,14 +44,17 @@ public class MainFrame extends MainFrameSkeleton{
 
     private ListableBeanFactory factory;
     private volatile Map<String, WorkspaceItemHandler<?>> itemHandlers;
-
-	public MainFrame(String tag, OperationUiContext ctx){
+    private WorkspaceItemHandler workspaceItemHandler;
+	public MainFrame(String tag, OperationUiContext ctx) throws Exception {
 		super(tag, ctx);
+        var path = ctx.getParameter(OperationUiContext.PARAMS).get("initPath").getAsString();
+        setEmbeddedMode(path.contains("embeddedMode=true"), ctx);
         setTitle(getMainRouter().getTitle(), ctx);
         setBackUrl(getMainRouter().getInitBackUrl(), ctx);
         factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
+        var workspaceProvider = factory.getBean(WorkspaceProvider.class);
         storage = factory.getBean(Storage.class);
-        var workspace = storage.findUniqueDocument(WorkspaceProjection.class, WorkspaceProjectionFields.userLogin, AuthContext.getCurrentUser(), false);
+        var workspace = workspaceProvider.getWorkspace();
         for(var group : workspace.getGroups()){
             getWorkspaceGroups().add(toWorkspaceGroup(group));
         }

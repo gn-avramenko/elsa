@@ -47,6 +47,17 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     (th as any).token.scrollbarColor = scrollbarColor;
     const lang = adminWebPeerExt.language || 'en';
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
+    if (props.element.getEmbeddedMode()) {
+        return (
+            <ConfigProvider theme={th}>
+                <Layout style={{ height: '100%' }}>
+                    <Content>
+                        {props.element.findByTag('mainRouter').createReactElement()}
+                    </Content>
+                </Layout>
+            </ConfigProvider>
+        );
+    }
     //customize token
     const drawMenu = () => (
         <MenuComp

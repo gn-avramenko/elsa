@@ -58,7 +58,11 @@ public class MainRouter extends MainRouterSkeleton{
     }
     private RouterPathHandler getRouterPathHandler(String path){
         init();
-        var cp = path.startsWith("/") ? path.substring(1): path;
+        var p = path;
+        if(p.contains("?")){
+            p = p.substring(0, p.indexOf("?")-1);
+        }
+        var cp = p.startsWith("/") ? p.substring(1): p;
         var handler = routerPathHandlers.stream().filter(it -> it.canHandle(cp)).findFirst().orElse(null);
         if(handler == null){
             throw Xeption.forDeveloper("Unable to find handler for path " + path);
