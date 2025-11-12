@@ -39,7 +39,7 @@ const defineConfig = ({ mode, command }: ConfigEnv): UserConfig => {
                     __dirname,
                     '../../submodules/webpeer/web/core/src/index'
                 ), // Базовый алиас для папки src
-                'admin': __dirname,
+                admin: __dirname,
             },
         },
         css: {
