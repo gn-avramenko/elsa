@@ -77,9 +77,7 @@ public class AdminAuthFilter extends HttpFilter {
                 return;
             }
             res.setStatus(401);
-            res.getWriter().write("""
-                    {"redirectUrl": "%s"}""".formatted(getRedirectUrl()));
-            res.getWriter().flush();
+            res.sendRedirect("/login?redirectUrl=/");
         } finally {
             AuthContext.resetCurrentUser();
             LocaleUtils.resetCurrentLocale();

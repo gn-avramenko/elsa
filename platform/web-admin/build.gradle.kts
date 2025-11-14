@@ -1,4 +1,6 @@
+import com.github.gradle.node.npm.task.NpmTask
 import com.github.gradle.node.npm.task.NpxTask
+import org.gradle.kotlin.dsl.register
 
 plugins {
     id("elsa-web")
@@ -12,10 +14,18 @@ elsa {
 }
 
 node {
-    version.set("20.0.0")
+    version.set("22.18.0")
     download.set(true)
     workDir.set(project.layout.buildDirectory.file("nodejs").get().asFile)
     npmWorkDir.set(project.layout.buildDirectory.file("npm").get().asFile)
+}
+
+tasks.register<NpmTask>("install-dependencies") {
+    group = "other"
+    description = "Install dependencies"
+
+    args.set(listOf("install"))
+    ignoreExitValue.set(false)
 }
 
 tasks.register<NpxTask>("eslint-fix") {
