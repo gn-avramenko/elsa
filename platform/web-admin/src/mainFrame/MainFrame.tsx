@@ -297,6 +297,9 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
 }
 
 export class MainFrameComponent extends MainFrameSkeleton {
+    processReloadPage(): void {
+        window.location.reload();
+    }
     processSetWebPeerParam(value: MainFrameSetWebPeerParamAction): void {
         setWebPeerParam(value.key, value.value);
         window.location.reload();

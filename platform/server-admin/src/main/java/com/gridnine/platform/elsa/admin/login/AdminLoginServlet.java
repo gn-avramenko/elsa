@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,33 +23,59 @@ public abstract class AdminLoginServlet extends HttpServlet {
     @Autowired
     private AdminAuthFilter adminAuthFilter;
 
+    private volatile String loginHtmlContent;
+    private volatile String loginCssContent;
+    private volatile String loginJsContent;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        var resource = getLoginHtmlResource();
         var redirectUrl = req.getParameter("redirectUrl");
+        initContent(redirectUrl);
+        String pathInfo = req.getPathInfo();
+        String content = loginHtmlContent;
         if (pathInfo != null) {
-            if (pathInfo.contains("login.css")) {
-                resource = getLoginCssResource();
-            } else if (pathInfo.contains("login.js")) {
-                resource = getLoginJsResource();
+            if (pathInfo.endsWith(".css")) {
+                content = loginCssContent;
+            } else if (pathInfo.endsWith(".js")) {
+               content = loginJsContent;
             }
         }
-        var baos =new ByteArrayOutputStream();
-        try(var is = resource.openStream()){
-            IoUtils.copy(is, baos);
-        }
-        var content = baos.toString(StandardCharsets.UTF_8).replace("${title}",getTitle()).replace("${context}", getContextPath())
-                .replace("${username}", getUserNameLabel())
-                .replace("${password}", getPasswordLabel())
-                .replace("${submitButton}", getSubmitButtonLabel()).replace("${redirectUrl}", redirectUrl == null?"":redirectUrl);
         resp.setCharacterEncoding("UTF-8");
-        try(var is = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))){
-            var os = resp.getOutputStream();
-            IoUtils.copy(is, os);
-            os.flush();
+        try(var writer = resp.getWriter()){
+            writer.write(content);
+            writer.flush();
         }
         resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    private void initContent(String redirectUrl) throws IOException {
+        if(loginHtmlContent==null){
+            synchronized (this){
+                if(loginHtmlContent==null){
+                    var cnt2 = readContent(getLoginCssResource());
+                    var cnt3 = readContent(getLoginJsResource()).replace("${context}", getContextPath());
+                    var loginJsName = "%s/login-%s.js".formatted(getContextPath(), IoUtils.sha1sum(cnt3));
+                    var loginCssName = "%s/login-%s.css".formatted(getContextPath(),IoUtils.sha1sum(cnt2));
+                    var cnt1 = readContent(getLoginHtmlResource()).replace("${title}",getTitle())
+                            .replace("${usernameLabel}", getUserNameLabel())
+                            .replace("${passwordLabel}", getPasswordLabel())
+                            .replace("${login_js}", loginJsName)
+                            .replace("${login_css}", loginCssName)
+                            .replace("${submitButtonLabel}", getSubmitButtonLabel()).replace("${redirectUrl}", redirectUrl == null?"":redirectUrl);
+                    loginCssContent = cnt2;
+                    loginJsContent = cnt3;
+                    loginHtmlContent = cnt1;
+                }
+            }
+        }
+    }
+
+    private String readContent(URL url) throws IOException {
+        var baos = new ByteArrayOutputStream();
+        try(var is = url.openStream()){
+            IoUtils.copy(is, baos);
+        }
+        return baos.toString(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -96,18 +121,18 @@ public abstract class AdminLoginServlet extends HttpServlet {
     }
 
     protected String getTitle(){
-        return "Авторизация";
+        return "en:Authorization|ru:Авторизация";
     }
 
     protected String getUserNameLabel(){
-        return "Имя пользователя:";
+        return "en:Login|ru:Имя пользователя";
     }
     protected String getPasswordLabel(){
-        return "Имя пользователя:";
+        return "en:Password|ru:Пароль";
     }
 
     protected String getSubmitButtonLabel(){
-        return "Войти";
+        return "en:Login|ru:Войти";
     }
 
     public record CredentialCheckResult(boolean success, String errorMessage) {}

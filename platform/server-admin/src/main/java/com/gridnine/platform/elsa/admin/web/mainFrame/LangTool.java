@@ -26,7 +26,7 @@ public class LangTool extends DropDownImage {
             getItems().add(en);
         }
         var ls = ctx.getParameter(OperationUiContext.LOCAL_STORAGE_DATA);
-        var enLang = ls.has("language") && "en".equals(ls.get("language").getAsString());
+        var enLang = ls.has("lang") && "en".equals(ls.get("lang").getAsString());
         setSelectedItem(createSelectedItem(enLang), ctx);
         setClickListener((act, context) ->{
             setSelectedItem(createSelectedItem(act.getId().equals("en")), context);

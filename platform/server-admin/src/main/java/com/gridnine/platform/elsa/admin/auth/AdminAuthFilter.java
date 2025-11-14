@@ -4,6 +4,7 @@ import com.gridnine.platform.elsa.admin.utils.HttpUtils;
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.core.auth.AuthContext;
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +22,19 @@ public class AdminAuthFilter extends HttpFilter {
     private final Map<String, String> authIds = new ConcurrentHashMap<>();
 
     private final static String AUTH_COOKIE_ID =  "admin-auth-cookie";
+
+    public void logout(HttpServletResponse resp) {
+        var login = AuthContext.getCurrentUser();
+        var entry = authIds.entrySet().stream().filter(it -> it.getValue().equals(login)).findFirst().orElse(null);
+        if(entry != null){
+            authIds.remove(entry.getKey());
+        } else {
+            var cookie = new Cookie(AUTH_COOKIE_ID, entry.getKey());
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            resp.addCookie(cookie);
+        }
+    }
 
     public void registerSuccessfulLogin(String login, HttpServletResponse resp) {
         var entry = authIds.entrySet().stream().filter(it -> it.getValue().equals(login)).findFirst().orElse(null);

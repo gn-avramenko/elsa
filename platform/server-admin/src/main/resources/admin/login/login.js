@@ -1,6 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const messageDiv = document.getElementById('message');
+    const webpeer = JSON.parse(window.localStorage.webpeer || '{}');
+    function setLabel(id, key){
+        let value = window.localization[key];
+        if(value.indexOf("|") !== -1){
+            const lang = webpeer.lang || 'en';
+            const prefix = lang+":";
+            const items = value.split("\|");
+            const item = items.find(it => it.startsWith(prefix))
+            value = item && item.substring(prefix.length);
+        }
+        document.getElementById(id).innerText = value;
+    }
+    setLabel("title-header", "title");
+    setLabel("title", "title");
+    setLabel("username-label", "usernameLabel");
+    setLabel("password-label", "passwordLabel");
+    setLabel("submit-button-label", "submitButtonLabel");
 
     // Показать сообщение
     function showMessage(text, type) {

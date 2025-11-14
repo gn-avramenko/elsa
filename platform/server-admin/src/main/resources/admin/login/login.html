@@ -3,30 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <link rel="stylesheet" href="${context}/login.css">
+    <title id="title-header"></title>
+    <link rel="stylesheet" href="${login_css}">
 </head>
 <body>
 <div class="container">
     <div class="auth-form">
-        <h2>${title}</h2>
+        <h2 id="title"></h2>
         <form id="loginForm">
             <div class="form-group">
-                <label for="username">${username}</label>
+                <label for="username" id="username-label"></label>
                 <input type="text" id="username" name="username" autocomplete="username" required>
             </div>
             <div class="form-group">
-                <label for="password">${password}</label>
+                <label for="password" id="password-label"></label>
                 <input type="password" id="password" name="password" autocomplete="current-password" required>
             </div>
-            <button type="submit" class="login-btn">${submitButton}</button>
+            <button type="submit" class="login-btn" id="submit-button-label"></button>
         </form>
         <div id="message" class="message"></div>
     </div>
 </div>
 <script>
     window.tempUrl = "${redirectUrl}"
+    window.localization = {
+        usernameLabel: "${usernameLabel}:",
+        passwordLabel: "${passwordLabel}:",
+        title: "${title}",
+        submitButtonLabel: "${submitButtonLabel}",
+    }
 </script>
-<script src="${context}/login.js"></script>
+<script src="${login_js}"></script>
 </body>
 </html>
