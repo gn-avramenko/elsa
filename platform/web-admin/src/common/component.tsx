@@ -1,6 +1,8 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import {
     BaseUiElement,
+    Context,
+    Middleware,
     PreloaderMiddleware,
     webpeerExt,
     WebPeerExtension,
@@ -123,6 +125,24 @@ export const preloaderHolder = {
     hidePreloader: () => {},
 };
 
+export class AuthMiddleware implements Middleware {
+    priority: number = 0;
+
+    advice(
+        request: Context,
+        callback: (request: Context) => Promise<Context>
+    ): Promise<Context> {
+        return new Promise<Context>(async (resolve) => {
+            const result = await callback(request);
+            if (result.rawResponse?.status === 401) {
+                const redirectUrl = result.response.redirectUrl;
+                window.location.href = `${redirectUrl}?redirectUrl=${encodeURIComponent(window.location.href)}`;
+            }
+            resolve(result);
+        });
+    }
+}
+
 reactWebPeerExt.setMiddleware([
     new PreloaderMiddleware(
         {
@@ -137,6 +157,7 @@ reactWebPeerExt.setMiddleware([
             delay: 300,
         }
     ),
+    new AuthMiddleware(),
 ]);
 let root: Root | null = null;
 reactWebPeerExt.uiHandler = {
