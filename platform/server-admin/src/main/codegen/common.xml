@@ -11,6 +11,4 @@
     </entity>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.ContentWrapper" managed-configuration="true"/>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.Glue"/>
-    <custom class-name="com.gridnine.platform.elsa.admin.web.common.DropDownImage">
-    </custom>
 </web-app>
