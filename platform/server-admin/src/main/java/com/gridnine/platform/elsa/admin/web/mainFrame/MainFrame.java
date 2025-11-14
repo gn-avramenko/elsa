@@ -27,20 +27,21 @@ package com.gridnine.platform.elsa.admin.web.mainFrame;
 import com.gridnine.platform.elsa.admin.domain.BaseWorkspaceItem;
 import com.gridnine.platform.elsa.admin.domain.WorkspaceProjection;
 import com.gridnine.platform.elsa.admin.domain.WorkspaceProjectionFields;
+import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
 import com.gridnine.platform.elsa.core.auth.AuthContext;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
+import com.gridnine.platform.elsa.webApp.common.ContentWrapper;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainFrame extends MainFrameSkeleton{
-
-    private Storage storage;
 
     private ListableBeanFactory factory;
     private volatile Map<String, WorkspaceItemHandler<?>> itemHandlers;
@@ -52,14 +53,20 @@ public class MainFrame extends MainFrameSkeleton{
         setTitle(getMainRouter().getTitle(), ctx);
         setAppName(getTitle(), ctx);
         setBackUrl(getMainRouter().getInitBackUrl(), ctx);
+        var headerToolsContainer = new ContentWrapper("header-tools", new ContentWrapperConfiguration(), ctx);
+        getHeaderTools(ctx).reversed().forEach(it -> headerToolsContainer.addChild(ctx, it,0));
+        addChild(ctx, headerToolsContainer, 0);
         factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
         var workspaceProvider = factory.getBean(WorkspaceProvider.class);
-        storage = factory.getBean(Storage.class);
         var workspace = workspaceProvider.getWorkspace();
         for(var group : workspace.getGroups()){
             getWorkspaceGroups().add(toWorkspaceGroup(group));
         }
 	}
+
+    protected List<BaseUiElement> getHeaderTools(OperationUiContext context) {
+        return List.of(new ThemeTool(context), new LangTool(context));
+    }
 
     @Override
     protected MainFrameConfiguration createConfiguration() {

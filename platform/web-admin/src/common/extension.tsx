@@ -17,7 +17,7 @@ export const setWebPeerParam = (key: string, value: any) => {
 };
 
 const ext = JSON.parse(window.localStorage.getItem('webpeer') ?? '{}');
-adminWebPeerExt.useDarkTheme = !!ext.useDarkTheme;
+adminWebPeerExt.useDarkTheme = 'true' === ext.useDarkTheme;
 adminWebPeerExt.language = ext.lang || 'en';
 
 export const DynamicIcon = (iconName: string) => {

@@ -4,4 +4,6 @@
     <message id="Clear"/>
     <message id="Filters"/>
     <message id="Content"/>
+    <message id="Dark"/>
+    <message id="Light"/>
 </messages-bundle>

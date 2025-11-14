@@ -11,4 +11,38 @@
     </entity>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.ContentWrapper" managed-configuration="true"/>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.Glue"/>
+    <entity id="com.gridnine.platform.elsa.admin.web.common.IconMenuItem">
+        <property id="id" type="STRING" non-nullable="true"/>
+        <property id="icon" type="STRING" non-nullable="true"/>
+        <property id="displayName" type="STRING" non-nullable="true"/>
+    </entity>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.common.DropDownIcon">
+        <server-managed-state>
+            <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.IconMenuItem"/>
+            <property id="selectedItem" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.common.IconMenuItem" non-nullable="true"/>
+        </server-managed-state>
+        <commands-from-client>
+            <command id="click">
+                <property id="id" type="STRING" non-nullable="true"/>
+            </command>
+        </commands-from-client>
+    </custom>
+    <entity id="com.gridnine.platform.elsa.admin.web.common.ImageMenuItem">
+        <property id="id" type="STRING" non-nullable="true"/>
+        <property id="src" type="STRING" non-nullable="true"/>
+        <property id="displayName" type="STRING"/>
+        <property id="imageWidth" type="INT" />
+        <property id="imageHeight" type="INT" />
+    </entity>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.common.DropDownImage">
+        <server-managed-state>
+            <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.ImageMenuItem"/>
+            <property id="selectedItem" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.common.ImageMenuItem" non-nullable="true"/>
+        </server-managed-state>
+        <commands-from-client>
+            <command id="click">
+                <property id="id" type="STRING" non-nullable="true"/>
+            </command>
+        </commands-from-client>
+    </custom>
 </web-app>

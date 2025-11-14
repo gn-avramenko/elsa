@@ -1,3 +1,4 @@
+import './admin.css';
 import React, { ReactElement, useEffect, useState } from 'react';
 import {
     BaseUiElement,

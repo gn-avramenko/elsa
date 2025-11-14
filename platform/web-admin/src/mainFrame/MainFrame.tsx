@@ -10,13 +10,12 @@ import {
 import useBreakpoint from 'use-breakpoint';
 import { Content, Header } from 'antd/es/layout/layout';
 import { PropsWithChildren, useState } from 'react';
-import { DropDownImageComp } from 'admin/src/components/dropdown-image-comp';
-import { DropDownIconComp } from 'admin/src/components/dropdown-icon-comp';
 import useTheme from 'antd/es/config-provider/hooks/useTheme';
 import { MenuComp } from 'admin/src/components/menu-comp';
 import { MainRouterComponent } from 'admin/src/mainFrame/MainRouter';
 import Sider from 'antd/es/layout/Sider';
 import { BackwardFilled } from '@ant-design/icons';
+import { MainFrameSetWebPeerParamAction } from 'admin/src-gen/mainFrame/MainFrameSetWebPeerParamAction';
 
 function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) {
     initStateSetters(props.element);
@@ -45,7 +44,6 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     );
 
     (th as any).token.scrollbarColor = scrollbarColor;
-    const lang = adminWebPeerExt.language || 'en';
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
     if (props.element.getEmbeddedMode()) {
         return (
@@ -91,87 +89,6 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             }}
         />
     );
-    const drawHeaderContent = () => (
-        <div
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                lineHeight: '20px',
-                height: '50px',
-                padding: token.padding,
-                paddingLeft: '5px',
-            }}
-        >
-            <img
-                alt=""
-                src="/_resources/classpath/admin/logo.svg"
-                style={{ display: 'inline-block', height: '45px' }}
-            />
-            <div
-                style={{
-                    fontSize: token.fontSizeHeading2,
-                    fontWeight: token.fontWeightStrong,
-                    padding: token.padding,
-                }}
-            >
-                {props.element.getAppName()}
-            </div>
-            <div style={{ flexGrow: 1 }} />
-            <div
-                style={{
-                    fontSize: token.fontSizeHeading3,
-                    fontWeight: token.fontWeightStrong,
-                    padding: token.padding,
-                }}
-                dangerouslySetInnerHTML={{ __html: props.element.getTitle() ?? '' }}
-            />
-            <div style={{ flexGrow: 1 }} />
-            <DropDownImageComp
-                style={{ padding: token.padding }}
-                menuItems={[
-                    {
-                        src: '/_resources/classpath/admin/en-flag.png',
-                        imageHeight: '20px',
-                        name: 'English',
-                        id: 'en',
-                    },
-                    {
-                        src: '/_resources/classpath/admin/ru-flag.png',
-                        imageHeight: '20px',
-                        name: 'Russian',
-                        id: 'ru',
-                    },
-                ]}
-                selectedId={lang}
-                callback={(item) => {
-                    setWebPeerParam('lang', item);
-                    window.location.reload();
-                }}
-            />
-            <DropDownIconComp
-                menuItems={[
-                    {
-                        name: 'Light',
-                        icon: 'SunOutlined',
-                        id: 'light',
-                    },
-                    {
-                        name: 'Dark',
-                        icon: 'MoonOutlined',
-                        id: 'dark',
-                    },
-                ]}
-                style={{ padding: token.padding }}
-                selectedId={darkTheme ? 'dark' : 'light'}
-                callback={(item) => {
-                    setWebPeerParam('useDarkTheme', item === 'dark');
-                    window.location.reload();
-                }}
-            />
-        </div>
-    );
     const drawMobileHeaderContent = () => (
         <div
             style={{
@@ -199,50 +116,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             >
                 Admin
             </div>
-            {false ? drawHeaderContent() : ''}
             <div style={{ flexGrow: 1 }} />
-            <DropDownImageComp
-                style={{ padding: token.padding }}
-                menuItems={[
-                    {
-                        src: '/_resources/classpath/admin/en-flag.png',
-                        imageHeight: '20px',
-                        name: 'English',
-                        id: 'en',
-                    },
-                    {
-                        src: '/_resources/classpath/admin/ru-flag.png',
-                        imageHeight: '20px',
-                        name: 'Russian',
-                        id: 'ru',
-                    },
-                ]}
-                selectedId={lang}
-                callback={(item) => {
-                    setWebPeerParam('lang', item);
-                    window.location.reload();
-                }}
-            />
-            <DropDownIconComp
-                menuItems={[
-                    {
-                        name: 'Light',
-                        icon: 'SunOutlined',
-                        id: 'light',
-                    },
-                    {
-                        name: 'Dark',
-                        icon: 'MoonOutlined',
-                        id: 'dark',
-                    },
-                ]}
-                style={{ padding: token.padding }}
-                selectedId={darkTheme ? 'dark' : 'light'}
-                callback={(item) => {
-                    setWebPeerParam('useDarkTheme', item === 'dark');
-                    window.location.reload();
-                }}
-            />
         </div>
     );
     return (
@@ -373,8 +247,9 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                 alignItems: 'center',
                             }}
                         >
-                            <div style={{ flexGrow: 1 }} />
+                            <div key="glue-1" style={{ flexGrow: 1 }} />
                             <div
+                                key="title"
                                 style={{
                                     fontSize: token.fontSizeHeading4,
                                     fontWeight: token.fontWeightStrong,
@@ -385,13 +260,21 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                     __html: props.element.getTitle() ?? '',
                                 }}
                             />
-                            <div style={{ flexGrow: 1 }} />
-                            <div>
+                            <div key="glue-2" style={{ flexGrow: 1 }} />
+                            <div
+                                key="tools"
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}
+                            >
                                 {(
                                     props.element.findByTag('header-tools')?.children ||
                                     []
                                 ).map((it) => (
                                     <div
+                                        key={`tool-wrapper-${it.id}`}
                                         style={{
                                             padding: token.paddingXS,
                                         }}
@@ -414,5 +297,9 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
 }
 
 export class MainFrameComponent extends MainFrameSkeleton {
+    processSetWebPeerParam(value: MainFrameSetWebPeerParamAction): void {
+        setWebPeerParam(value.key, value.value);
+        window.location.reload();
+    }
     functionalComponent = MainFrameFC;
 }
