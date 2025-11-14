@@ -1,4 +1,4 @@
-import { initStateSetters } from 'admin/src/common/component';
+import { BaseReactUiElement, initStateSetters } from 'admin/src/common/component';
 import { MainFrameSkeleton } from 'admin/src-gen/mainFrame/MainFrameSkeleton';
 import { Button, ConfigProvider, Drawer, Layout, theme } from 'antd';
 import {
@@ -116,7 +116,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                     padding: token.padding,
                 }}
             >
-                Admin
+                {props.element.getAppName()}
             </div>
             <div style={{ flexGrow: 1 }} />
             <div
@@ -199,6 +199,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             >
                 Admin
             </div>
+            {false ? drawHeaderContent() : ''}
             <div style={{ flexGrow: 1 }} />
             <DropDownImageComp
                 style={{ padding: token.padding }}
@@ -339,26 +340,72 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                 </Layout>
             ) : (
                 <Layout style={{ height: '100%', borderRadius: token.borderRadiusLG }}>
-                    <Header
-                        style={{
-                            padding: 0,
-                            height: 60,
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}
-                    >
-                        {drawHeaderContent()}
-                    </Header>
+                    <Sider>
+                        <Header
+                            style={{
+                                padding: 0,
+                                height: 30,
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    fontSize: token.fontSizeHeading4,
+                                    fontWeight: token.fontWeightStrong,
+                                    paddingLeft: token.padding,
+                                    lineHeight: token.lineHeightHeading4,
+                                }}
+                            >
+                                {props.element.getAppName()}
+                            </div>
+                        </Header>
+                        <Content>{drawMenu()}</Content>
+                    </Sider>
                     <Content style={{ height: '100%' }}>
-                        <Layout style={{ height: '100%' }}>
-                            <Sider>{drawMenu()}</Sider>
-                            <Content>
-                                {props.element
-                                    .findByTag('mainRouter')
-                                    .createReactElement()}
-                            </Content>
-                        </Layout>
+                        <Header
+                            style={{
+                                padding: 0,
+                                height: 30,
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <div style={{ flexGrow: 1 }} />
+                            <div
+                                style={{
+                                    fontSize: token.fontSizeHeading4,
+                                    fontWeight: token.fontWeightStrong,
+                                    padding: token.paddingXS,
+                                    lineHeight: token.lineHeightHeading4,
+                                }}
+                                dangerouslySetInnerHTML={{
+                                    __html: props.element.getTitle() ?? '',
+                                }}
+                            />
+                            <div style={{ flexGrow: 1 }} />
+                            <div>
+                                {(
+                                    props.element.findByTag('header-tools')?.children ||
+                                    []
+                                ).map((it) => (
+                                    <div
+                                        style={{
+                                            padding: token.paddingXS,
+                                        }}
+                                    >
+                                        {(
+                                            it as BaseReactUiElement
+                                        ).createReactElement()}
+                                    </div>
+                                ))}
+                            </div>
+                        </Header>
+                        <Content>
+                            {props.element.findByTag('mainRouter').createReactElement()}
+                        </Content>
                     </Content>
                 </Layout>
             )}

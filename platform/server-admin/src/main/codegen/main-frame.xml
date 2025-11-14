@@ -14,6 +14,7 @@
         <server-managed-state>
             <collection id="workspaceGroups" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceGroup"/>
             <property id="title" type="STRING"/>
+            <property id="appName" type="STRING"/>
             <property id="backUrl" type="STRING"/>
             <property id="embeddedMode" type="BOOLEAN"/>
         </server-managed-state>

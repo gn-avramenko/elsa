@@ -50,6 +50,7 @@ public class MainFrame extends MainFrameSkeleton{
         var path = ctx.getParameter(OperationUiContext.PARAMS).get("initPath").getAsString();
         setEmbeddedMode(path.contains("embeddedMode=true"), ctx);
         setTitle(getMainRouter().getTitle(), ctx);
+        setAppName(getTitle(), ctx);
         setBackUrl(getMainRouter().getInitBackUrl(), ctx);
         factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
         var workspaceProvider = factory.getBean(WorkspaceProvider.class);
