@@ -1,0 +1,19 @@
+{
+  "ext": {
+    "scrollbarColor": "rgba(0, 0, 0, 0.25) rgba(6, 6, 6, 0.12)"
+  },
+  "token": {
+    "fontFamily": "-apple-system, system-ui, Helvetica, Arial, sans-serif"
+  },
+  "algorithm": ["defaultAlgorithm"],
+  "components": {
+    "Layout": {
+      "headerHeight": "30px",
+      "headerColor": "rgb(255,255,255)",
+      "headerBg": "rgb(149, 180, 200)",
+      "siderBg": "rgb(255,255,255)",
+      "lightTriggerColor": "rgb(255,255,255)",
+      "triggerBg": "rgb(255,255,255)"
+    }
+  }
+}

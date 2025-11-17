@@ -17,6 +17,7 @@
             <property id="appName" type="STRING"/>
             <property id="backUrl" type="STRING"/>
             <property id="embeddedMode" type="BOOLEAN"/>
+            <property id="themeToken" type="STRING" non-nullable="true"/>
         </server-managed-state>
         <commands-from-server>
             <command id="setWebPeerParam">

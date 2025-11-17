@@ -27,25 +27,32 @@ package com.gridnine.platform.elsa.admin.web.mainFrame;
 import com.gridnine.platform.elsa.admin.domain.BaseWorkspaceItem;
 import com.gridnine.platform.elsa.admin.domain.WorkspaceProjection;
 import com.gridnine.platform.elsa.admin.domain.WorkspaceProjectionFields;
+import com.gridnine.platform.elsa.admin.utils.AdminParameters;
 import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
+import com.gridnine.platform.elsa.common.core.utils.IoUtils;
+import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.core.auth.AuthContext;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.platform.elsa.webApp.common.ContentWrapper;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
+import com.gridnine.webpeer.core.ui.GlobalUiContext;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.ListableBeanFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainFrame extends MainFrameSkeleton{
 
     private ListableBeanFactory factory;
     private volatile Map<String, WorkspaceItemHandler<?>> itemHandlers;
-    private WorkspaceItemHandler workspaceItemHandler;
 	public MainFrame(String tag, OperationUiContext ctx) throws Exception {
 		super(tag, ctx);
         var path = ctx.getParameter(OperationUiContext.PARAMS).get("initPath").getAsString();
@@ -53,6 +60,16 @@ public class MainFrame extends MainFrameSkeleton{
         setTitle(getMainRouter().getTitle(), ctx);
         setAppName(getTitle(), ctx);
         setBackUrl(getMainRouter().getInitBackUrl(), ctx);
+        if(Boolean.TRUE.equals(isEmbeddedMode())){
+            var locale = path.contains("lang=ru")? LocaleUtils.ruLocale: Locale.ENGLISH;
+            GlobalUiContext.setParameter(ctx.getParameter(OperationUiContext.PATH), ctx.getParameter(OperationUiContext.CLIENT_ID), AdminParameters.LOCALE, locale);
+            LocaleUtils.setCurrentLocale(locale);
+            setThemeToken(path.contains("theme=dark")? getDarkThemeToken(): getLightThemeToken(), ctx);
+        } else {
+            var ls = ctx.getParameter(OperationUiContext.LOCAL_STORAGE_DATA);
+            var darkTheme = ls != null && ls.has("useDarkTheme") &&"true".equals(ls.get("useDarkTheme").getAsString());
+            setThemeToken(darkTheme? getDarkThemeToken(): getLightThemeToken(), ctx);
+        }
         var headerToolsContainer = new ContentWrapper("header-tools", new ContentWrapperConfiguration(), ctx);
         getHeaderTools(ctx).reversed().forEach(it -> headerToolsContainer.addChild(ctx, it,0));
         addChild(ctx, headerToolsContainer, 0);
@@ -63,6 +80,22 @@ public class MainFrame extends MainFrameSkeleton{
             getWorkspaceGroups().add(toWorkspaceGroup(group));
         }
 	}
+
+    protected String getLightThemeToken() throws IOException {
+        return getStringContent("admin/mainFrame/light-theme-token.json");
+    }
+
+    private String getStringContent(String path) throws IOException {
+        var baos = new ByteArrayOutputStream();
+        try(var is = getClass().getClassLoader().getResource(path).openStream()){
+            IoUtils.copy(is, baos);
+        }
+        return baos.toString(StandardCharsets.UTF_8);
+    }
+
+    protected String getDarkThemeToken() throws IOException {
+        return getStringContent("admin/mainFrame/dark-theme-token.json");
+    }
 
     protected List<BaseUiElement> getHeaderTools(OperationUiContext context) {
         return List.of(new ThemeTool(context), new LangTool(context));

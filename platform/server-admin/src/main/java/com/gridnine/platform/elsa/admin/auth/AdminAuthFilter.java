@@ -6,6 +6,7 @@ import com.gridnine.platform.elsa.admin.utils.HttpUtils;
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
+import com.gridnine.platform.elsa.common.core.utils.TextUtils;
 import com.gridnine.platform.elsa.core.auth.AuthContext;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import jakarta.annotation.PostConstruct;
@@ -33,10 +34,13 @@ public class AdminAuthFilter extends HttpFilter {
     @Autowired
     private Storage storage;
 
-    @Value("${auth.tokenPeriod:24}")
+    @Value("${elsa.auth.tokenPeriod:24}")
     private int authTokenPeriod;
 
-    private Timer cleanupTimer;
+    @Value("${elsa.auth.developmentUserName:#{null}}")
+    private String developmentUserName;
+
+    private final Timer cleanupTimer;
 
     public AdminAuthFilter() {
         cleanupTimer = new Timer("login-tokens-cleanup");
@@ -83,12 +87,11 @@ public class AdminAuthFilter extends HttpFilter {
             if(token != null){
                 storage.deleteAsset(token);
             }
-        } else {
-            var cookie = new Cookie(AUTH_COOKIE_ID, null);
-            cookie.setPath("/");
-            cookie.setMaxAge(0);
-            resp.addCookie(cookie);
         }
+        var cookie = new Cookie(AUTH_COOKIE_ID, null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        resp.addCookie(cookie);
     }
 
     public void registerSuccessfulLogin(String login, HttpServletResponse resp) {
@@ -125,6 +128,15 @@ public class AdminAuthFilter extends HttpFilter {
         }
         if(request.getQueryString() != null && request.getQueryString().contains("action=destroy")){
             chain.doFilter(request,res);
+            return;
+        }
+        if(TextUtils.isNotBlank(developmentUserName)){
+            AuthContext.setCurrentUser(developmentUserName);
+            try{
+                chain.doFilter(request,res);
+            } finally {
+                AuthContext.resetCurrentUser();
+            }
             return;
         }
         try {
@@ -175,7 +187,6 @@ public class AdminAuthFilter extends HttpFilter {
             res.sendRedirect("/login?redirectUrl=/");
         } finally {
             AuthContext.resetCurrentUser();
-            LocaleUtils.resetCurrentLocale();
         }
     }
 

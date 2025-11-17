@@ -25,6 +25,15 @@ public class ElsaServerMongoTestConfiguration {
     }
 
     @Bean
+    public MongoTestServer mongoTestServer(){
+        return new MongoTestServer();
+    }
+
+    @Bean
+    public TestMongoStorageFactory testMongoStorageFactory(){
+        return new TestMongoStorageFactory();
+    }
+    @Bean
     public JdbcDatabaseCustomizer jdbcDatabaseCustomizer(){
         return new StandardMongoJdbcCustomizer(dmr);
     }

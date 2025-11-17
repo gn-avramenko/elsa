@@ -1,12 +1,7 @@
 import { BaseReactUiElement, initStateSetters } from 'admin/src/common/component';
 import { MainFrameSkeleton } from 'admin/src-gen/mainFrame/MainFrameSkeleton';
 import { Button, ConfigProvider, Drawer, Layout, theme } from 'antd';
-import {
-    adminWebPeerExt,
-    BREAKPOINTS,
-    DynamicIcon,
-    setWebPeerParam,
-} from 'admin/src/common/extension';
+import { BREAKPOINTS, DynamicIcon, setWebPeerParam } from 'admin/src/common/extension';
 import useBreakpoint from 'use-breakpoint';
 import { Content, Header } from 'antd/es/layout/layout';
 import { PropsWithChildren, useState } from 'react';
@@ -20,40 +15,14 @@ import { MainFrameSetWebPeerParamAction } from 'admin/src-gen/mainFrame/MainFram
 function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) {
     initStateSetters(props.element);
     const [drawerOpened, setDrawerOpened] = useState(false);
-    const darkTheme = !!adminWebPeerExt.useDarkTheme;
     const { token } = theme.useToken();
-    let scrollbarColor = darkTheme
-        ? 'rgba(255, 255, 255, 0.25) rgba(253, 253, 253, 0.12)'
-        : 'rgba(0, 0, 0, 0.25) rgba(6, 6, 6, 0.12)';
-    const th = useTheme(
-        darkTheme
-            ? {
-                  algorithm: [theme.darkAlgorithm],
-                  components: {
-                      Layout: {
-                          headerHeight: '30px',
-                      },
-                  },
-              }
-            : {
-                  token: {
-                      fontFamily:
-                          '-apple-system, system-ui, Helvetica, Arial, sans-serif',
-                  },
-                  algorithm: [theme.defaultAlgorithm],
-                  components: {
-                      Layout: {
-                          headerHeight: '30px',
-                          headerColor: 'rgb(255,255,255)',
-                          headerBg: 'rgb(149, 180, 200)',
-                          siderBg: 'rgb(255,255,255)',
-                          lightTriggerColor: 'rgb(255,255,255)',
-                          triggerBg: 'rgb(255,255,255)',
-                      },
-                  },
-              }
-    ) as any;
-
+    const themeConfig = JSON.parse(props.element.getThemeToken()) as any;
+    if (themeConfig.algorithm) {
+        themeConfig.algorithm = themeConfig.algorithm.map(
+            (it: any) => (theme as any)[it]
+        );
+    }
+    const th = useTheme(themeConfig) as any;
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
     if (props.element.getEmbeddedMode()) {
         return (
@@ -86,7 +55,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             style={{
                 height: '100%',
                 overflowY: 'auto',
-                scrollbarColor: scrollbarColor,
+                scrollbarColor: themeConfig.ext.scrollbarColor,
             }}
             callback={(link) => {
                 setDrawerOpened(false);

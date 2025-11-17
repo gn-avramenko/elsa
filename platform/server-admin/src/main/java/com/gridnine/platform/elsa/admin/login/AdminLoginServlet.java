@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +27,7 @@ public abstract class AdminLoginServlet extends HttpServlet {
     private volatile String loginHtmlContent;
     private volatile String loginCssContent;
     private volatile String loginJsContent;
+    private volatile byte[] favicon;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,6 +40,14 @@ public abstract class AdminLoginServlet extends HttpServlet {
                 content = loginCssContent;
             } else if (pathInfo.endsWith(".js")) {
                content = loginJsContent;
+            } else if (pathInfo.endsWith("favicon.svg")) {
+                resp.setContentType("image/svg+xml");
+                try(var os = resp.getOutputStream()){
+                    IoUtils.copy(new ByteArrayInputStream(favicon), os);
+                    os.flush();
+                }
+                resp.setStatus(HttpServletResponse.SC_OK);
+                return;
             }
         }
         resp.setCharacterEncoding("UTF-8");
@@ -56,15 +66,23 @@ public abstract class AdminLoginServlet extends HttpServlet {
                     var cnt3 = readContent(getLoginJsResource()).replace("${context}", getContextPath());
                     var loginJsName = "%s/login-%s.js".formatted(getContextPath(), IoUtils.sha1sum(cnt3));
                     var loginCssName = "%s/login-%s.css".formatted(getContextPath(),IoUtils.sha1sum(cnt2));
+                    var faviconSvg = "%s/favicon.svg".formatted(getContextPath());
                     var cnt1 = readContent(getLoginHtmlResource()).replace("${title}",getTitle())
                             .replace("${usernameLabel}", getUserNameLabel())
                             .replace("${passwordLabel}", getPasswordLabel())
                             .replace("${login_js}", loginJsName)
+                            .replace("${favicon_svg}", faviconSvg)
                             .replace("${login_css}", loginCssName)
                             .replace("${submitButtonLabel}", getSubmitButtonLabel()).replace("${redirectUrl}", redirectUrl == null?"":redirectUrl);
                     loginCssContent = cnt2;
                     loginJsContent = cnt3;
+                    var baos = new ByteArrayOutputStream();
+                    try(var is= getFaviconResource().openStream()){
+                        IoUtils.copy(is, baos);
+                    }
+                    favicon = baos.toByteArray();
                     loginHtmlContent = cnt1;
+
                 }
             }
         }
@@ -114,6 +132,10 @@ public abstract class AdminLoginServlet extends HttpServlet {
     }
     protected URL getLoginJsResource() {
         return getClass().getClassLoader().getResource("admin/login/login.js");
+    }
+
+    protected URL getFaviconResource() {
+        return getClass().getClassLoader().getResource("admin/login/favicon.svg");
     }
 
     protected String getContextPath(){

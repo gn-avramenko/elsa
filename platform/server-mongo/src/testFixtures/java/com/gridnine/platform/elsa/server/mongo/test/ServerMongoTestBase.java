@@ -16,24 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = {ElsaServerMongoConfiguration.class, ElsaServerMongoTestConfiguration.class}, initializers = {ServerMongoTestPropertyOverrideContextInitializer.class})
 public class ServerMongoTestBase extends ServerCoreTestBase {
 
-    private MongoServer server;
-
-    @Override
-    protected void setup() throws Exception {
-        server = new MongoServer(new MemoryBackend());
-        server.bind("localhost", 47017);
-        super.setup();
-    }
-
-    @Override
-    protected void dispose() throws Exception {
-        try {
-            super.dispose();
-        } finally {
-            server.shutdown();
-        }
-    }
-
     @Autowired
     protected MongoFacade mongoFacade;
 }

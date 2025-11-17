@@ -1,5 +1,8 @@
 plugins {
     java
+    id("java-test-fixtures")
+    id("org.springframework.boot") version "3.5.4"
+    id("io.spring.dependency-management") version "1.1.7"
     id("elsa-java")
 }
 
@@ -14,6 +17,10 @@ dependencies {
     implementation(project(":server-core"))
     implementation(project(":server-web-app"))
     implementation(project(":webpeer-server-core"))
+    testFixturesImplementation(testFixtures(project(":common-core")))
+    testFixturesImplementation(testFixtures(project(":server-core")))
+    testFixturesImplementation(testFixtures(project(":server-atomikos")))
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 elsa {
@@ -30,6 +37,8 @@ elsa {
 sourceSets.main {
     java.srcDirs("src/main/java", "src/main/java-gen")
 }
-
+sourceSets.testFixtures {
+    java.srcDirs("src/testFixtures/java-gen")
+}
 group ="com.gridnine.elsa"
 version ="1.0"

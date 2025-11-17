@@ -1,0 +1,16 @@
+{
+  "ext": {
+    "scrollbarColor": "rgba(255, 255, 255, 0.25) rgba(253, 253, 253, 0.12)"
+  },
+  "token": {
+    "fontFamily": "-apple-system, system-ui, Helvetica, Arial, sans-serif"
+  },
+  "algorithm": ["darkAlgorithm"],
+  "components": {
+    "Layout": {
+      "headerHeight": "30px",
+      "headerColor": "rgb(255,255,255)",
+      "headerBg": "rgb(149, 180, 200)"
+    }
+  }
+}
