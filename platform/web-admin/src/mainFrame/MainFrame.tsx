@@ -29,21 +29,31 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
         darkTheme
             ? {
                   algorithm: [theme.darkAlgorithm],
+                  components: {
+                      Layout: {
+                          headerHeight: '30px',
+                      },
+                  },
               }
             : {
+                  token: {
+                      fontFamily:
+                          '-apple-system, system-ui, Helvetica, Arial, sans-serif',
+                  },
                   algorithm: [theme.defaultAlgorithm],
                   components: {
                       Layout: {
+                          headerHeight: '30px',
                           headerColor: 'rgb(255,255,255)',
+                          headerBg: 'rgb(149, 180, 200)',
                           siderBg: 'rgb(255,255,255)',
                           lightTriggerColor: 'rgb(255,255,255)',
                           triggerBg: 'rgb(255,255,255)',
                       },
                   },
               }
-    );
+    ) as any;
 
-    (th as any).token.scrollbarColor = scrollbarColor;
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
     if (props.element.getEmbeddedMode()) {
         return (
@@ -89,36 +99,6 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             }}
         />
     );
-    const drawMobileHeaderContent = () => (
-        <div
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                lineHeight: '20px',
-                height: '50px',
-                padding: token.padding,
-                paddingLeft: '5px',
-            }}
-        >
-            <img
-                alt=""
-                src="/_resources/classpath/admin/logo.svg"
-                style={{ display: 'inline-block', height: '45px' }}
-            />
-            <div
-                style={{
-                    fontSize: token.fontSizeHeading2,
-                    fontWeight: token.fontWeightStrong,
-                    padding: token.padding,
-                }}
-            >
-                Admin
-            </div>
-            <div style={{ flexGrow: 1 }} />
-        </div>
-    );
     return (
         <ConfigProvider theme={th}>
             {breakpoint === 'mobile' ? (
@@ -126,7 +106,6 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                     <Header
                         style={{
                             padding: 0,
-                            height: 60,
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -134,18 +113,17 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                     >
                         {props.element.getBackUrl() ? (
                             <div
+                                key="header"
                                 style={{
                                     width: '100%',
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    lineHeight: '20px',
-                                    height: '50px',
                                     padding: token.padding,
                                     paddingLeft: '5px',
                                 }}
                             >
-                                <div style={{ flexGrow: 0 }}>
+                                <div style={{ flexGrow: 0 }} key="back">
                                     <Button
                                         icon={<BackwardFilled />}
                                         onClick={() => {
@@ -160,8 +138,9 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                         }}
                                     />
                                 </div>
-                                <div style={{ flexGrow: 1 }} />
+                                <div key="glue-1" style={{ flexGrow: 1 }} />
                                 <div
+                                    key="title"
                                     style={{
                                         fontSize: token.fontSizeHeading3,
                                         fontWeight: token.fontWeightStrong,
@@ -174,20 +153,60 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                 <div style={{ flexGrow: 1 }} />
                             </div>
                         ) : (
-                            <>
+                            <div
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    paddingLeft: '5px',
+                                }}
+                            >
                                 <div
-                                    style={{
-                                        lineHeight: '35px',
-                                        padding: token.paddingSM,
-                                    }}
+                                    key="menu"
                                     onClick={() => {
                                         setDrawerOpened(true);
                                     }}
                                 >
                                     {DynamicIcon('MenuFoldOutlined')}
                                 </div>
-                                {drawMobileHeaderContent()}
-                            </>
+                                <div
+                                    key="title"
+                                    style={{
+                                        fontSize: token.fontSizeHeading2,
+                                        fontWeight: token.fontWeightStrong,
+                                        paddingLeft: token.paddingXS,
+                                        paddingBottom: '3px',
+                                    }}
+                                >
+                                    {props.element.getAppName()}
+                                </div>
+                                <div style={{ flexGrow: 1 }} />
+                                <div
+                                    key="tools"
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    {(
+                                        props.element.findByTag('header-tools')
+                                            ?.children || []
+                                    ).map((it) => (
+                                        <div
+                                            key={`tool-wrapper-${it.id}`}
+                                            style={{
+                                                padding: token.paddingXS,
+                                            }}
+                                        >
+                                            {(
+                                                it as BaseReactUiElement
+                                            ).createReactElement()}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         )}
                     </Header>
                     <Content style={{ height: '100%' }}>
@@ -218,7 +237,6 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                         <Header
                             style={{
                                 padding: 0,
-                                height: 30,
                                 display: 'flex',
                                 flexDirection: 'row',
                                 alignItems: 'center',
@@ -241,7 +259,6 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                         <Header
                             style={{
                                 padding: 0,
-                                height: 30,
                                 display: 'flex',
                                 flexDirection: 'row',
                                 alignItems: 'center',

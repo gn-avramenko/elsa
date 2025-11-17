@@ -25,4 +25,9 @@
     <searchable-projection id="com.gridnine.platform.elsa.admin.domain.WorkspaceProjection" document="com.gridnine.platform.elsa.admin.domain.Workspace">
         <property id="userLogin" type="STRING" cache-find="true" use-in-text-search="true"/>
     </searchable-projection>
+    <asset id="com.gridnine.platform.elsa.admin.domain.LoginToken">
+        <property id="token" type="STRING" non-nullable="true"/>
+        <property id="login" type="STRING" non-nullable="true"/>
+        <property id="created" type="INSTANT" non-nullable="true"/>
+    </asset>
 </domain>

@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const messageDiv = document.getElementById('message');
     const webpeer = JSON.parse(window.localStorage.webpeer || '{}');
+    if("true" === webpeer.useDarkTheme){
+        document.body.classList.add("dark");
+    }
     function setLabel(id, key){
         let value = window.localization[key];
         if(value.indexOf("|") !== -1){
