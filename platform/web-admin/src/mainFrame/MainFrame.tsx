@@ -1,20 +1,34 @@
-import { BaseReactUiElement, initStateSetters } from 'admin/src/common/component';
+import {
+    BaseReactUiElement,
+    initStateSetters,
+    preloaderHolder,
+} from 'admin/src/common/component';
 import { MainFrameSkeleton } from 'admin/src-gen/mainFrame/MainFrameSkeleton';
-import { Button, ConfigProvider, Drawer, Layout, theme } from 'antd';
+import { ConfigProvider, Drawer, Layout, Spin, theme } from 'antd';
 import { BREAKPOINTS, DynamicIcon, setWebPeerParam } from 'admin/src/common/extension';
 import useBreakpoint from 'use-breakpoint';
 import { Content, Header } from 'antd/es/layout/layout';
-import { PropsWithChildren, useState } from 'react';
+import { createContext, PropsWithChildren, useContext, useState } from 'react';
 import useTheme from 'antd/es/config-provider/hooks/useTheme';
 import { MenuComp } from 'admin/src/components/menu-comp';
 import { MainRouterComponent } from 'admin/src/mainFrame/MainRouter';
 import Sider from 'antd/es/layout/Sider';
-import { BackwardFilled } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { MainFrameSetWebPeerParamAction } from 'admin/src-gen/mainFrame/MainFrameSetWebPeerParamAction';
+import { MainFrameSaveFileAction } from 'admin/src-gen/mainFrame/MainFrameSaveFileAction';
+
+const ExtThemePropertiesContext = createContext<any>({});
+
+export const useExtThemeProperties = (): any => {
+    return useContext(ExtThemePropertiesContext);
+};
 
 function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) {
     initStateSetters(props.element);
     const [drawerOpened, setDrawerOpened] = useState(false);
+    const [spinning, setSpinning] = useState(false);
+    preloaderHolder.hidePreloader = () => setSpinning(false);
+    preloaderHolder.showPreloader = () => setSpinning(true);
     const { token } = theme.useToken();
     const themeConfig = JSON.parse(props.element.getThemeToken()) as any;
     if (themeConfig.algorithm) {
@@ -22,17 +36,20 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             (it: any) => (theme as any)[it]
         );
     }
-    const th = useTheme(themeConfig) as any;
+    const ext = themeConfig.ext;
+    const th = useTheme(themeConfig);
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
     if (props.element.getEmbeddedMode()) {
         return (
-            <ConfigProvider theme={th}>
-                <Layout style={{ height: '100%' }}>
-                    <Content>
-                        {props.element.findByTag('mainRouter').createReactElement()}
-                    </Content>
-                </Layout>
-            </ConfigProvider>
+            <ExtThemePropertiesContext.Provider value={ext}>
+                <ConfigProvider theme={th}>
+                    <Layout style={{ height: '100%' }}>
+                        <Content>
+                            {props.element.findByTag('mainRouter').createReactElement()}
+                        </Content>
+                    </Layout>
+                </ConfigProvider>
+            </ExtThemePropertiesContext.Provider>
         );
     }
     //customize token
@@ -55,7 +72,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             style={{
                 height: '100%',
                 overflowY: 'auto',
-                scrollbarColor: themeConfig.ext.scrollbarColor,
+                scrollbarColor: ext.scrollbarColor,
             }}
             callback={(link) => {
                 setDrawerOpened(false);
@@ -93,8 +110,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                 }}
                             >
                                 <div style={{ flexGrow: 0 }} key="back">
-                                    <Button
-                                        icon={<BackwardFilled />}
+                                    <ArrowLeftOutlined
                                         onClick={() => {
                                             (
                                                 props.element.findByTag(
@@ -179,6 +195,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                         )}
                     </Header>
                     <Content style={{ height: '100%' }}>
+                        <Spin spinning={spinning} fullscreen={true} />
                         <Drawer
                             styles={{
                                 header: { padding: 5 },
@@ -192,11 +209,13 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                             {drawMenu()}
                         </Drawer>
                         <Layout style={{ height: '100%' }}>
-                            <Content>
-                                {props.element
-                                    .findByTag('mainRouter')
-                                    .createReactElement()}
-                            </Content>
+                            <ExtThemePropertiesContext.Provider value={ext}>
+                                <Content>
+                                    {props.element
+                                        .findByTag('mainRouter')
+                                        .createReactElement()}
+                                </Content>
+                            </ExtThemePropertiesContext.Provider>
                         </Layout>
                     </Content>
                 </Layout>
@@ -224,9 +243,16 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                         </Header>
                         <Content>{drawMenu()}</Content>
                     </Sider>
-                    <Content style={{ height: '100%' }}>
+                    <Content
+                        style={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
                         <Header
                             style={{
+                                flexGrow: 0,
                                 padding: 0,
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -272,8 +298,13 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                 ))}
                             </div>
                         </Header>
-                        <Content>
-                            {props.element.findByTag('mainRouter').createReactElement()}
+                        <Content style={{ flexGrow: 1 }}>
+                            <Spin spinning={spinning} fullscreen={true} />
+                            <ExtThemePropertiesContext.Provider value={ext}>
+                                {props.element
+                                    .findByTag('mainRouter')
+                                    .createReactElement()}
+                            </ExtThemePropertiesContext.Provider>
                         </Content>
                     </Content>
                 </Layout>
@@ -283,6 +314,15 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
 }
 
 export class MainFrameComponent extends MainFrameSkeleton {
+    processSaveFile(value: MainFrameSaveFileAction): void {
+        const link = document.createElement('a');
+        link.download = value.name;
+        link.href = `data:application/octet-stream;base64,${value.base64Content}`;
+        link.className = 'external';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
     processReloadPage(): void {
         window.location.reload();
     }

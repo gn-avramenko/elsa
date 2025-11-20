@@ -25,15 +25,11 @@
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
 import com.gridnine.platform.elsa.admin.domain.BaseWorkspaceItem;
-import com.gridnine.platform.elsa.admin.domain.WorkspaceProjection;
-import com.gridnine.platform.elsa.admin.domain.WorkspaceProjectionFields;
 import com.gridnine.platform.elsa.admin.utils.AdminParameters;
 import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
 import com.gridnine.platform.elsa.common.core.utils.IoUtils;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
-import com.gridnine.platform.elsa.core.auth.AuthContext;
-import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.platform.elsa.webApp.common.ContentWrapper;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
@@ -44,10 +40,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class MainFrame extends MainFrameSkeleton{
 
@@ -146,5 +139,12 @@ public class MainFrame extends MainFrameSkeleton{
                 itemHandlers = handlers;
             }
         }
+    }
+
+    public void saveFile(String fileName, byte[] content, OperationUiContext context) {
+        var action  = new MainFrameSaveFileAction();
+        action.setName(fileName);
+        action.setBase64Content(Base64.getEncoder().encodeToString(content));
+        saveFile(action , context, false);
     }
 }

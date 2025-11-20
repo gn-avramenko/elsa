@@ -1,16 +1,26 @@
 {
   "ext": {
-    "scrollbarColor": "rgba(255, 255, 255, 0.25) rgba(253, 253, 253, 0.12)"
+    "scrollbarColor": "rgba(255, 255, 255, 0.25) rgba(253, 253, 253, 0.12)",
+    "enterTime": {
+      "inactiveDayBackground": "rgb(65, 76, 78)",
+      "holidayBackground": "rgb(101, 65, 65)",
+      "noStrikeBackground": "rgb(89, 104, 83)",
+      "strikeBackground": "rgb(86, 100, 103)",
+      "progressBillableColor": "rgb(160, 176, 200)",
+      "progressNonBillableColor": "rgb(233, 30, 99)"
+    }
   },
   "token": {
-    "fontFamily": "-apple-system, system-ui, Helvetica, Arial, sans-serif"
+    "fontFamily": "-apple-system, system-ui, Helvetica, Arial, sans-serif",
+    "colorBgBase": "rgb(55, 66, 68)"
   },
   "algorithm": ["darkAlgorithm"],
   "components": {
     "Layout": {
       "headerHeight": "30px",
       "headerColor": "rgb(255,255,255)",
-      "headerBg": "rgb(149, 180, 200)"
+      "headerBg": "rgb(149, 180, 200)",
+      "siderBg": "rgb(55, 66, 68)"
     }
   }
 }

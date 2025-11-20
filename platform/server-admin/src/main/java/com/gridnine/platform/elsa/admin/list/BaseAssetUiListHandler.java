@@ -244,7 +244,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         return result;
     }
 
-    public String getTitle() {
+    public String getTitle(String path) {
         var title = domainMetaRegistry.getAssets().get(assetClass.getName()).getDisplayNames().get(LocaleUtils.getCurrentLocale());
         return title;
     }

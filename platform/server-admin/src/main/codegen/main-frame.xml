@@ -25,6 +25,10 @@
                 <property id="value" type="STRING" non-nullable="true"/>
             </command>
             <command id="reloadPage"/>
+            <command id="saveFile">
+                <property id="name" type="STRING" non-nullable="true"/>
+                <property id="base64Content" type="STRING" non-nullable="true"/>
+            </command>
         </commands-from-server>
         <children>
             <router id="mainRouter" class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainRouter"/>

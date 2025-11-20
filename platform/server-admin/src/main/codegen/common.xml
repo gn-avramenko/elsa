@@ -4,7 +4,11 @@
         <enum-item id="MOBILE"/>
         <enum-item id="DESKTOP"/>
     </enum>
-    <button class-name="com.gridnine.platform.elsa.admin.web.common.Button"/>
+    <button class-name="com.gridnine.platform.elsa.admin.web.common.Button">
+        <server-managed-state>
+            <property id="tooltip" type="STRING"/>
+        </server-managed-state>
+    </button>
     <entity id="com.gridnine.platform.elsa.admin.web.common.Option">
         <property id="id" type="STRING" non-nullable="true"/>
         <property id="displayName" type="STRING" non-nullable="true"/>

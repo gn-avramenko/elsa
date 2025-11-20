@@ -114,7 +114,7 @@ public class MainRouter extends MainRouterSkeleton{
 		setPath(path, ctx);
 		setHasChanges(false, ctx);
         lastHandler = handler;
-        MainFrame.lookup(this).setTitle(lastHandler.getTitle(), ctx);
+        MainFrame.lookup(this).setTitle(lastHandler.getTitle(getPath()), ctx);
 		var elm = getUnmodifiableListOfChildren().getFirst();
 		removeChild(ctx, elm);
 		elm = ExceptionUtils.wrapException(()->handler.createElement(path, ctx));
@@ -137,6 +137,6 @@ public class MainRouter extends MainRouterSkeleton{
     }
 
     public String getTitle(){
-        return lastHandler.getTitle();
+        return lastHandler.getTitle(getPath());
     }
 }

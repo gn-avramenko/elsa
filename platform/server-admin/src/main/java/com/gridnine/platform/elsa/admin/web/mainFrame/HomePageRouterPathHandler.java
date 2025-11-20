@@ -28,7 +28,7 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 public class HomePageRouterPathHandler implements RouterPathHandler{
     @Override
     public boolean canHandle(String path) {
-        return path !=null && path.startsWith("home") ;
+        return path.startsWith("home");
     }
 
     @Override
@@ -37,7 +37,7 @@ public class HomePageRouterPathHandler implements RouterPathHandler{
     }
 
     @Override
-    public String getTitle() {
+    public String getTitle(String path) {
         return "Home";
     }
 

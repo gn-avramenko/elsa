@@ -1,6 +1,14 @@
 {
   "ext": {
-    "scrollbarColor": "rgba(0, 0, 0, 0.25) rgba(6, 6, 6, 0.12)"
+    "scrollbarColor": "rgba(0, 0, 0, 0.25) rgba(6, 6, 6, 0.12)",
+    "enterTime": {
+      "inactiveDayBackground": "rgb(247, 248, 250)",
+      "holidayBackground": "rgb(255, 245, 243)",
+      "noStrikeBackground": "rgb(235, 249, 230)",
+      "strikeBackground": "rgb(242, 247, 255)",
+      "progressBillableColor": "#A0B0C8",
+      "progressNonBillableColor": "#E91E63"
+    }
   },
   "token": {
     "fontFamily": "-apple-system, system-ui, Helvetica, Arial, sans-serif"

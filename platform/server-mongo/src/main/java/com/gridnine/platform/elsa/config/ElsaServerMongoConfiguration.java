@@ -27,4 +27,5 @@ public class ElsaServerMongoConfiguration {
     public ElsaServerMongoCustomMetaRegistryConfigurator elsaServerMongoCustomMetaRegistryConfigurator(){
         return new ElsaServerMongoCustomMetaRegistryConfigurator();
     }
+
 }
