@@ -29,7 +29,23 @@
                 <property id="name" type="STRING" non-nullable="true"/>
                 <property id="base64Content" type="STRING" non-nullable="true"/>
             </command>
+            <command id="showConfirmationDialog">
+                <property id="title" type="STRING" non-nullable="true"/>
+                <property id="okText" type="STRING" non-nullable="true"/>
+                <property id="cancelText" type="STRING" non-nullable="true"/>
+                <property id="question" type="STRING" non-nullable="true"/>
+            </command>
+            <command id="showError">
+                <property id="title" type="STRING" non-nullable="true"/>
+                <property id="closeText" type="STRING" non-nullable="true"/>
+                <property id="error" type="STRING" non-nullable="true"/>
+            </command>
         </commands-from-server>
+        <commands-from-client>
+            <command id="processConfirmationResult">
+                <property id="okPressed" type="BOOLEAN" non-nullable="true"/>
+            </command>
+        </commands-from-client>
         <children>
             <router id="mainRouter" class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainRouter"/>
         </children>

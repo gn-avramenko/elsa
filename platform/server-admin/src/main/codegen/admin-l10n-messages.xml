@@ -6,4 +6,8 @@
     <message id="Content"/>
     <message id="Dark"/>
     <message id="Light"/>
+    <message id="Ok"/>
+    <message id="Cancel"/>
+    <message id="Confirmation"/>
+    <message id="Error"/>
 </messages-bundle>

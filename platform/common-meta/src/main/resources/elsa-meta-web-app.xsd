@@ -117,6 +117,7 @@
             <element type="tns:AutocompleteType" name="autocomplete"/>
             <element type="tns:LabelType" name="label"/>
             <element type="tns:CustomType" name="custom"/>
+            <element type="tns:RefType" name="element-ref"/>
         </choice>
     </group>
     <group name="AllRootElementsGroup">
@@ -300,6 +301,10 @@
             <extension base="tns:BaseElementType"/>
         </complexContent>
     </complexType>
+    <complexType name="RefType">
+        <attribute name="id" use="required"/>
+        <attribute name="class-name" use="required"/>
+    </complexType>
     <complexType name="RootCustomType">
         <complexContent>
             <extension base="tns:BaseRootElementType"/>
@@ -312,4 +317,5 @@
         </sequence>
         <attribute name="id" use="required"/>
     </complexType>
+
 </schema>

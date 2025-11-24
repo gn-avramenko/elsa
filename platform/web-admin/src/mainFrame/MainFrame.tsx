@@ -4,7 +4,7 @@ import {
     preloaderHolder,
 } from 'admin/src/common/component';
 import { MainFrameSkeleton } from 'admin/src-gen/mainFrame/MainFrameSkeleton';
-import { ConfigProvider, Drawer, Layout, Spin, theme } from 'antd';
+import { ConfigProvider, Drawer, Layout, Modal, Spin, theme } from 'antd';
 import { BREAKPOINTS, DynamicIcon, setWebPeerParam } from 'admin/src/common/extension';
 import useBreakpoint from 'use-breakpoint';
 import { Content, Header } from 'antd/es/layout/layout';
@@ -13,9 +13,11 @@ import useTheme from 'antd/es/config-provider/hooks/useTheme';
 import { MenuComp } from 'admin/src/components/menu-comp';
 import { MainRouterComponent } from 'admin/src/mainFrame/MainRouter';
 import Sider from 'antd/es/layout/Sider';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { MainFrameSetWebPeerParamAction } from 'admin/src-gen/mainFrame/MainFrameSetWebPeerParamAction';
 import { MainFrameSaveFileAction } from 'admin/src-gen/mainFrame/MainFrameSaveFileAction';
+import { MainFrameShowConfirmationDialogAction } from 'admin/src-gen/mainFrame/MainFrameShowConfirmationDialogAction';
+import { MainFrameShowErrorAction } from 'admin/src-gen/mainFrame/MainFrameShowErrorAction';
 
 const ExtThemePropertiesContext = createContext<any>({});
 
@@ -127,7 +129,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                 <div
                                     key="title"
                                     style={{
-                                        fontSize: token.fontSizeHeading3,
+                                        fontSize: token.fontSizeHeading5,
                                         fontWeight: token.fontWeightStrong,
                                         padding: token.padding,
                                     }}
@@ -314,6 +316,32 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
 }
 
 export class MainFrameComponent extends MainFrameSkeleton {
+    processShowError(value: MainFrameShowErrorAction): void {
+        Modal.error({
+            title: value.title,
+            okText: value.closeText,
+            content: value.error,
+        });
+    }
+    processShowConfirmationDialog(value: MainFrameShowConfirmationDialogAction): void {
+        Modal.confirm({
+            icon: <ExclamationCircleFilled />,
+            title: value.title,
+            okText: value.okText,
+            cancelText: value.cancelText,
+            content: value.question,
+            onOk: () => {
+                this.sendProcessConfirmationResult({
+                    okPressed: true,
+                });
+            },
+            onCancel: () => {
+                this.sendProcessConfirmationResult({
+                    okPressed: false,
+                });
+            },
+        });
+    }
     processSaveFile(value: MainFrameSaveFileAction): void {
         const link = document.createElement('a');
         link.download = value.name;

@@ -54,7 +54,7 @@ public class MainRouter extends MainRouterSkeleton{
 	}
 
     public String getInitBackUrl(){
-        return lastHandler.getDefaultBackUrl();
+        return lastHandler.getDefaultBackUrl(getPath());
     }
     private RouterPathHandler getRouterPathHandler(String path){
         init();
@@ -102,8 +102,9 @@ public class MainRouter extends MainRouterSkeleton{
 
 	public void navigate(String path, boolean force, OperationUiContext ctx){
         ctx.setParameter(StandardParameters.ROUTER_PATH, path);
+        ctx.setParameter(StandardParameters.BEAN_FACTORY, factory);
         var handler = getRouterPathHandler(path);
-        MainFrame.lookup(this).setBackUrl(handler.getDefaultBackUrl(), ctx);
+        MainFrame.lookup(this).setBackUrl(handler.getDefaultBackUrl(path), ctx);
         if(lastHandler != null && lastHandler.equals(handler)){
 			return;
 		}

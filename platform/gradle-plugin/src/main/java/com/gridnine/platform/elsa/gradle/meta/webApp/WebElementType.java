@@ -12,6 +12,7 @@ public enum WebElementType {
     BUTTON,
     SELECT,
     ROUTER,
+    REF,
     NESTED_ROUTER,
     TEXT_AREA,
     TEXT_FIELD,

@@ -356,7 +356,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     protected abstract String getMobileRowContent(T asset);
 
     @Override
-    public String getDefaultBackUrl() {
-        return "/home";
+    public String getDefaultBackUrl(String path) {
+        return "/";
     }
 }

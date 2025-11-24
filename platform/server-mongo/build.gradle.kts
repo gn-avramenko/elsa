@@ -18,7 +18,7 @@ dependencies {
     implementation(project(":common-meta"))
     implementation(project(":common-core"))
     implementation(project(":server-core"))
-    implementation("org.mongodb:mongodb-driver-sync:4.9.1")
+    implementation("org.mongodb:mongodb-driver-sync:5.5.1")
     testImplementation("org.junit.platform:junit-platform-suite:1+")
     testImplementation("org.junit.jupiter:junit-jupiter:5+")
     testImplementation(testFixtures(project(":common-core")))

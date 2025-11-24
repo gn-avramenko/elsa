@@ -27,6 +27,7 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.UpdateDefinition;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -199,4 +200,9 @@ public class MongoDatabase {
     public <A extends BaseAsset> void saveAssetVersion(A oldAsset) {
         throw new UnsupportedOperationException();
     }
+
+    public MongoTemplate getMongoTemplate() {
+        return mongoTemplate;
+    }
+
 }

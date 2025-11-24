@@ -811,4 +811,8 @@ public class MongoStorage implements Storage {
     private record UpdateDocumentContext<D extends BaseDocument>(D oldDocument, OperationContext<D> operationContext) {
     }
 
+    public MongoDatabase getDatabase() {
+        return database;
+    }
+
 }

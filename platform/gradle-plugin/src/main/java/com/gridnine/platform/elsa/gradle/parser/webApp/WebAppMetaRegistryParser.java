@@ -287,9 +287,15 @@ public class WebAppMetaRegistryParser {
                 updateBaseProperties(result, child);
                 yield result;
             }
+            case "element-ref" -> {
+                yield  new RefWebElementDescription(className);
+            }
+
             default -> throw new IllegalArgumentException("unsupported tag name " + tagName);
         };
-        registry.getElements().put(className, elm);
+        if(!(elm instanceof RefWebElementDescription)){
+            registry.getElements().put(className, elm);
+        }
         return elm;
     }
 

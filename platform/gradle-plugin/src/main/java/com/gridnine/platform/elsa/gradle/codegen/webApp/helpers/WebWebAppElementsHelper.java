@@ -103,14 +103,14 @@ public class WebWebAppElementsHelper {
                         gen.blankLine();
                         for (var prop : elm.getServerManagedState().getProperties().values()) {
                             gen.wrapWithBlock("%s%s()".formatted(prop.getType() == StandardValueType.BOOLEAN && prop.isNonNullable()? "is": "get",BuildTextUtils.capitalize(prop.getId())), () -> {
-                                gen.printLine("return this.state.get('%s') as %s%s".formatted(prop.getId(),
+                                gen.printLine("return this?.state?.get('%s') as %s%s".formatted(prop.getId(),
                                         getType(prop.getType(), registry, prop.getClassName(), gen, commonPackageName, moduleName),
                                         prop.isNonNullable() ? "" : " | undefined"));
                             });
                         }
                         for (var coll : elm.getServerManagedState().getCollections().values()) {
                             gen.wrapWithBlock("get%s()".formatted(BuildTextUtils.capitalize(coll.getId())), () -> {
-                                gen.printLine("return this.state.get('%s') as %s[] || [] ".formatted(coll.getId(),
+                                gen.printLine("return this?.state?.get('%s') as %s[] || [] ".formatted(coll.getId(),
                                         getType(coll.getElementType(), registry, coll.getElementClassName(), gen, commonPackageName, moduleName)));
                             });
                         }
@@ -134,7 +134,7 @@ public class WebWebAppElementsHelper {
                                 var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
                                 var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue", commonPackageName, moduleName);
                                 gen.wrapWithBlock("getValue()", () -> {
-                                    gen.printLine("return this.state.get('value') as %s".formatted(inputValueSimpleClassName));
+                                    gen.printLine("return this?.state?.get('value') as %s".formatted(inputValueSimpleClassName));
                                 });
                                 gen.wrapWithBlock("setValue(value: %s)".formatted(inputValueSimpleClassName), () -> {
                                     gen.printLine("this.stateSetters.get('value')!(value)");
@@ -142,13 +142,13 @@ public class WebWebAppElementsHelper {
                                         this.sendCommand('pc', {
                                            pn : 'value',
                                            pv: value
-                                        }, !this.state.get('hasValueChangeListener') && !!this.state.get('deferred'));""");
+                                        }, !this?.state?.get('hasValueChangeListener') && !!this?.state?.get('deferred'));""");
                                 });
                             } else {
                                 var id = WebAppMetadataHelper.getSimpleInputValueDescription(elm.getInput());
                                 var cn = JavaCodeGeneratorUtils.getSimpleName(id.valueClassName());
                                 gen.wrapWithBlock("getValue()", () -> {
-                                    gen.printLine("return this.state.get('value') as %s%s".formatted(cn, id.collection()? "[]":""));
+                                    gen.printLine("return this?.state?.get('value') as %s%s".formatted(cn, id.collection()? "[]":""));
                                 });
                                 gen.wrapWithBlock("setValue(value: %s%s)".formatted(cn, id.collection()? "[]":""), () -> {
                                     gen.printLine("this.stateSetters.get('value')!(value)");

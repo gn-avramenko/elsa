@@ -24,10 +24,12 @@
 
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
+import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.domain.BaseWorkspaceItem;
 import com.gridnine.platform.elsa.admin.utils.AdminParameters;
 import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
+import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument;
 import com.gridnine.platform.elsa.common.core.utils.IoUtils;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
@@ -46,6 +48,8 @@ public class MainFrame extends MainFrameSkeleton{
 
     private ListableBeanFactory factory;
     private volatile Map<String, WorkspaceItemHandler<?>> itemHandlers;
+    private RunnableWithExceptionAndArgument<OperationUiContext> confirmationCallback;
+    private AdminL10nFactory aL10nFactory;
 	public MainFrame(String tag, OperationUiContext ctx) throws Exception {
 		super(tag, ctx);
         var path = ctx.getParameter(OperationUiContext.PARAMS).get("initPath").getAsString();
@@ -67,6 +71,7 @@ public class MainFrame extends MainFrameSkeleton{
         getHeaderTools(ctx).reversed().forEach(it -> headerToolsContainer.addChild(ctx, it,0));
         addChild(ctx, headerToolsContainer, 0);
         factory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
+        aL10nFactory = factory.getBean(AdminL10nFactory.class);
         var workspaceProvider = factory.getBean(WorkspaceProvider.class);
         var workspace = workspaceProvider.getWorkspace();
         for(var group : workspace.getGroups()){
@@ -97,7 +102,34 @@ public class MainFrame extends MainFrameSkeleton{
     @Override
     protected MainFrameConfiguration createConfiguration() {
         var mainFrameConfiguration = new MainFrameConfiguration();
+        mainFrameConfiguration.setProcessConfirmationResultListener((act, context) ->{
+            try{
+                if(confirmationCallback != null && act.isOkPressed()){
+                    confirmationCallback.run(context);
+                }
+            } finally {
+                confirmationCallback = null;
+            }
+        });
         return mainFrameConfiguration;
+    }
+
+    public void confirm(String question, RunnableWithExceptionAndArgument<OperationUiContext> callback, OperationUiContext context) {
+        this.confirmationCallback = callback;
+        var data = new MainFrameShowConfirmationDialogAction();
+        data.setQuestion(question);
+        data.setTitle(aL10nFactory.Confirmation());
+        data.setCancelText(aL10nFactory.Cancel());
+        data.setOkText(aL10nFactory.Ok());
+        this.showConfirmationDialog(data, context, true);
+    }
+
+    public void error(String errorMessage, OperationUiContext context) {
+        var data = new MainFrameShowErrorAction();
+        data.setError(errorMessage);
+        data.setTitle(aL10nFactory.Error());
+        data.setCloseText(aL10nFactory.Ok());
+        this.showError(data, context, true);
     }
 
     private WorkspaceGroup toWorkspaceGroup(com.gridnine.platform.elsa.admin.domain.WorkspaceGroup group) {

@@ -21,7 +21,6 @@
 
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
-import com.gridnine.platform.elsa.common.core.utils.TextUtils;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
@@ -42,7 +41,7 @@ public class HomePageRouterPathHandler implements RouterPathHandler{
     }
 
     @Override
-    public String getDefaultBackUrl() {
+    public String getDefaultBackUrl(String path) {
         return null;
     }
 }
