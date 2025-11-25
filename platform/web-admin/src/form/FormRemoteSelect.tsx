@@ -2,13 +2,12 @@ import { initStateSetters } from 'admin/src/common/component';
 import { FormRemoteSelectSkeleton } from 'admin/src-gen/form/FormRemoteSelectSkeleton';
 import { FormElementWrapper } from 'admin/src/form/FormElementWrapper';
 import { DebounceSelect } from 'admin/src/components/DebounceSelect';
-import { theme } from 'antd';
+import { Tooltip } from 'antd';
 
 function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
     initStateSetters(props.element);
-    const { token } = theme.useToken();
-    return (
-        <FormElementWrapper title={props.element.getTitle()}>
+    const drawSelect = () => {
+        return (
             <DebounceSelect
                 size="middle"
                 allowClear
@@ -37,10 +36,11 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
                 style={{
                     width: '100%',
                     minWidth: '300px',
-                    padding: token.paddingXXS,
-                    paddingRight: 0,
+                    padding: 0,
+                    borderColor: props.element.getValidation() ? 'red' : undefined,
                 }}
                 onChange={(newValue) => {
+                    props.element.resetValidation();
                     props.element.setValue(
                         newValue
                             ? {
@@ -51,10 +51,34 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
                     );
                 }}
             />
+        );
+    };
+    const validation = props.element.getValidation();
+    return (
+        <FormElementWrapper title={props.element.getTitle()}>
+            {validation ? (
+                <Tooltip title={validation}>
+                    <div style={{ border: '1px solid red' }}>{drawSelect()}</div>
+                </Tooltip>
+            ) : (
+                drawSelect()
+            )}
         </FormElementWrapper>
     );
 }
 
 export class FormRemoteSelectComponent extends FormRemoteSelectSkeleton {
     functionalComponent = FormRemoteSelectFC;
+
+    resetValidation() {
+        this.stateSetters.get('validation')!(null);
+        this.sendCommand(
+            'pc',
+            {
+                pn: 'validation',
+                pv: null,
+            },
+            true
+        );
+    }
 }
