@@ -62,6 +62,7 @@ export function DebounceSelect<
                 setOpen(false);
             }}
             onSearch={debounceFetcher}
+            showSearch={true}
             notFoundContent={fetching ? <Spin size="small" /> : noContentFoundStr}
             {...props}
             options={options}

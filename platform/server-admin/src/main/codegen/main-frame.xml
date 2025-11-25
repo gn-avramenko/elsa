@@ -10,6 +10,14 @@
         <property id="icon" type="STRING"/>
         <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceItem"/>
     </entity>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrameDialogButton" managed-configuration="true">
+        <server-managed-state>
+            <property id="title" type="STRING"/>
+        </server-managed-state>
+        <commands-from-client>
+            <command id="click"/>
+        </commands-from-client>
+    </custom-container>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame">
         <server-managed-state>
             <collection id="workspaceGroups" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceGroup"/>
@@ -18,6 +26,7 @@
             <property id="backUrl" type="STRING"/>
             <property id="embeddedMode" type="BOOLEAN"/>
             <property id="themeToken" type="STRING" non-nullable="true"/>
+            <property id="dialogTitle" type="STRING"/>
         </server-managed-state>
         <commands-from-server>
             <command id="setWebPeerParam">
@@ -40,6 +49,8 @@
                 <property id="closeText" type="STRING" non-nullable="true"/>
                 <property id="error" type="STRING" non-nullable="true"/>
             </command>
+            <command id="showDialogInternal"/>
+            <command id="closeDialogInternal"/>
         </commands-from-server>
         <commands-from-client>
             <command id="processConfirmationResult">

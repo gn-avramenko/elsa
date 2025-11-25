@@ -130,15 +130,6 @@ public class AdminAuthFilter extends HttpFilter {
             chain.doFilter(request,res);
             return;
         }
-        if(TextUtils.isNotBlank(developmentUserName)){
-            AuthContext.setCurrentUser(developmentUserName);
-            try{
-                chain.doFilter(request,res);
-            } finally {
-                AuthContext.resetCurrentUser();
-            }
-            return;
-        }
         try {
             var cookieId = request.getCookies() == null? null: Arrays.stream(request.getCookies()).filter(it -> AUTH_COOKIE_ID.equals(it.getName())).findFirst().orElse(null);
             if (cookieId != null) {
@@ -181,6 +172,15 @@ public class AdminAuthFilter extends HttpFilter {
                 cookie.setPath("/");
                 res.addCookie(cookie);
                 chain.doFilter(request, res);
+                return;
+            }
+            if(TextUtils.isNotBlank(developmentUserName)){
+                AuthContext.setCurrentUser(developmentUserName);
+                try{
+                    chain.doFilter(request,res);
+                } finally {
+                    AuthContext.resetCurrentUser();
+                }
                 return;
             }
             res.setStatus(401);

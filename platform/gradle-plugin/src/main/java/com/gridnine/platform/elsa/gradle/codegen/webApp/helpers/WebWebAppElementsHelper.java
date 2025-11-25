@@ -136,7 +136,7 @@ public class WebWebAppElementsHelper {
                                 gen.wrapWithBlock("getValue()", () -> {
                                     gen.printLine("return this?.state?.get('value') as %s".formatted(inputValueSimpleClassName));
                                 });
-                                gen.wrapWithBlock("setValue(value: %s)".formatted(inputValueSimpleClassName), () -> {
+                                gen.wrapWithBlock("setValue(value?: %s)".formatted(inputValueSimpleClassName), () -> {
                                     gen.printLine("this.stateSetters.get('value')!(value)");
                                     gen.printLine("""
                                         this.sendCommand('pc', {
@@ -150,7 +150,7 @@ public class WebWebAppElementsHelper {
                                 gen.wrapWithBlock("getValue()", () -> {
                                     gen.printLine("return this?.state?.get('value') as %s%s".formatted(cn, id.collection()? "[]":""));
                                 });
-                                gen.wrapWithBlock("setValue(value: %s%s)".formatted(cn, id.collection()? "[]":""), () -> {
+                                gen.wrapWithBlock("setValue(value?: %s%s)".formatted(cn, id.collection()? "[]":""), () -> {
                                     gen.printLine("this.stateSetters.get('value')!(value)");
                                     gen.printLine("""
                                         this.sendCommand('pc', {

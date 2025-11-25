@@ -179,4 +179,43 @@ public class MainFrame extends MainFrameSkeleton{
         action.setBase64Content(Base64.getEncoder().encodeToString(content));
         saveFile(action , context, false);
     }
+
+    public<E extends BaseUiElement,P> void showDialog(String title, DialogHandler<E,P> handler, P parameters, OperationUiContext context) {
+        deleteDialogChildren(context);
+        setDialogTitle(title, context);
+        var editor = handler.getEditor("dialog-content", context, parameters);
+        addChild(context, editor, 0);
+        var buttons = handler.getButtons(context);
+        var buttonsWrapper = new ContentWrapper("dialog-buttons", new ContentWrapperConfiguration(), context);
+        for(var button : buttons){
+            var bc = new MainFrameDialogButtonConfiguration();
+            bc.setTitle(button.getName());
+            bc.setClickListener((ctx) ->{
+                button.onClick(new DialogCallback<>() {
+                    @Override
+                    public void close() {
+                        deleteDialogChildren(ctx);
+                        closeDialogInternal(ctx, true);
+                    }
+
+                    @Override
+                    public E getEditor() {
+                        return editor;
+                    }
+                }, ctx);
+            });
+            var db = new MainFrameDialogButton(button.getId(), bc, context);
+            buttonsWrapper.addChild(context, db, buttonsWrapper.getUnmodifiableListOfChildren().size());
+        }
+        addChild(context, buttonsWrapper, 0);
+        showDialogInternal(context, true);
+    }
+
+    private void deleteDialogChildren(OperationUiContext context) {
+        var toDelete = super.getUnmodifiableListOfChildren().stream().filter(it -> "dialog-buttons".equals(it.getTag()) || "dialog-content".equals(it.getTag())).toList();
+        toDelete.forEach(it -> {
+            removeChild(context, it);
+        });
+    }
+
 }

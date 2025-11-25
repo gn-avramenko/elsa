@@ -29,6 +29,8 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     initStateSetters(props.element);
     const [drawerOpened, setDrawerOpened] = useState(false);
     const [spinning, setSpinning] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    props.element.setDialogOpen = setDialogOpen;
     preloaderHolder.hidePreloader = () => setSpinning(false);
     preloaderHolder.showPreloader = () => setSpinning(true);
     const { token } = theme.useToken();
@@ -41,6 +43,20 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     const ext = themeConfig.ext;
     const th = useTheme(themeConfig);
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
+    const drawDialog = () => {
+        return (
+            <Modal
+                open={dialogOpen}
+                title={props.element.getDialogTitle()}
+                closable={false}
+                footer={(props.element.findByTag('dialog-buttons')?.children || []).map(
+                    (it) => (it as BaseReactUiElement).createReactElement()
+                )}
+            >
+                {props.element.findByTag('dialog-content')?.createReactElement()}
+            </Modal>
+        );
+    };
     if (props.element.getEmbeddedMode()) {
         return (
             <ExtThemePropertiesContext.Provider value={ext}>
@@ -48,6 +64,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                     <Layout style={{ height: '100%' }}>
                         <Content>
                             {props.element.findByTag('mainRouter').createReactElement()}
+                            {drawDialog()}
                         </Content>
                     </Layout>
                 </ConfigProvider>
@@ -160,13 +177,13 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                 <div
                                     key="title"
                                     style={{
-                                        fontSize: token.fontSizeHeading2,
+                                        fontSize: token.fontSizeHeading5,
                                         fontWeight: token.fontWeightStrong,
                                         paddingLeft: token.paddingXS,
                                         paddingBottom: '3px',
                                     }}
                                 >
-                                    {props.element.getAppName()}
+                                    {props.element.getTitle()}
                                 </div>
                                 <div style={{ flexGrow: 1 }} />
                                 <div
@@ -216,6 +233,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                     {props.element
                                         .findByTag('mainRouter')
                                         .createReactElement()}
+                                    {drawDialog()}
                                 </Content>
                             </ExtThemePropertiesContext.Provider>
                         </Layout>
@@ -306,6 +324,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                 {props.element
                                     .findByTag('mainRouter')
                                     .createReactElement()}
+                                {drawDialog()}
                             </ExtThemePropertiesContext.Provider>
                         </Content>
                     </Content>
@@ -316,6 +335,15 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
 }
 
 export class MainFrameComponent extends MainFrameSkeleton {
+    processShowDialogInternal(): void {
+        this.setDialogOpen(true);
+    }
+    processCloseDialogInternal(): void {
+        this.setDialogOpen(false);
+    }
+
+    setDialogOpen: (value: boolean) => void = () => {};
+
     processShowError(value: MainFrameShowErrorAction): void {
         Modal.error({
             title: value.title,

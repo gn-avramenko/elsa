@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://vga.com/elsa/meta-web-app">
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.form.FormContainer">
+        <server-managed-state>
+            <property id="width" type="STRING"/>
+        </server-managed-state>
+    </custom-container>
     <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormTextField">
         <server-managed-state>
             <property id="title" type="STRING"/>
+            <property id="deferred" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="STRING"/>
@@ -11,10 +17,21 @@
     <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormRemoteSelect">
         <server-managed-state>
             <property id="title" type="STRING"/>
+            <property id="validation" type="STRING"/>
+            <property id="deferred" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
         </input-value>
+        <services>
+            <service id="autocomplete">
+                <request>
+                    <property id="pattern" type="STRING"/>
+                </request>
+                <response>
+                    <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
+                </response>
+            </service>
+        </services>
     </custom>
-    <custom-container class-name="com.gridnine.platform.elsa.admin.web.form.FormContainer"/>
 </web-app>
