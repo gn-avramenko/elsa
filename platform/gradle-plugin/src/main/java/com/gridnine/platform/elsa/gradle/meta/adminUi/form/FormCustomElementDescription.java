@@ -19,11 +19,21 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.common.meta.adminUi.form;
+package com.gridnine.platform.elsa.gradle.meta.adminUi.form;
 
-public enum FormComponentType {
-    TEXT_FIELD,
-    REMOTE_SELECT,
-    SELECT,
-    CUSTOM
+
+public class FormCustomElementDescription extends BaseAdminUiFormComponentDescription {
+    private String className;
+    @Override
+    public FormComponentType getType() {
+        return FormComponentType.CUSTOM;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 }

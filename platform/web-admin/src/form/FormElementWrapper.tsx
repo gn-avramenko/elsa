@@ -1,30 +1,20 @@
 import { PropsWithChildren } from 'react';
-import useBreakpoint from 'use-breakpoint';
-import { BREAKPOINTS } from 'admin/src/common/extension';
-import { theme } from 'antd';
+import { Tooltip } from 'antd';
+import { StyledFormElement } from 'admin/src/form/form-styled';
 
-export function FormElementWrapper(props: PropsWithChildren<{ title?: string }>) {
-    const { breakpoint } = useBreakpoint(BREAKPOINTS);
-    const { token } = theme.useToken();
-    if (breakpoint === 'mobile') {
+export function FormElementWrapper(
+    props: PropsWithChildren<{ title?: string; validation?: string }>
+) {
+    const drawDiv = () => {
         return (
-            <div
-                style={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                }}
-            >
-                <div style={{ padding: token.paddingXXS }}>{props.title ?? ''}</div>
-                <div style={{ width: '100%' }}>{props.children}</div>
-            </div>
+            <StyledFormElement>
+                <div className="admin-form-wrapper-title">{props.title}</div>
+                {props.children}
+            </StyledFormElement>
         );
+    };
+    if (props.validation) {
+        return <Tooltip title={props.validation}>{drawDiv()}</Tooltip>;
     }
-    return (
-        <tr>
-            <td>{props.title}</td>
-            <td style={{ padding: 0 }}>{props.children}</td>
-        </tr>
-    );
+    return drawDiv();
 }

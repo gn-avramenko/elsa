@@ -1,9 +1,6 @@
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
-import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments;
-import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd3Arguments;
-import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
@@ -12,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class OkCancelDialogHandler<E extends BaseUiElement, P> implements DialogHandler<E,P>{
+public abstract class BaseOkCancelDialogHandler<E extends BaseUiElement, P> implements DialogHandler<E,P>{
 
     @Autowired
     private AdminL10nFactory  adminL10nFactory;

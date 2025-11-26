@@ -18,9 +18,15 @@ import { MainFrameSetWebPeerParamAction } from 'admin/src-gen/mainFrame/MainFram
 import { MainFrameSaveFileAction } from 'admin/src-gen/mainFrame/MainFrameSaveFileAction';
 import { MainFrameShowConfirmationDialogAction } from 'admin/src-gen/mainFrame/MainFrameShowConfirmationDialogAction';
 import { MainFrameShowErrorAction } from 'admin/src-gen/mainFrame/MainFrameShowErrorAction';
+import { ThemeProvider } from 'styled-components';
+import type { GlobalToken } from 'antd/es/theme/interface';
 
 const ExtThemePropertiesContext = createContext<any>({});
 
+export type StyledComponentsTheme = {
+    token: GlobalToken;
+    ext: any;
+};
 export const useExtThemeProperties = (): any => {
     return useContext(ExtThemePropertiesContext);
 };
@@ -48,6 +54,10 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             <Modal
                 open={dialogOpen}
                 title={props.element.getDialogTitle()}
+                width={{
+                    xs: '100%',
+                    sm: '800px',
+                }}
                 closable={false}
                 footer={(props.element.findByTag('dialog-buttons')?.children || []).map(
                     (it) => (it as BaseReactUiElement).createReactElement()
@@ -59,16 +69,20 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     };
     if (props.element.getEmbeddedMode()) {
         return (
-            <ExtThemePropertiesContext.Provider value={ext}>
-                <ConfigProvider theme={th}>
-                    <Layout style={{ height: '100%' }}>
-                        <Content>
-                            {props.element.findByTag('mainRouter').createReactElement()}
-                            {drawDialog()}
-                        </Content>
-                    </Layout>
-                </ConfigProvider>
-            </ExtThemePropertiesContext.Provider>
+            <ThemeProvider theme={{ token, ext }}>
+                <ExtThemePropertiesContext.Provider value={ext}>
+                    <ConfigProvider theme={th}>
+                        <Layout style={{ height: '100%' }}>
+                            <Content>
+                                {props.element
+                                    .findByTag('mainRouter')
+                                    .createReactElement()}
+                                {drawDialog()}
+                            </Content>
+                        </Layout>
+                    </ConfigProvider>
+                </ExtThemePropertiesContext.Provider>
+            </ThemeProvider>
         );
     }
     //customize token
@@ -105,87 +119,199 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
         />
     );
     return (
-        <ConfigProvider theme={th}>
-            {breakpoint === 'mobile' ? (
-                <Layout style={{ height: '100%', borderRadius: token.borderRadiusLG }}>
-                    <Header
-                        style={{
-                            padding: 0,
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}
+        <ThemeProvider theme={{ token: token, ext: ext }}>
+            <ConfigProvider theme={th}>
+                {breakpoint === 'mobile' ? (
+                    <Layout
+                        style={{ height: '100%', borderRadius: token.borderRadiusLG }}
                     >
-                        {props.element.getBackUrl() ? (
-                            <div
-                                key="header"
+                        <Header
+                            style={{
+                                padding: 0,
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {props.element.getBackUrl() ? (
+                                <div
+                                    key="header"
+                                    style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        padding: token.padding,
+                                        paddingLeft: '5px',
+                                    }}
+                                >
+                                    <div style={{ flexGrow: 0 }} key="back">
+                                        <ArrowLeftOutlined
+                                            onClick={() => {
+                                                (
+                                                    props.element.findByTag(
+                                                        'mainRouter'
+                                                    ) as MainRouterComponent
+                                                ).navigate({
+                                                    path: props.element.getBackUrl()!!,
+                                                    force: false,
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                    <div key="glue-1" style={{ flexGrow: 1 }} />
+                                    <div
+                                        key="title"
+                                        style={{
+                                            fontSize: token.fontSizeHeading5,
+                                            fontWeight: token.fontWeightStrong,
+                                            padding: token.padding,
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: props.element.getTitle() ?? '',
+                                        }}
+                                    />
+                                    <div style={{ flexGrow: 1 }} />
+                                </div>
+                            ) : (
+                                <div
+                                    style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        paddingLeft: '5px',
+                                    }}
+                                >
+                                    <div
+                                        key="menu"
+                                        onClick={() => {
+                                            setDrawerOpened(true);
+                                        }}
+                                    >
+                                        {DynamicIcon('MenuFoldOutlined')}
+                                    </div>
+                                    <div
+                                        key="title"
+                                        style={{
+                                            fontSize: token.fontSizeHeading5,
+                                            fontWeight: token.fontWeightStrong,
+                                            paddingLeft: token.paddingXS,
+                                            paddingBottom: '3px',
+                                        }}
+                                    >
+                                        {props.element.getTitle()}
+                                    </div>
+                                    <div style={{ flexGrow: 1 }} />
+                                    <div
+                                        key="tools"
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        {(
+                                            props.element.findByTag('header-tools')
+                                                ?.children || []
+                                        ).map((it) => (
+                                            <div
+                                                key={`tool-wrapper-${it.id}`}
+                                                style={{
+                                                    padding: token.paddingXS,
+                                                }}
+                                            >
+                                                {(
+                                                    it as BaseReactUiElement
+                                                ).createReactElement()}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </Header>
+                        <Content style={{ height: '100%' }}>
+                            <Spin spinning={spinning} fullscreen={true} />
+                            <Drawer
+                                styles={{
+                                    header: { padding: 5 },
+                                    content: { padding: 0 },
+                                    body: { padding: 5 },
+                                }}
+                                closable
+                                onClose={() => setDrawerOpened(false)}
+                                open={drawerOpened}
+                            >
+                                {drawMenu()}
+                            </Drawer>
+                            <Layout style={{ height: '100%' }}>
+                                <ExtThemePropertiesContext.Provider value={ext}>
+                                    <Content>
+                                        {props.element
+                                            .findByTag('mainRouter')
+                                            .createReactElement()}
+                                        {drawDialog()}
+                                    </Content>
+                                </ExtThemePropertiesContext.Provider>
+                            </Layout>
+                        </Content>
+                    </Layout>
+                ) : (
+                    <Layout
+                        style={{ height: '100%', borderRadius: token.borderRadiusLG }}
+                    >
+                        <Sider>
+                            <Header
                                 style={{
-                                    width: '100%',
+                                    padding: 0,
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    padding: token.padding,
-                                    paddingLeft: '5px',
                                 }}
                             >
-                                <div style={{ flexGrow: 0 }} key="back">
-                                    <ArrowLeftOutlined
-                                        onClick={() => {
-                                            (
-                                                props.element.findByTag(
-                                                    'mainRouter'
-                                                ) as MainRouterComponent
-                                            ).navigate({
-                                                path: props.element.getBackUrl()!!,
-                                                force: false,
-                                            });
-                                        }}
-                                    />
+                                <div
+                                    style={{
+                                        fontSize: token.fontSizeHeading4,
+                                        fontWeight: token.fontWeightStrong,
+                                        paddingLeft: token.padding,
+                                        lineHeight: token.lineHeightHeading4,
+                                    }}
+                                >
+                                    {props.element.getAppName()}
                                 </div>
+                            </Header>
+                            <Content>{drawMenu()}</Content>
+                        </Sider>
+                        <Content
+                            style={{
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <Header
+                                style={{
+                                    flexGrow: 0,
+                                    padding: 0,
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}
+                            >
                                 <div key="glue-1" style={{ flexGrow: 1 }} />
                                 <div
                                     key="title"
                                     style={{
-                                        fontSize: token.fontSizeHeading5,
+                                        fontSize: token.fontSizeHeading4,
                                         fontWeight: token.fontWeightStrong,
-                                        padding: token.padding,
+                                        padding: token.paddingXS,
+                                        lineHeight: token.lineHeightHeading4,
                                     }}
                                     dangerouslySetInnerHTML={{
                                         __html: props.element.getTitle() ?? '',
                                     }}
                                 />
-                                <div style={{ flexGrow: 1 }} />
-                            </div>
-                        ) : (
-                            <div
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    paddingLeft: '5px',
-                                }}
-                            >
-                                <div
-                                    key="menu"
-                                    onClick={() => {
-                                        setDrawerOpened(true);
-                                    }}
-                                >
-                                    {DynamicIcon('MenuFoldOutlined')}
-                                </div>
-                                <div
-                                    key="title"
-                                    style={{
-                                        fontSize: token.fontSizeHeading5,
-                                        fontWeight: token.fontWeightStrong,
-                                        paddingLeft: token.paddingXS,
-                                        paddingBottom: '3px',
-                                    }}
-                                >
-                                    {props.element.getTitle()}
-                                </div>
-                                <div style={{ flexGrow: 1 }} />
+                                <div key="glue-2" style={{ flexGrow: 1 }} />
                                 <div
                                     key="tools"
                                     style={{
@@ -210,127 +336,21 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                         </div>
                                     ))}
                                 </div>
-                            </div>
-                        )}
-                    </Header>
-                    <Content style={{ height: '100%' }}>
-                        <Spin spinning={spinning} fullscreen={true} />
-                        <Drawer
-                            styles={{
-                                header: { padding: 5 },
-                                content: { padding: 0 },
-                                body: { padding: 5 },
-                            }}
-                            closable
-                            onClose={() => setDrawerOpened(false)}
-                            open={drawerOpened}
-                        >
-                            {drawMenu()}
-                        </Drawer>
-                        <Layout style={{ height: '100%' }}>
-                            <ExtThemePropertiesContext.Provider value={ext}>
-                                <Content>
+                            </Header>
+                            <Content style={{ flexGrow: 1 }}>
+                                <Spin spinning={spinning} fullscreen={true} />
+                                <ExtThemePropertiesContext.Provider value={ext}>
                                     {props.element
                                         .findByTag('mainRouter')
                                         .createReactElement()}
                                     {drawDialog()}
-                                </Content>
-                            </ExtThemePropertiesContext.Provider>
-                        </Layout>
-                    </Content>
-                </Layout>
-            ) : (
-                <Layout style={{ height: '100%', borderRadius: token.borderRadiusLG }}>
-                    <Sider>
-                        <Header
-                            style={{
-                                padding: 0,
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <div
-                                style={{
-                                    fontSize: token.fontSizeHeading4,
-                                    fontWeight: token.fontWeightStrong,
-                                    paddingLeft: token.padding,
-                                    lineHeight: token.lineHeightHeading4,
-                                }}
-                            >
-                                {props.element.getAppName()}
-                            </div>
-                        </Header>
-                        <Content>{drawMenu()}</Content>
-                    </Sider>
-                    <Content
-                        style={{
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <Header
-                            style={{
-                                flexGrow: 0,
-                                padding: 0,
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <div key="glue-1" style={{ flexGrow: 1 }} />
-                            <div
-                                key="title"
-                                style={{
-                                    fontSize: token.fontSizeHeading4,
-                                    fontWeight: token.fontWeightStrong,
-                                    padding: token.paddingXS,
-                                    lineHeight: token.lineHeightHeading4,
-                                }}
-                                dangerouslySetInnerHTML={{
-                                    __html: props.element.getTitle() ?? '',
-                                }}
-                            />
-                            <div key="glue-2" style={{ flexGrow: 1 }} />
-                            <div
-                                key="tools"
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                {(
-                                    props.element.findByTag('header-tools')?.children ||
-                                    []
-                                ).map((it) => (
-                                    <div
-                                        key={`tool-wrapper-${it.id}`}
-                                        style={{
-                                            padding: token.paddingXS,
-                                        }}
-                                    >
-                                        {(
-                                            it as BaseReactUiElement
-                                        ).createReactElement()}
-                                    </div>
-                                ))}
-                            </div>
-                        </Header>
-                        <Content style={{ flexGrow: 1 }}>
-                            <Spin spinning={spinning} fullscreen={true} />
-                            <ExtThemePropertiesContext.Provider value={ext}>
-                                {props.element
-                                    .findByTag('mainRouter')
-                                    .createReactElement()}
-                                {drawDialog()}
-                            </ExtThemePropertiesContext.Provider>
+                                </ExtThemePropertiesContext.Provider>
+                            </Content>
                         </Content>
-                    </Content>
-                </Layout>
-            )}
-        </ConfigProvider>
+                    </Layout>
+                )}
+            </ConfigProvider>
+        </ThemeProvider>
     );
 }
 

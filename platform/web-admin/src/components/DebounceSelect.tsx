@@ -5,6 +5,7 @@ export interface DebounceSelectProps<ValueType = any>
     extends Omit<SelectProps<ValueType | ValueType[]>, 'options' | 'children'> {
     fetchOptions: (search?: string) => Promise<ValueType[]>;
     debounceTimeout?: number;
+    hasError?: boolean;
     noContentFoundStr?: string;
     value: ValueType[];
 }
@@ -38,7 +39,11 @@ export function DebounceSelect<
                 return;
             }
             const values = value.map((it) => it.value);
-            setOptions(newOptions.filter((it) => values.indexOf(it.value) === -1));
+            if ((props as any).multiple) {
+                setOptions(newOptions.filter((it) => values.indexOf(it.value) === -1));
+            } else {
+                setOptions(newOptions);
+            }
             setFetching(false);
         });
     };
@@ -50,6 +55,7 @@ export function DebounceSelect<
         <Select
             labelInValue
             filterOption={false}
+            className={props.hasError ? 'admin-form-error' : ''}
             open={open}
             value={value}
             onOpenChange={(visible) => {

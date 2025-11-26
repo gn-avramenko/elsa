@@ -9,6 +9,7 @@
         <server-managed-state>
             <property id="title" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="STRING"/>
@@ -19,6 +20,7 @@
             <property id="title" type="STRING"/>
             <property id="validation" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
@@ -33,5 +35,17 @@
                 </response>
             </service>
         </services>
+    </custom>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormSelect">
+        <server-managed-state>
+            <property id="title" type="STRING"/>
+            <property id="validation" type="STRING"/>
+            <property id="deferred" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
+            <collection id="options" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
+        </server-managed-state>
+        <input-value>
+            <property id="value" type="STRING"/>
+        </input-value>
     </custom>
 </web-app>

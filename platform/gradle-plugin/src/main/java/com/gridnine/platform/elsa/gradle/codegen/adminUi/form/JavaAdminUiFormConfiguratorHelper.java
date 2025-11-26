@@ -24,6 +24,7 @@ package com.gridnine.platform.elsa.gradle.codegen.adminUi.form;
 import com.gridnine.platform.elsa.gradle.codegen.adminUi.common.JavaAdminUiCodeGenUtils;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormContainerDescription;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormCustomElementDescription;
 
 public class JavaAdminUiFormConfiguratorHelper {
 
@@ -56,6 +57,26 @@ public class JavaAdminUiFormConfiguratorHelper {
                             gen.printLine("containerDescription.getComponents().put(comp.getId(), comp);");
                         });
 
+                    }
+                    case SELECT -> {
+                        gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormSelectDescription");
+                        gen.wrapWithBlock(null, () -> {
+                            gen.printLine("var comp = new FormSelectDescription();");
+                            gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                            JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                            gen.printLine("containerDescription.getComponents().put(comp.getId(), comp);");
+                        });
+
+                    }
+                    case CUSTOM -> {
+                        gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormCustomElementDescription");
+                        gen.wrapWithBlock(null, () -> {
+                            gen.printLine("var comp = new FormCustomElementDescription();");
+                            gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                            JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                            gen.printLine("comp.setClassName(\"%s\");".formatted(((FormCustomElementDescription) comp).getClassName()));
+                            gen.printLine("containerDescription.getComponents().put(comp.getId(), comp);");
+                        });
                     }
                 }
             }

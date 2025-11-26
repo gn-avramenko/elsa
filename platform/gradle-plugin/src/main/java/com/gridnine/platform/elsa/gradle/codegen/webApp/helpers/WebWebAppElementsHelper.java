@@ -132,7 +132,6 @@ public class WebWebAppElementsHelper {
                         if(elm.getInput() != null){
                             if(elm.getInput().getValue().getProperties().size()+elm.getInput().getValue().getCollections().size() > 1){
                                 var inputValueSimpleClassName = "%sInputValue".formatted(simpleClassName);
-                                var inputValueImport = WebCodeGeneratorUtils.getImportName(className+"InputValue", commonPackageName, moduleName);
                                 gen.wrapWithBlock("getValue()", () -> {
                                     gen.printLine("return this?.state?.get('value') as %s".formatted(inputValueSimpleClassName));
                                 });
@@ -146,7 +145,15 @@ public class WebWebAppElementsHelper {
                                 });
                             } else {
                                 var id = WebAppMetadataHelper.getSimpleInputValueDescription(elm.getInput());
-                                var cn = JavaCodeGeneratorUtils.getSimpleName(id.valueClassName());
+                                var cn1 = JavaCodeGeneratorUtils.getSimpleName(id.valueClassName());
+                                if(id.prop() != null) {
+                                    if ("Boolean".equals(cn1)) {
+                                        cn1 = "boolean";
+                                    }else if ("String".equals(cn1)) {
+                                        cn1 = "string";
+                                    }
+                                }
+                                var cn = cn1;
                                 gen.wrapWithBlock("getValue()", () -> {
                                     gen.printLine("return this?.state?.get('value') as %s%s".formatted(cn, id.collection()? "[]":""));
                                 });

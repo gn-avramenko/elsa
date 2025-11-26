@@ -7,4 +7,5 @@ public interface DialogButton<E extends BaseUiElement> {
     String getId();
     String getName();
     void onClick(DialogCallback<E> callback, OperationUiContext context);
+    default void customize(MainFrameDialogButtonConfiguration bc){};
 }

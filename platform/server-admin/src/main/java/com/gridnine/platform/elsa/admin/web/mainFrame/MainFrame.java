@@ -204,15 +204,22 @@ public class MainFrame extends MainFrameSkeleton{
                     }
                 }, ctx);
             });
+            button.customize(bc);
             var db = new MainFrameDialogButton(button.getId(), bc, context);
             buttonsWrapper.addChild(context, db, buttonsWrapper.getUnmodifiableListOfChildren().size());
         }
         addChild(context, buttonsWrapper, 0);
+        var customHeader = handler.getCustomHeader(editor, context);
+        if(customHeader!=null){
+            var headerWrapper = new ContentWrapper("dialog-header", new ContentWrapperConfiguration(), context);
+            headerWrapper.addChild(context, customHeader, 0);
+            addChild(context, headerWrapper, 0);
+        }
         showDialogInternal(context, true);
     }
 
     private void deleteDialogChildren(OperationUiContext context) {
-        var toDelete = super.getUnmodifiableListOfChildren().stream().filter(it -> "dialog-buttons".equals(it.getTag()) || "dialog-content".equals(it.getTag())).toList();
+        var toDelete = super.getUnmodifiableListOfChildren().stream().filter(it -> "dialog-buttons".equals(it.getTag()) || "dialog-content".equals(it.getTag()) || "dialog-header".equals(it.getTag())).toList();
         toDelete.forEach(it -> {
             removeChild(context, it);
         });

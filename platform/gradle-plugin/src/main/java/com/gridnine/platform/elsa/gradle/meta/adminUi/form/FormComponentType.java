@@ -24,4 +24,6 @@ package com.gridnine.platform.elsa.gradle.meta.adminUi.form;
 public enum FormComponentType {
     TEXT_FIELD,
     REMOTE_SELECT,
+    SELECT,
+    CUSTOM
 }

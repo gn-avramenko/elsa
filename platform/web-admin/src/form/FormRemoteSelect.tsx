@@ -2,22 +2,42 @@ import { initStateSetters } from 'admin/src/common/component';
 import { FormRemoteSelectSkeleton } from 'admin/src-gen/form/FormRemoteSelectSkeleton';
 import { FormElementWrapper } from 'admin/src/form/FormElementWrapper';
 import { DebounceSelect } from 'admin/src/components/DebounceSelect';
-import { Tooltip } from 'antd';
+import useBreakpoint from 'use-breakpoint';
+import { BREAKPOINTS } from 'admin/src/common/extension';
 
 function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
     initStateSetters(props.element);
-    const drawSelect = () => {
-        return (
+    const { breakpoint } = useBreakpoint(BREAKPOINTS);
+    if (props.element.getHidden()) {
+        return '' as any;
+    }
+    const shrinkName = (value: string) => {
+        if (!value?.length) {
+            return value;
+        }
+        if (breakpoint === 'mobile') {
+            return value.length > 50 ? `${value.substring(0, 50)}...` : value;
+        }
+        return value.length > 100 ? `${value.substring(0, 100)}...` : value;
+    };
+    return (
+        <FormElementWrapper
+            title={props.element.getTitle()}
+            validation={props.element.getValidation()}
+        >
             <DebounceSelect
                 size="middle"
                 allowClear
+                hasError={!!props.element.getValidation()}
                 debounceTimeout={300}
                 value={
                     props.element.getValue()
                         ? [
                               {
                                   key: props.element.getValue().id,
-                                  label: props.element.getValue().displayName,
+                                  label: shrinkName(
+                                      props.element.getValue().displayName
+                                  ),
                                   value: props.element.getValue().id,
                               },
                           ]
@@ -29,7 +49,7 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
                     });
                     return (response.items || []).map((it) => ({
                         key: it.id,
-                        label: it.displayName,
+                        label: shrinkName(it.displayName),
                         value: it.id,
                     }));
                 }}
@@ -51,18 +71,6 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
                     );
                 }}
             />
-        );
-    };
-    const validation = props.element.getValidation();
-    return (
-        <FormElementWrapper title={props.element.getTitle()}>
-            {validation ? (
-                <Tooltip title={validation}>
-                    <div style={{ border: '1px solid red' }}>{drawSelect()}</div>
-                </Tooltip>
-            ) : (
-                drawSelect()
-            )}
         </FormElementWrapper>
     );
 }

@@ -586,6 +586,7 @@ public class WebAppMetadataHelper {
                 prop.setType(pr.getType());
                 prop.setId("value");
                 prop.setClassName(pr.getClassName());
+                prop.setNonNullable(pr.isNonNullable());
             }
         } else {
             collection = true;

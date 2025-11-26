@@ -85,7 +85,7 @@
     </complexType>
     <complexType name="FormCustomType">
         <complexContent>
-            <extension base="common:MetaElementType">
+            <extension base="tns:BaseFormElementType">
             <attribute name="class-name" type="string" use="required"/>
             </extension>
         </complexContent>
