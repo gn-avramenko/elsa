@@ -53,15 +53,13 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
         return (
             <Modal
                 open={dialogOpen}
-                title={props.element.getDialogTitle()}
+                title={props.element.findByTag('dialog-header')?.createReactElement()}
                 width={{
                     xs: '100%',
                     sm: '800px',
                 }}
                 closable={false}
-                footer={(props.element.findByTag('dialog-buttons')?.children || []).map(
-                    (it) => (it as BaseReactUiElement).createReactElement()
-                )}
+                footer={props.element.findByTag('dialog-footer')?.createReactElement()}
             >
                 {props.element.findByTag('dialog-content')?.createReactElement()}
             </Modal>

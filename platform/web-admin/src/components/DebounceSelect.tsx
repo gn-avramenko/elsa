@@ -19,6 +19,7 @@ export function DebounceSelect<
 >({
     fetchOptions,
     value,
+    hasError,
     noContentFoundStr,
     debounceTimeout = 300,
     ...props
@@ -55,7 +56,7 @@ export function DebounceSelect<
         <Select
             labelInValue
             filterOption={false}
-            className={props.hasError ? 'admin-form-error' : ''}
+            className={hasError ? 'admin-form-error' : ''}
             open={open}
             value={value}
             onOpenChange={(visible) => {

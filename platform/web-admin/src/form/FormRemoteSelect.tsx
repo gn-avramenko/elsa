@@ -24,6 +24,7 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
         <FormElementWrapper
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
+            hidden={props.element.getHidden()}
         >
             <DebounceSelect
                 size="middle"

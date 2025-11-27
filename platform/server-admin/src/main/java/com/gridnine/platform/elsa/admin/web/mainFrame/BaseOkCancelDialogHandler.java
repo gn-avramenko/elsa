@@ -1,64 +1,53 @@
 package com.gridnine.platform.elsa.admin.web.mainFrame;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
-import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
+import com.gridnine.platform.elsa.admin.web.dialog.LabelHeader;
+import com.gridnine.platform.elsa.common.core.model.common.RunnableWithException;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
-import java.util.List;
-
-public abstract class BaseOkCancelDialogHandler<E extends BaseUiElement, P> implements DialogHandler<E,P>{
+public abstract class BaseOkCancelDialogHandler<E extends BaseUiElement, P> implements DialogHandler<P>{
 
     @Autowired
     private AdminL10nFactory  adminL10nFactory;
 
     @Override
-    public E getEditor(String tag, OperationUiContext context, P parameters) {
-        return ExceptionUtils.wrapException(()-> createEditor(tag, parameters, context));
+    public MainFrame.DialogPack getDialogPack(OperationUiContext context, P parameters) throws Exception {
+        var header = new MainFrameDialogHeader("dialog-header", context);
+        {
+            var title = new LabelHeader("title", context);
+            title.setTitle(getTitle(parameters), context);
+            header.addChild(context, title, 0);
+        }
+        var content = createEditor("dialog-content", parameters, context);
+        var footer = new MainFrameDialogFooter("dialog-footer", context);
+        {
+            var config = new MainFrameDialogButtonConfiguration();
+            config.setTitle(adminL10nFactory.Cancel());
+            config.setClickListener((ctx) ->{
+                MainFrame.lookup(content).closeDialog(ctx);
+            });
+            var cancelButton = new MainFrameDialogButton("cancel", config, context);
+            footer.addChild(context, cancelButton, 0);
+        }
+        {
+            var config = new MainFrameDialogButtonConfiguration();
+            config.setTitle(adminL10nFactory.Ok());
+            config.setClickListener((ctx) ->{
+                onOk(ctx, content, ()->{
+                    MainFrame.lookup(content).closeDialog(ctx);
+                });
+            });
+            var okButton = new MainFrameDialogButton("ok", config, context);
+            footer.addChild(context, okButton, 0);
+        }
+        return new MainFrame.DialogPack(header, content, footer);
     }
 
-    @Override
-    public List<DialogButton<E>> getButtons(OperationUiContext context) {
-        var cancelButton = new DialogButton<E>(){
-
-            @Override
-            public String getId() {
-                return "cancel";
-            }
-
-            @Override
-            public String getName() {
-                return adminL10nFactory.Cancel();
-            }
-
-            @Override
-            public void onClick(DialogCallback<E> callback, OperationUiContext context) {
-                callback.close();
-            }
-        };
-        var okButton = new DialogButton<E>(){
-
-            @Override
-            public String getId() {
-                return "ok";
-            }
-
-            @Override
-            public String getName() {
-                return adminL10nFactory.Ok();
-            }
-
-            @Override
-            public void onClick(DialogCallback<E> callback, OperationUiContext context) {
-                ExceptionUtils.wrapException(()-> onOk(context, callback));
-            }
-        };
-        return Arrays.asList(okButton, cancelButton);
-    }
+    protected abstract String getTitle(P parameters);
 
     protected abstract E createEditor(String tag, P params, OperationUiContext context) throws Exception;
 
-    protected abstract void onOk(OperationUiContext context, DialogCallback<E> callback) throws Exception;
+    protected abstract void onOk(OperationUiContext context, E editor, RunnableWithException closeCallback) throws Exception;
 }

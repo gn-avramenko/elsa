@@ -13,11 +13,18 @@
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrameDialogButton" managed-configuration="true">
         <server-managed-state>
             <property id="title" type="STRING"/>
+            <property id="disabled" type="BOOLEAN" non-nullable="true"/>
+            <property id="hidden" type="BOOLEAN" non-nullable="true"/>
+            <property id="buttonType" type="STRING"/>
+            <property id="color" type="STRING"/>
+            <property id="icon" type="STRING"/>
         </server-managed-state>
         <commands-from-client>
             <command id="click"/>
         </commands-from-client>
     </custom-container>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrameDialogFooter"/>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrameDialogHeader"/>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame">
         <server-managed-state>
             <collection id="workspaceGroups" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.mainFrame.WorkspaceGroup"/>
@@ -26,7 +33,6 @@
             <property id="backUrl" type="STRING"/>
             <property id="embeddedMode" type="BOOLEAN"/>
             <property id="themeToken" type="STRING" non-nullable="true"/>
-            <property id="dialogTitle" type="STRING"/>
         </server-managed-state>
         <commands-from-server>
             <command id="setWebPeerParam">

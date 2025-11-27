@@ -151,6 +151,8 @@ public class WebWebAppElementsHelper {
                                         cn1 = "boolean";
                                     }else if ("String".equals(cn1)) {
                                         cn1 = "string";
+                                    }else if ("BigDecimal".equals(cn1)) {
+                                        cn1 = "number";
                                     }
                                 }
                                 var cn = cn1;

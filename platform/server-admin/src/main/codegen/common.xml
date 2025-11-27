@@ -49,4 +49,9 @@
             </command>
         </commands-from-client>
     </custom>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.dialog.LabelHeader">
+        <server-managed-state>
+            <property id="title" type="STRING" non-nullable="true"/>
+        </server-managed-state>
+    </custom-container>
 </web-app>

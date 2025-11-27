@@ -3,8 +3,11 @@ import { Tooltip } from 'antd';
 import { StyledFormElement } from 'admin/src/form/form-styled';
 
 export function FormElementWrapper(
-    props: PropsWithChildren<{ title?: string; validation?: string }>
+    props: PropsWithChildren<{ title?: string; hidden?: boolean; validation?: string }>
 ) {
+    if (props.hidden) {
+        return '';
+    }
     const drawDiv = () => {
         return (
             <StyledFormElement>

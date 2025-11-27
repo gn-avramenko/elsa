@@ -8,9 +8,6 @@ import { Select } from 'antd';
 function FormSelectFC(props: { element: FormSelectComponent }) {
     initStateSetters(props.element);
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
-    if (props.element.getHidden()) {
-        return '' as any;
-    }
     const shrinkName = (value: string) => {
         if (!value?.length) {
             return value;
@@ -24,6 +21,7 @@ function FormSelectFC(props: { element: FormSelectComponent }) {
         <FormElementWrapper
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
+            hidden={props.element.getHidden()}
         >
             <Select
                 size="middle"

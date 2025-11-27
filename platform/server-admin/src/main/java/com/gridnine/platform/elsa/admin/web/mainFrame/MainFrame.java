@@ -30,6 +30,7 @@ import com.gridnine.platform.elsa.admin.utils.AdminParameters;
 import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAndArgument;
+import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.IoUtils;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
@@ -180,49 +181,27 @@ public class MainFrame extends MainFrameSkeleton{
         saveFile(action , context, false);
     }
 
-    public<E extends BaseUiElement,P> void showDialog(String title, DialogHandler<E,P> handler, P parameters, OperationUiContext context) {
+    public<P> void showDialog(DialogHandler<P> handler, P parameters, OperationUiContext context) {
         deleteDialogChildren(context);
-        setDialogTitle(title, context);
-        var editor = handler.getEditor("dialog-content", context, parameters);
-        addChild(context, editor, 0);
-        var buttons = handler.getButtons(context);
-        var buttonsWrapper = new ContentWrapper("dialog-buttons", new ContentWrapperConfiguration(), context);
-        for(var button : buttons){
-            var bc = new MainFrameDialogButtonConfiguration();
-            bc.setTitle(button.getName());
-            bc.setClickListener((ctx) ->{
-                button.onClick(new DialogCallback<>() {
-                    @Override
-                    public void close() {
-                        deleteDialogChildren(ctx);
-                        closeDialogInternal(ctx, true);
-                    }
-
-                    @Override
-                    public E getEditor() {
-                        return editor;
-                    }
-                }, ctx);
-            });
-            button.customize(bc);
-            var db = new MainFrameDialogButton(button.getId(), bc, context);
-            buttonsWrapper.addChild(context, db, buttonsWrapper.getUnmodifiableListOfChildren().size());
-        }
-        addChild(context, buttonsWrapper, 0);
-        var customHeader = handler.getCustomHeader(editor, context);
-        if(customHeader!=null){
-            var headerWrapper = new ContentWrapper("dialog-header", new ContentWrapperConfiguration(), context);
-            headerWrapper.addChild(context, customHeader, 0);
-            addChild(context, headerWrapper, 0);
-        }
+        var pack = ExceptionUtils.wrapException(() ->handler.getDialogPack( context, parameters));
+        addChild(context, pack.header, 0);
+        addChild(context, pack.content, 0);
+        addChild(context, pack.footer, 0);
         showDialogInternal(context, true);
     }
 
+    public void closeDialog( OperationUiContext context) {
+        closeDialogInternal(context, true);
+        deleteDialogChildren(context);
+    }
+
     private void deleteDialogChildren(OperationUiContext context) {
-        var toDelete = super.getUnmodifiableListOfChildren().stream().filter(it -> "dialog-buttons".equals(it.getTag()) || "dialog-content".equals(it.getTag()) || "dialog-header".equals(it.getTag())).toList();
+        var toDelete = super.getUnmodifiableListOfChildren().stream().filter(it -> "dialog-footer".equals(it.getTag()) || "dialog-content".equals(it.getTag()) || "dialog-header".equals(it.getTag())).toList();
         toDelete.forEach(it -> {
             removeChild(context, it);
         });
     }
+
+    public record DialogPack(BaseUiElement header, BaseUiElement content, BaseUiElement footer) {}
 
 }
