@@ -140,11 +140,16 @@ reactWebPeerExt.setMiddleware([
     ),
 ]);
 let root: Root | null = null;
+let rootElement: BaseReactUiElement | null = null;
 reactWebPeerExt.uiHandler = {
+    handleRemotingError(message: string, details: string): void {
+        (rootElement as any).showErrorDialog(message, details);
+    },
     drawUi(rootElm: BaseReactUiElement) {
         if (!root) {
             root = createRoot(document.getElementById('root') as Element);
         }
+        rootElement = rootElm;
         root.render(rootElm.createReactElement());
     },
     createElement(model: any): BaseUiElement {

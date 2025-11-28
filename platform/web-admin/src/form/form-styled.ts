@@ -15,6 +15,7 @@ export const StyledFormElement: any = styled.div<{}>`
         position: absolute;
         top: -9px;
         left: 10px;
+        border-radius: 2px;
         padding-left: 3px;
         padding-right: 3px;
         color: ${({ theme }) =>
@@ -24,6 +25,7 @@ export const StyledFormElement: any = styled.div<{}>`
             (theme as StyledComponentsTheme).token.colorBgBase};
         z-index: 30;
     }
+    
 
     .admin-form-error {
         .ant-select-selector {

@@ -23,6 +23,11 @@
             <command id="click"/>
         </commands-from-client>
     </custom-container>
+    <enum id="com.gridnine.platform.elsa.admin.web.mainFrame.NotificationType">
+        <enum-item id="ERROR"/>
+        <enum-item id="WARNING"/>
+        <enum-item id="INFO"/>
+    </enum>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrameDialogFooter"/>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrameDialogHeader"/>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame">
@@ -44,16 +49,16 @@
                 <property id="name" type="STRING" non-nullable="true"/>
                 <property id="base64Content" type="STRING" non-nullable="true"/>
             </command>
-            <command id="showConfirmationDialog">
+            <command id="showNotificationInternal">
+                <property id="title" type="STRING" non-nullable="true"/>
+                <property id="notificationType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.mainFrame.NotificationType"/>
+                <property id="text" type="STRING" non-nullable="true"/>
+            </command>
+            <command id="showConfirmationDialogInternal">
                 <property id="title" type="STRING" non-nullable="true"/>
                 <property id="okText" type="STRING" non-nullable="true"/>
                 <property id="cancelText" type="STRING" non-nullable="true"/>
                 <property id="question" type="STRING" non-nullable="true"/>
-            </command>
-            <command id="showError">
-                <property id="title" type="STRING" non-nullable="true"/>
-                <property id="closeText" type="STRING" non-nullable="true"/>
-                <property id="error" type="STRING" non-nullable="true"/>
             </command>
             <command id="showDialogInternal"/>
             <command id="closeDialogInternal"/>

@@ -25,11 +25,13 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
+            readonly={!!props.element.getReadonly()}
         >
             <DebounceSelect
                 size="middle"
                 allowClear
                 hasError={!!props.element.getValidation()}
+                disabled={!!props.element.getReadonly()}
                 debounceTimeout={300}
                 value={
                     props.element.getValue()

@@ -21,6 +21,7 @@
             <property id="validation" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
             <property id="hidden" type="BOOLEAN"/>
+            <property id="readonly" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
@@ -42,6 +43,7 @@
             <property id="validation" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
             <property id="hidden" type="BOOLEAN"/>
+            <property id="readonly" type="BOOLEAN"/>
             <collection id="options" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
         </server-managed-state>
         <input-value>

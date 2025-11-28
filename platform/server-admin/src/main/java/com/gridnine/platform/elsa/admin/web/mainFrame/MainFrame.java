@@ -117,20 +117,28 @@ public class MainFrame extends MainFrameSkeleton{
 
     public void confirm(String question, RunnableWithExceptionAndArgument<OperationUiContext> callback, OperationUiContext context) {
         this.confirmationCallback = callback;
-        var data = new MainFrameShowConfirmationDialogAction();
+        var data = new MainFrameShowConfirmationDialogInternalAction();
         data.setQuestion(question);
         data.setTitle(aL10nFactory.Confirmation());
         data.setCancelText(aL10nFactory.Cancel());
         data.setOkText(aL10nFactory.Ok());
-        this.showConfirmationDialog(data, context, true);
+        this.showConfirmationDialogInternal(data, context, true);
     }
 
-    public void error(String errorMessage, OperationUiContext context) {
-        var data = new MainFrameShowErrorAction();
-        data.setError(errorMessage);
+    public void showError(String errorMessage, OperationUiContext context) {
+        var data = new MainFrameShowNotificationInternalAction();
+        data.setText(errorMessage);
         data.setTitle(aL10nFactory.Error());
-        data.setCloseText(aL10nFactory.Ok());
-        this.showError(data, context, true);
+        data.setNotificationType(NotificationType.ERROR);
+        this.showNotificationInternal(data, context, true);
+    }
+
+    public void showWarning(String waringMessage, OperationUiContext context) {
+        var data = new MainFrameShowNotificationInternalAction();
+        data.setText(waringMessage);
+        data.setTitle(aL10nFactory.Error());
+        data.setNotificationType(NotificationType.WARNING);
+        this.showNotificationInternal(data, context, true);
     }
 
     private WorkspaceGroup toWorkspaceGroup(com.gridnine.platform.elsa.admin.domain.WorkspaceGroup group) {

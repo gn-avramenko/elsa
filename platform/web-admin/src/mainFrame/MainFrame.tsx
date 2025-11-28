@@ -4,7 +4,16 @@ import {
     preloaderHolder,
 } from 'admin/src/common/component';
 import { MainFrameSkeleton } from 'admin/src-gen/mainFrame/MainFrameSkeleton';
-import { ConfigProvider, Drawer, Layout, Modal, Spin, theme } from 'antd';
+import {
+    Button,
+    ConfigProvider,
+    Drawer,
+    Layout,
+    Modal,
+    notification,
+    Spin,
+    theme,
+} from 'antd';
 import { BREAKPOINTS, DynamicIcon, setWebPeerParam } from 'admin/src/common/extension';
 import useBreakpoint from 'use-breakpoint';
 import { Content, Header } from 'antd/es/layout/layout';
@@ -13,13 +22,19 @@ import useTheme from 'antd/es/config-provider/hooks/useTheme';
 import { MenuComp } from 'admin/src/components/menu-comp';
 import { MainRouterComponent } from 'admin/src/mainFrame/MainRouter';
 import Sider from 'antd/es/layout/Sider';
-import { ArrowLeftOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import {
+    ArrowLeftOutlined,
+    ExclamationCircleFilled,
+    ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import { MainFrameSetWebPeerParamAction } from 'admin/src-gen/mainFrame/MainFrameSetWebPeerParamAction';
 import { MainFrameSaveFileAction } from 'admin/src-gen/mainFrame/MainFrameSaveFileAction';
-import { MainFrameShowConfirmationDialogAction } from 'admin/src-gen/mainFrame/MainFrameShowConfirmationDialogAction';
-import { MainFrameShowErrorAction } from 'admin/src-gen/mainFrame/MainFrameShowErrorAction';
 import { ThemeProvider } from 'styled-components';
 import type { GlobalToken } from 'antd/es/theme/interface';
+import { MainFrameShowConfirmationDialogInternalAction } from 'admin/src-gen/mainFrame/MainFrameShowConfirmationDialogInternalAction';
+import { MainFrameShowNotificationInternalAction } from 'admin/src-gen/mainFrame/MainFrameShowNotificationInternalAction';
+import type { NotificationInstance } from 'antd/es/notification/interface';
+import TextArea from 'antd/es/input/TextArea';
 
 const ExtThemePropertiesContext = createContext<any>({});
 
@@ -39,8 +54,18 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     props.element.setDialogOpen = setDialogOpen;
     preloaderHolder.hidePreloader = () => setSpinning(false);
     preloaderHolder.showPreloader = () => setSpinning(true);
+    const [api, contextHolder] = notification.useNotification();
+    props.element.notification = api;
     const { token } = theme.useToken();
     const themeConfig = JSON.parse(props.element.getThemeToken()) as any;
+    const [errorMessage, setErrorMessage] = useState<string | undefined>();
+    const [errorDetails, setErrorDetails] = useState<string | undefined>();
+    const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
+    (props.element as any).showErrorDialog = (message: string, details: string) => {
+        setErrorMessage(message);
+        setErrorDetails(details);
+        setErrorDialogOpen(true);
+    };
     if (themeConfig.algorithm) {
         themeConfig.algorithm = themeConfig.algorithm.map(
             (it: any) => (theme as any)[it]
@@ -49,6 +74,42 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     const ext = themeConfig.ext;
     const th = useTheme(themeConfig);
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
+    const drawErrorDialog = () => {
+        return (
+            <Modal
+                title={
+                    <div>
+                        <ExclamationCircleOutlined
+                            style={{
+                                color: token.colorError,
+                                padding: token.paddingXS,
+                                display: 'inline-block',
+                            }}
+                        />
+                        <span style={{ display: 'inline-block' }}>Error</span>
+                    </div>
+                }
+                footer={
+                    <Button
+                        color="danger"
+                        variant="solid"
+                        onClick={() => setErrorDialogOpen(false)}
+                    >
+                        Close
+                    </Button>
+                }
+                open={errorDialogOpen}
+                closable={false}
+                onOk={() => setErrorDialogOpen(false)}
+                onCancel={() => setErrorDialogOpen(false)}
+            >
+                <TextArea
+                    value={`${errorMessage}\r\n${errorDetails}`}
+                    style={{ width: '100%', height: '400px', overflowY: 'auto' }}
+                />
+            </Modal>
+        );
+    };
     const drawDialog = () => {
         return (
             <Modal
@@ -76,6 +137,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                     .findByTag('mainRouter')
                                     .createReactElement()}
                                 {drawDialog()}
+                                {drawErrorDialog()}
                             </Content>
                         </Layout>
                     </ConfigProvider>
@@ -249,6 +311,8 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                             .findByTag('mainRouter')
                                             .createReactElement()}
                                         {drawDialog()}
+                                        {contextHolder}
+                                        {drawErrorDialog()}
                                     </Content>
                                 </ExtThemePropertiesContext.Provider>
                             </Layout>
@@ -342,6 +406,8 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                         .findByTag('mainRouter')
                                         .createReactElement()}
                                     {drawDialog()}
+                                    {contextHolder}
+                                    {drawErrorDialog()}
                                 </ExtThemePropertiesContext.Provider>
                             </Content>
                         </Content>
@@ -353,6 +419,36 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
 }
 
 export class MainFrameComponent extends MainFrameSkeleton {
+    processShowNotificationInternal(
+        value: MainFrameShowNotificationInternalAction
+    ): void {
+        switch (value.notificationType) {
+            case 'INFO': {
+                this.notification?.info({
+                    description: value.text,
+                    message: value.title,
+                });
+                return;
+            }
+            case 'WARNING': {
+                this.notification?.warning({
+                    description: value.text,
+                    message: value.title,
+                });
+                return;
+            }
+            case 'ERROR': {
+                this.notification?.error({
+                    description: value.text,
+                    message: value.title,
+                });
+                return;
+            }
+        }
+    }
+
+    notification?: NotificationInstance;
+
     processShowDialogInternal(): void {
         this.setDialogOpen(true);
     }
@@ -362,14 +458,9 @@ export class MainFrameComponent extends MainFrameSkeleton {
 
     setDialogOpen: (value: boolean) => void = () => {};
 
-    processShowError(value: MainFrameShowErrorAction): void {
-        Modal.error({
-            title: value.title,
-            okText: value.closeText,
-            content: value.error,
-        });
-    }
-    processShowConfirmationDialog(value: MainFrameShowConfirmationDialogAction): void {
+    processShowConfirmationDialogInternal(
+        value: MainFrameShowConfirmationDialogInternalAction
+    ) {
         Modal.confirm({
             icon: <ExclamationCircleFilled />,
             title: value.title,
@@ -388,6 +479,7 @@ export class MainFrameComponent extends MainFrameSkeleton {
             },
         });
     }
+
     processSaveFile(value: MainFrameSaveFileAction): void {
         const link = document.createElement('a');
         link.download = value.name;

@@ -22,10 +22,12 @@ function FormSelectFC(props: { element: FormSelectComponent }) {
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
+            readonly={!!props.element.getReadonly()}
         >
             <Select
                 size="middle"
                 allowClear
+                disabled={!!props.element.getReadonly()}
                 className={props.element.getValidation() ? 'admin-form-error' : ''}
                 options={(props.element.getOptions() || []).map((it) => ({
                     key: it.id,
