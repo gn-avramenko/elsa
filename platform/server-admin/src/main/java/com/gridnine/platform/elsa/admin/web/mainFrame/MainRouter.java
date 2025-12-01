@@ -34,6 +34,7 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.WebPeerUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 
@@ -101,11 +102,12 @@ public class MainRouter extends MainRouterSkeleton{
 	}
 
 	public void navigate(String path, boolean force, OperationUiContext ctx){
+        var oldPath = getPath();
         ctx.setParameter(StandardParameters.ROUTER_PATH, path);
         ctx.setParameter(StandardParameters.BEAN_FACTORY, factory);
         var handler = getRouterPathHandler(path);
         MainFrame.lookup(this).setBackUrl(handler.getDefaultBackUrl(path), ctx);
-        if(lastHandler != null && lastHandler.equals(handler)){
+        if(lastHandler != null && lastHandler.equals(handler) && Objects.equals(oldPath, path)){
 			return;
 		}
         if(Boolean.TRUE.equals(isHasChanges()) && !force){
