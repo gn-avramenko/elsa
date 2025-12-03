@@ -55,7 +55,7 @@ public class MainFrame extends MainFrameSkeleton{
 		super(tag, ctx);
         var path = ctx.getParameter(OperationUiContext.PARAMS).get("initPath").getAsString();
         setEmbeddedMode(path.contains("embeddedMode=true"), ctx);
-        setTitle(getMainRouter().getTitle(), ctx);
+        setTitle(getMainRouter().getTitle(ctx), ctx);
         setAppName(getTitle(), ctx);
         setBackUrl(getMainRouter().getInitBackUrl(), ctx);
         if(Boolean.TRUE.equals(isEmbeddedMode())){

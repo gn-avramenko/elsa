@@ -21,6 +21,10 @@
 
 package com.gridnine.platform.elsa.gradle.meta.adminUi.common;
 
+import com.gridnine.platform.elsa.gradle.meta.adminUi.AdminUiMetaRegistry;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.BaseAdminUiContainerDescription;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormMetadataParser;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.grid.GridMetadataParser;
 import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
@@ -36,6 +40,16 @@ public class AdminUiParserHelper {
             throw new RuntimeException("class name is null");
         }
         return className;
+    }
+
+    public static BaseAdminUiContainerDescription parse(XmlNode node, boolean root, AdminUiMetaRegistry registry) {
+        if("form".equals(node.getName())){
+            return FormMetadataParser.parseForm(node, root, registry);
+        }
+        if("grid".equals(node.getName())){
+            return GridMetadataParser.parseForm(node, root, registry);
+        }
+        throw new RuntimeException("unsupported tag name " + node.getName());
     }
 
     public static void updateTitle(XmlNode node, Map<Locale, String> titleMap) {

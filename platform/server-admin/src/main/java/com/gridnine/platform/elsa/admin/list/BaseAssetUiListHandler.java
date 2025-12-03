@@ -27,6 +27,7 @@ import com.gridnine.platform.elsa.admin.web.common.BreakPoint;
 import com.gridnine.platform.elsa.admin.web.common.ButtonConfiguration;
 import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
+import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments;
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
@@ -48,16 +49,16 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiListHandler {
-    private final Class<T> assetClass;
+    protected final Class<T> assetClass;
 
     @Autowired
-    private DomainMetaRegistry domainMetaRegistry;
+    protected DomainMetaRegistry domainMetaRegistry;
 
     @Autowired
-    private Storage storage;
+    protected Storage storage;
 
     @Autowired
-    private AdminL10nFactory aL10nFactory;
+    protected AdminL10nFactory aL10nFactory;
 
     public BaseAssetUiListHandler(Class<T> assetClass) {
         this.assetClass = assetClass;
@@ -106,10 +107,10 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         entityListConfiguration.setFiltersTitle(aL10nFactory.Filters());
         entityListConfiguration.setContentTitle(aL10nFactory.Content());
 
-        entityListConfiguration.setDoubleClickListener(((action, context1) -> {
-            System.out.println("clicked  " + action.getId());
-        }));
         var entityList = new EntityList("content", entityListConfiguration, context);
+        entityList.setDoubleClickListener(((action, context1) -> {
+            MainFrame.lookup(entityList).getMainRouter().navigate("/%s/%s".formatted(getSection(), action.getId()), true, context1);
+        }));
         entityList.getSearchField().setValueChangeListener((oldValue, newValue, context1) -> {
             entityList.setLoading(true, context1);
             entityList.refreshData(context1, true);
@@ -244,11 +245,10 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         return result;
     }
 
-    public String getTitle(String path) {
-        var title = domainMetaRegistry.getAssets().get(assetClass.getName()).getDisplayNames().get(LocaleUtils.getCurrentLocale());
-        return title;
+    @Override
+    public String getTitle(String path, OperationUiContext context) throws Exception {
+        return domainMetaRegistry.getAssets().get(assetClass.getName()).getDisplayNames().get(LocaleUtils.getCurrentLocale());
     }
-
 
     protected abstract String getSection();
 

@@ -23,6 +23,9 @@ package com.gridnine.platform.elsa.common.meta.adminUi.form;
 
 public enum FormComponentType {
     TEXT_FIELD,
+    BOOLEAN_FIELD,
+    DATE_INTERVAL_FIELD,
+    TEXT_AREA,
     REMOTE_SELECT,
     SELECT,
     CUSTOM

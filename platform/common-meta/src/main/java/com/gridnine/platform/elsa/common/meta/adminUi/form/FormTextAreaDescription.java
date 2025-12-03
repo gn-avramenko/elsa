@@ -19,9 +19,12 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.meta.adminUi;
+package com.gridnine.platform.elsa.common.meta.adminUi.form;
 
-public enum AdminUiContainerType {
-    FORM,
-    GRID,
+
+public class FormTextAreaDescription extends BaseAdminUiFormComponentDescription {
+    @Override
+    public FormComponentType getType() {
+        return FormComponentType.TEXT_AREA;
+    }
 }

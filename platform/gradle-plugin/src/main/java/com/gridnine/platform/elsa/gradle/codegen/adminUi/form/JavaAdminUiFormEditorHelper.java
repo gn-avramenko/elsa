@@ -95,6 +95,9 @@ public class JavaAdminUiFormEditorHelper {
     private static String getType(BaseAdminUiFormComponentDescription pd) {
         return switch (pd.getType()) {
             case TEXT_FIELD -> "com.gridnine.platform.elsa.admin.web.form.FormTextField";
+            case BOOLEAN_FIELD -> "com.gridnine.platform.elsa.admin.web.form.FormBooleanField";
+            case DATE_INTERVAL_FIELD -> "com.gridnine.platform.elsa.admin.web.form.FormDateIntervalField";
+            case TEXT_AREA -> "com.gridnine.platform.elsa.admin.web.form.FormTextArea";
             case REMOTE_SELECT -> "com.gridnine.platform.elsa.admin.web.form.FormRemoteSelect";
             case SELECT -> "com.gridnine.platform.elsa.admin.web.form.FormSelect";
             case CUSTOM -> ((FormCustomElementDescription) pd).getClassName();

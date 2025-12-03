@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.meta.adminUi;
 
+import com.gridnine.platform.elsa.gradle.meta.adminUi.common.AdminUiParserHelper;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormMetadataParser;
 import com.gridnine.platform.elsa.gradle.meta.common.*;
 import com.gridnine.platform.elsa.gradle.meta.webApp.*;
@@ -43,12 +44,7 @@ public class AdminUiMetaRegistryParser {
                 } else if("entity".equals(child.getName())){
                     CommonParserUtils.updateEntity(registry.getEntities(), child);
                 } else {
-                    String tagName = child.getName();
-                    if (tagName.equals("form")) {
-                        FormMetadataParser.parseForm(child, registry);
-                        return;
-                    }
-                    throw new RuntimeException("unsupported tag" + tagName);
+                    AdminUiParserHelper.parse(child, true, registry);
                 }
             });
         }));

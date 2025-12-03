@@ -15,6 +15,37 @@
             <property id="value" type="STRING"/>
         </input-value>
     </custom>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormTextArea">
+        <server-managed-state>
+            <property id="title" type="STRING"/>
+            <property id="deferred" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
+        </server-managed-state>
+        <input-value>
+            <property id="value" type="STRING"/>
+        </input-value>
+    </custom>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormBooleanField">
+        <server-managed-state>
+            <property id="title" type="STRING"/>
+            <property id="deferred" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
+        </server-managed-state>
+        <input-value>
+            <property id="value" type="BOOLEAN"/>
+        </input-value>
+    </custom>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormDateIntervalField">
+        <server-managed-state>
+            <property id="title" type="STRING"/>
+            <property id="deferred" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
+        </server-managed-state>
+        <input-value>
+            <property id="startDate" type="LOCAL_DATE"/>
+            <property id="endDate" type="LOCAL_DATE"/>
+        </input-value>
+    </custom>
     <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormRemoteSelect">
         <server-managed-state>
             <property id="title" type="STRING"/>

@@ -1,24 +1,19 @@
 import { initStateSetters } from 'admin/src/common/component';
 import { EntityListSearchFieldSkeleton } from 'admin/src-gen/entityList/EntityListSearchFieldSkeleton';
-import Search from 'antd/es/input/Search';
 import debounce from 'lodash/debounce';
+import { Input } from 'antd';
 
 function EntityListSearchFieldFC(props: { element: EntityListSearchFieldComponent }) {
     initStateSetters(props.element);
     return (
-        <Search
+        <Input
             allowClear
+            type="text"
+            autoComplete="off"
             id="search"
-            onSearch={(text) => {
-                props.element.stateSetters.get('value')!(text);
-                props.element.setValue(text);
-            }}
             onChange={(e) => {
-                const value = {
-                    value: e.target.value,
-                };
-                props.element.stateSetters.get('value')!(value);
-                props.element.debouncedSetValue(value);
+                props.element.stateSetters.get('value')!(e.target.value);
+                props.element.debouncedSetValue(e.target.value);
             }}
         />
     );

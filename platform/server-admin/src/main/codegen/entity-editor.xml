@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://vga.com/elsa/meta-web-app">
+    <enum id="com.gridnine.platform.elsa.admin.web.entityEditor.EntityEditorToolType">
+        <enum-item id="STANDARD"/>
+        <enum-item id="ERROR"/>
+        <enum-item id="SUCCESS"/>
+        <enum-item id="WARNING"/>
+    </enum>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.entityEditor.EditorTool">
+        <server-managed-state>
+            <property id="tooltip" type="STRING"/>
+            <property id="disabled" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
+            <property id="buttonType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityEditor.EntityEditorToolType"/>
+            <property id="icon" type="STRING"/>
+        </server-managed-state>
+        <commands-from-client>
+            <command id="click"/>
+        </commands-from-client>
+    </custom>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.entityEditor.EntityEditor">
+        <server-managed-state>
+        </server-managed-state>
+    </custom-container>
+</web-app>

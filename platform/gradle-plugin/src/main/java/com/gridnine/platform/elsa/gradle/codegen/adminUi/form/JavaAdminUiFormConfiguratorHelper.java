@@ -25,61 +25,102 @@ import com.gridnine.platform.elsa.gradle.codegen.adminUi.common.JavaAdminUiCodeG
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormContainerDescription;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormCustomElementDescription;
+import com.gridnine.platform.elsa.gradle.utils.BuildRunnableWithException;
 
 public class JavaAdminUiFormConfiguratorHelper {
 
-    public static void generateDescription(FormContainerDescription cd, JavaCodeGenerator gen) throws Exception {
+    public static void generateDescription(FormContainerDescription cd, String containerDescriptionName, boolean root, JavaCodeGenerator gen) throws Exception {
         gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormContainerDescription");
-        gen.wrapWithBlock(null, () -> {
-            gen.printLine("""
-                    var containerDescription = (FormContainerDescription) registry.getContainers().computeIfAbsent("%s", className->{
-                                    var ctr = new FormContainerDescription();
-                                    ctr.setClassName(className);
-                                    return ctr;
-                                });""".formatted(cd.getClassName()));
-            for(var comp : cd.getComponents().values()){
-                switch (comp.getType()) {
-                    case TEXT_FIELD -> {
-                        gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormTextFieldDescription");
-                        gen.wrapWithBlock(null, () -> {
-                            gen.printLine("var comp = new FormTextFieldDescription();");
-                            gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
-                            JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
-                            gen.printLine("containerDescription.getComponents().put(comp.getId(), comp);");
-                        });
-                    }
-                    case REMOTE_SELECT -> {
-                        gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormRemoteSelectDescription");
-                        gen.wrapWithBlock(null, () -> {
-                            gen.printLine("var comp = new FormRemoteSelectDescription();");
-                            gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
-                            JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
-                            gen.printLine("containerDescription.getComponents().put(comp.getId(), comp);");
-                        });
+        var runnable = new BuildRunnableWithException(){
 
+            @Override
+            public void run() throws Exception {
+                    if(root) {
+                        gen.printLine("""
+                        var %s = (FormContainerDescription) registry.getContainers().computeIfAbsent("%s", className->{
+                                        var ctr = new FormContainerDescription();
+                                        ctr.setClassName(className);
+                                        return ctr;
+                                    });""".formatted(containerDescriptionName, cd.getClassName()));
+                    } else {
+                        gen.printLine("var %s = new FormContainerDescription();".formatted(containerDescriptionName));
                     }
-                    case SELECT -> {
-                        gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormSelectDescription");
-                        gen.wrapWithBlock(null, () -> {
-                            gen.printLine("var comp = new FormSelectDescription();");
-                            gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
-                            JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
-                            gen.printLine("containerDescription.getComponents().put(comp.getId(), comp);");
-                        });
+                    for(var comp : cd.getComponents().values()){
+                        switch (comp.getType()) {
+                            case TEXT_FIELD -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormTextFieldDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormTextFieldDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
+                            }
+                            case BOOLEAN_FIELD -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormBooleanFieldDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormBooleanFieldDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
+                            }
+                            case TEXT_AREA -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormTextAreaDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormTextAreaDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
+                            }
+                            case DATE_INTERVAL_FIELD -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormDateIntervalFieldDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormDateIntervalFieldDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
+                            }
+                            case REMOTE_SELECT -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormRemoteSelectDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormRemoteSelectDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
 
+                            }
+                            case SELECT -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormSelectDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormSelectDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
+
+                            }
+                            case CUSTOM -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormCustomElementDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormCustomElementDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("comp.setClassName(\"%s\");".formatted(((FormCustomElementDescription) comp).getClassName()));
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
+                            }
+                        }
                     }
-                    case CUSTOM -> {
-                        gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormCustomElementDescription");
-                        gen.wrapWithBlock(null, () -> {
-                            gen.printLine("var comp = new FormCustomElementDescription();");
-                            gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
-                            JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
-                            gen.printLine("comp.setClassName(\"%s\");".formatted(((FormCustomElementDescription) comp).getClassName()));
-                            gen.printLine("containerDescription.getComponents().put(comp.getId(), comp);");
-                        });
-                    }
-                }
             }
-        });
+        };
+        if(root) {
+            gen.wrapWithBlock(null,runnable);
+        } else {
+            runnable.run();
+        }
     }
 }

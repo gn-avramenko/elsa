@@ -57,7 +57,7 @@ public class MongoConverter {
             result.fields().include(query.getPreferredFields().toArray(new String[]{}));
         }
         if (!TextUtils.isBlank(query.getFreeText())) {
-            result.addCriteria(Criteria.where("aggregateddata").regex(query.getFreeText(), "i"));
+            result.addCriteria(Criteria.where("aggregatedData").regex(query.getFreeText(), "i"));
         }
         result.skip(query.getOffset());
         result.limit(query.getLimit() == 0 ? 200 : query.getLimit());

@@ -19,9 +19,12 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.meta.adminUi;
+package com.gridnine.platform.elsa.gradle.meta.adminUi.form;
 
-public enum AdminUiContainerType {
-    FORM,
-    GRID,
+
+public class FormDateIntervalFieldDescription extends BaseAdminUiFormComponentDescription {
+    @Override
+    public FormComponentType getType() {
+        return FormComponentType.DATE_INTERVAL_FIELD;
+    }
 }

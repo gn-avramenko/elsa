@@ -23,4 +23,5 @@ package com.gridnine.platform.elsa.common.meta.adminUi;
 
 public enum AdminUiContainerType {
     FORM,
+    GRID,
 }

@@ -19,9 +19,46 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.meta.adminUi;
+package com.gridnine.platform.elsa.common.meta.adminUi.grid;
 
-public enum AdminUiContainerType {
-    FORM,
-    GRID,
+
+import com.gridnine.platform.elsa.common.meta.adminUi.BaseAdminUiContainerDescription;
+
+public class GridColumnDescription {
+    private BaseAdminUiContainerDescription content;
+    private int smallWidth;
+    private int standardWidth;
+    private int largeWidth;
+
+    public int getSmallWidth() {
+        return smallWidth;
+    }
+
+    public void setSmallWidth(int smallWidth) {
+        this.smallWidth = smallWidth;
+    }
+
+    public int getStandardWidth() {
+        return standardWidth;
+    }
+
+    public void setStandardWidth(int standardWidth) {
+        this.standardWidth = standardWidth;
+    }
+
+    public int getLargeWidth() {
+        return largeWidth;
+    }
+
+    public void setLargeWidth(int largeWidth) {
+        this.largeWidth = largeWidth;
+    }
+
+    public void setContent(BaseAdminUiContainerDescription content) {
+        this.content = content;
+    }
+
+    public BaseAdminUiContainerDescription getContent() {
+        return content;
+    }
 }

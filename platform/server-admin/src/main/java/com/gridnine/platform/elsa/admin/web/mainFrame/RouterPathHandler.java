@@ -27,6 +27,6 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 public interface RouterPathHandler {
     boolean canHandle(String path);
     BaseUiElement createElement(String path, OperationUiContext context) throws Exception;
-    String getTitle(String path);
+    String getTitle(String path, OperationUiContext context) throws Exception;
     String getDefaultBackUrl(String path);
 }

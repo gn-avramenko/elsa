@@ -117,12 +117,12 @@ public class MainRouter extends MainRouterSkeleton{
 		setPath(path, ctx);
 		setHasChanges(false, ctx);
         lastHandler = handler;
-        MainFrame.lookup(this).setTitle(lastHandler.getTitle(getPath()), ctx);
 		var elm = getUnmodifiableListOfChildren().getFirst();
-		removeChild(ctx, elm);
-		elm = ExceptionUtils.wrapException(()->handler.createElement(path, ctx));
-		addChild(ctx, elm, 0);
-	}
+        removeChild(ctx, elm);
+        elm = ExceptionUtils.wrapException(()->handler.createElement(path, ctx));
+        addChild(ctx, elm, 0);
+        MainFrame.lookup(this).setTitle(ExceptionUtils.wrapException(()->lastHandler.getTitle(getPath(), ctx)), ctx);
+    }
 
     private void init() {
         if(routerPathHandlers!=null){
@@ -139,7 +139,7 @@ public class MainRouter extends MainRouterSkeleton{
         }
     }
 
-    public String getTitle(){
-        return lastHandler.getTitle(getPath());
+    public String getTitle(OperationUiContext ctx) throws Exception {
+        return lastHandler.getTitle(getPath(), ctx);
     }
 }

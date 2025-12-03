@@ -10,4 +10,8 @@
     <message id="Cancel"/>
     <message id="Confirmation"/>
     <message id="Error"/>
+    <message id="Delete"/>
+    <message id="Edit"/>
+    <message id="View"/>
+    <message id="Save"/>
 </messages-bundle>

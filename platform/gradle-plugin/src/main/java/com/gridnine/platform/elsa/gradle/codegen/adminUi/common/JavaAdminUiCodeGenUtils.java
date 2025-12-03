@@ -21,7 +21,12 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.adminUi.common;
 
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.form.JavaAdminUiFormConfiguratorHelper;
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.grid.JavaAdminUiGridConfiguratorHelper;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.BaseAdminUiContainerDescription;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormContainerDescription;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.grid.GridContainerDescription;
 
 import java.util.Locale;
 import java.util.Map;
@@ -31,6 +36,17 @@ public class JavaAdminUiCodeGenUtils {
         for (Map.Entry<Locale, String> entry : map.entrySet()) {
             generator.addImport("com.gridnine.platform.elsa.common.core.utils.LocaleUtils");
             generator.printLine("comp.getTitle().put(LocaleUtils.getLocale(\"%s\", null), \"%s\");".formatted(entry.getKey().getLanguage(), entry.getValue()));
+        }
+    }
+
+    public static void generateDescription(BaseAdminUiContainerDescription cd, String containerDescriptionName, boolean root, JavaCodeGenerator gen) throws Exception {
+        switch (cd.getType()) {
+            case FORM -> {
+                JavaAdminUiFormConfiguratorHelper.generateDescription((FormContainerDescription) cd, containerDescriptionName, root, gen);
+            }
+            case GRID -> {
+                JavaAdminUiGridConfiguratorHelper.generateDescription((GridContainerDescription) cd, containerDescriptionName, root, gen);
+            }
         }
     }
 }

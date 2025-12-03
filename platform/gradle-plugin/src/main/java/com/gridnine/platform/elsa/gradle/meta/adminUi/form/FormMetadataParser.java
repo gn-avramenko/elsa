@@ -27,10 +27,12 @@ import com.gridnine.platform.elsa.gradle.meta.common.XmlNode;
 import com.gridnine.platform.elsa.gradle.parser.common.CommonParserUtils;
 
 public class FormMetadataParser {
-    public static void parseForm(XmlNode child, AdminUiMetaRegistry registry){
+    public static FormContainerDescription parseForm(XmlNode child, boolean root, AdminUiMetaRegistry registry){
         var formDescription = new FormContainerDescription();
-        formDescription.setClassName(AdminUiParserHelper.getClassName(child));
-        registry.getContainers().put(formDescription.getClassName(), formDescription);
+        if(root){
+            formDescription.setClassName(AdminUiParserHelper.getClassName(child));
+            registry.getContainers().put(formDescription.getClassName(), formDescription);
+        }
         child.getChildren().forEach(childNode -> {
             var tag = childNode.getName();
             if("text-field".equals(tag)){
@@ -38,6 +40,27 @@ public class FormMetadataParser {
                 textFieldDescription.setId(CommonParserUtils.getIdAttribute(childNode));
                 AdminUiParserHelper.updateTitle(childNode, textFieldDescription.getTitle());
                 formDescription.getComponents().put(textFieldDescription.getId(), textFieldDescription);
+                return;
+            }
+            if("text-area".equals(tag)){
+                var textAreaDescription = new FormTextAreaDescription();
+                textAreaDescription.setId(CommonParserUtils.getIdAttribute(childNode));
+                AdminUiParserHelper.updateTitle(childNode, textAreaDescription.getTitle());
+                formDescription.getComponents().put(textAreaDescription.getId(), textAreaDescription);
+                return;
+            }
+            if("boolean-field".equals(tag)){
+                var booleanFieldDescription = new FormBooleanFieldDescription();
+                booleanFieldDescription.setId(CommonParserUtils.getIdAttribute(childNode));
+                AdminUiParserHelper.updateTitle(childNode, booleanFieldDescription.getTitle());
+                formDescription.getComponents().put(booleanFieldDescription.getId(), booleanFieldDescription);
+                return;
+            }
+            if("date-interval-field".equals(tag)){
+                var dateIntervalFieldDescription = new FormDateIntervalFieldDescription();
+                dateIntervalFieldDescription.setId(CommonParserUtils.getIdAttribute(childNode));
+                AdminUiParserHelper.updateTitle(childNode, dateIntervalFieldDescription.getTitle());
+                formDescription.getComponents().put(dateIntervalFieldDescription.getId(), dateIntervalFieldDescription);
                 return;
             }
             if("custom".equals(tag)){
@@ -63,5 +86,6 @@ public class FormMetadataParser {
                 return;
             }
         });
+        return  formDescription;
     }
 }

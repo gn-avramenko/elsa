@@ -36,7 +36,7 @@ public class HomePageRouterPathHandler implements RouterPathHandler{
     }
 
     @Override
-    public String getTitle(String path) {
+    public String getTitle(String path, OperationUiContext context) {
         return "Home";
     }
 

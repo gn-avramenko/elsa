@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.adminUi;
 
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.common.JavaAdminUiCodeGenUtils;
 import com.gridnine.platform.elsa.gradle.codegen.adminUi.form.JavaAdminUiFormConfiguratorHelper;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGeneratorUtils;
@@ -49,9 +50,7 @@ public class JavaAdminUiConfiguratorCodeGenerator {
                     JavaCodeGeneratorUtils.generateJavaEntityConfiguratorCode(ed, gen);
                 }
                 for (var cd : registry.getContainers().values()) {
-                    switch (cd.getType()) {
-                        case FORM -> JavaAdminUiFormConfiguratorHelper.generateDescription((FormContainerDescription) cd, gen);
-                    }
+                    JavaAdminUiCodeGenUtils.generateDescription(cd, "rootContainerDescription", true, gen);
                 }
             });
 
