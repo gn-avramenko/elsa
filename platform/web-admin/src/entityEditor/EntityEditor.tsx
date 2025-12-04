@@ -10,6 +10,7 @@ function EntityEditorFC(props: { element: EntityEditorComponent }) {
             style={{
                 display: 'flex',
                 flexDirection: 'column',
+                flexGrow: 1,
                 margin: token.paddingXXS,
             }}
         >
@@ -26,9 +27,13 @@ function EntityEditorFC(props: { element: EntityEditorComponent }) {
                 })}
             </div>
             <div
-                style={{ flexGrow: 1, overflowY: 'auto', marginTop: token.paddingXXS }}
+                style={{
+                    flexGrow: 1,
+                    overflowY: 'auto',
+                    marginTop: token.paddingXXS,
+                }}
             >
-                Content
+                {props.element.findByTag('content')?.createReactElement()}
             </div>
         </div>
     );

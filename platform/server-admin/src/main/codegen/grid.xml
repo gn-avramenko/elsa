@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://vga.com/elsa/meta-web-app">
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.grid.GridContainer">
+
+    </custom-container>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.grid.GridRowContainer">
+
+    </custom-container>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.grid.GridColumnContainer">
+        <server-managed-state>
+            <property id="smallWidth" type="INT" />
+            <property id="standardWidth" type="INT" />
+            <property id="largeWidth" type="INT" />
+        </server-managed-state>
+    </custom-container>
+</web-app>

@@ -21,6 +21,7 @@
 
 package com.gridnine.platform.elsa.gradle.codegen.common;
 
+import com.gridnine.platform.elsa.gradle.utils.BuildExceptionUtils;
 import com.gridnine.platform.elsa.gradle.utils.BuildRunnableWithException;
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
@@ -44,15 +45,15 @@ public class JavaCodeGenerator {
         buf.append(line);
     }
 
-    public void wrapWithBlock(String name, BuildRunnableWithException runnable) throws Exception {
+    public void wrapWithBlock(String name, BuildRunnableWithException runnable) {
         wrapWithBlock(name, "{", "}", runnable);
     }
 
-    public void wrapWithBlock(String name, String blockStartCharacter, String blockEndCharacter, BuildRunnableWithException runnable) throws Exception {
+    public void wrapWithBlock(String name, String blockStartCharacter, String blockEndCharacter, BuildRunnableWithException runnable) {
         printLine(name == null ? blockStartCharacter : "%s%s".formatted(name, blockStartCharacter));
         indent++;
         try {
-            runnable.run();
+            BuildExceptionUtils.wrapException(runnable);
         } finally {
             indent--;
             printLine(blockEndCharacter);

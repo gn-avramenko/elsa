@@ -56,7 +56,6 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     preloaderHolder.showPreloader = () => setSpinning(true);
     const [api, contextHolder] = notification.useNotification();
     props.element.notification = api;
-    const { token } = theme.useToken();
     const themeConfig = JSON.parse(props.element.getThemeToken()) as any;
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
     const [errorDetails, setErrorDetails] = useState<string | undefined>();
@@ -71,8 +70,10 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             (it: any) => (theme as any)[it]
         );
     }
+    let { token } = theme.useToken();
     const ext = themeConfig.ext;
     const th = useTheme(themeConfig);
+    token = { ...token, ...th!.token! };
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
     const drawErrorDialog = () => {
         return (
@@ -322,11 +323,12 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                     <Layout
                         style={{ height: '100%', borderRadius: token.borderRadiusLG }}
                     >
-                        <Sider>
+                        <Sider style={{ display: 'flex', flexDirection: 'column' }}>
                             <Header
                                 style={{
                                     padding: 0,
                                     display: 'flex',
+                                    flexGrow: 0,
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                 }}
@@ -342,7 +344,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                     {props.element.getAppName()}
                                 </div>
                             </Header>
-                            <Content>{drawMenu()}</Content>
+                            <Content style={{ flexGrow: 1 }}>{drawMenu()}</Content>
                         </Sider>
                         <Content
                             style={{
@@ -399,7 +401,14 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                                     ))}
                                 </div>
                             </Header>
-                            <Content style={{ flexGrow: 1 }}>
+                            <Content
+                                style={{
+                                    flexGrow: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    backgroundColor: token.colorBgBase,
+                                }}
+                            >
                                 <Spin spinning={spinning} fullscreen={true} />
                                 <ExtThemePropertiesContext.Provider value={ext}>
                                     {props.element

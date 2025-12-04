@@ -32,7 +32,7 @@ import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 import java.util.List;
 
-public class EntityEditor extends EntityEditorSkeleton{
+public class EntityEditor<E extends BaseUiElement> extends EntityEditorSkeleton{
 
     private String title;
 
@@ -47,6 +47,18 @@ public class EntityEditor extends EntityEditorSkeleton{
 
     public String getTitle() {
         return title;
+    }
+
+    public void setContent(E content, OperationUiContext context) throws Exception {
+        var existingContentContainer = getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals("content")).findFirst().orElse(null);
+        if(existingContentContainer != null){
+            removeChild(context, existingContentContainer);
+        }
+        addChild(context, content, 0);;
+    }
+
+    public E getContent(){
+        return (E) getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals("content")).findFirst().get();
     }
 
     public void setTools(List<BaseUiElement> tools, OperationUiContext operationUiContext) {

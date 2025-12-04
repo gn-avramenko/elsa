@@ -30,6 +30,7 @@ import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormCustomElementDesc
 import com.gridnine.platform.elsa.gradle.utils.BuildTextUtils;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -102,5 +103,39 @@ public class JavaAdminUiFormEditorHelper {
             case SELECT -> "com.gridnine.platform.elsa.admin.web.form.FormSelect";
             case CUSTOM -> ((FormCustomElementDescription) pd).getClassName();
         };
+    }
+
+    public static void collectFields(FormContainerDescription cd, Map<String, String> fields) {
+        cd.getComponents().forEach((pd, component) -> {
+            fields.put(pd, getType(component));
+        });
+    }
+
+    public static void generateNestedComponent(FormContainerDescription cd, String containerName, JavaCodeGenerator gen) {
+        gen.addImport("com.gridnine.platform.elsa.admin.web.form.FormContainer");
+        gen.printLine("var %s = new FormContainer(\"form\", context);".formatted(containerName));
+        var idx = new AtomicInteger(0);
+        for (var pd : cd.getComponents().values()) {
+            gen.blankLine();
+            gen.wrapWithBlock("", ()->{
+                var type = getType(pd);
+                var config = "%sConfiguration".formatted(type);
+                gen.addImport(config);
+                if(pd instanceof FormCustomElementDescription fcd){
+                    gen.printLine("%s = new %s(\"%s\", context);".formatted(pd.getId(), JavaCodeGeneratorUtils.getSimpleName(type), pd.getId()));
+                } else {
+                    gen.printLine("var config = new %s();".formatted(JavaCodeGeneratorUtils.getSimpleName(config)));
+                    gen.addImport("com.gridnine.platform.elsa.common.core.utils.LocaleUtils");
+                    gen.printLine("config.setDeferred(true);");
+                    gen.printLine("config.setTitle(LocaleUtils.getLocalizedName(new String[]{%s}, new String[]{%s}, \"%s\"));"
+                            .formatted(BuildTextUtils.joinToString(pd.getTitle().keySet().stream().map("\"%s\""::formatted).toList(),
+                                            ","),
+                                    BuildTextUtils.joinToString(pd.getTitle().values().stream().map("\"%s\""::formatted).toList(),
+                                            ", "), pd.getId()));
+                    gen.printLine("%s = new %s(\"%s\", config, context);".formatted(pd.getId(), JavaCodeGeneratorUtils.getSimpleName(type), pd.getId()));
+                }
+                gen.printLine("%s.addChild(context, %s, %s);".formatted(containerName, pd.getId(), idx.getAndIncrement()));
+            });
+        }
     }
 }

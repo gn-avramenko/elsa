@@ -22,7 +22,9 @@
 package com.gridnine.platform.elsa.gradle.codegen.adminUi.common;
 
 import com.gridnine.platform.elsa.gradle.codegen.adminUi.form.JavaAdminUiFormConfiguratorHelper;
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.form.JavaAdminUiFormEditorHelper;
 import com.gridnine.platform.elsa.gradle.codegen.adminUi.grid.JavaAdminUiGridConfiguratorHelper;
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.grid.JavaAdminUiGridEditorHelper;
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.BaseAdminUiContainerDescription;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormContainerDescription;
@@ -46,6 +48,28 @@ public class JavaAdminUiCodeGenUtils {
             }
             case GRID -> {
                 JavaAdminUiGridConfiguratorHelper.generateDescription((GridContainerDescription) cd, containerDescriptionName, root, gen);
+            }
+        }
+    }
+
+    public static void collectFields(BaseAdminUiContainerDescription cd, Map<String,String> fields) throws Exception {
+        switch (cd.getType()) {
+            case FORM -> {
+                JavaAdminUiFormEditorHelper.collectFields((FormContainerDescription) cd, fields);
+            }
+            case GRID -> {
+                JavaAdminUiGridEditorHelper.collectFields((GridContainerDescription) cd, fields);
+            }
+        }
+    }
+
+    public static void generateNestedComponent(BaseAdminUiContainerDescription cd, String containerName, JavaCodeGenerator gen) {
+        switch (cd.getType()) {
+            case FORM -> {
+                JavaAdminUiFormEditorHelper.generateNestedComponent((FormContainerDescription) cd, containerName, gen);
+            }
+            case GRID -> {
+                JavaAdminUiGridEditorHelper.generateNestedComponent((GridContainerDescription) cd, containerName, gen);
             }
         }
     }

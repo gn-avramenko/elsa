@@ -22,3 +22,8 @@
 .ant-table-wrapper .st {
 
 }
+.ant-layout-sider-children{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}

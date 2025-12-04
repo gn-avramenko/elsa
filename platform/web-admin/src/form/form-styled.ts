@@ -25,7 +25,6 @@ export const StyledFormElement: any = styled.div<{}>`
             (theme as StyledComponentsTheme).token.colorBgBase};
         z-index: 30;
     }
-    
 
     .admin-form-error {
         .ant-select-selector {

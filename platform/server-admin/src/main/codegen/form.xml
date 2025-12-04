@@ -10,6 +10,8 @@
             <property id="title" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
             <property id="hidden" type="BOOLEAN"/>
+            <property id="readonly" type="BOOLEAN"/>
+            <property id="validation" type="STRING"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="STRING"/>
@@ -20,6 +22,8 @@
             <property id="title" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
             <property id="hidden" type="BOOLEAN"/>
+            <property id="validation" type="STRING"/>
+            <property id="readonly" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="STRING"/>
@@ -30,6 +34,8 @@
             <property id="title" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
             <property id="hidden" type="BOOLEAN"/>
+            <property id="validation" type="STRING"/>
+            <property id="readonly" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="value" type="BOOLEAN"/>
@@ -40,6 +46,8 @@
             <property id="title" type="STRING"/>
             <property id="deferred" type="BOOLEAN"/>
             <property id="hidden" type="BOOLEAN"/>
+            <property id="validation" type="STRING"/>
+            <property id="readonly" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
             <property id="startDate" type="LOCAL_DATE"/>

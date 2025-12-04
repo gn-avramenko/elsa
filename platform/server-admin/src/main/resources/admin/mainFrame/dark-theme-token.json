@@ -12,7 +12,8 @@
   },
   "token": {
     "fontFamily": "-apple-system, system-ui, Helvetica, Arial, sans-serif",
-    "colorBgBase": "rgb(55, 66, 68)"
+    "colorBgBase": "rgb(55, 66, 68)",
+    "colorTextDescription": "rgb(255,255,255)"
   },
   "algorithm": ["darkAlgorithm"],
   "components": {

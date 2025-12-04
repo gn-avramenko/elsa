@@ -117,7 +117,7 @@ public class WebCodeGeneratorUtils {
         return switch (vt) {
             case LONG, INT, BIG_DECIMAL -> "number";
             case UUID, STRING, CLASS -> "string";
-            case LOCAL_DATE, INSTANT, LOCAL_DATE_TIME -> "Date";
+            case LOCAL_DATE, INSTANT, LOCAL_DATE_TIME -> "string";
             case ENUM -> JavaCodeGeneratorUtils.getSimpleName(className);
             case ENTITY -> {
                 if("Object".equals(className)){

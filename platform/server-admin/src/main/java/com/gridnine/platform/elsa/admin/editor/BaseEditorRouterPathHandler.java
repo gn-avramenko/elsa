@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class BaseEditorRouterPathHandler implements RouterPathHandler {
+public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> implements RouterPathHandler {
 
-    public static final TypedParameter<EntityEditor> ENTITY_EDITOR = new TypedParameter<>("ENTITY_EDITOR");
+    public static final TypedParameter<EntityEditor<?>> ENTITY_EDITOR = new TypedParameter<>("ENTITY_EDITOR");
 
     private final AtomicInteger index = new AtomicInteger(0);
 
@@ -35,14 +35,18 @@ public abstract class BaseEditorRouterPathHandler implements RouterPathHandler {
 
     @Override
     public BaseUiElement createElement(String path, OperationUiContext context) throws Exception {
-        var result = new EntityEditor(context);
+        var result = new EntityEditor<E>(context);
         context.setParameter(ENTITY_EDITOR, result);
+        var content = createContent("content", context);
+        result.setContent(content, context);
         var id = path.split("/")[2];
         readData(result, id, context);
         return result;
     }
 
-    protected abstract void readData(EntityEditor result, String id, OperationUiContext context) throws Exception;
+    protected abstract E createContent(String tag, OperationUiContext context) throws Exception;
+
+    protected abstract void readData(EntityEditor<E> result, String id, OperationUiContext context) throws Exception;
 
     @Override
     public String getTitle(String path, OperationUiContext context) throws Exception {
@@ -59,7 +63,7 @@ public abstract class BaseEditorRouterPathHandler implements RouterPathHandler {
         return new Glue("glue-"+index.incrementAndGet(), context);
     }
 
-    protected EditorTool deleteTool(EntityEditor editor, OperationUiContext context) {
+    protected EditorTool deleteTool(EntityEditor<E> editor, OperationUiContext context) {
         var config = new EditorToolConfiguration();
         config.setButtonType(EntityEditorToolType.ERROR);
         config.setIcon("DeleteOutlined");
@@ -70,7 +74,7 @@ public abstract class BaseEditorRouterPathHandler implements RouterPathHandler {
         return new EditorTool("delete", config, context);
     }
 
-    protected EditorTool editTool(EntityEditor editor, OperationUiContext context) {
+    protected EditorTool editTool(EntityEditor<E> editor, OperationUiContext context) {
         var config = new EditorToolConfiguration();
         config.setButtonType(EntityEditorToolType.STANDARD);
         config.setIcon("EditOutlined");
@@ -81,7 +85,7 @@ public abstract class BaseEditorRouterPathHandler implements RouterPathHandler {
         return new EditorTool("edit", config, context);
     }
 
-    protected EditorTool saveTool(EntityEditor editor, OperationUiContext context) {
+    protected EditorTool saveTool(EntityEditor<E> editor, OperationUiContext context) {
         var config = new EditorToolConfiguration();
         config.setButtonType(EntityEditorToolType.STANDARD);
         config.setIcon("SaveOutlined");

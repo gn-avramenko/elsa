@@ -22,10 +22,12 @@
 package com.gridnine.platform.elsa.gradle.codegen.adminUi;
 
 import com.gridnine.platform.elsa.gradle.codegen.adminUi.form.JavaAdminUiFormEditorHelper;
+import com.gridnine.platform.elsa.gradle.codegen.adminUi.grid.JavaAdminUiGridEditorHelper;
 import com.gridnine.platform.elsa.gradle.codegen.common.CodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.AdminUiMetaRegistry;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.AdminUiMetaRegistryParser;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormContainerDescription;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.grid.GridContainerDescription;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,6 +47,9 @@ public class JavaAdminUiCodeGenerator implements CodeGenerator<JavaAdminUiCodeGe
                 switch (container.getType()) {
                     case FORM -> {
                         JavaAdminUiFormEditorHelper.generateEditor((FormContainerDescription) container, destDir, generatedFiles);
+                    }
+                    case GRID -> {
+                        JavaAdminUiGridEditorHelper.generateEditor((GridContainerDescription) container, destDir, generatedFiles);
                     }
                 }
             }
