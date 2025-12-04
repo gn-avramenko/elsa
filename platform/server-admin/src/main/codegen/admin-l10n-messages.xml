@@ -10,8 +10,13 @@
     <message id="Cancel"/>
     <message id="Confirmation"/>
     <message id="Error"/>
+    <message id="Info"/>
     <message id="Delete"/>
     <message id="Edit"/>
     <message id="View"/>
     <message id="Save"/>
+    <message id="Editor_has_validation_errors"/>
+    <message id="Are_you_sure_to_delete"/>
+    <message id="Object_deleted"/>
+    <message id="New_item"/>
 </messages-bundle>

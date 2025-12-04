@@ -133,11 +133,19 @@ public class MainFrame extends MainFrameSkeleton{
         this.showNotificationInternal(data, context, true);
     }
 
-    public void showWarning(String waringMessage, OperationUiContext context) {
+    public void showWarning(String warning, OperationUiContext context) {
         var data = new MainFrameShowNotificationInternalAction();
-        data.setText(waringMessage);
+        data.setText(warning);
         data.setTitle(aL10nFactory.Error());
         data.setNotificationType(NotificationType.WARNING);
+        this.showNotificationInternal(data, context, true);
+    }
+
+    public void showInfo(String info, OperationUiContext context) {
+        var data = new MainFrameShowNotificationInternalAction();
+        data.setText(info);
+        data.setTitle(aL10nFactory.Info());
+        data.setNotificationType(NotificationType.INFO);
         this.showNotificationInternal(data, context, true);
     }
 

@@ -2,9 +2,22 @@ import { initStateSetters } from 'admin/src/common/component';
 import { EditorToolSkeleton } from 'admin/src-gen/entityEditor/EditorToolSkeleton';
 import { Button, theme, Tooltip } from 'antd';
 import { DynamicIcon } from 'admin/src/common/extension';
+import { useEditor } from 'admin/src/entityEditor/EntityEditor';
 
 function EditorToolFC(props: { element: EditorToolComponent }) {
     initStateSetters(props.element);
+    const editor = useEditor();
+    let disabled = false;
+    if (props.element.getDisabledByDefault()) {
+        disabled = !(props.element.getEnablingTags() || []).find((it) =>
+            editor?.hasTag(it)
+        );
+    } else {
+        disabled = !!(props.element.getDisablingTags() || []).find((it) =>
+            editor?.hasTag(it)
+        );
+    }
+
     if (props.element.getHidden()) {
         return '' as any;
     }
@@ -31,7 +44,7 @@ function EditorToolFC(props: { element: EditorToolComponent }) {
                 type="primary"
                 variant="solid"
                 color={color as any}
-                disabled={!!props.element.getDisabled()}
+                disabled={!!props.element.getDisabled() || disabled}
                 icon={props.element.getIcon() && DynamicIcon(props.element.getIcon()!!)}
                 onClick={() => props.element.sendClick()}
                 style={{ display: 'inline-block', marginLeft: token.paddingXXS }}

@@ -30,11 +30,15 @@ import com.gridnine.platform.elsa.webApp.common.ContentWrapper;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class EntityEditor<E extends BaseUiElement> extends EntityEditorSkeleton{
 
     private String title;
+
+    private String objectId;
 
 	public EntityEditor(OperationUiContext ctx){
 		super("content", ctx);
@@ -48,6 +52,16 @@ public class EntityEditor<E extends BaseUiElement> extends EntityEditorSkeleton{
     public String getTitle() {
         return title;
     }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public void setTitle(String title) {}
 
     public void setContent(E content, OperationUiContext context) throws Exception {
         var existingContentContainer = getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals("content")).findFirst().orElse(null);
@@ -75,6 +89,24 @@ public class EntityEditor<E extends BaseUiElement> extends EntityEditorSkeleton{
         this.title = title;
         if(isInitialized()){
             MainFrame.lookup(this).setTitle(title, context);
+        }
+    }
+
+    public void addTag(String tag, OperationUiContext context){
+        var newTags = new ArrayList<>(getTags() == null? List.of() : getTags());
+        if(!newTags.contains(tag)){
+            newTags.add(tag);
+            setTags(newTags, context);
+        }
+    }
+    public void removeTag(String tag, OperationUiContext context){
+        var newTags = new ArrayList<>(getTags() == null? List.of() : getTags());
+        if(newTags.isEmpty()){
+            return;
+        }
+        if(newTags.contains(tag)){
+            newTags.remove(tag);
+            setTags(newTags, context);
         }
     }
 }

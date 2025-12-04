@@ -4,10 +4,13 @@ import { FormElementWrapper } from 'admin/src/form/FormElementWrapper';
 import { DebounceSelect } from 'admin/src/components/DebounceSelect';
 import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from 'admin/src/common/extension';
+import { useEditor } from 'admin/src/entityEditor/EntityEditor';
 
 function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
     initStateSetters(props.element);
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
+    const editor = useEditor();
+    const viewMode = editor != null && !editor.hasTag('edit-mode');
     if (props.element.getHidden()) {
         return '' as any;
     }
@@ -25,13 +28,13 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
-            readonly={!!props.element.getReadonly()}
+            readonly={!!props.element.getReadonly() || viewMode}
         >
             <DebounceSelect
                 size="middle"
                 allowClear
                 hasError={!!props.element.getValidation()}
-                disabled={!!props.element.getReadonly()}
+                disabled={!!props.element.getReadonly() || viewMode}
                 debounceTimeout={300}
                 value={
                     props.element.getValue()
@@ -72,6 +75,9 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
                               }
                             : undefined
                     );
+                    if (editor) {
+                        editor.addTag('has-changes');
+                    }
                 }}
             />
         </FormElementWrapper>

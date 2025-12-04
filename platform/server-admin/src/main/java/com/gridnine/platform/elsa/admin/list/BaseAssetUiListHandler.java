@@ -226,7 +226,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             config.setTitle(th.getTooltip());
             config.setIcon(th.getIcon());
             config.setClickListener((ctx) -> {
-                th.onClicked(context, entityList);
+                th.onClicked(ctx, entityList);
             });
             var button = new EntityListButton("button-%s".formatted(idx), config, context);
             tools.addChild(context, button, idx - 1);
@@ -314,6 +314,24 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         };
     }
 
+    protected ListToolHandler newItemTool() {
+        return new ListToolHandler() {
+            @Override
+            public String getIcon() {
+                return "PlusCircleOutlined";
+            }
+
+            @Override
+            public String getTooltip() {
+                return aL10nFactory.New_item();
+            }
+
+            @Override
+            public void onClicked(OperationUiContext context, EntityList entityList) throws Exception {
+                MainFrame.lookup(entityList).getMainRouter().navigate("/%s/new?editMode=true".formatted(getSection()), true, context);
+            }
+        };
+    }
     protected ListToolHandler tool(String icon, String toolTip, RunnableWithExceptionAnd2Arguments<OperationUiContext, EntityList> handler) {
         return new ListToolHandler() {
 

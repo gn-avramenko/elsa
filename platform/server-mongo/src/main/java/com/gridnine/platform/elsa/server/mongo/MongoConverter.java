@@ -422,7 +422,7 @@ public class MongoConverter {
                 return new BsonString(dateTimeFormatter.format((LocalDateTime) value));
             }
             case LOCAL_DATE -> {
-                return new BsonString(dateFormatter.format((LocalDateTime) value));
+                return new BsonString(dateFormatter.format((LocalDate) value));
             }
             case INSTANT -> {
                 return new BsonDateTime(((Instant) value).toEpochMilli());

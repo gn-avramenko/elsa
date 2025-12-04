@@ -4,10 +4,13 @@ import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from 'admin/src/common/extension';
 import { FormElementWrapper } from 'admin/src/form/FormElementWrapper';
 import { Select } from 'antd';
+import { useEditor } from 'admin/src/entityEditor/EntityEditor';
 
 function FormSelectFC(props: { element: FormSelectComponent }) {
     initStateSetters(props.element);
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
+    const editor = useEditor();
+    const viewMode = editor != null && !editor.hasTag('edit-mode');
     const shrinkName = (value: string) => {
         if (!value?.length) {
             return value;
@@ -22,12 +25,12 @@ function FormSelectFC(props: { element: FormSelectComponent }) {
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
-            readonly={!!props.element.getReadonly()}
+            readonly={!!props.element.getReadonly() || viewMode}
         >
             <Select
                 size="middle"
                 allowClear
-                disabled={!!props.element.getReadonly()}
+                disabled={!!props.element.getReadonly() || viewMode}
                 className={props.element.getValidation() ? 'admin-form-error' : ''}
                 options={(props.element.getOptions() || []).map((it) => ({
                     key: it.id,
@@ -43,6 +46,9 @@ function FormSelectFC(props: { element: FormSelectComponent }) {
                 onChange={(newValue) => {
                     props.element.resetValidation();
                     props.element.setValue(newValue);
+                    if (editor) {
+                        editor.addTag('has-changes');
+                    }
                 }}
             />
         </FormElementWrapper>

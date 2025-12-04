@@ -11,6 +11,9 @@
             <property id="tooltip" type="STRING"/>
             <property id="disabled" type="BOOLEAN"/>
             <property id="hidden" type="BOOLEAN"/>
+            <property id="disabledByDefault" type="BOOLEAN"/>
+            <collection id="enablingTags" element-type="STRING"/>
+            <collection id="disablingTags" element-type="STRING"/>
             <property id="buttonType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.entityEditor.EntityEditorToolType"/>
             <property id="icon" type="STRING"/>
         </server-managed-state>
@@ -20,6 +23,7 @@
     </custom>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.entityEditor.EntityEditor">
         <server-managed-state>
+            <collection element-type="STRING" id="tags" />
         </server-managed-state>
     </custom-container>
 </web-app>
