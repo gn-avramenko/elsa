@@ -21,6 +21,8 @@
 
 package com.gridnine.platform.elsa.config;
 
+import com.gridnine.platform.elsa.admin.acl.AclEngine;
+import com.gridnine.platform.elsa.admin.acl.standard.StandardAclHandler;
 import com.gridnine.platform.elsa.admin.locale.AdminLocaleInterceptor;
 import com.gridnine.platform.elsa.admin.storage.WorkspaceProjectionHandler;
 import com.gridnine.platform.elsa.admin.web.mainFrame.HomePageRouterPathHandler;
@@ -53,4 +55,13 @@ public class AdminConfiguration {
         return new HomePageRouterPathHandler();
     }
 
+    @Bean
+    public AclEngine aclEngine(){
+        return new AclEngine();
+    }
+
+    @Bean
+    public StandardAclHandler standardAclHandler(){
+        return new StandardAclHandler();
+    }
 }

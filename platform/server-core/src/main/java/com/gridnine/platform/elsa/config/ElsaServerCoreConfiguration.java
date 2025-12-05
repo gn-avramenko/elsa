@@ -27,11 +27,9 @@ import com.gridnine.platform.elsa.core.cache.ehCache.EhCacheManager;
 import com.gridnine.platform.elsa.core.codec.AesCodec;
 import com.gridnine.platform.elsa.core.migration.MigrationProcessor;
 import com.gridnine.platform.elsa.core.remoting.standard.GetL10nBundleHandler;
-import com.gridnine.platform.elsa.core.storage.StorageFactory;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcDatabaseMetadataProvider;
 import com.gridnine.platform.elsa.core.storage.standard.CacheStorageAdvice;
 import com.gridnine.platform.elsa.core.storage.standard.InvalidateCacheStorageInterceptor;
-import com.gridnine.platform.elsa.core.storage.standard.StandardStorageFactory;
 import com.gridnine.platform.elsa.server.core.CoreDomainConfigurator;
 import com.gridnine.platform.elsa.server.core.CoreL10nMessagesRegistryConfigurator;
 import com.gridnine.platform.elsa.server.core.CoreL10nMessagesRegistryFactory;
@@ -97,4 +95,5 @@ public class ElsaServerCoreConfiguration {
     public MigrationProcessor migrationProcessor(){
         return new MigrationProcessor();
     }
+
 }

@@ -402,13 +402,18 @@ public class JavaCodeGeneratorUtils {
                     for (StandardPropertyDescription pd : ed.getProperties().values()) {
                         if(pd.getType() == StandardValueType.ENTITY || pd.getType() == StandardValueType.ENTITY_REFERENCE){
                             gen.blankLine();
-                            gen.wrapWithBlock("if(%s != null)".formatted(pd.getId()), ()-> gen.printLine("%s.seal();".formatted(pd.getId())));
+                            gen.wrapWithBlock("if(%s instanceof Sealable slb)".formatted(pd.getId()), ()-> gen.printLine("slb.seal();"));
                         }
                     }
                     for (StandardCollectionDescription cd : ed.getCollections().values()) {
                         gen.blankLine();
                         if(cd.getElementType() == StandardValueType.ENTITY_REFERENCE || cd.getElementType() == StandardValueType.ENTITY){
-                            gen.printLine("%s.forEach(it -> it.seal());".formatted(cd.getId()));
+                            gen.printLine("""
+                                    %s.forEach(it -> {
+                                     if(it instanceof Sealable slb){
+                                        slb.seal();
+                                     }
+                                    });""".formatted(cd.getId()));
                         }
                     }
                     for (StandardMapDescription md : ed.getMaps().values()) {

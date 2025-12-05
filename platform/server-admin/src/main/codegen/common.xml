@@ -54,4 +54,23 @@
             <property id="title" type="STRING" non-nullable="true"/>
         </server-managed-state>
     </custom-container>
+    <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.GroupEditor">
+        <server-managed-state>
+            <property id="readonly" type="BOOLEAN" non-nullable="true"/>
+        </server-managed-state>
+        <commands-from-client>
+            <command id="add">
+                <property id="idx" type="INT"/>
+            </command>
+            <command id="delete">
+                <property id="idx" type="INT"/>
+            </command>
+            <command id="moveUp">
+                <property id="idx" type="INT"/>
+            </command>
+            <command id="moveDown">
+                <property id="idx" type="INT"/>
+            </command>
+        </commands-from-client>
+    </custom-container>
 </web-app>

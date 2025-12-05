@@ -22,13 +22,16 @@
 package com.gridnine.platform.elsa.admin.list;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
+import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
 import com.gridnine.platform.elsa.admin.web.common.BreakPoint;
 import com.gridnine.platform.elsa.admin.web.common.ButtonConfiguration;
 import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
+import com.gridnine.platform.elsa.common.core.l10n.Localizer;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
+import com.gridnine.platform.elsa.common.core.model.common.Localizable;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments;
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.model.domain.BaseAsset;
@@ -37,6 +40,9 @@ import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.common.meta.domain.DatabaseCollectionType;
 import com.gridnine.platform.elsa.common.meta.domain.DatabasePropertyType;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
+import com.gridnine.platform.elsa.admin.acl.AclEngine;
+import com.gridnine.platform.elsa.admin.acl.AclHandler;
+import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.webApp.common.Button;
 import com.gridnine.platform.elsa.webApp.common.ContentWrapper;
@@ -44,11 +50,9 @@ import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiListHandler {
+public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiListHandler, AclHandler {
     protected final Class<T> assetClass;
 
     @Autowired
@@ -59,6 +63,9 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
     @Autowired
     protected AdminL10nFactory aL10nFactory;
+
+    @Autowired
+    protected Localizer localizer;
 
     public BaseAssetUiListHandler(Class<T> assetClass) {
         this.assetClass = assetClass;
@@ -128,11 +135,11 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             entityList.setLimit(30);
             entityList.setLoading(true, ctx);
             entityList.refreshData(ctx, true);
-        } );
+        });
         entityList.setData(Collections.emptyList(), context);
         var filters = getFilters(context);
-        if(!filters.isEmpty()){
-            entityList.setRestoreCommittedFilterValuesListener((context1) ->{
+        if (!filters.isEmpty()) {
+            entityList.setRestoreCommittedFilterValuesListener((context1) -> {
                 filters.forEach(filter -> {
                     filter.restoreCommitedValue(context1);
                 });
@@ -147,13 +154,13 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             var buttonsPanels = new ContentWrapper("buttons", new ContentWrapperConfiguration(), context);
             filtersPanels.addChild(context, buttonsPanels, 0);
             {
-                var buttonConfig  = new ButtonConfiguration();
+                var buttonConfig = new ButtonConfiguration();
                 buttonConfig.setTitle(aL10nFactory.Apply());
                 buttonConfig.setClickListener((context1) -> {
                     filters.forEach(filter -> {
                         filter.commitValue(context1);
                     });
-                    entityList.setLoading(true,  context1);
+                    entityList.setLoading(true, context1);
                     entityList.hideFilters(context1, true);
                     entityList.refreshData(context1, true);
                 });
@@ -161,7 +168,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 buttonsPanels.addChild(context, button, 0);
             }
             {
-                var buttonConfig  = new ButtonConfiguration();
+                var buttonConfig = new ButtonConfiguration();
                 buttonConfig.setTitle(aL10nFactory.Clear());
                 buttonConfig.setClickListener((context1) -> {
                     filters.forEach(filter -> {
@@ -169,7 +176,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                         filter.commitValue(context1);
                     });
                     entityList.hideFilters(context1, true);
-                    entityList.setLoading(true,  context1);
+                    entityList.setLoading(true, context1);
                     entityList.refreshData(context1, true);
                 });
                 var button = new Button("clear", buttonConfig, context);
@@ -182,7 +189,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             query.setFreeText(entityList.getSearchField().getValue());
             filters.forEach(filter -> {
                 var crit = filter.getSearchCriterion();
-                if(crit != null){
+                if (crit != null) {
                     query.getCriterions().add(crit);
                 }
             });
@@ -200,7 +207,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 var rowData = new RowData();
                 result.add(rowData);
                 rowData.setId(item.getId().toString());
-                if(action.getBreakPoint() == BreakPoint.MOBILE){
+                if (action.getBreakPoint() == BreakPoint.MOBILE) {
                     rowData.setMobileContent(getMobileRowContent(item));
                 } else {
                     columns.forEach(c -> {
@@ -264,11 +271,11 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         var ad = domainMetaRegistry.getAssets().get(assetClass.getName());
         var prop = ad.getProperties().get(fieldName);
         var coll = ad.getCollections().get(fieldName);
-        var title  = coll == null? prop.getDisplayNames().get(LocaleUtils.getCurrentLocale()): coll.getDisplayNames().get(LocaleUtils.getCurrentLocale());
-        if(prop != null){
+        var title = coll == null ? prop.getDisplayNames().get(LocaleUtils.getCurrentLocale()) : coll.getDisplayNames().get(LocaleUtils.getCurrentLocale());
+        if (prop != null) {
             switch (prop.getType()) {
                 case ENTITY_REFERENCE:
-                    return new EntityFilter(fieldName, title, (Class) Class.forName(prop.getClassName()),storage, context );
+                    return new EntityFilter(fieldName, title, (Class) Class.forName(prop.getClassName()), storage, context);
                 default:
                     throw Xeption.forDeveloper("unsupported");
             }
@@ -317,6 +324,11 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     protected ListToolHandler newItemTool() {
         return new ListToolHandler() {
             @Override
+            public String getId() {
+                return "new-item";
+            }
+
+            @Override
             public String getIcon() {
                 return "PlusCircleOutlined";
             }
@@ -332,8 +344,14 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             }
         };
     }
-    protected ListToolHandler tool(String icon, String toolTip, RunnableWithExceptionAnd2Arguments<OperationUiContext, EntityList> handler) {
+
+    protected ListToolHandler tool(String id, String icon, String toolTip, RunnableWithExceptionAnd2Arguments<OperationUiContext, EntityList> handler) {
         return new ListToolHandler() {
+
+            @Override
+            public String getId() {
+                return id;
+            }
 
             @Override
             public String getIcon() {
@@ -352,9 +370,10 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         };
     }
 
-    protected SelectionType getSelectionType(){
+    protected SelectionType getSelectionType() {
         return SelectionType.NONE;
     }
+
     private ColumnType getColumnType(DatabaseCollectionType item) {
         return switch (item) {
             default -> ColumnType.STRING;
@@ -367,7 +386,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         };
     }
 
-    protected List<EntityListFilter> getFilters(OperationUiContext context) throws Exception{
+    protected List<EntityListFilter> getFilters(OperationUiContext context) throws Exception {
         return List.of();
     }
 
@@ -376,5 +395,70 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     @Override
     public String getDefaultBackUrl(String path) {
         return "/";
+    }
+
+    @Override
+    public double getPriority() {
+        return 1;
+    }
+
+    @Override
+    public void updateAclMetadata(AclEngine aclEngine) {
+        var asset = domainMetaRegistry.getAssets().get(assetClass.getName());
+        var listNames = asset.getDisplayNames();
+        var groupItem = new AclMetadataElement();
+        groupItem.setName(createLocalizable(listNames));
+        groupItem.setId(assetClass.getName());
+        groupItem.setHandlerId(getClass().getName());
+        groupItem.getActions().add(new AllActionsMetadata(localizer));
+        aclEngine.addNode(AclEngine.ROOT_NODE_ID, groupItem);
+        var listItem = new AclMetadataElement();
+        listItem.setName(AdminL10nFactory.ListMessage(), localizer);
+        listItem.setId("%s.list".formatted(assetClass.getName()));
+        listItem.setHandlerId(getClass().getName());
+        listItem.getActions().add(new AllActionsMetadata(localizer));
+        aclEngine.addNode(groupItem.getId(), listItem);
+        var toolsItem = new AclMetadataElement();
+        toolsItem.setId("%s.list.tools".formatted(assetClass.getName()));
+        toolsItem.setName(AdminL10nFactory.ToolsMessage(), localizer);
+        toolsItem.setHandlerId(getClass().getName());
+        toolsItem.getActions().add(new AllActionsMetadata(localizer));
+        aclEngine.addNode(listItem.getId(), toolsItem);
+        var tools = getTools();
+        tools.stream().filter(it -> it instanceof ListToolHandler).forEach(ti -> {
+            var tool = (ListToolHandler) ti;
+            var item = new AclMetadataElement();
+            var locales = new ArrayList<>(listNames.keySet());
+            if(locales.isEmpty()) {
+                locales.add(Locale.ENGLISH);
+            }
+            var names = new HashMap<Locale, String>();
+            locales.forEach(locale -> {
+                var oldLocale = LocaleUtils.getCurrentLocale();
+                try {
+                    LocaleUtils.setCurrentLocale(locale);
+                    names.put(locale, tool.getTooltip());
+                } finally {
+                    LocaleUtils.setCurrentLocale(oldLocale);
+                }
+            });
+            item.setId("%s.tools.%s".formatted(assetClass.getName(), tool.getId()));
+            item.setName(createLocalizable(names));
+            item.setHandlerId(getClass().getName());
+            item.getActions().add(new AllActionsMetadata(localizer));
+            aclEngine.addNode(toolsItem.getId(), item);
+        });
+    }
+
+    protected Localizable createLocalizable(Map<Locale, String> locales) {
+        return locale -> {
+            if (locales.containsKey(locale)) {
+                return locales.get(locale);
+            }
+            if (locales.containsKey(Locale.ENGLISH)) {
+                return locales.get(Locale.ENGLISH);
+            }
+            return "???";
+        };
     }
 }

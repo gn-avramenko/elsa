@@ -61,7 +61,9 @@ public class EntityEditor<E extends BaseUiElement> extends EntityEditorSkeleton{
         this.objectId = objectId;
     }
 
-    public void setTitle(String title) {}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public void setContent(E content, OperationUiContext context) throws Exception {
         var existingContentContainer = getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals("content")).findFirst().orElse(null);

@@ -1,0 +1,65 @@
+package com.gridnine.platform.elsa.admin.acl;
+
+import com.gridnine.platform.elsa.admin.AdminL10nFactory;
+import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
+import com.gridnine.platform.elsa.common.core.l10n.Localizer;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.PostConstruct;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class AclEngine {
+
+    public static final String ROOT_NODE_ID="root";
+    private AclMetadataElement rootElement;
+
+    private final Map<String, AclValueRenderer<?,?,?>> renderers = new  HashMap<>();
+
+    private final Map<String, AclMetadataElement> inverseMap = new HashMap<>();
+
+    @Autowired(required = false)
+    private List<AclHandler> handlers;
+
+    @Autowired
+    private Localizer localizer;
+
+    public AclMetadataElement getNode(String nodeId) {
+        return inverseMap.get(nodeId);
+    }
+
+    public void addNode(String parentId, AclMetadataElement element) {
+        element.setParentId(parentId);
+        var elm = inverseMap.get(parentId);
+        elm.getChildren().add(element);
+        if(element.getId() != null){
+            inverseMap.put(element.getId(), element);
+        }
+    }
+
+    @PostConstruct
+    public void init() {
+        rootElement = new AclMetadataElement();
+        rootElement.setId(ROOT_NODE_ID);
+        rootElement.setName(AdminL10nFactory.All_ObjectsMessage(), localizer);
+        rootElement.getActions().add(new AllActionsMetadata(localizer));
+        inverseMap.put(ROOT_NODE_ID, rootElement);
+        if (handlers != null) {
+            for (AclHandler handler : handlers.stream().sorted(Comparator.comparing(AclHandler::getPriority)).toList()) {
+                handler.updateAclMetadata(this);
+            }
+        }
+    }
+    public <P,V,E extends BaseUiElement> void register(AclValueRenderer<P,V,E> renderer){
+        renderers.put(renderer.getId(), renderer);
+    }
+
+    public <P,V,E extends BaseUiElement> AclValueRenderer<P,V,E> getRenderer(String id) {
+        return (AclValueRenderer<P, V, E>) renderers.get(id);
+    }
+
+
+}

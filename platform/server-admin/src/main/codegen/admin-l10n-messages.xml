@@ -19,4 +19,9 @@
     <message id="Are_you_sure_to_delete"/>
     <message id="Object_deleted"/>
     <message id="New_item"/>
+    <message id="List"/>
+    <message id="Tools"/>
+    <message id="All_Objects"/>
+    <message id="All_Actions"/>
+    <message id="Value"/>
 </messages-bundle>

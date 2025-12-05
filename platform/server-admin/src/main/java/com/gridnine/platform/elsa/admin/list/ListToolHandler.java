@@ -25,6 +25,7 @@ import com.gridnine.platform.elsa.admin.web.entityList.EntityList;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public interface ListToolHandler {
+    String getId();
     String getIcon();
     String getTooltip();
     void onClicked(OperationUiContext context, EntityList entityList) throws Exception;

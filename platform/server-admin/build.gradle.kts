@@ -10,6 +10,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("org.springframework:spring-context:6.2.7")
     implementation("com.google.code.gson:gson:2.12.1")
     implementation(project(":common-meta"))
@@ -31,7 +32,7 @@ elsa {
             listOf("src/main/codegen/admin-domain.xml"))
         webApp("src/main/java-gen", "src/main/java","com.gridnine.platform.elsa.admin.AdminWebAppConfigurator",
             true, listOf("src/main/codegen/common.xml","src/main/codegen/main-frame.xml",
-                "src/main/codegen/entity-editor.xml","src/main/codegen/entity-list.xml", "src/main/codegen/form.xml","src/main/codegen/grid.xml"))
+                "src/main/codegen/entity-editor.xml","src/main/codegen/acl.xml","src/main/codegen/entity-list.xml", "src/main/codegen/form.xml","src/main/codegen/grid.xml"))
     }
 }
 

@@ -13,6 +13,7 @@ elsa {
             "../server-admin/src/main/codegen/main-frame.xml",
             "../server-admin/src/main/codegen/entity-editor.xml","../server-admin/src/main/codegen/form.xml",
             "../server-admin/src/main/codegen/grid.xml",
+            "../server-admin/src/main/codegen/acl.xml",
             "../server-admin/src/main/codegen/entity-list.xml"))
     }
 }

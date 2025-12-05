@@ -5,12 +5,13 @@ import com.gridnine.platform.elsa.admin.web.common.Glue;
 import com.gridnine.platform.elsa.admin.web.entityEditor.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
 import com.gridnine.platform.elsa.admin.web.mainFrame.RouterPathHandler;
-import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
+import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.TypedParameter;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
@@ -28,6 +29,21 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     @Autowired
     private Storage storage;
 
+    @Autowired
+    private ListableBeanFactory beanFactory;
+
+    private volatile AclEngine aclEngine;
+
+    protected AclEngine getAclEngine() {
+       if(aclEngine == null) {
+           synchronized (this) {
+               if(aclEngine == null) {
+                   aclEngine = beanFactory.getBean(AclEngine.class);
+               }
+           }
+       }
+       return aclEngine;
+    }
     @Override
     public boolean canHandle(String path) {
         if (TextUtils.isBlank(path)) {
