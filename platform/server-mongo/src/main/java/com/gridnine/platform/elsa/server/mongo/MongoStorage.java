@@ -345,14 +345,32 @@ public class MongoStorage implements Storage {
 
     @Override
     public <D extends BaseIdentity> void updateCaptions(D entity) {
-
         updateCaptions(entity, new UpdateCaptionsParameters());
     }
 
     @Override
     public <D extends BaseIdentity> void updateCaptions(D entity, UpdateCaptionsParameters params) {
         init();
-        //noops
+        ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) ->{
+            updateCaptions(entity, params, advices, tx, 0);
+        }));
+
+    }
+
+    private <D extends BaseIdentity> void updateCaptions(D entity, UpdateCaptionsParameters params, List<StorageAdvice> advices, ElsaTransactionContext tx, int idx) throws Exception {
+        if (idx == advices.size()) {
+            if (entity instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(entity.getClass(), entity.getId(), names);
+            } else {
+                database.updateCaptions(entity.getClass(), entity.getId(), entity.toString());
+            }
+            return;
+        }
+        advices.get(idx).onUpdateCaptions(entity, params, (entity2, params2) -> updateCaptions(entity2, params2, advices, tx, idx + 1));
     }
 
     @Override
@@ -446,9 +464,6 @@ public class MongoStorage implements Storage {
         if (doc.getVersionInfo() == null) {
             doc.setVersionInfo(new VersionInfo());
         }
-        if(doc.getValue("_id") == null){
-            doc.setValue("_id", new ObjectId().toHexString());
-        }
         if (idx == advices.size()) {
             var context = getUpdateDocumentContext(doc, ctx);
             if (!params.isSkipInterceptors()) {
@@ -471,7 +486,15 @@ public class MongoStorage implements Storage {
             if ((createNewVersion && context.oldDocument != null) || (context.oldDocument != null && updatePreviousVersion)) {
                 database.saveDocumentVersion(context.oldDocument);
             }
-
+            if (doc instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(doc.getClass(), doc.getId(), names);
+            } else {
+                database.updateCaptions(doc.getClass(), doc.getId(), doc.toString());
+            }
             updateProjectionsInternal(doc, context.oldDocument != null);
             return;
         }
@@ -659,9 +682,6 @@ public class MongoStorage implements Storage {
         if (asset.getVersionInfo() == null) {
             asset.setVersionInfo(new VersionInfo());
         }
-        if(asset.getValue("_id") == null){
-            asset.setValue("_id", new ObjectId().toHexString());
-        }
         if (idx == storageAdvices.size()) {
             var uc = getUpdateAssetContext(asset, ctx);
             for (var interceptor : interceptors) {
@@ -689,6 +709,15 @@ public class MongoStorage implements Storage {
             database.saveAsset(new DatabaseAssetWrapper<>(asset, aggregatedData), uc.oldAsset);
             if (createNewVersion && oldAsset != null) {
                 database.saveAssetVersion(oldAsset);
+            }
+            if (asset instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(asset.getClass(), asset.getId(), names);
+            } else {
+                database.updateCaptions(asset.getClass(), asset.getId(), asset.toString());
             }
             return;
         }

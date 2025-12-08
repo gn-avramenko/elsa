@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.UUID;
 
 public class TextUtils {
@@ -105,4 +106,8 @@ public class TextUtils {
                 .encode(string, StandardCharsets.UTF_8)
                 .replace("+", "%20");
     }
+    public static String capitalize(String value) {
+        return value.substring(0, 1).toUpperCase(Locale.ROOT) + value.substring(1);
+    }
+
 }

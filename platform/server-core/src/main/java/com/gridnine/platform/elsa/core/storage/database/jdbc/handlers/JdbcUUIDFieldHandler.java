@@ -33,6 +33,7 @@ import com.gridnine.platform.elsa.core.storage.database.jdbc.model.JdbcUtils;
 import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 public class JdbcUUIDFieldHandler extends BaseJdbcSingleFieldHandler {
 
@@ -42,16 +43,16 @@ public class JdbcUUIDFieldHandler extends BaseJdbcSingleFieldHandler {
 
     @Override
     public Object getModelValue(ResultSet rs, EnumMapper enumMapper, ClassMapper classMapper, CaptionProvider captionProvider, ReflectionFactory factory, JdbcDialect dialect) throws Exception {
-        return JdbcUtils.isNull(rs, fieldName) ? null : rs.getObject(fieldName);
+        return JdbcUtils.isNull(rs, fieldName) ? null : rs.getObject(fieldName).toString();
     }
 
     @Override
     public Map<String, Pair<Object, JdbcFieldType>> getSqlValues(Object value, EnumMapper enumMapper, ClassMapper classMapper, ReflectionFactory factory) throws Exception {
-        return Collections.singletonMap(fieldName, Pair.of(value, JdbcFieldType.UUID));
+        return Collections.singletonMap(fieldName, Pair.of(value == null? null: UUID.fromString(value.toString()), JdbcFieldType.UUID));
     }
 
     @Override
     public Pair<Object, JdbcFieldType> getSqlQueryValue(Object value, EnumMapper enumMapper, ClassMapper classMapper, ReflectionFactory factory) throws Exception {
-        return Pair.of(value, JdbcFieldType.UUID);
+        return Pair.of(value == null? null: UUID.fromString(value.toString()), JdbcFieldType.UUID);
     }
 }

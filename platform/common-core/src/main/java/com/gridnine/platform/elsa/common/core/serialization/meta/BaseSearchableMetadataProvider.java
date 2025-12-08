@@ -110,22 +110,13 @@ abstract class BaseSearchableMetadataProvider extends BaseObjectMetadataProvider
     }
 
     private String toClassName(DatabasePropertyType type, String className) {
-        if (type == DatabasePropertyType.ENTITY_REFERENCE) {
-            return EntityReference.class.getName();
-        }
         return className;
     }
 
     private String toClassName(StandardValueType type, String className) {
-        if (type == StandardValueType.ENTITY_REFERENCE) {
-            return EntityReference.class.getName();
-        }
         return className;
     }
     private String toClassName(DatabaseCollectionType type, String className) {
-        if (type == DatabaseCollectionType.ENTITY_REFERENCE) {
-            return EntityReference.class.getName();
-        }
         return className;
     }
 

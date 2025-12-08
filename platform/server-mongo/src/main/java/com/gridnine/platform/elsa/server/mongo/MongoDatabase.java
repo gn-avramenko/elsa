@@ -18,6 +18,7 @@ import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.search.SimpleCriterion;
 import com.gridnine.platform.elsa.common.core.serialization.meta.ObjectMetadataProvidersFactory;
+import com.gridnine.platform.elsa.common.core.utils.TextUtils;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.storage.database.DatabaseAssetWrapper;
 import com.gridnine.platform.elsa.core.storage.database.DatabaseSearchableProjectionWrapper;
@@ -28,7 +29,7 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.UpdateDefinition;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +52,8 @@ public class MongoDatabase {
         var types =  new ArrayList<String>(domainMetaRegistry.getAssets().keySet());
         types.addAll(domainMetaRegistry.getDocuments().keySet());
         types.addAll(domainMetaRegistry.getSearchableProjections().keySet());
-        var collectionNames = types.stream().map(it -> customizer.getCollectionName(reflectionFactory.getClass(it))).filter(Objects::nonNull).toList();
+        var collectionNames = types.stream().map(it -> customizer == null? reflectionFactory.getClass(it).getSimpleName().toLowerCase():
+                customizer.getCollectionName(reflectionFactory.getClass(it))).filter(Objects::nonNull).toList();
         ensureAllCollectionsExists(collectionNames);
     }
 
@@ -89,7 +91,7 @@ public class MongoDatabase {
     }
 
     public void deleteDocument(Class<? extends BaseDocument> aClass, String id) {
-        mongoTemplate.remove(new Query().addCriteria(Criteria.where("_id").is(id)), getCollectionName(aClass));
+        mongoTemplate.remove(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), getCollectionName(aClass));
     }
 
     public List<com.gridnine.platform.elsa.common.core.model.domain.VersionInfo> getVersionsMetadata(Class<?> aClass, String id) {
@@ -108,7 +110,7 @@ public class MongoDatabase {
 
     public <D extends BaseDocument> void saveDocument(D doc, boolean update) {
         if (update) {
-            Query query = new Query().addCriteria(Criteria.where("_id").is(doc.getId()));
+            Query query = new Query().addCriteria(Criteria.where("_id").is(new BsonString(doc.getId())));
             mongoTemplate.findAndReplace(query, converter.toDocument(doc, mongoTemplate.findOne(query, Document.class, getCollectionName(doc.getClass()))), getCollectionName(doc.getClass()));
         } else {
             mongoTemplate.insert(converter.toDocument(doc, null), getCollectionName(doc.getClass()));
@@ -120,7 +122,7 @@ public class MongoDatabase {
     }
 
     public <D extends BaseDocument> D loadDocument(Class<D> aClass, String id) {
-        return converter.fromDocument(mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(id)), Document.class, getCollectionName(aClass)), aClass);
+        return converter.fromDocument(mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), Document.class, getCollectionName(aClass)), aClass);
     }
 
     public void updateProjections(Class<BaseSearchableProjection<BaseDocument>> projectionClass, String id, ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>> wrappers, boolean update) {
@@ -174,7 +176,7 @@ public class MongoDatabase {
     }
 
     public <A extends BaseAsset> A loadAsset(Class<A> cls, String id) {
-        return converter.fromDocument(mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(id)), Document.class, getCollectionName(cls)), cls);
+        return converter.fromDocument(mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), Document.class, getCollectionName(cls)), cls);
     }
 
     public <A extends BaseIdentity> A loadVersion(Class<A> cls, String id, int version) {
@@ -182,12 +184,12 @@ public class MongoDatabase {
     }
 
     public void deleteAsset(Class<? extends BaseAsset> aClass, String id) {
-        mongoTemplate.remove(new Query().addCriteria(Criteria.where("_id").is(id)), getCollectionName(aClass));
+        mongoTemplate.remove(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), getCollectionName(aClass));
     }
 
     public <A extends BaseAsset> void saveAsset(DatabaseAssetWrapper<A> aDatabaseAssetWrapper, A oldAsset) {
         if (oldAsset != null) {
-            Query query = new Query().addCriteria(Criteria.where("_id").is(aDatabaseAssetWrapper.getAsset().getId()));
+            Query query = new Query().addCriteria(Criteria.where("_id").is(new BsonString(aDatabaseAssetWrapper.getAsset().getId())));
             Document doc = converter.toDocument(aDatabaseAssetWrapper.getAsset(), mongoTemplate.findOne(query, Document.class, getCollectionName(aDatabaseAssetWrapper.getAsset().getClass())));
             doc.put("aggregatedData", aDatabaseAssetWrapper.getAggregatedData());
             mongoTemplate.findAndReplace(query,
@@ -207,4 +209,26 @@ public class MongoDatabase {
         return mongoTemplate;
     }
 
+    public void deleteCaptions(Class<? extends BaseIdentity> aClass, String id) {
+        var collName = "%s-captions".formatted(getCollectionName(aClass));
+        mongoTemplate.remove(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), collName);
+    }
+
+    public void updateCaptions(Class<? extends BaseIdentity> aClass, String id, LinkedHashMap<Locale, String> names) {
+        var collName = "%s-captions".formatted(getCollectionName(aClass));
+        var doc = new Document();
+        for(Map.Entry<Locale, String> entry : names.entrySet()) {
+            doc.put("caption%s".formatted(TextUtils.capitalize(entry.getKey().getLanguage())), entry.getValue());
+        }
+        doc.put("_id", new BsonString(id));
+        mongoTemplate.upsert(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), Update.fromDocument(doc), collName);
+    }
+
+    public void updateCaptions(Class<? extends BaseIdentity> aClass, String id, String caption) {
+        var collName = "%s-captions".formatted(getCollectionName(aClass));
+        var doc = new Document();
+        doc.put("_id", new BsonString(id));
+        doc.put("caption", caption);
+        mongoTemplate.upsert(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), Update.fromDocument(doc), collName);
+    }
 }

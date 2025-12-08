@@ -228,6 +228,10 @@ public class MongoConverter {
         A result = reflectionFactory.newInstance(realClassName);
         BaseObjectMetadataProvider<?> provider = metadataProvidersFactory.getProvider(realClassName);
         for (SerializablePropertyDescription prop : provider.getAllProperties()) {
+            if(prop.id().equals("id") && (result instanceof BaseAsset || result instanceof BaseDocument || result instanceof BaseSearchableProjection<?>)) {
+                result.setValue("id", doc.get("_id"));
+                continue;
+            }
             result.setValue(prop.id(), getModelValue(doc.getOrDefault(prop.id(), null), prop.type(), prop.isAbstract(), prop.className()));
         }
         for (SerializableCollectionDescription coll : provider.getAllCollections()) {
@@ -245,16 +249,6 @@ public class MongoConverter {
                                 mapDescription.keyClassName()),
                         getModelValue(item.asDocument().get("value"), mapDescription.valueType(), mapDescription.valueIsAbstract(),
                                 mapDescription.valueClassName())));
-            }
-        }
-        if (result instanceof BaseAsset ba) {
-            if (ba.getVersionInfo() == null) {
-                ba.setVersionInfo(new VersionInfo());
-            }
-        }
-        if (result instanceof BaseDocument bd) {
-            if (bd.getVersionInfo() == null) {
-                bd.setVersionInfo(new VersionInfo());
             }
         }
         return result;
@@ -329,16 +323,21 @@ public class MongoConverter {
             key = key.substring(0, key.lastIndexOf(".")) + "." + key.substring(index + 7);
         }
         @SuppressWarnings("unchecked") var provider = (BaseObjectMetadataProvider<Object>) metadataProvidersFactory.getProvider(key);
-
         if (existingDocument != null) {
             document.putAll(existingDocument);
+        } else if(obj instanceof BaseAsset || obj instanceof BaseDocument || obj instanceof BaseSearchableProjection<?>) {
+            document.put("_id", provider.getPropertyValue(obj, "id"));
         }
         if (isAbstract) {
             document.put(CLASS_NAME_PROPERTY, key);
         }
         for (SerializablePropertyDescription prop : provider.getAllProperties()) {
+            if(prop.id().equals("id")){
+                continue;
+            }
             var value = provider.getPropertyValue(obj, prop.id());
             if (value != null) {
+
                 document.put(prop.id(), getBsonValue(value, prop.type(), prop.isAbstract(),
                         Optional.ofNullable(existingDocument)
                                 .map(ed -> ed.get(prop.id())).orElse(null), processed));

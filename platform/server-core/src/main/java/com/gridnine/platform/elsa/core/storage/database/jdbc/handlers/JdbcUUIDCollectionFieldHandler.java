@@ -61,17 +61,20 @@ public class JdbcUUIDCollectionFieldHandler implements JdbcFieldHandler {
         if (jdbcValue == null) {
             return Collections.emptyList();
         }
-        return Arrays.stream((Object[]) jdbcValue.getArray()).map(it -> (UUID) it).toList();
+        return Arrays.stream((Object[]) jdbcValue.getArray()).map(Object::toString).toList();
     }
 
     @Override
     public Map<String, Pair<Object, JdbcFieldType>> getSqlValues(Object value, EnumMapper enumMapper, ClassMapper classMapper, ReflectionFactory factory) throws Exception {
-        return Collections.singletonMap(fieldName, Pair.of(value, JdbcFieldType.UUID_ARRAY));
+        return Collections.singletonMap(fieldName, Pair.of(UUID.fromString((String)value), JdbcFieldType.UUID_ARRAY));
     }
 
     @Override
     public Pair<Object, JdbcFieldType> getSqlQueryValue(Object value, EnumMapper enumMapper, ClassMapper classMapper, ReflectionFactory factory) throws Exception {
-        return Pair.of(value, value instanceof Collection? JdbcFieldType.UUID_ARRAY: JdbcFieldType.UUID);
+        if(value instanceof Collection<?> cl) {
+            return Pair.of(cl.stream().map(it -> UUID.fromString(it.toString())), JdbcFieldType.UUID_ARRAY);
+        }
+        return Pair.of(UUID.fromString(value.toString()), JdbcFieldType.UUID);
     }
 
 }

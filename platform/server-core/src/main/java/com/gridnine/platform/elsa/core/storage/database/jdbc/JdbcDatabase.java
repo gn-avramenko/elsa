@@ -719,7 +719,7 @@ public class JdbcDatabase implements Database {
                 case BIG_DECIMAL -> ps.setBigDecimal(idx, (BigDecimal) value);
                 case BLOB -> dialect.setBlob(ps, idx, (DatabaseBinaryData) value);
                 case UUID,UUID_ID -> ps.setObject(idx, value);
-                case UUID_ARRAY -> ps.setArray(idx, ps.getConnection().createArrayOf("uuid", ((Collection<Object>) value).toArray()));
+                case UUID_ARRAY -> ps.setArray(idx, ps.getConnection().createArrayOf("uuid", ((Collection<String >) value).stream().map(UUID::fromString).toArray()));
             }
         });
 
@@ -1180,7 +1180,7 @@ public class JdbcDatabase implements Database {
                 return;
             }
             if (BaseIdentity.Fields.idName.equals(propertyName)) {
-                wrapper.getAsset().setId((String) value);
+                wrapper.getAsset().setId(((UUID) value).toString());
                 return;
             }
             if (assetDescr.getProperties().containsKey(propertyName)) {
@@ -1261,7 +1261,7 @@ public class JdbcDatabase implements Database {
                 return;
             }
             if (BaseIdentity.Fields.idName.equals(propertyName)) {
-                asset.setId((String) value);
+                asset.setId(((UUID) value).toString());
                 return;
             }
             if (propertiesIds.contains(propertyName)) {
