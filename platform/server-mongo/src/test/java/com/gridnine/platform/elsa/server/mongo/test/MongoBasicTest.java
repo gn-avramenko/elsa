@@ -7,7 +7,6 @@ package com.gridnine.platform.elsa.server.mongo.test;
 
 import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
 import com.gridnine.platform.elsa.common.core.search.SearchQueryBuilder;
-import com.gridnine.platform.elsa.common.mongo.model.domain.BaseMongoAsset;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.server.mongo.MongoFacade;
 import com.gridnine.platform.elsa.server.mongo.test.model.domain.TestMongoDomainAsset;
@@ -37,7 +36,7 @@ public class MongoBasicTest extends ServerMongoTestBase{
         storage.saveAsset(asset, "initialization");
         var assetRef = asset.toReference();
         Assertions.assertNotNull(storage.loadAsset(assetRef, false));
-        var doc = storage.findUniqueAsset(TestMongoDomainAsset.class, BaseMongoAsset.Fields._id, asset.get_id(), false);
+        var doc = storage.loadAsset(TestMongoDomainAsset.class, asset.getId(), false);
         Assertions.assertEquals("test",doc.getStringProperty());
         List<TestMongoDomainAsset> assets = storage.searchAssets(TestMongoDomainAsset.class,
                 new SearchQueryBuilder().where(SearchCriterion.eq(TestMongoDomainAssetFields.stringProperty, "test")).build());
