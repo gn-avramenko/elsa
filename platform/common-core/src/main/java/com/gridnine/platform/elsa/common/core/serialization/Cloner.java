@@ -73,7 +73,7 @@ public class Cloner {
             return null;
         }
         return switch (type) {
-            case STRING, ENUM, UUID, LONG, INT, BIG_DECIMAL, LOCAL_DATE_TIME, LOCAL_DATE,
+            case STRING, ENUM, LONG, INT, BIG_DECIMAL, LOCAL_DATE_TIME, LOCAL_DATE,
                     BOOLEAN, CLASS, INSTANT -> value;
             case BYTE_ARRAY -> {
                 var ba = (byte[]) value;

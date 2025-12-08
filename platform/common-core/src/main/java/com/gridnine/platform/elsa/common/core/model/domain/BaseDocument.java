@@ -34,7 +34,7 @@ public abstract class BaseDocument extends BaseIdentity implements Sealable {
     private boolean sealed;
 
     public BaseDocument() {
-        super(UUID.randomUUID());
+        super(UUID.randomUUID().toString());
     }
 
     private VersionInfo versionInfo;

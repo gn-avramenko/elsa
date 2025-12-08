@@ -8,10 +8,7 @@ package com.gridnine.platform.elsa.server.mongo;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
-import com.gridnine.platform.elsa.common.core.model.domain.BaseAsset;
-import com.gridnine.platform.elsa.common.core.model.domain.BaseDocument;
-import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
-import com.gridnine.platform.elsa.common.core.model.domain.VersionInfo;
+import com.gridnine.platform.elsa.common.core.model.domain.*;
 import com.gridnine.platform.elsa.common.core.reflection.ReflectionFactory;
 import com.gridnine.platform.elsa.common.core.search.*;
 import com.gridnine.platform.elsa.common.core.serialization.meta.*;
@@ -45,9 +42,12 @@ public class MongoConverter {
 
     private final ReflectionFactory reflectionFactory;
 
-    public MongoConverter(ObjectMetadataProvidersFactory metadataProvidersFactory, ReflectionFactory reflectionFactory) {
+    private final CaptionProvider captionProvider;
+
+    public MongoConverter(ObjectMetadataProvidersFactory metadataProvidersFactory, CaptionProvider captionProvider, ReflectionFactory reflectionFactory) {
         this.metadataProvidersFactory = metadataProvidersFactory;
         this.reflectionFactory = reflectionFactory;
+        this.captionProvider = captionProvider;
     }
 
     public Query toMongoQuery(SearchQuery query, Class<?> entityType) {
@@ -167,13 +167,10 @@ public class MongoConverter {
 
     private String toQueryPropertyName(String id, SerializablePropertyDescription propertyDescription) {
         switch (propertyDescription.type()) {
-            case STRING, ENUM, LONG, INT, BIG_DECIMAL, LOCAL_DATE_TIME, LOCAL_DATE, BOOLEAN, UUID, CLASS, INSTANT -> {
+            case STRING, ENUM, ENTITY_REFERENCE,LONG, INT, BIG_DECIMAL, LOCAL_DATE_TIME, LOCAL_DATE, BOOLEAN, CLASS, INSTANT -> {
                 return id;
             }
             case ENTITY -> throw Xeption.forDeveloper("unsupported property type ENTITY");
-            case ENTITY_REFERENCE -> {
-                return "%s.id".formatted(id);
-            }
             case BYTE_ARRAY -> throw Xeption.forDeveloper("unsupported property type BYTE_ARRAY");
         }
         throw Xeption.forDeveloper("unsupported id " + id);
@@ -185,7 +182,7 @@ public class MongoConverter {
             return null;
         }
         switch (property.type()) {
-            case STRING, LONG, INT, BIG_DECIMAL, BOOLEAN, UUID -> {
+            case STRING, LONG, INT, BIG_DECIMAL, BOOLEAN -> {
                 return value;
             }
             case ENUM -> {
@@ -195,7 +192,7 @@ public class MongoConverter {
                 throw Xeption.forDeveloper("unsupported property type ENTITY");
             }
             case ENTITY_REFERENCE -> {
-                return ((EntityReference<?>) value).getId().toString();
+                return ((EntityReference<?>) value).getId();
             }
             case LOCAL_DATE_TIME -> {
                 return dateTimeFormatter.format((LocalDateTime) value);
@@ -268,9 +265,6 @@ public class MongoConverter {
             return null;
         }
         switch (type) {
-            case UUID -> {
-                return UUID.fromString((String) o);
-            }
             case STRING -> {
                 return o;
             }
@@ -308,9 +302,10 @@ public class MongoConverter {
                 return o instanceof Date ? ((Date) o).toInstant() : null;
             }
             case ENTITY_REFERENCE -> {
-                var doc = (Document) o;
-                return new EntityReference<>(UUID.fromString(doc.getString("id")),
-                        reflectionFactory.getClass(doc.getString("type")), doc.getString("caption"));
+                var id = (String) o;
+                var ref = new EntityReference<>(id, reflectionFactory.getClass(className), null);
+                ref.setCaption(captionProvider.getCaption(ref));
+                return ref;
             }
         }
         throw Xeption.forDeveloper("unsupported property type " + type);
@@ -386,9 +381,6 @@ public class MongoConverter {
     private BsonValue getBsonValue(Object value, SerializablePropertyType type, boolean isAbstract,
                                    Object existingValue, Set<Object> processed) throws Exception {
         switch (type) {
-            case UUID -> {
-                return new BsonString(value.toString());
-            }
             case STRING -> {
                 return new BsonString((String) value);
             }
@@ -428,12 +420,8 @@ public class MongoConverter {
                 return new BsonDateTime(((Instant) value).toEpochMilli());
             }
             case ENTITY_REFERENCE -> {
-                var er = new BsonDocument();
                 var erv = (EntityReference<?>) value;
-                er.put(EntityReference.Fields.id, new BsonString(erv.getId().toString()));
-                er.put(EntityReference.Fields.type, new BsonString(erv.getType().getName()));
-                er.put(EntityReference.Fields.caption, new BsonString(erv.getCaption()));
-                return er;
+                return new BsonString(erv.getId());
             }
         }
         throw Xeption.forDeveloper("unsupported property type " + type);

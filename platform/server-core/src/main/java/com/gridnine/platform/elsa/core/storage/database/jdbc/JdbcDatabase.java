@@ -98,7 +98,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <A extends BaseAsset> DatabaseAssetWrapper<A> loadAssetWrapper(Class<A> aClass, UUID id) {
+    public <A extends BaseAsset> DatabaseAssetWrapper<A> loadAssetWrapper(Class<A> aClass, String id) {
         var description = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(aClass.getName()));
         Objects.requireNonNull(description);
         var columnNames = getColumnNames(description, Collections.emptySet(), Collections.emptySet());
@@ -172,7 +172,7 @@ public class JdbcDatabase implements Database {
 
 
     @Override
-    public <A extends BaseAsset> void saveAssetVersion(Class<A> aClass, UUID id, DatabaseBinaryData data, VersionInfo vi) throws Exception {
+    public <A extends BaseAsset> void saveAssetVersion(Class<A> aClass, String id, DatabaseBinaryData data, VersionInfo vi) throws Exception {
         var handler = new VersionWrapperReflectionHandler(vi, data, id);
         insert(handler, JdbcUtils.getVersionTableName(aClass.getName()));
     }
@@ -194,7 +194,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public List<VersionInfo> getVersionsMetadata(Class<?> cls, UUID id) {
+    public List<VersionInfo> getVersionsMetadata(Class<?> cls, String id) {
         var fields = new LinkedHashSet<String>();
         fields.add(VersionInfo.Fields.versionNumber.toLowerCase());
         fields.add(VersionInfo.Fields.comment.toLowerCase());
@@ -225,12 +225,12 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <A extends BaseAsset> void deleteAsset(Class<A> aClass, UUID id) {
+    public <A extends BaseAsset> void deleteAsset(Class<A> aClass, String id) {
         template.update("delete from %s where id = ?".formatted(JdbcUtils.getTableName(aClass.getName())), (ps) -> ps.setObject(1, id));
     }
 
     @Override
-    public DatabaseObjectData loadVersion(Class<?> cls, UUID id, int number) {
+    public DatabaseObjectData loadVersion(Class<?> cls, String id, int number) {
         var fields = new LinkedHashSet<String>();
         fields.add(VersionInfo.Fields.versionNumber.toLowerCase());
         fields.add(VersionInfo.Fields.comment.toLowerCase());
@@ -253,7 +253,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public void deleteVersion(Class<?> cls, UUID id, int number) throws Exception {
+    public void deleteVersion(Class<?> cls, String id, int number) throws Exception {
         var version = loadVersion(cls, id, number);
         template.update("delete from %s where id = ? and number = ?".formatted(JdbcUtils.getVersionTableName(cls.getName())), (ps) -> {
             ps.setObject(1, id);
@@ -263,7 +263,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id) {
+    public <A extends BaseAsset> A loadAsset(Class<A> cls, String id) {
         var description = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(cls.getName()));
         Objects.requireNonNull(description);
         var columnNames = getColumnNames(description, Collections.emptySet(), Collections.singleton(DatabaseAssetWrapper.Fields.aggregatedData));
@@ -283,7 +283,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <D extends BaseDocument> DatabaseObjectData loadDocumentData(Class<D> cls, UUID id) {
+    public <D extends BaseDocument> DatabaseObjectData loadDocumentData(Class<D> cls, String id) {
         var fields = new LinkedHashSet<String>();
         fields.add(VersionInfo.Fields.versionNumber);
         fields.add(VersionInfo.Fields.comment);
@@ -330,7 +330,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public void updateProjections(Class<BaseSearchableProjection<BaseDocument>> projectionClass, UUID id, ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>> wrappers, boolean update) throws Exception {
+    public void updateProjections(Class<BaseSearchableProjection<BaseDocument>> projectionClass, String id, ArrayList<DatabaseSearchableProjectionWrapper<BaseDocument, BaseSearchableProjection<BaseDocument>>> wrappers, boolean update) throws Exception {
         var descr = dbMetadataProvider.getDescriptions().get(JdbcUtils.getTableName(projectionClass.getName()));
         if (!update) {
             for (var proj : wrappers) {
@@ -433,7 +433,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <D extends BaseDocument> void saveDocument(UUID id, Class<D> aClass, DatabaseObjectData obj, DatabaseObjectData oldDocument) throws Exception {
+    public <D extends BaseDocument> void saveDocument(String id, Class<D> aClass, DatabaseObjectData obj, DatabaseObjectData oldDocument) throws Exception {
         if (oldDocument != null) {
             template.update("delete from %s where %s = ?".formatted(JdbcUtils.getTableName(aClass.getName()), BaseIdentity.Fields.idName)
                     , (ps -> ps.setObject(1, id)));
@@ -450,7 +450,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <D extends BaseDocument> void saveDocumentVersion(Class<D> aClass, UUID id, DatabaseObjectData version, Long oldVersionDataId) throws Exception {
+    public <D extends BaseDocument> void saveDocumentVersion(Class<D> aClass, String id, DatabaseObjectData version, Long oldVersionDataId) throws Exception {
         if (oldVersionDataId != null) {
             template.update("delete from %s where %s = ? and %s = ?"
                             .formatted(JdbcUtils.getVersionTableName(aClass.getName()),
@@ -466,7 +466,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <D extends BaseDocument> void deleteDocument(Class<D> aClass, UUID id, Long oid) throws Exception {
+    public <D extends BaseDocument> void deleteDocument(Class<D> aClass, String id, Long oid) throws Exception {
         template.update("delete from %s where %s = ?"
                         .formatted(JdbcUtils.getTableName(aClass.getName()),
                                 BaseIdentity.Fields.idName)
@@ -492,7 +492,7 @@ public class JdbcDatabase implements Database {
                 JdbcUtils.getCaptionTableName(cls.getName()), TextUtils.isBlank(pattern) ? "" :
                         "where %s %s '%s%%'".formatted(column, dialect.getIlikeFunctionName(), pattern.toLowerCase().trim()), column, limit), (rs, idx) -> (EntityReference<D>) ExceptionUtils.wrapException(() -> {
             var ref = new EntityReference<>();
-            ref.setId(rs.getObject(1, UUID.class));
+            ref.setId(rs.getObject(1, String.class));
             //noinspection unchecked
             ref.setType((Class<BaseIdentity>) cls);
             ref.setCaption(rs.getString(2));
@@ -501,19 +501,19 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public <D extends BaseDocument, I extends BaseSearchableProjection<D>> void deleteProjections(Class<I> projectionClass, UUID id) {
+    public <D extends BaseDocument, I extends BaseSearchableProjection<D>> void deleteProjections(Class<I> projectionClass, String id) {
         template.update("delete from %s where %s = ?".formatted(JdbcUtils.getTableName(projectionClass.getName()), BaseSearchableProjection.Fields.document), (ps) -> ps.setObject(1, id));
     }
 
     @Override
-    public <I extends BaseIdentity> String getCaption(Class<I> type, UUID id, Locale locale) {
+    public <I extends BaseIdentity> String getCaption(Class<I> type, String id, Locale locale) {
         var result = template.query("select %sCaption from %s where %s = ?".formatted(locale.getLanguage(),
                 JdbcUtils.getCaptionTableName(type.getName()), BaseIdentity.Fields.idName), (ps) -> ps.setObject(1, id), (rs, idx) -> rs.getString(1));
         return result.isEmpty() ? null : result.get(0);
     }
 
     @Override
-    public <I extends BaseIdentity> String getCaption(Class<I> type, UUID id) {
+    public <I extends BaseIdentity> String getCaption(Class<I> type, String id) {
         var result = template.query("select caption from %s where %s = ?".formatted(JdbcUtils.getCaptionTableName(type.getName()),
                 BaseIdentity.Fields.idName), (ps) -> ps.setObject(1, id), (rs, idx) -> rs.getString(1));
         return result.isEmpty() ? null : result.get(0);
@@ -656,7 +656,7 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public void updateCaptions(Class<?> aClass, UUID id, String caption, boolean insert) {
+    public void updateCaptions(Class<?> aClass, String id, String caption, boolean insert) {
         if (insert) {
             template.update("insert into %s(id, caption) values (?,?)".formatted(JdbcUtils.getCaptionTableName(aClass.getName())), (ps) -> {
                 ps.setObject(1, id);
@@ -672,12 +672,12 @@ public class JdbcDatabase implements Database {
     }
 
     @Override
-    public void deleteCaptions(Class<?> aClass, UUID id) {
+    public void deleteCaptions(Class<?> aClass, String id) {
         template.update("delete from %s where id = ?".formatted(JdbcUtils.getCaptionTableName(aClass.getName())), (ps) -> ps.setObject(1, id));
     }
 
     @Override
-    public void updateCaptions(Class<?> aClass, UUID id, LinkedHashMap<Locale, String> captions, boolean insert) {
+    public void updateCaptions(Class<?> aClass, String id, LinkedHashMap<Locale, String> captions, boolean insert) {
         if (insert) {
             template.update("insert into %s(id, %s) values (?, %s)".formatted(JdbcUtils.getCaptionTableName(aClass.getName()),
                     TextUtils.join(captions.keySet().stream().map(it -> "%sname".formatted(it.getLanguage())).toList(), ", "),
@@ -1180,7 +1180,7 @@ public class JdbcDatabase implements Database {
                 return;
             }
             if (BaseIdentity.Fields.idName.equals(propertyName)) {
-                wrapper.getAsset().setId((UUID) value);
+                wrapper.getAsset().setId((String) value);
                 return;
             }
             if (assetDescr.getProperties().containsKey(propertyName)) {
@@ -1261,7 +1261,7 @@ public class JdbcDatabase implements Database {
                 return;
             }
             if (BaseIdentity.Fields.idName.equals(propertyName)) {
-                asset.setId((UUID) value);
+                asset.setId((String) value);
                 return;
             }
             if (propertiesIds.contains(propertyName)) {
@@ -1283,16 +1283,16 @@ public class JdbcDatabase implements Database {
 
 
     static class DocumentWrapperReflectionHandler extends DatabaseObjectData {
-        private UUID id;
+        private String id;
 
-        DocumentWrapperReflectionHandler(UUID id) {
+        DocumentWrapperReflectionHandler(String id) {
             this.id = id;
         }
 
         @Override
         public void setValue(String propertyName, Object value) {
             if (BaseIdentity.Fields.idName.equals(propertyName)) {
-                id = (UUID) value;
+                id = (String) value;
                 return;
             }
             super.setValue(propertyName, value);
@@ -1312,9 +1312,9 @@ public class JdbcDatabase implements Database {
 
         private DatabaseBinaryData data;
 
-        private UUID objectid;
+        private String objectid;
 
-        VersionWrapperReflectionHandler(VersionInfo info, DatabaseBinaryData data, UUID objectid) {
+        VersionWrapperReflectionHandler(VersionInfo info, DatabaseBinaryData data, String objectid) {
             this.info = info;
             this.data = data;
             this.objectid = objectid;
@@ -1327,7 +1327,7 @@ public class JdbcDatabase implements Database {
                 return;
             }
             if (JdbcDatabaseMetadataProvider.OBJECT_ID_COLUMN.equals(propertyName)) {
-                objectid = (UUID) value;
+                objectid = (String) value;
                 return;
             }
             info.setValue(propertyName, value);

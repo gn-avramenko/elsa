@@ -35,7 +35,7 @@ public abstract class BaseVirtualAsset extends BaseIdentity implements Sealable{
     private boolean sealed;
 
     public BaseVirtualAsset() {
-        super(UUID.randomUUID());
+        super(UUID.randomUUID().toString());
     }
 
     private VersionInfo versionInfo;
@@ -82,7 +82,7 @@ public abstract class BaseVirtualAsset extends BaseIdentity implements Sealable{
     }
 
     @Override
-    public void setId(UUID id) {
+    public void setId(String id) {
         if(sealed){
             throw Xeption.forDeveloper("object is sealed");
         }

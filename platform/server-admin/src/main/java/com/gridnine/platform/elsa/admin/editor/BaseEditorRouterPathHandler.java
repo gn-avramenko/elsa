@@ -105,7 +105,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         config.getDisablingTags().add("new");
         config.setClickListener((ctx) -> {
             MainFrame.lookup(editor).confirm(adminL10nFactory.Are_you_sure_to_delete(), (ctx2)->{
-               var asset = storage.loadAsset((Class)getObjectClass(), UUID.fromString(editor.getObjectId()), true);
+               var asset = storage.loadAsset((Class)getObjectClass(), editor.getObjectId(), true);
                storage.deleteAsset(asset);
                MainFrame.lookup(editor).getMainRouter().navigate("/%s".formatted(getSection()), true, ctx2);
                 MainFrame.lookup(editor).showInfo(adminL10nFactory.Object_deleted(), ctx2);

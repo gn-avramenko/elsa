@@ -91,7 +91,7 @@ public class JdbcEntityReferenceCollectionFieldHandler implements JdbcFieldHandl
         if (idJdbcValues == null) {
             return Collections.emptyList();
         }
-        var idValues = Arrays.stream((Object[]) idJdbcValues.getArray()).map(it -> (UUID) it)
+        var idValues = Arrays.stream((Object[]) idJdbcValues.getArray()).map(it -> ((UUID) it).toString())
                 .toList();
         var typeValues = new ArrayList<Class<?>>();
         if (isAbstract) {

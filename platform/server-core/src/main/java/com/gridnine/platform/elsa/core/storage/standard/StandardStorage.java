@@ -143,7 +143,7 @@ public class StandardStorage implements Storage {
     }
 
     @Override
-    public <D extends BaseDocument> D loadDocument(Class<D> cls, UUID id, boolean forModification) {
+    public <D extends BaseDocument> D loadDocument(Class<D> cls, String id, boolean forModification) {
         init();
         return ExceptionUtils.wrapException(() -> loadDocument(cls, id, forModification, advices, 0));
     }
@@ -163,7 +163,7 @@ public class StandardStorage implements Storage {
     }
 
     @Override
-    public List<VersionInfo> getVersionsMetadata(Class<?> cls, UUID id) {
+    public List<VersionInfo> getVersionsMetadata(Class<?> cls, String id) {
         init();
         return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> getVersionsMetadata(cls, id, advices, 0), false));
     }
@@ -223,19 +223,19 @@ public class StandardStorage implements Storage {
     }
 
     @Override
-    public <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version) {
+    public <A extends BaseAsset> A loadAssetVersion(Class<A> cls, String id, int version) {
         init();
         return ExceptionUtils.wrapException(() -> loadAssetVersion(cls, id, version, advices, 0));
     }
 
     @Override
-    public <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id, boolean forModification) {
+    public <A extends BaseAsset> A loadAsset(Class<A> cls, String id, boolean forModification) {
         init();
         return ExceptionUtils.wrapException(() -> loadAsset(cls, id, forModification, advices, 0));
     }
 
     @Override
-    public <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, UUID id, int version) {
+    public <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, String id, int version) {
         init();
         return ExceptionUtils.wrapException(() -> loadDocumentVersion(cls, id, version, advices, 0));
     }
@@ -685,7 +685,7 @@ public class StandardStorage implements Storage {
                 findUniqueDocumentReference(projClass2, property2, propertyValue2, advices, idx + 1));
     }
 
-    private <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, UUID objectId, int versionNumber,
+    private <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, String objectId, int versionNumber,
                                                            List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return transactionManager.withTransaction((tx) -> {
@@ -705,7 +705,7 @@ public class StandardStorage implements Storage {
                 loadDocumentVersion(cls2, id2, versionNumber2, advices, idx + 1));
     }
 
-    private <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
+    private <A extends BaseAsset> A loadAsset(Class<A> cls, String id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return transactionManager.withTransaction((tx) ->{
                 return database.loadAsset(cls, id);
@@ -716,7 +716,7 @@ public class StandardStorage implements Storage {
         );
     }
 
-    private <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version, List<StorageAdvice> advices, int idx) throws Exception {
+    private <A extends BaseAsset> A loadAssetVersion(Class<A> cls, String id, int version, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return transactionManager.withTransaction((tx) -> {
                 var data = database.loadVersion(cls, id, version);
@@ -739,7 +739,7 @@ public class StandardStorage implements Storage {
                 -> searchAssets(cls2, query2, forModification2, advices, idx + 1));
     }
 
-    private List<VersionInfo> getVersionsMetadata(Class<?> cls, UUID id, List<StorageAdvice> storageAdvices, int idx) throws Exception {
+    private List<VersionInfo> getVersionsMetadata(Class<?> cls, String id, List<StorageAdvice> storageAdvices, int idx) throws Exception {
         init();
         if (idx == storageAdvices.size()) {
             return database.getVersionsMetadata(cls, id).stream().sorted(Comparator.comparing(VersionInfo::getVersionNumber)).toList();
@@ -917,7 +917,7 @@ public class StandardStorage implements Storage {
         }
     }
 
-    private <D extends BaseDocument> D loadDocument(Class<D> cls, UUID id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
+    private <D extends BaseDocument> D loadDocument(Class<D> cls, String id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return transactionManager.withTransaction((tx) ->{
                 var documentData = database.loadDocumentData(cls, id);
@@ -935,7 +935,7 @@ public class StandardStorage implements Storage {
     }
 
     @Override
-    public <I extends BaseIdentity> String getCaption(Class<I> type, UUID id, Locale currentLocale) {
+    public <I extends BaseIdentity> String getCaption(Class<I> type, String id, Locale currentLocale) {
         var locale = currentLocale;
         if(locale == null){
             locale = LocaleUtils.getCurrentLocale();

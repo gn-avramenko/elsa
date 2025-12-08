@@ -67,7 +67,7 @@ abstract class BaseSearchableMetadataProvider extends BaseObjectMetadataProvider
 
     private SerializablePropertyType toSerializableType(DatabasePropertyType type) {
         return switch (type) {
-            case UUID -> SerializablePropertyType.UUID;
+            case UUID -> SerializablePropertyType.STRING;
             case LONG -> SerializablePropertyType.LONG;
             case LOCAL_DATE_TIME -> SerializablePropertyType.LOCAL_DATE_TIME;
             case INSTANT -> SerializablePropertyType.INSTANT;
@@ -84,7 +84,7 @@ abstract class BaseSearchableMetadataProvider extends BaseObjectMetadataProvider
 
     private SerializablePropertyType toSerializableType(StandardValueType type) {
         return switch (type) {
-            case UUID -> SerializablePropertyType.UUID;
+            case UUID -> SerializablePropertyType.STRING;
             case LONG -> SerializablePropertyType.LONG;
             case LOCAL_DATE_TIME -> SerializablePropertyType.LOCAL_DATE_TIME;
             case INSTANT -> SerializablePropertyType.INSTANT;
@@ -104,7 +104,7 @@ abstract class BaseSearchableMetadataProvider extends BaseObjectMetadataProvider
             case ENTITY_REFERENCE -> SerializablePropertyType.ENTITY_REFERENCE;
             case ENUM -> SerializablePropertyType.ENUM;
             case STRING -> SerializablePropertyType.STRING;
-            case UUID -> SerializablePropertyType.UUID;
+            case UUID -> SerializablePropertyType.STRING;
             case ENTITY -> SerializablePropertyType.ENTITY;
         };
     }

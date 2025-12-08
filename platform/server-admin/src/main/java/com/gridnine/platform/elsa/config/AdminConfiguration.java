@@ -23,22 +23,14 @@ package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.acl.standard.StandardAclHandler;
-import com.gridnine.platform.elsa.admin.locale.AdminLocaleInterceptor;
-import com.gridnine.platform.elsa.admin.storage.WorkspaceProjectionHandler;
 import com.gridnine.platform.elsa.admin.web.mainFrame.HomePageRouterPathHandler;
 import com.gridnine.platform.elsa.admin.workspace.LinkWorkspaceItemHandler;
 import com.gridnine.platform.elsa.admin.workspace.ListWorkspaceItemHandler;
-import com.gridnine.platform.elsa.admin.workspace.WorkspaceItemHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AdminConfiguration {
-
-    @Bean
-    public WorkspaceProjectionHandler  workspaceProjectionHandler(){
-        return new WorkspaceProjectionHandler();
-    }
 
     @Bean
     public ListWorkspaceItemHandler listWorkspaceItemHandler(){

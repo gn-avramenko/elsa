@@ -33,7 +33,6 @@ import com.gridnine.platform.elsa.common.core.search.FieldNameSupport;
 import com.gridnine.platform.elsa.core.storage.StorageAdvice;
 
 import java.util.Set;
-import java.util.UUID;
 
 public class InvocationCountAdvice implements StorageAdvice {
     private int loadDocumentCount = 0;
@@ -74,13 +73,13 @@ public class InvocationCountAdvice implements StorageAdvice {
     }
 
     @Override
-    public <A extends BaseAsset> A onLoadAsset(Class<A> cls, UUID id, boolean forModification, CallableWithExceptionAnd3Arguments<A, Class<A>, UUID, Boolean> callback) throws Exception {
+    public <A extends BaseAsset> A onLoadAsset(Class<A> cls, String id, boolean forModification, CallableWithExceptionAnd3Arguments<A, Class<A>, String, Boolean> callback) throws Exception {
         loadAssetCount++;
         return callback.call(cls, id, forModification);
     }
 
     @Override
-    public <D extends BaseDocument> D onLoadDocument(Class<D> cls, UUID id, boolean forModification, CallableWithExceptionAnd3Arguments<D, Class<D>, UUID, Boolean> callback) throws Exception {
+    public <D extends BaseDocument> D onLoadDocument(Class<D> cls, String id, boolean forModification, CallableWithExceptionAnd3Arguments<D, Class<D>, String, Boolean> callback) throws Exception {
         loadDocumentCount++;
         return callback.call(cls, id, forModification);
     }

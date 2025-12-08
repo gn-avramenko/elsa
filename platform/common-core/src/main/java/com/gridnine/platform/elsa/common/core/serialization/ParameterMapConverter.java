@@ -62,7 +62,6 @@ public class ParameterMapConverter {
                         case CLASS -> reflectionFactory.getClass(vit.next());
                         case ENTITY_REFERENCE, ENTITY, BYTE_ARRAY -> throw new UnsupportedOperationException(UOE_MESSAGE);
                         case BIG_DECIMAL -> BigDecimal.valueOf(Double.parseDouble(vit.next()));
-                        case UUID -> UUID.fromString(vit.next());
                         case INT -> Integer.parseInt(vit.next());
                         case LONG -> Long.parseLong(vit.next());
                         case LOCAL_DATE_TIME -> LocalDateTime.parse(vit.next(), dateTimeFormatter);
@@ -95,7 +94,6 @@ public class ParameterMapConverter {
             case CLASS -> reflectionFactory.getClass(values[0]);
             case ENTITY_REFERENCE, ENTITY, BYTE_ARRAY -> throw new UnsupportedOperationException(UOE_MESSAGE);
             case BIG_DECIMAL -> BigDecimal.valueOf(Double.parseDouble(values[0]));
-            case UUID -> UUID.fromString(values[0]);
             case INT -> Integer.parseInt(values[0]);
             case LONG -> Long.parseLong(values[0]);
             case LOCAL_DATE_TIME -> LocalDateTime.parse(values[0], dateTimeFormatter);

@@ -51,7 +51,7 @@ public class CacheStorageAdvice implements StorageAdvice {
     private final Object nullValue = new BaseIdentity() {
     };
 
-    private final EntityReference nullObjectReference = new EntityReference<>(UUID.randomUUID(), BaseIdentity.class, null);
+    private final EntityReference nullObjectReference = new EntityReference<>(UUID.randomUUID().toString(), BaseIdentity.class, null);
 
     @Autowired
     private CacheMetadataProvider cacheMetadataProvider;
@@ -62,7 +62,7 @@ public class CacheStorageAdvice implements StorageAdvice {
     @Autowired
     private Storage storage;
 
-    private final Map<String, KeyValueCache<UUID, ?>> resolveCaches = new ConcurrentHashMap<>();
+    private final Map<String, KeyValueCache<String, ?>> resolveCaches = new ConcurrentHashMap<>();
 
     private final Map<String, Map<String, KeyValueCache<String, EntityReference>>> findCaches = new ConcurrentHashMap<>();
 
@@ -78,12 +78,12 @@ public class CacheStorageAdvice implements StorageAdvice {
     }
 
     @Override
-    public <D extends BaseDocument> D onLoadDocument(Class<D> cls, UUID id, boolean forModification, CallableWithExceptionAnd3Arguments<D, Class<D>, UUID, Boolean> callback) throws Exception {
+    public <D extends BaseDocument> D onLoadDocument(Class<D> cls, String id, boolean forModification, CallableWithExceptionAnd3Arguments<D, Class<D>, String, Boolean> callback) throws Exception {
         return onResolve(cls, id, forModification, callback);
     }
 
     @Override
-    public <A extends BaseAsset> A onLoadAsset(Class<A> cls, UUID id, boolean forModification, CallableWithExceptionAnd3Arguments<A, Class<A>, UUID, Boolean> callback) throws Exception {
+    public <A extends BaseAsset> A onLoadAsset(Class<A> cls, String id, boolean forModification, CallableWithExceptionAnd3Arguments<A, Class<A>, String, Boolean> callback) throws Exception {
         return onResolve(cls, id, forModification, callback);
     }
 
@@ -187,9 +187,9 @@ public class CacheStorageAdvice implements StorageAdvice {
 
     private <D extends BaseIdentity> D onResolve(
             Class<D> cls,
-            UUID id,
+            String id,
             boolean forModification,
-            CallableWithExceptionAnd3Arguments<D, Class<D>, UUID, Boolean> callback) throws Exception {
+            CallableWithExceptionAnd3Arguments<D, Class<D>, String, Boolean> callback) throws Exception {
         if (forModification || !cacheMetadataProvider.isCacheResolve(cls)) {
             return callback.call(cls, id, forModification);
         }
@@ -207,11 +207,11 @@ public class CacheStorageAdvice implements StorageAdvice {
         return newValue.value() == nullValue ? null : newValue.value();
     }
 
-    public <I extends BaseIdentity> void invalidateResolveCache(Class<I> cls, UUID id) {
+    public <I extends BaseIdentity> void invalidateResolveCache(Class<I> cls, String id) {
         getOrCreateResolveCache(cls).put(id, new CachedValue<>(System.nanoTime(), null));
     }
 
-    private <D> KeyValueCache<UUID, D> getOrCreateResolveCache(Class<D> cls) {
+    private <D> KeyValueCache<String, D> getOrCreateResolveCache(Class<D> cls) {
         var cache = resolveCaches.get(cls.getName());
         if (cache == null) {
             cache = resolveCaches.computeIfAbsent(cls.getName(), (className) -> {
@@ -225,10 +225,10 @@ public class CacheStorageAdvice implements StorageAdvice {
                     expirationInSecondsStr = env.getProperty("cache.resolve.expiration.default", "3600");
                 }
                 var expirationInSeconds = Integer.parseInt(expirationInSecondsStr);
-                return cacheManager.createKeyValueCache(UUID.class, EntityReference.class, "resolve_%s".formatted(className), capacity, expirationInSeconds);
+                return cacheManager.createKeyValueCache(String.class, EntityReference.class, "resolve_%s".formatted(className), capacity, expirationInSeconds);
             });
         }
-        return (KeyValueCache<UUID, D>) cache;
+        return (KeyValueCache<String, D>) cache;
     }
 
     private <E extends BaseIdentity> KeyValueCache<String, EntityReference<E>> getOrCreateFindCache(Class<?> cls, String fieldName) {

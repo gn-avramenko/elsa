@@ -39,14 +39,14 @@ public class EntityReference<T extends BaseIdentity> implements Sealable {
 
     private String caption;
 
-    private UUID id;
+    private String id;
 
     private boolean sealed;
 
     public EntityReference() {
     }
 
-    public EntityReference(UUID id, Class<T> type, String caption) {
+    public EntityReference(String id, Class<T> type, String caption) {
         this.id = id;
         this.type = type;
         this.caption = caption;
@@ -57,11 +57,11 @@ public class EntityReference<T extends BaseIdentity> implements Sealable {
         this(document.getId(), (Class<T>) document.getClass(), document.toString());
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         if(sealed){
             throw Xeption.forDeveloper("object is sealed");
         }
