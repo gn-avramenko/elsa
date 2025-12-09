@@ -31,7 +31,7 @@ import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 class AssetMetadataProvider extends BaseSearchableMetadataProvider {
     AssetMetadataProvider(AssetDescription description, DomainMetaRegistry dr, CustomMetaRegistry cr) {
         super(description, dr,cr);
-        addProperty(new SerializablePropertyDescription(BaseIdentity.Fields.idName, SerializablePropertyType.UUID, null, false));
+        addProperty(new SerializablePropertyDescription(BaseIdentity.Fields.idName, SerializablePropertyType.STRING, null, false));
         addProperty(new SerializablePropertyDescription(BaseAsset.Fields.versionInfo, SerializablePropertyType.ENTITY, VersionInfo.class.getName(), false));
     }
 }

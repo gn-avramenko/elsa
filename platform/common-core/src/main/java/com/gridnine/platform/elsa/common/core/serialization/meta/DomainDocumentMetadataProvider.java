@@ -31,7 +31,7 @@ import com.gridnine.platform.elsa.common.meta.remoting.RemotingMetaRegistry;
 
 public class DomainDocumentMetadataProvider extends EntityMetadataProvider {
     DomainDocumentMetadataProvider(DocumentDescription documentDescription, DomainMetaRegistry dr, CustomMetaRegistry cr, RemotingMetaRegistry rr) {
-        super(documentDescription, dr, cr, rr, new SerializablePropertyDescription(BaseIdentity.Fields.idName, SerializablePropertyType.UUID, null, false),
+        super(documentDescription, dr, cr, rr, new SerializablePropertyDescription(BaseIdentity.Fields.idName, SerializablePropertyType.STRING, null, false),
                 new SerializablePropertyDescription(BaseDocument.Fields.versionInfo, SerializablePropertyType.ENTITY, VersionInfo.class.getName(), false)
         );
     }

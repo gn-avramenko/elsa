@@ -35,13 +35,13 @@ import java.util.UUID;
 public interface Storage {
     <D extends BaseDocument> D loadDocument(EntityReference<D> ref, boolean forModification);
 
-    <D extends BaseDocument> D loadDocument(Class<D> cls, UUID id, boolean forModification);
+    <D extends BaseDocument> D loadDocument(Class<D> cls, String id, boolean forModification);
 
     <A extends BaseAsset> void saveAsset(A asset, boolean createNewVersion, String comment);
 
     <A extends BaseAsset> void deleteAsset(A asset);
 
-    List<VersionInfo> getVersionsMetadata(Class<?> cls, UUID id);
+    List<VersionInfo> getVersionsMetadata(Class<?> cls, String id);
 
     <A extends BaseAsset> void saveAsset(A asset, String comment);
 
@@ -53,15 +53,15 @@ public interface Storage {
 
     <A extends BaseAsset> List<A> searchAssets(Class<A> cls, SearchQuery query);
 
-    <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version);
+    <A extends BaseAsset> A loadAssetVersion(Class<A> cls, String id, int version);
 
-    <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id, boolean forModification);
+    <A extends BaseAsset> A loadAsset(Class<A> cls, String id, boolean forModification);
 
     default <A extends BaseAsset> A loadAsset(EntityReference<A> ref, boolean forModification){
         return ref == null? null: loadAsset(ref.getType(), ref.getId(), forModification);
     }
 
-    <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, UUID id, int version);
+    <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, String id, int version);
 
     <T, D extends BaseDocument, I extends BaseSearchableProjection<D>, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>>
     EntityReference<D> findUniqueDocumentReference(Class<I> projClass, E property, T propertyValue);
@@ -110,7 +110,7 @@ public interface Storage {
 
     <T, A extends BaseAsset, E extends FieldNameSupport & EqualitySupport & ArgumentType<T>> Set<A> getAllAssets(Class<A> cls, E property, T propertyValue, boolean forModification);
 
-    <I extends BaseIdentity> String getCaption(Class<I> type, UUID id, Locale currentLocale);
+    <I extends BaseIdentity> String getCaption(Class<I> type, String id, Locale currentLocale);
 
     <RP> RP performNativeOperation(CallableWithExceptionAndArgument<RP, ElsaTransactionContext> operation);
 }

@@ -38,17 +38,17 @@ public abstract class BaseIdentity extends BaseIntrospectableObject {
     public BaseIdentity() {
     }
 
-    public BaseIdentity(UUID id) {
+    public BaseIdentity(String id) {
         this.id = id;
     }
 
-    private UUID id;
+    private String id;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -63,13 +63,13 @@ public abstract class BaseIdentity extends BaseIntrospectableObject {
     @Override
     public void setValue(String propertyName, Object value) {
         if (Fields.idName.equals(propertyName)) {
-            id = (UUID) value;
+            id = (String) value;
             return;
         }
         super.setValue(propertyName, value);
     }
 
-    public static class _idField extends FieldNameSupport implements EqualitySupport, ArgumentType<UUID> {
+    public static class _idField extends FieldNameSupport implements EqualitySupport, ArgumentType<String> {
         _idField(){
             super("id");
         }

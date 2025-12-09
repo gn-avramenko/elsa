@@ -47,19 +47,19 @@ public interface StorageAdvice extends HasPriority {
         callback.run(asset);
     }
 
-    default <A extends BaseAsset> A onLoadAssetVersion(Class<A> cls, UUID id, int version, CallableWithExceptionAnd3Arguments<A, Class<A>, UUID, Integer> callback) throws Exception {
+    default <A extends BaseAsset> A onLoadAssetVersion(Class<A> cls, String id, int version, CallableWithExceptionAnd3Arguments<A, Class<A>, String, Integer> callback) throws Exception {
         return callback.call(cls, id, version);
     }
 
-    default <A extends BaseAsset> A onLoadAsset(Class<A> cls, UUID id, boolean forModification, CallableWithExceptionAnd3Arguments<A, Class<A>, UUID, Boolean> callback) throws Exception {
+    default <A extends BaseAsset> A onLoadAsset(Class<A> cls, String id, boolean forModification, CallableWithExceptionAnd3Arguments<A, Class<A>, String, Boolean> callback) throws Exception {
         return callback.call(cls, id, forModification);
     }
 
-    default <D extends BaseDocument> D onLoadDocument(Class<D> cls, UUID id, boolean forModification, CallableWithExceptionAnd3Arguments<D, Class<D>, UUID, Boolean> callback) throws Exception {
+    default <D extends BaseDocument> D onLoadDocument(Class<D> cls, String id, boolean forModification, CallableWithExceptionAnd3Arguments<D, Class<D>, String, Boolean> callback) throws Exception {
         return callback.call(cls, id, forModification);
     }
 
-    default <D extends BaseDocument> D onLoadDocumentVersion(Class<D> cls, UUID objectId, int versionNumber, CallableWithExceptionAnd3Arguments<D, Class<D>, UUID, Integer> callback) throws Exception {
+    default <D extends BaseDocument> D onLoadDocumentVersion(Class<D> cls, String objectId, int versionNumber, CallableWithExceptionAnd3Arguments<D, Class<D>, String, Integer> callback) throws Exception {
         return callback.call(cls, objectId, versionNumber);
     }
 

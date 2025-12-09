@@ -91,7 +91,7 @@ public class EntityFilter extends EntityFilterSkeleton implements EntityListFilt
         if(values.isEmpty()){
             return null;
         }
-        return new InCriterion<>(fieldId, values.stream().map(it -> new EntityReference<>(UUID.fromString(it.getId()),
+        return new InCriterion<>(fieldId, values.stream().map(it -> new EntityReference<>(it.getId(),
                 (Class<BaseIdentity>) entityClass, "")).toList());
     }
 }

@@ -72,7 +72,6 @@ public class MongoStorage implements Storage {
 
     private final  DomainMetaRegistry domainMetaRegistry;
 
-    private final String configurationPrefix;
 
     private ElsaTransactionManager transactionManager;
 
@@ -95,26 +94,21 @@ public class MongoStorage implements Storage {
                         LockManager lockManager,
                         DomainMetaRegistry metaRegistry,
                         SupportedLocalesProvider localesProvider,
-                        AbstractBeanFactory abstractBeanFactory, MongoFacade mongoFacade, ObjectMetadataProvidersFactory metadataProvidersFactory, ReflectionFactory reflectionFactory, String prefix, Map<String,Object> customParameters) {
+                        MongoTemplate mongoTemplate,
+                        CaptionProvider captionProvider,
+                        AbstractBeanFactory abstractBeanFactory, MongoFacade mongoFacade, ObjectMetadataProvidersFactory metadataProvidersFactory, ReflectionFactory reflectionFactory, Map<String,Object> customParameters) {
         this.factory = factory;
         this.lockManager = lockManager;
         this.localesProvider = localesProvider;
         this.domainMetaRegistry = metaRegistry;
         this.abstractBeanFactory = abstractBeanFactory;
-        this.configurationPrefix = prefix;
         this.customParameters = customParameters;
         this.mongoFacade = mongoFacade;
         this.metadataProvidersFactory = metadataProvidersFactory;
         this.reflectionFactory = reflectionFactory;
         transactionManager = new MongoElsaTransactionManager();
-        String url = abstractBeanFactory.resolveEmbeddedValue("${%s.url}".formatted(this.configurationPrefix));
-        String db = abstractBeanFactory.resolveEmbeddedValue("${%s.db}".formatted(this.configurationPrefix));
-        var settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(url))
-                .uuidRepresentation(UuidRepresentation.STANDARD).build();
-        var client = MongoClients.create(settings);
-        var template = new MongoTemplate(client, db);
-        mongoFacade.setMongoTemplate(template);
-        database = new MongoDatabase(customParameters, template, metadataProvidersFactory, reflectionFactory, domainMetaRegistry);
+        mongoFacade.setMongoTemplate(mongoTemplate);
+        database = new MongoDatabase(customParameters, mongoTemplate,  captionProvider, metadataProvidersFactory, reflectionFactory, domainMetaRegistry);
         classMapper = new ClassMapper() {
             private final AtomicInteger counter = new AtomicInteger(0);
             private final Map<Integer, String> classNames = new ConcurrentHashMap<>();
@@ -183,7 +177,7 @@ public class MongoStorage implements Storage {
     }
 
     @Override
-    public <D extends BaseDocument> D loadDocument(Class<D> cls, UUID id, boolean forModification) {
+    public <D extends BaseDocument> D loadDocument(Class<D> cls, String id, boolean forModification) {
         init();
         return (D) ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadDocument((Class<BaseDocument>)cls, id, forModification, advices, 0), false));
     }
@@ -203,7 +197,7 @@ public class MongoStorage implements Storage {
     }
 
     @Override
-    public List<VersionInfo> getVersionsMetadata(Class<?> cls, UUID id) {
+    public List<VersionInfo> getVersionsMetadata(Class<?> cls, String id) {
         init();
         return ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> getVersionsMetadata(cls, id, advices, 0), false));
     }
@@ -237,19 +231,19 @@ public class MongoStorage implements Storage {
     }
 
     @Override
-    public <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version) {
+    public <A extends BaseAsset> A loadAssetVersion(Class<A> cls, String id, int version) {
         init();
         return (A) ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadAssetVersion((Class) cls, id, version, advices, 0), false));
     }
 
     @Override
-    public <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id, boolean forModification) {
+    public <A extends BaseAsset> A loadAsset(Class<A> cls, String id, boolean forModification) {
         init();
         return (A) ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadAsset((Class) cls, id, forModification, advices, 0), false));
     }
 
     @Override
-    public <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, UUID id, int version) {
+    public <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, String id, int version) {
         init();
         return (D)ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) -> loadDocumentVersion((Class)cls, id, version, advices, 0), false));
     }
@@ -351,21 +345,38 @@ public class MongoStorage implements Storage {
 
     @Override
     public <D extends BaseIdentity> void updateCaptions(D entity) {
-
         updateCaptions(entity, new UpdateCaptionsParameters());
     }
 
     @Override
     public <D extends BaseIdentity> void updateCaptions(D entity, UpdateCaptionsParameters params) {
         init();
-        //noops
+        ExceptionUtils.wrapException(() -> transactionManager.withTransaction((tx) ->{
+            updateCaptions(entity, params, advices, tx, 0);
+        }));
+
+    }
+
+    private <D extends BaseIdentity> void updateCaptions(D entity, UpdateCaptionsParameters params, List<StorageAdvice> advices, ElsaTransactionContext tx, int idx) throws Exception {
+        if (idx == advices.size()) {
+            if (entity instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(entity.getClass(), entity.getId(), names);
+            } else {
+                database.updateCaptions(entity.getClass(), entity.getId(), entity.toString());
+            }
+            return;
+        }
+        advices.get(idx).onUpdateCaptions(entity, params, (entity2, params2) -> updateCaptions(entity2, params2, advices, tx, idx + 1));
     }
 
     @Override
     public <D extends BaseIdentity> List<EntityReference<D>> searchCaptions(Class<D> cls, String pattern, int limit) {
         init();
-        //noops
-        return Collections.emptyList();
+        return database.searchCaptions(cls, pattern, limit);
     }
 
     @Override
@@ -452,9 +463,6 @@ public class MongoStorage implements Storage {
         if (doc.getVersionInfo() == null) {
             doc.setVersionInfo(new VersionInfo());
         }
-        if(doc.getValue("_id") == null){
-            doc.setValue("_id", new ObjectId().toHexString());
-        }
         if (idx == advices.size()) {
             var context = getUpdateDocumentContext(doc, ctx);
             if (!params.isSkipInterceptors()) {
@@ -477,7 +485,15 @@ public class MongoStorage implements Storage {
             if ((createNewVersion && context.oldDocument != null) || (context.oldDocument != null && updatePreviousVersion)) {
                 database.saveDocumentVersion(context.oldDocument);
             }
-
+            if (doc instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(doc.getClass(), doc.getId(), names);
+            } else {
+                database.updateCaptions(doc.getClass(), doc.getId(), doc.toString());
+            }
             updateProjectionsInternal(doc, context.oldDocument != null);
             return;
         }
@@ -596,7 +612,7 @@ public class MongoStorage implements Storage {
                 findUniqueDocumentReference(projClass2, property2, propertyValue2, advices, idx + 1));
     }
 
-    private <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, UUID objectId, int versionNumber,
+    private <D extends BaseDocument> D loadDocumentVersion(Class<D> cls, String objectId, int versionNumber,
                                                            List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             database.loadVersion(cls, objectId, versionNumber);
@@ -605,7 +621,7 @@ public class MongoStorage implements Storage {
                 loadDocumentVersion(cls2, id2, versionNumber2, advices, idx + 1));
     }
 
-    private <A extends BaseAsset> A loadAsset(Class<A> cls, UUID id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
+    private <A extends BaseAsset> A loadAsset(Class<A> cls, String id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return database.loadAsset(cls, id);
         }
@@ -614,7 +630,7 @@ public class MongoStorage implements Storage {
         );
     }
 
-    private <A extends BaseAsset> A loadAssetVersion(Class<A> cls, UUID id, int version, List<StorageAdvice> advices, int idx) throws Exception {
+    private <A extends BaseAsset> A loadAssetVersion(Class<A> cls, String id, int version, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return database.loadVersion(cls, id, version);
         }
@@ -631,7 +647,7 @@ public class MongoStorage implements Storage {
                 -> searchAssets(cls2, query2, forModification2, advices, idx + 1));
     }
 
-    private List<VersionInfo> getVersionsMetadata(Class<?> cls, UUID id, List<StorageAdvice> storageAdvices, int idx) throws Exception {
+    private List<VersionInfo> getVersionsMetadata(Class<?> cls, String id, List<StorageAdvice> storageAdvices, int idx) throws Exception {
         init();
         if (idx == storageAdvices.size()) {
             return database.getVersionsMetadata(cls, id).stream().sorted(Comparator.comparing(VersionInfo::getVersionNumber)).toList();
@@ -665,9 +681,6 @@ public class MongoStorage implements Storage {
         if (asset.getVersionInfo() == null) {
             asset.setVersionInfo(new VersionInfo());
         }
-        if(asset.getValue("_id") == null){
-            asset.setValue("_id", new ObjectId().toHexString());
-        }
         if (idx == storageAdvices.size()) {
             var uc = getUpdateAssetContext(asset, ctx);
             for (var interceptor : interceptors) {
@@ -677,12 +690,12 @@ public class MongoStorage implements Storage {
             if (oldAsset == null) {
                 asset.getVersionInfo().setValue(VersionInfo.Fields.revision, 0);
             } else {
-                if (asset.getVersionInfo().getRevision() != oldAsset.getVersionInfo().getRevision()) {
+                if (asset.getVersionInfo() != null && oldAsset.getVersionInfo() != null && asset.getVersionInfo().getRevision() != oldAsset.getVersionInfo().getRevision()) {
                     throw new IllegalArgumentException("revision conflict: expected = %s, actual: %s".formatted(
                             oldAsset.getVersionInfo().getRevision(), asset.getVersionInfo().getRevision()
                     ));
                 }
-                asset.getVersionInfo().setValue(VersionInfo.Fields.revision, oldAsset.getVersionInfo().getRevision() + 1);
+                asset.getVersionInfo().setValue(VersionInfo.Fields.revision, oldAsset.getVersionInfo() == null? 0: (oldAsset.getVersionInfo().getRevision() + 1));
             }
             var description = domainMetaRegistry.getAssets().get(asset.getClass().getName());
             AggregatedData data = buildAggregatedData(asset, description);
@@ -691,10 +704,19 @@ public class MongoStorage implements Storage {
             asset.getVersionInfo().setModified(now);
             asset.getVersionInfo().setModifiedBy(AuthContext.getCurrentUser());
             asset.getVersionInfo().setComment(comment);
-            asset.getVersionInfo().setVersionNumber(oldAsset == null ? 0 : oldAsset.getVersionInfo().getVersionNumber() + 1);
+            asset.getVersionInfo().setVersionNumber(oldAsset == null || oldAsset.getVersionInfo() == null? 0 : oldAsset.getVersionInfo().getVersionNumber() + 1);
             database.saveAsset(new DatabaseAssetWrapper<>(asset, aggregatedData), uc.oldAsset);
             if (createNewVersion && oldAsset != null) {
                 database.saveAssetVersion(oldAsset);
+            }
+            if (asset instanceof Localizable lz) {
+                var names = new LinkedHashMap<Locale, String>();
+                for (var locale : localesProvider.getSupportedLocales()) {
+                    names.put(locale, lz.toString(locale));
+                }
+                database.updateCaptions(asset.getClass(), asset.getId(), names);
+            } else {
+                database.updateCaptions(asset.getClass(), asset.getId(), asset.toString());
             }
             return;
         }
@@ -724,9 +746,9 @@ public class MongoStorage implements Storage {
         var oldAsset = database.loadAsset((Class<A>) asset.getClass(), asset.getId());
         var revision = asset.getVersionInfo().getRevision();
         if (revision == -1) {
-            revision = oldAsset == null ? 0 : oldAsset.getVersionInfo().getRevision() + 1;
+            revision = oldAsset == null || oldAsset.getVersionInfo() == null ? 0 : oldAsset.getVersionInfo().getRevision() + 1;
         }
-        if (oldAsset != null && revision != oldAsset.getVersionInfo().getRevision()) {
+        if (oldAsset != null && oldAsset.getVersionInfo()!= null && revision != oldAsset.getVersionInfo().getRevision()) {
             throw Xeption.forDeveloper("revision conflict with asset %s %s, db revision = %s, operation revision %s"
                     .formatted(asset.getClass().getName(), asset.getId(),
                             oldAsset.getVersionInfo().getRevision(), revision));
@@ -775,7 +797,7 @@ public class MongoStorage implements Storage {
         }
     }
 
-    private <D extends BaseDocument> D loadDocument(Class<D> cls, UUID id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
+    private <D extends BaseDocument> D loadDocument(Class<D> cls, String id, boolean forModification, List<StorageAdvice> advices, int idx) throws Exception {
         if (idx == advices.size()) {
             return database.loadDocument(cls, id);
         }
@@ -784,7 +806,7 @@ public class MongoStorage implements Storage {
     }
 
     @Override
-    public <I extends BaseIdentity> String getCaption(Class<I> type, UUID id, Locale currentLocale) {
+    public <I extends BaseIdentity> String getCaption(Class<I> type, String id, Locale currentLocale) {
         return null;
     }
 

@@ -151,7 +151,7 @@ public class WebAppUtils {
                 return (T)  Instant.parse(value.getAsString());
             case ENTITY_REFERENCE: {
                 var obj = value.getAsJsonObject();
-                return (T) new EntityReference<BaseIdentity>(UUID.fromString(obj.get("id").getAsString()), (Class) Class.forName(obj.get("class").getAsString()), obj.get("caption").getAsString());
+                return (T) new EntityReference<BaseIdentity>(obj.get("id").getAsString(), (Class) Class.forName(obj.get("class").getAsString()), obj.get("caption").getAsString());
             }
         }
         throw Xeption.forDeveloper("unsupported type %s".formatted(type));

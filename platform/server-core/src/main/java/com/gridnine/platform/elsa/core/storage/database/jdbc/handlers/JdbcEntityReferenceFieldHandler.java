@@ -95,7 +95,7 @@ public class JdbcEntityReferenceFieldHandler implements JdbcFieldHandler {
         if (JdbcUtils.isNull(rs, fieldName)) {
             return null;
         }
-        var id = rs.getObject(fieldName, UUID.class);
+        var id = rs.getObject(fieldName, UUID.class).toString();
         var cls = isAbstract ? factory.getClass(classMapper.getName(rs.getInt(typeFieldName))) : this.cls;
         var caption = storeCaptions ? rs.getString(captionFieldName) : captionProvider.getCaption(new EntityReference<>(id, (Class) cls, null));
         return new EntityReference<>(id, (Class<BaseIdentity>) cls, caption);

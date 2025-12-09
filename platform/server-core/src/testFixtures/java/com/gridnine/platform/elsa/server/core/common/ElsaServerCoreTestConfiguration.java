@@ -21,7 +21,11 @@
 
 package com.gridnine.platform.elsa.server.core.common;
 
+import com.gridnine.platform.elsa.core.storage.StorageFactory;
+import com.gridnine.platform.elsa.core.storage.database.DatabaseFactory;
+import com.gridnine.platform.elsa.core.storage.database.jdbc.SimpleJdbcDatabaseFactory;
 import com.gridnine.platform.elsa.core.storage.database.jdbc.adapter.JdbcDataSourceProvider;
+import com.gridnine.platform.elsa.core.storage.standard.StandardStorageFactory;
 import org.springframework.context.annotation.Bean;
 
 public class ElsaServerCoreTestConfiguration {
@@ -40,4 +44,15 @@ public class ElsaServerCoreTestConfiguration {
     public TestProjectSettingsProjectionHandler testProjectSettingsProjectionHandler() {
         return new TestProjectSettingsProjectionHandler();
     }
+
+    @Bean
+    public StorageFactory standardStorageFactory(){
+        return new StandardStorageFactory();
+    }
+
+    @Bean
+    public DatabaseFactory simpleJdbcDatabaseFactory(){
+        return new SimpleJdbcDatabaseFactory();
+    }
+
 }

@@ -32,7 +32,6 @@ public enum SerializablePropertyType {
     LOCAL_DATE_TIME,
     LOCAL_DATE,
     BOOLEAN,
-    UUID,
     CLASS,
     BYTE_ARRAY,
     INSTANT,

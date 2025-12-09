@@ -93,7 +93,7 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
     private SerializablePropertyType toSerializableType(StandardValueType type) {
         return switch (type) {
             case LONG -> SerializablePropertyType.LONG;
-            case UUID -> SerializablePropertyType.UUID;
+            case UUID,STRING -> SerializablePropertyType.STRING;
             case LOCAL_DATE_TIME -> SerializablePropertyType.LOCAL_DATE_TIME;
             case INSTANT -> SerializablePropertyType.INSTANT;
             case LOCAL_DATE -> SerializablePropertyType.LOCAL_DATE;
@@ -103,7 +103,6 @@ class EntityMetadataProvider extends BaseObjectMetadataProvider<BaseIntrospectab
             case BOOLEAN -> SerializablePropertyType.BOOLEAN;
             case BIG_DECIMAL -> SerializablePropertyType.BIG_DECIMAL;
             case BYTE_ARRAY -> SerializablePropertyType.BYTE_ARRAY;
-            case STRING -> SerializablePropertyType.STRING;
             case ENTITY -> SerializablePropertyType.ENTITY;
             case CLASS -> SerializablePropertyType.CLASS;
         };

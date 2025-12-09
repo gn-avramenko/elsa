@@ -135,7 +135,6 @@ public class JsonUnmarshaller {
                     }
                     var value = switch (collectionDescription.elementType()) {
                         case STRING -> parser.getText();
-                        case UUID -> UUID.fromString(parser.getText());
                         case ENUM -> switch (params.getEnumSerializationStrategy()) {
                             case ID -> reflectionFactory.safeGetEnum(collectionDescription.elementClassName(),
                                     enumMapper.getName(parser.getIntValue(),
@@ -199,7 +198,6 @@ public class JsonUnmarshaller {
             case ENTITY_REFERENCE -> readEntityReference(parser, className, params);
             case ENTITY -> unmarshal(parser, className, params);
             case BIG_DECIMAL -> BigDecimal.valueOf(parser.getDoubleValue());
-            case UUID -> UUID.fromString(parser.getValueAsString());
             case INT -> parser.getIntValue();
             case LONG -> parser.getLongValue();
             case BYTE_ARRAY -> parser.getBinaryValue();
@@ -216,7 +214,7 @@ public class JsonUnmarshaller {
             var tagName = parser.currentName();
             parser.nextToken();
             switch (tagName) {
-                case BaseIdentity.Fields.idName -> result.setId(UUID.fromString(parser.getValueAsString()));
+                case BaseIdentity.Fields.idName -> result.setId(parser.getValueAsString());
                 case EntityReference.Fields.type -> {
                     switch (params.getEntityReferenceTypeSerializationStrategy()) {
                         case ALL_CLASS_NAME -> result.setType(reflectionFactory.getClass(parser.getText()));

@@ -56,7 +56,7 @@ public class DomainSerializationTest extends TestBase {
         document.setStringProperty("string property");
         var entityRef = new EntityReference<TestDomainDocument>();
         entityRef.setType(TestDomainDocument.class);
-        entityRef.setId(UUID.randomUUID());
+        entityRef.setId(UUID.randomUUID().toString());
         entityRef.setCaption("entity reference caption");
         document.setEntityReference(entityRef);
         document.getStringCollection().add("value");

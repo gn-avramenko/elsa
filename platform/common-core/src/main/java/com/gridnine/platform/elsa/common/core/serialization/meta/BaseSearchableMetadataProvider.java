@@ -67,7 +67,7 @@ abstract class BaseSearchableMetadataProvider extends BaseObjectMetadataProvider
 
     private SerializablePropertyType toSerializableType(DatabasePropertyType type) {
         return switch (type) {
-            case UUID -> SerializablePropertyType.UUID;
+            case UUID -> SerializablePropertyType.STRING;
             case LONG -> SerializablePropertyType.LONG;
             case LOCAL_DATE_TIME -> SerializablePropertyType.LOCAL_DATE_TIME;
             case INSTANT -> SerializablePropertyType.INSTANT;
@@ -84,7 +84,7 @@ abstract class BaseSearchableMetadataProvider extends BaseObjectMetadataProvider
 
     private SerializablePropertyType toSerializableType(StandardValueType type) {
         return switch (type) {
-            case UUID -> SerializablePropertyType.UUID;
+            case UUID -> SerializablePropertyType.STRING;
             case LONG -> SerializablePropertyType.LONG;
             case LOCAL_DATE_TIME -> SerializablePropertyType.LOCAL_DATE_TIME;
             case INSTANT -> SerializablePropertyType.INSTANT;
@@ -104,28 +104,19 @@ abstract class BaseSearchableMetadataProvider extends BaseObjectMetadataProvider
             case ENTITY_REFERENCE -> SerializablePropertyType.ENTITY_REFERENCE;
             case ENUM -> SerializablePropertyType.ENUM;
             case STRING -> SerializablePropertyType.STRING;
-            case UUID -> SerializablePropertyType.UUID;
+            case UUID -> SerializablePropertyType.STRING;
             case ENTITY -> SerializablePropertyType.ENTITY;
         };
     }
 
     private String toClassName(DatabasePropertyType type, String className) {
-        if (type == DatabasePropertyType.ENTITY_REFERENCE) {
-            return EntityReference.class.getName();
-        }
         return className;
     }
 
     private String toClassName(StandardValueType type, String className) {
-        if (type == StandardValueType.ENTITY_REFERENCE) {
-            return EntityReference.class.getName();
-        }
         return className;
     }
     private String toClassName(DatabaseCollectionType type, String className) {
-        if (type == DatabaseCollectionType.ENTITY_REFERENCE) {
-            return EntityReference.class.getName();
-        }
         return className;
     }
 

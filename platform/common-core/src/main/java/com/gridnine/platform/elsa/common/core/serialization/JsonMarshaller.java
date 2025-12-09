@@ -118,7 +118,6 @@ public class JsonMarshaller {
                 for (Object value : values) {
                     switch (coll.elementType()) {
                         case STRING -> generator.writeString((String) value);
-                        case UUID -> generator.writeString(value.toString());
                         case ENUM -> {
                             switch (params.getEnumSerializationStrategy()) {
                                 case ID -> generator.writeNumber(enumMapper.getId((Enum<?>) value));
@@ -178,7 +177,6 @@ public class JsonMarshaller {
 
     private void writeJsonProperty(String id, SerializablePropertyType type, boolean isAbstract, Object value, JsonGenerator generator, SerializationParameters params, Set<Object> processed) throws Exception {
         switch (type) {
-            case UUID -> generator.writeStringField(id, value.toString());
             case STRING -> generator.writeStringField(id, (String) value);
             case CLASS -> {
                 switch (params.getClassSerializationStrategy()) {

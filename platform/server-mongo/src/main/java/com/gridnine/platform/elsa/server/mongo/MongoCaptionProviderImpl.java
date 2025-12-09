@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.core.storage.standard;
+package com.gridnine.platform.elsa.server.mongo;
 
 import com.gridnine.platform.elsa.common.core.l10n.SupportedLocalesProvider;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
@@ -29,19 +29,22 @@ import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.Lazy;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
+import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.cache.CacheManager;
 import com.gridnine.platform.elsa.core.cache.CacheMetadataProvider;
 import com.gridnine.platform.elsa.core.cache.CachedValue;
 import com.gridnine.platform.elsa.core.cache.KeyValueCache;
-import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.platform.elsa.core.storage.database.Database;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.bson.Document;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class JdbcCaptionProviderImpl implements CaptionProvider {
+public class MongoCaptionProviderImpl implements CaptionProvider {
 
     private final Map<String, KeyValueCache<String, String>> captionsCache = new ConcurrentHashMap<>();
 
@@ -51,20 +54,23 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
 
     private final CacheMetadataProvider cacheMetadataProvider;
 
-    private final Lazy<Database> database;
-
     private final CacheManager cacheManager;
 
+
+    private final MongoTemplate mongoTemplate;
+
+    private final DomainMetaRegistry domainMetaRegistry;
 
     private final SupportedLocalesProvider supportedLocalesProvider;
     private final String nullString = TextUtils.generateUUID();
 
-    public JdbcCaptionProviderImpl(Environment env, CacheMetadataProvider cacheMetadataProvider, Lazy<Database> database, CacheManager cacheManager, SupportedLocalesProvider supportedLocalesProvider) {
+    public MongoCaptionProviderImpl(Environment env, CacheMetadataProvider cacheMetadataProvider, MongoTemplate mongoTemplate, DomainMetaRegistry domainMetaRegistry, CacheManager cacheManager, SupportedLocalesProvider supportedLocalesProvider) {
         this.env = env;
         this.cacheMetadataProvider = cacheMetadataProvider;
-        this.database = database;
+        this.mongoTemplate = mongoTemplate;
         this.cacheManager = cacheManager;
         this.supportedLocalesProvider = supportedLocalesProvider;
+        this.domainMetaRegistry = domainMetaRegistry;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -77,7 +83,8 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
                 if (oldValue != null && oldValue.value() != null) {
                     return oldValue.value().equals(nullString) ? null : oldValue.value();
                 }
-                var ar = database.getObject().getCaption(ref.getType(), ref.getId());
+                var obj = getCaptions(ref.getType(), ref.getId());
+                var ar = obj.get("caption");
                 var newValue = new CachedValue<>(System.nanoTime(), ar == null ? nullString : ar);
                 cache.replace(ref.getId(), oldValue, newValue);
                 return Objects.equals(newValue.value(), nullString) ? null : newValue.value();
@@ -89,8 +96,12 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
                     return oldValue.value().get(LocaleUtils.getCurrentLocale());
                 }
                 var res = new HashMap<Locale, String>();
+                var obj = getCaptions(ref.getType(), ref.getId());
                 for(var loc: supportedLocalesProvider.getSupportedLocales()){
-                    var ar = database.getObject().getCaption(ref.getType(), ref.getId(), loc);
+                    var ar = obj.get("caption_%s".formatted(loc.getLanguage().toLowerCase()));
+                    if(ar == null){
+                        ar = obj.get("caption_en");
+                    }
                     res.put(loc, ar);
                 }
                 var newValue = new CachedValue<>(System.nanoTime(), res);
@@ -99,9 +110,24 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
             }
             return ref.getCaption();
         });
-
-
     }
+
+    private Map<String, String> getCaptions(Class<?> objType, String id){
+        var colName = domainMetaRegistry.getAssets().get(objType.getName()).getParameters().get("collection-name");
+        if(TextUtils.isBlank(colName)){
+            return Collections.emptyMap();
+        }
+        var elm = mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(id)), Document.class, "%s-captions".formatted(colName));
+        if(elm == null){
+            return Collections.emptyMap();
+        }
+        var result = new HashMap<String, String>();
+        elm.entrySet().forEach(entry -> {
+            result.put(entry.getKey(), (String) entry.getValue());
+        });
+        return result;
+    }
+
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     <I extends BaseIdentity> void invalidateCaptionsCache(Class<I> cls, String id) {

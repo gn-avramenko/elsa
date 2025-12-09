@@ -112,8 +112,7 @@ public class JavaDomainEntitiesCodeGenerator {
 
     static StandardValueType getStandardValueType(DatabasePropertyType type) {
         return switch (type) {
-            case STRING, TEXT -> StandardValueType.STRING;
-            case UUID -> StandardValueType.UUID;
+            case STRING, TEXT,UUID -> StandardValueType.STRING;
             case LOCAL_DATE -> StandardValueType.LOCAL_DATE;
             case LOCAL_DATE_TIME -> StandardValueType.LOCAL_DATE_TIME;
             case INSTANT -> StandardValueType.INSTANT;
