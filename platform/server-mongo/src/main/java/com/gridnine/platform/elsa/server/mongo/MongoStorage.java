@@ -376,8 +376,7 @@ public class MongoStorage implements Storage {
     @Override
     public <D extends BaseIdentity> List<EntityReference<D>> searchCaptions(Class<D> cls, String pattern, int limit) {
         init();
-        //noops
-        return Collections.emptyList();
+        return database.searchCaptions(cls, pattern, limit);
     }
 
     @Override
@@ -691,12 +690,12 @@ public class MongoStorage implements Storage {
             if (oldAsset == null) {
                 asset.getVersionInfo().setValue(VersionInfo.Fields.revision, 0);
             } else {
-                if (asset.getVersionInfo().getRevision() != oldAsset.getVersionInfo().getRevision()) {
+                if (asset.getVersionInfo() != null && oldAsset.getVersionInfo() != null && asset.getVersionInfo().getRevision() != oldAsset.getVersionInfo().getRevision()) {
                     throw new IllegalArgumentException("revision conflict: expected = %s, actual: %s".formatted(
                             oldAsset.getVersionInfo().getRevision(), asset.getVersionInfo().getRevision()
                     ));
                 }
-                asset.getVersionInfo().setValue(VersionInfo.Fields.revision, oldAsset.getVersionInfo().getRevision() + 1);
+                asset.getVersionInfo().setValue(VersionInfo.Fields.revision, oldAsset.getVersionInfo() == null? 0: (oldAsset.getVersionInfo().getRevision() + 1));
             }
             var description = domainMetaRegistry.getAssets().get(asset.getClass().getName());
             AggregatedData data = buildAggregatedData(asset, description);
@@ -705,7 +704,7 @@ public class MongoStorage implements Storage {
             asset.getVersionInfo().setModified(now);
             asset.getVersionInfo().setModifiedBy(AuthContext.getCurrentUser());
             asset.getVersionInfo().setComment(comment);
-            asset.getVersionInfo().setVersionNumber(oldAsset == null ? 0 : oldAsset.getVersionInfo().getVersionNumber() + 1);
+            asset.getVersionInfo().setVersionNumber(oldAsset == null || oldAsset.getVersionInfo() == null? 0 : oldAsset.getVersionInfo().getVersionNumber() + 1);
             database.saveAsset(new DatabaseAssetWrapper<>(asset, aggregatedData), uc.oldAsset);
             if (createNewVersion && oldAsset != null) {
                 database.saveAssetVersion(oldAsset);
@@ -747,9 +746,9 @@ public class MongoStorage implements Storage {
         var oldAsset = database.loadAsset((Class<A>) asset.getClass(), asset.getId());
         var revision = asset.getVersionInfo().getRevision();
         if (revision == -1) {
-            revision = oldAsset == null ? 0 : oldAsset.getVersionInfo().getRevision() + 1;
+            revision = oldAsset == null || oldAsset.getVersionInfo() == null ? 0 : oldAsset.getVersionInfo().getRevision() + 1;
         }
-        if (oldAsset != null && revision != oldAsset.getVersionInfo().getRevision()) {
+        if (oldAsset != null && oldAsset.getVersionInfo()!= null && revision != oldAsset.getVersionInfo().getRevision()) {
             throw Xeption.forDeveloper("revision conflict with asset %s %s, db revision = %s, operation revision %s"
                     .formatted(asset.getClass().getName(), asset.getId(),
                             oldAsset.getVersionInfo().getRevision(), revision));

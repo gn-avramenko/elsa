@@ -8,16 +8,14 @@ package com.gridnine.platform.elsa.server.mongo;
 
 import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
-import com.gridnine.platform.elsa.common.core.model.domain.BaseAsset;
-import com.gridnine.platform.elsa.common.core.model.domain.BaseDocument;
-import com.gridnine.platform.elsa.common.core.model.domain.BaseSearchableProjection;
-import com.gridnine.platform.elsa.common.core.model.domain.CaptionProvider;
+import com.gridnine.platform.elsa.common.core.model.domain.*;
 import com.gridnine.platform.elsa.common.core.reflection.ReflectionFactory;
 import com.gridnine.platform.elsa.common.core.search.AggregationQuery;
 import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.search.SimpleCriterion;
 import com.gridnine.platform.elsa.common.core.serialization.meta.ObjectMetadataProvidersFactory;
+import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.storage.database.DatabaseAssetWrapper;
@@ -26,6 +24,7 @@ import com.mongodb.client.MongoCursor;
 import org.bson.BsonDocument;
 import org.bson.BsonString;
 import org.bson.Document;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -44,10 +43,12 @@ public class MongoDatabase {
     private final Map<String, String> collectionsMapping = new ConcurrentHashMap<>();
 
 
+    private final DomainMetaRegistry domainMetaRegistry;
 
     public MongoDatabase(Map<String, Object> customParameters, MongoTemplate mongoTemplate, CaptionProvider captionProvider, ObjectMetadataProvidersFactory providersFactory, ReflectionFactory reflectionFactory, DomainMetaRegistry domainMetaRegistry) {
         this.mongoTemplate = mongoTemplate;
         this.customizer = (MongoStorageCustomizer) customParameters.get(MongoStorageCustomizer.KEY);
+        this.domainMetaRegistry = domainMetaRegistry;
         this.converter = new MongoConverter(providersFactory,captionProvider, reflectionFactory);
         var types =  new ArrayList<String>(domainMetaRegistry.getAssets().keySet());
         types.addAll(domainMetaRegistry.getDocuments().keySet());
@@ -230,5 +231,23 @@ public class MongoDatabase {
         doc.put("_id", new BsonString(id));
         doc.put("caption", caption);
         mongoTemplate.upsert(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), Update.fromDocument(doc), collName);
+    }
+
+    public <D extends BaseIdentity> List<EntityReference<D>> searchCaptions(Class<D> cls, String pattern, int limit) {
+        var collectionName = "%s-captions".formatted(getCollectionName(cls));
+        var columnName = "caption";
+        if(domainMetaRegistry.getAssets().get(cls.getName()).getLocalizableCaptionExpression() != null){
+            columnName = "caption-%s".formatted(LocaleUtils.getCurrentLocale().getLanguage());
+        }
+        var query = new Query().with(Sort.by(Sort.Direction.ASC, columnName)).limit(limit);
+        if(TextUtils.isNotBlank(pattern)){
+            query = query.addCriteria(Criteria.where(columnName).regex(pattern.trim(), "i"));
+        }
+        var result = new ArrayList<EntityReference<D>>();
+        var fcn = columnName;
+        mongoTemplate.find(query, Document.class, collectionName).forEach(entity -> {
+            result.add(new EntityReference<D>(entity.getString("_id"), cls, entity.getString(fcn)));
+        });
+        return result;
     }
 }
