@@ -2,7 +2,6 @@ package com.gridnine.platform.elsa.admin.acl.standard;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.AclActionMetadata;
-import com.gridnine.platform.elsa.admin.common.BooleanValueRenderer;
 import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
 import com.gridnine.platform.elsa.admin.utils.LocaleUtils;
 import com.gridnine.platform.elsa.common.core.l10n.Localizer;

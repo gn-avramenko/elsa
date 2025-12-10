@@ -1,11 +1,8 @@
 package com.gridnine.platform.elsa.admin.common;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
-import com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper;
 import com.gridnine.platform.elsa.admin.domain.RestrictionsValueWrapper;
 import com.gridnine.platform.elsa.admin.web.common.RestrictionsEditor;
-import com.gridnine.platform.elsa.admin.web.form.FormBooleanField;
-import com.gridnine.platform.elsa.admin.web.form.FormBooleanFieldConfiguration;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -26,7 +26,6 @@ package com.gridnine.platform.elsa.admin.web.common;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
-import com.gridnine.platform.elsa.admin.common.ValueRenderer;
 import com.gridnine.platform.elsa.admin.web.form.FormSelect;
 import com.gridnine.platform.elsa.admin.web.form.FormSelectConfiguration;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
