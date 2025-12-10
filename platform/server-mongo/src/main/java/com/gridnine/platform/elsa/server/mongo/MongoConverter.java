@@ -332,7 +332,7 @@ public class MongoConverter {
             document.put(CLASS_NAME_PROPERTY, key);
         }
         for (SerializablePropertyDescription prop : provider.getAllProperties()) {
-            if(prop.id().equals("id")){
+            if(prop.id().equals("id") && (obj instanceof BaseAsset || obj instanceof BaseDocument || obj instanceof BaseSearchableProjection<?>)){
                 continue;
             }
             var value = provider.getPropertyValue(obj, prop.id());

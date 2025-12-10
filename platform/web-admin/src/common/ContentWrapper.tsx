@@ -14,4 +14,7 @@ function ContentWrapperFC(props: { element: ContentWrapperComponent }) {
 
 export class ContentWrapperComponent extends ContentWrapperSkeleton {
     functionalComponent = ContentWrapperFC;
+    redraw() {
+        (this.parent as BaseReactUiElement).redraw();
+    }
 }

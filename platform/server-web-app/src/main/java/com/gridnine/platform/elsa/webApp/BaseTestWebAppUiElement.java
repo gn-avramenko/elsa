@@ -116,7 +116,7 @@ public abstract class BaseTestWebAppUiElement extends BaseUiElement {
         ).findFirst().orElse(null);
     }
 
-    protected BaseTestWebAppUiElement findChildByTag(String tag){
+    public BaseTestWebAppUiElement findChildByTag(String tag){
         return  (BaseTestWebAppUiElement) getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals(tag)).findFirst().orElse(null);
     }
 }

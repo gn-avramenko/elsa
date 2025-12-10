@@ -24,9 +24,9 @@
 
 package com.gridnine.platform.elsa.admin.web.entityEditor;
 
+import com.gridnine.platform.elsa.admin.web.common.ContentWrapper;
 import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
-import com.gridnine.platform.elsa.webApp.common.ContentWrapper;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 

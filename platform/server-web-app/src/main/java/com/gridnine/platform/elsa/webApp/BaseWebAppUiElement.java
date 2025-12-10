@@ -119,7 +119,7 @@ public abstract class BaseWebAppUiElement extends BaseUiElement {
         ).findFirst().orElse(null);
     }
 
-    protected BaseWebAppUiElement findChildByTag(String tag){
+    public BaseWebAppUiElement findChildByTag(String tag){
         return  (BaseWebAppUiElement) getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals(tag)).findFirst().orElse(null);
     }
 }

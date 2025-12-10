@@ -146,7 +146,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         config.getEnablingTags().add("has-changes");
         config.setClickListener((ctx) -> {
             editor.removeTag("has-changes", ctx);
-            var res = writeData(editor, context);
+            var res = writeData(editor, ctx);
             if(res.success()) {
                 editor.removeTag("new", ctx);
                 if("new".equals(editor.getObjectId())){

@@ -46,13 +46,11 @@ public abstract class GroupEditor extends GroupEditorSkeleton{
         });
         result.setMoveDownListener((act, ctx)->{
             var child = getUnmodifiableListOfChildren().get(act.getIdx());
-            removeChild(ctx, child);
-            addChild(ctx, child, act.getIdx()+1);
+            moveChild(ctx, child.getId(), act.getIdx()+1);
         });
         result.setMoveUpListener((act, ctx)->{
             var child = getUnmodifiableListOfChildren().get(act.getIdx());
-            removeChild(ctx, child);
-            addChild(ctx, child, act.getIdx()-1);
+            moveChild(ctx, child.getId(), act.getIdx()-1);
         });
         return result;
     }

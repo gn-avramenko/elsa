@@ -26,7 +26,7 @@ export type InputDescription = {
 };
 
 export function initStateSetters(element: BaseReactUiElement) {
-    for (const prop of element.state.keys()) {
+    for (const prop of [...element.state.keys(), 'counter']) {
         const [value, setValue] = useState(element.state.get(prop));
         element.state.set(prop, value);
         element.stateSetters.set(prop, setValue);

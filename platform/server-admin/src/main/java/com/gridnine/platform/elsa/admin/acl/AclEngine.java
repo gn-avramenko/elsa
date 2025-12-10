@@ -2,6 +2,7 @@ package com.gridnine.platform.elsa.admin.acl;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
+import com.gridnine.platform.elsa.admin.common.ValueRenderer;
 import com.gridnine.platform.elsa.common.core.l10n.Localizer;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,6 @@ public class AclEngine {
 
     public static final String ROOT_NODE_ID="root";
     private AclMetadataElement rootElement;
-
-    private final Map<String, AclValueRenderer<?,?,?>> renderers = new  HashMap<>();
 
     private final Map<String, AclMetadataElement> inverseMap = new HashMap<>();
 
@@ -52,13 +51,6 @@ public class AclEngine {
                 handler.updateAclMetadata(this);
             }
         }
-    }
-    public <P,V,E extends BaseUiElement> void register(AclValueRenderer<P,V,E> renderer){
-        renderers.put(renderer.getId(), renderer);
-    }
-
-    public <P,V,E extends BaseUiElement> AclValueRenderer<P,V,E> getRenderer(String id) {
-        return (AclValueRenderer<P, V, E>) renderers.get(id);
     }
 
 

@@ -32,7 +32,7 @@
     <entity id="com.gridnine.platform.elsa.admin.domain.AclRule">
         <collection id="actions" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.AclAction"/>
     </entity>
-    <entity id="com.gridnine.platform.elsa.admin.domain.BooleanAclValue">
+    <entity id="com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper">
         <property id="value" type="BOOLEAN" non-nullable="true"/>
     </entity>
     <entity id="com.gridnine.platform.elsa.admin.domain.AclEntry">

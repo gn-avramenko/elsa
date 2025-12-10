@@ -24,4 +24,7 @@
     <message id="All_Objects"/>
     <message id="All_Actions"/>
     <message id="Value"/>
+    <message id="Actions"/>
+    <message id="Conditions"/>
+    <message id="Action"/>
 </messages-bundle>

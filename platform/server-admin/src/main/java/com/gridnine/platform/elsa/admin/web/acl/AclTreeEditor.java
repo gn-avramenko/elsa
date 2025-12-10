@@ -26,43 +26,88 @@ package com.gridnine.platform.elsa.admin.web.acl;
 
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
+import com.gridnine.platform.elsa.admin.domain.AclEntry;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
+import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
+import org.springframework.beans.factory.ListableBeanFactory;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class AclTreeEditor extends AclTreeEditorSkeleton{
 
     private final AclEntryEditor entryEditor;
+    private final Map<String, AclEntry> aclEntries = new HashMap<>();
+    private final Map<String, AclMetadataElement> metadata = new HashMap<>();
+    private final ListableBeanFactory  beanFactory;
 
 	public AclTreeEditor(String tag, OperationUiContext ctx){
 		super(tag, ctx);
         entryEditor = new AclEntryEditor("entry", ctx);
+        beanFactory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
         addChild(ctx, entryEditor, 0);
 	}
 
     @Override
     protected AclTreeEditorConfiguration createConfiguration() {
-        return new AclTreeEditorConfiguration();
+        var result = new AclTreeEditorConfiguration();
+        result.setSelectNodeListener((act ,ctx)->{
+            ctx.setParameter(StandardParameters.BEAN_FACTORY, beanFactory);
+            if(!entryEditor.validate(ctx)){
+                return;
+            }
+            var entry = entryEditor.getData();
+            if(entry == null){
+                aclEntries.remove(getSelectedNodeId());
+            } else {
+                aclEntries.put(getSelectedNodeId(), entry);
+            }
+            setSelectedNodeId(act.getNodeId(), ctx);
+            var newEntry = aclEntries.get(act.getNodeId());
+            entryEditor.setData(metadata.get(act.getNodeId()), newEntry == null? List.of(): newEntry.getRules(), ctx);
+        });
+        return result;
     }
 
-    public void readData(AclMetadataElement rootNode, OperationUiContext context) {
+    public boolean validate(OperationUiContext context){
+        return entryEditor.validate(context);
+    }
+
+    public void readData(AclMetadataElement rootNode, List<AclEntry> entries, OperationUiContext context) {
+        context.setParameter(StandardParameters.BEAN_FACTORY, beanFactory);
         var rootNodeWrapper = new AclMetadataElementWrapper();
+        metadata.clear();
         convert(rootNode, rootNodeWrapper);
         rootNodeWrapper.getChildren().sort(Comparator.comparing(AclMetadataElementWrapper::getName));
         setRootEntry(rootNodeWrapper, context);
         setSelectedNodeId(AclEngine.ROOT_NODE_ID, context);
-        entryEditor.setData(List.of(), context);
+        aclEntries.clear();
+        entries.forEach(entry -> {
+            aclEntries.put(entry.getId(), entry);
+        });
+        var rootEntry = aclEntries.get(rootNode.getId());
+        entryEditor.setData(rootNode, rootEntry == null? List.of(): rootEntry.getRules(), context);
     }
 
     private void convert(AclMetadataElement rootNode, AclMetadataElementWrapper rootNodeWrapper) {
         rootNodeWrapper.setId(rootNode.getId());
+        metadata.put(rootNode.getId(), rootNode);
         rootNodeWrapper.setName(rootNode.getName().toString(LocaleUtils.getCurrentLocale()));
         rootNode.getChildren().forEach(child -> {
             var childWrapper = new AclMetadataElementWrapper();
             convert(child, childWrapper);
             rootNodeWrapper.getChildren().add(childWrapper);
         });
+    }
+
+    public List<AclEntry> getData() {
+        var result = new HashMap<String, AclEntry>(aclEntries);
+        var entry = entryEditor.getData();
+        if(entry == null){
+            result.remove(getSelectedNodeId());
+        } else {
+            result.put(getSelectedNodeId(), entry);
+        }
+        return new ArrayList<>(result.values());
     }
 }

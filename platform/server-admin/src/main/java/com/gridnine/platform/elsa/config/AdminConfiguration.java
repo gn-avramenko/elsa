@@ -22,7 +22,8 @@
 package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
-import com.gridnine.platform.elsa.admin.acl.standard.StandardAclHandler;
+import com.gridnine.platform.elsa.admin.common.BooleanValueRenderer;
+import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
 import com.gridnine.platform.elsa.admin.web.mainFrame.HomePageRouterPathHandler;
 import com.gridnine.platform.elsa.admin.workspace.LinkWorkspaceItemHandler;
 import com.gridnine.platform.elsa.admin.workspace.ListWorkspaceItemHandler;
@@ -53,7 +54,12 @@ public class AdminConfiguration {
     }
 
     @Bean
-    public StandardAclHandler standardAclHandler(){
-        return new StandardAclHandler();
+    public RenderersRegistry renderersRegistry(){
+        return new RenderersRegistry();
+    }
+
+    @Bean
+    public BooleanValueRenderer   booleanValueRenderer(){
+        return new BooleanValueRenderer();
     }
 }

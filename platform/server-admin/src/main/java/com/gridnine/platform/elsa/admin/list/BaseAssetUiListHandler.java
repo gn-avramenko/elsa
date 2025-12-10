@@ -24,9 +24,7 @@ package com.gridnine.platform.elsa.admin.list;
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
-import com.gridnine.platform.elsa.admin.web.common.BreakPoint;
-import com.gridnine.platform.elsa.admin.web.common.ButtonConfiguration;
-import com.gridnine.platform.elsa.admin.web.common.ContentWrapperConfiguration;
+import com.gridnine.platform.elsa.admin.web.common.*;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
 import com.gridnine.platform.elsa.common.core.l10n.Localizer;
@@ -44,8 +42,6 @@ import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.acl.AclHandler;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
 import com.gridnine.platform.elsa.core.storage.Storage;
-import com.gridnine.platform.elsa.webApp.common.Button;
-import com.gridnine.platform.elsa.webApp.common.ContentWrapper;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,7 +220,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         for (var tool : getTools()) {
             idx++;
             if (tool instanceof Glue) {
-                var glue = new com.gridnine.platform.elsa.webApp.common.Glue("glue-%s".formatted(idx), context);
+                var glue = new com.gridnine.platform.elsa.admin.web.common.Glue("glue-%s".formatted(idx), context);
                 tools.addChild(context, glue, idx - 1);
                 continue;
             }

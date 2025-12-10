@@ -10,7 +10,16 @@
             <property id="rootEntry" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.acl.AclMetadataElementWrapper"/>
             <property id="selectedNodeId" type="STRING" non-nullable="true"/>
         </server-managed-state>
+        <commands-from-client>
+            <command id="selectNode">
+                <property id="nodeId" type="STRING" non-nullable="true"/>
+            </command>
+        </commands-from-client>
     </custom-container>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.acl.AclRuleEditor">
+        <server-managed-state>
+            <property id="conditionsTitle" type="STRING" non-nullable="true"/>
+            <property id="actionsTitle" type="STRING" non-nullable="true"/>
+        </server-managed-state>
     </custom-container>
 </web-app>

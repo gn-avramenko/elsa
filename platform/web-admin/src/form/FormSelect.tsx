@@ -35,12 +35,11 @@ function FormSelectFC(props: { element: FormSelectComponent }) {
                 options={(props.element.getOptions() || []).map((it) => ({
                     key: it.id,
                     label: shrinkName(it.displayName),
-                    value: it.displayName,
+                    value: it.id,
                 }))}
                 value={props.element.getValue()}
                 style={{
                     width: '100%',
-                    minWidth: '300px',
                     padding: 0,
                 }}
                 onChange={(newValue) => {
