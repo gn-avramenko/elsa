@@ -23,15 +23,23 @@ package com.gridnine.platform.elsa.admin.list;
 
 import com.gridnine.platform.elsa.admin.web.entityList.ColumnType;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
+import com.gridnine.platform.elsa.common.core.model.common.Localizable;
+import com.gridnine.platform.elsa.common.core.serialization.meta.SerializablePropertyType;
 
 public interface FieldHandler {
     String getId();
 
-    String getTitle();
+    Localizable getTitle();
 
     ColumnType getColumnType();
 
+    SerializablePropertyType getValueType();
+
+    String getValueClassName();
+
     String getValueStr(BaseIntrospectableObject item);
+
+    boolean isCollection();
 
     boolean isSortable();
 }

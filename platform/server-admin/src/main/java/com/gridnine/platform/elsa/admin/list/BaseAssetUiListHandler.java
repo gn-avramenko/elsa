@@ -23,6 +23,8 @@ package com.gridnine.platform.elsa.admin.list;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
+import com.gridnine.platform.elsa.admin.acl.standard.ListRestrictionsMetadata;
+import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
 import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
 import com.gridnine.platform.elsa.admin.web.common.*;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
@@ -34,6 +36,7 @@ import com.gridnine.platform.elsa.common.core.model.common.RunnableWithException
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.model.domain.BaseAsset;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
+import com.gridnine.platform.elsa.common.core.serialization.meta.SerializablePropertyType;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.common.meta.domain.DatabaseCollectionType;
 import com.gridnine.platform.elsa.common.meta.domain.DatabasePropertyType;
@@ -95,7 +98,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         for (var column : columns) {
             var c = new ColumnDescription();
             c.setId(column.getId());
-            c.setTitle(column.getTitle());
+            c.setTitle(column.getTitle().toString(LocaleUtils.getCurrentLocale()));
             c.setColumnType(column.getColumnType());
             c.setSortable(column.isSortable());
             entityListConfiguration.getColumns().add(c);
@@ -290,8 +293,8 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             }
 
             @Override
-            public String getTitle() {
-                return prop == null ? coll.getDisplayNames().get(LocaleUtils.getCurrentLocale()) : prop.getDisplayNames().get(LocaleUtils.getCurrentLocale());
+            public Localizable getTitle() {
+                return prop == null ? createLocalizable(coll.getDisplayNames()) : createLocalizable(prop.getDisplayNames());
             }
 
             @Override
@@ -300,9 +303,24 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             }
 
             @Override
+            public SerializablePropertyType getValueType() {
+                return prop == null? SerializablePropertyType.valueOf(coll.getElementType().name()): SerializablePropertyType.valueOf(prop.getType().name());
+            }
+
+            @Override
+            public String getValueClassName() {
+                return prop == null? coll.getElementClassName(): prop.getClassName();
+            }
+
+            @Override
             public String getValueStr(BaseIntrospectableObject item) {
                 var value = item.getValue(fieldName) == null ? null : item.getValue(fieldName);
                 return value == null ? "" : value.toString();
+            }
+
+            @Override
+            public boolean isCollection() {
+                return prop==null;
             }
 
             @Override
@@ -413,6 +431,18 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         listItem.setId("%s.list".formatted(assetClass.getName()));
         listItem.setHandlerId(getClass().getName());
         listItem.getActions().add(new AllActionsMetadata(localizer));
+        {
+            List<RestrictionsEditor.RestrictionPropertyMetadata> props = new ArrayList<>();
+            getColumns().forEach(it ->{
+               if(it.getValueType() != SerializablePropertyType.ENTITY_REFERENCE) {
+                   //TODO process all types
+                    return;
+               }
+                var prop = new RestrictionsEditor.RestrictionPropertyMetadata(it.getId(), it.getValueType().name(), it.getValueClassName(), it.getTitle());
+                props.add(prop);
+            });
+            listItem.getActions().add(new ListRestrictionsMetadata(localizer, new RestrictionsValueRenderer.RestrictionsValueParameters(Collections.unmodifiableList(props))));
+        }
         aclEngine.addNode(groupItem.getId(), listItem);
         var toolsItem = new AclMetadataElement();
         toolsItem.setId("%s.list.tools".formatted(assetClass.getName()));

@@ -33,6 +33,7 @@ import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class ActionsEditor extends ActionsEditorSkeleton{
 
     private final AdminL10nFactory adminL10nFactory;
     private final RenderersRegistry renderersRegistry;
+    private final ListableBeanFactory beanFactory;
 
     public void setMetadata(List<ActionMetadata> actions) {
         this.actionsMetadata = actions;
@@ -51,6 +53,7 @@ public class ActionsEditor extends ActionsEditorSkeleton{
 
     public ActionsEditor(String tag, OperationUiContext ctx){
 		super(tag, ctx);
+        beanFactory = ctx.getParameter(StandardParameters.BEAN_FACTORY);
         adminL10nFactory = ctx.getParameter(StandardParameters.BEAN_FACTORY).getBean(AdminL10nFactory.class);
         renderersRegistry = ctx.getParameter(StandardParameters.BEAN_FACTORY).getBean(RenderersRegistry.class);
 	}
@@ -82,6 +85,7 @@ public class ActionsEditor extends ActionsEditorSkeleton{
             return item;
         }).toList());
         actionConfig.setValueChangeListener((oldVal, newValue, context) -> {
+            context.setParameter(StandardParameters.BEAN_FACTORY, beanFactory);
             var mtd = actionsMetadata.stream().filter(it -> it.id.equals(newValue)).findFirst().get();
             createValueEditor(result, mtd.rendererId, mtd.renderersParams, null, context);
         });
@@ -100,7 +104,7 @@ public class ActionsEditor extends ActionsEditorSkeleton{
             contentWrapper.removeChild(ctx, existingComp);
         }
         var renderer = renderersRegistry.getRenderer(rendererId);
-        var elm = renderer.createUiElement(parameters, value, "value", ctx);
+        var elm = renderer.createUiElement(parameters, value, isReadonly(), "value", ctx);
         contentWrapper.addChild(ctx, elm, 0);
     }
 

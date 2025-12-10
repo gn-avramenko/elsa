@@ -19,10 +19,11 @@ public class BooleanValueRenderer implements ValueRenderer<Void, BooleanValueWra
     }
 
     @Override
-    public FormBooleanField createUiElement(Void rendererParameters, BooleanValueWrapper value, String tag, OperationUiContext context) throws Exception {
+    public FormBooleanField createUiElement(Void rendererParameters, BooleanValueWrapper value, boolean readonly, String tag, OperationUiContext context) throws Exception {
         var config = new FormBooleanFieldConfiguration();
         config.setTitle(adminL10nFactory.Value());
         config.setValue(value != null && value.isValue());
+        config.setReadonly(readonly);
         return new FormBooleanField(tag, config, context);
     }
 

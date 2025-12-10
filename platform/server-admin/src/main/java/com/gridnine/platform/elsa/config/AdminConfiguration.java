@@ -24,6 +24,7 @@ package com.gridnine.platform.elsa.config;
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.common.BooleanValueRenderer;
 import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
+import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
 import com.gridnine.platform.elsa.admin.web.mainFrame.HomePageRouterPathHandler;
 import com.gridnine.platform.elsa.admin.workspace.LinkWorkspaceItemHandler;
 import com.gridnine.platform.elsa.admin.workspace.ListWorkspaceItemHandler;
@@ -61,5 +62,10 @@ public class AdminConfiguration {
     @Bean
     public BooleanValueRenderer   booleanValueRenderer(){
         return new BooleanValueRenderer();
+    }
+
+    @Bean
+    public RestrictionsValueRenderer  restrictionsValueRenderer(){
+        return new RestrictionsValueRenderer();
     }
 }

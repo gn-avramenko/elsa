@@ -37,7 +37,7 @@ function AclTreeEditorFC(props: { element: AclTreeEditorComponent }) {
             </div>
             <div style={{ flexGrow: 1, height: '100%', padding: '5px' }}>
                 <Row style={{ width: '100%' }}>
-                    <Col xs={24} sm={12} style={{ width: '100%' }}>
+                    <Col xs={23}>
                         {props.element.findByTag('entry').createReactElement()}
                     </Col>
                 </Row>

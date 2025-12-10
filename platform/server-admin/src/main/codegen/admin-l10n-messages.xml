@@ -23,8 +23,15 @@
     <message id="Tools"/>
     <message id="All_Objects"/>
     <message id="All_Actions"/>
+    <message id="List_Restrictions"/>
     <message id="Value"/>
     <message id="Actions"/>
     <message id="Conditions"/>
     <message id="Action"/>
+    <message id="l10nAnd"/>
+    <message id="l10nOr"/>
+    <message id="l10nNot"/>
+    <message id="l10nSimple"/>
+    <message id="Property"/>
+    <message id="Condition"/>
 </messages-bundle>

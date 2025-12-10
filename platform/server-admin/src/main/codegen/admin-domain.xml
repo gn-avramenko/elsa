@@ -35,6 +35,22 @@
     <entity id="com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper">
         <property id="value" type="BOOLEAN" non-nullable="true"/>
     </entity>
+    <enum id="com.gridnine.platform.elsa.admin.domain.RestrictionType">
+        <enum-item id="SIMPLE"/>
+        <enum-item id="OR"/>
+        <enum-item id="NOT"/>
+        <enum-item id="AND"/>
+    </enum>
+    <entity id="com.gridnine.platform.elsa.admin.domain.Restriction">
+        <property id="restrictionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.domain.RestrictionType"/>
+        <property id="propertyId" type="STRING" />
+        <property id="conditionId" type="STRING"/>
+        <property id="value" type="ENTITY" class-name="Object"/>
+        <collection id="nestedRestrictions" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.Restriction"/>
+    </entity>
+    <entity id="com.gridnine.platform.elsa.admin.domain.RestrictionsValueWrapper">
+        <collection id="restrictions" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.Restriction"/>
+    </entity>
     <entity id="com.gridnine.platform.elsa.admin.domain.AclEntry">
         <property id="id" type="STRING"/>
         <collection id="rules" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.AclRule"/>
