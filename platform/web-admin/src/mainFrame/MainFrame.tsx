@@ -46,6 +46,16 @@ export const useExtThemeProperties = (): any => {
     return useContext(ExtThemePropertiesContext);
 };
 
+export interface DialogContextType {
+    isOpen: boolean;
+}
+
+export const DialogContext = createContext<DialogContextType | undefined>(undefined);
+
+export const useDialog = (): DialogContextType | undefined => {
+    return useContext(DialogContext);
+};
+
 function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) {
     initStateSetters(props.element);
     const [drawerOpened, setDrawerOpened] = useState(false);
@@ -113,18 +123,28 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
     };
     const drawDialog = () => {
         return (
-            <Modal
-                open={dialogOpen}
-                title={props.element.findByTag('dialog-header')?.createReactElement()}
-                width={{
-                    xs: '100%',
-                    sm: '800px',
+            <DialogContext.Provider
+                value={{
+                    isOpen: dialogOpen,
                 }}
-                closable={false}
-                footer={props.element.findByTag('dialog-footer')?.createReactElement()}
             >
-                {props.element.findByTag('dialog-content')?.createReactElement()}
-            </Modal>
+                <Modal
+                    open={dialogOpen}
+                    title={props.element
+                        .findByTag('dialog-header')
+                        ?.createReactElement()}
+                    width={{
+                        xs: '100%',
+                        sm: '800px',
+                    }}
+                    closable={false}
+                    footer={props.element
+                        .findByTag('dialog-footer')
+                        ?.createReactElement()}
+                >
+                    {props.element.findByTag('dialog-content')?.createReactElement()}
+                </Modal>
+            </DialogContext.Provider>
         );
     };
     if (props.element.getEmbeddedMode()) {

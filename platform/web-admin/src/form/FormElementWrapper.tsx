@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { Tooltip } from 'antd';
 import { StyledFormElement } from 'admin/src/form/form-styled';
+import { useDialog } from 'admin/src/mainFrame/MainFrame';
 
 export function FormElementWrapper(
     props: PropsWithChildren<{
@@ -25,7 +26,8 @@ export function FormElementWrapper(
             </StyledFormElement>
         );
     };
-    if (props.validation) {
+    const dialog = useDialog();
+    if (props.validation && (!dialog || dialog.isOpen)) {
         return <Tooltip title={props.validation}>{drawDiv()}</Tooltip>;
     }
     return drawDiv();
