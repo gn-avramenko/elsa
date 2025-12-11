@@ -41,6 +41,13 @@
         <enum-item id="NOT"/>
         <enum-item id="AND"/>
     </enum>
+    <entity id="com.gridnine.platform.elsa.admin.domain.EntityReferenceWrapper">
+        <property id="id" type="STRING"/>
+        <property id="displayName" type="STRING"/>
+    </entity>
+    <entity id="com.gridnine.platform.elsa.admin.domain.EntityReferenceRestrictionValue">
+        <collection id="values" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.EntityReferenceWrapper"/>
+    </entity>
     <entity id="com.gridnine.platform.elsa.admin.domain.Restriction">
         <property id="restrictionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.domain.RestrictionType"/>
         <property id="propertyId" type="STRING" />

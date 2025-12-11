@@ -27,7 +27,7 @@ function AclBlock(props: PropsWithChildren<{ title: string }>) {
             >
                 {props.title}
             </div>
-            <div style={{ padding: token.paddingXS, paddingTop: 13 }}>
+            <div style={{ padding: token.paddingXS, paddingTop: 15 }}>
                 {props.children}
             </div>
         </div>

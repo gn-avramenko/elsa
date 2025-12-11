@@ -7,6 +7,7 @@ export interface DebounceSelectProps<ValueType = any>
     debounceTimeout?: number;
     hasError?: boolean;
     noContentFoundStr?: string;
+    multiple?: boolean;
     value: ValueType[];
 }
 
@@ -40,7 +41,7 @@ export function DebounceSelect<
                 return;
             }
             const values = value.map((it) => it.value);
-            if ((props as any).multiple) {
+            if (props.multiple) {
                 setOptions(newOptions.filter((it) => values.indexOf(it.value) === -1));
             } else {
                 setOptions(newOptions);

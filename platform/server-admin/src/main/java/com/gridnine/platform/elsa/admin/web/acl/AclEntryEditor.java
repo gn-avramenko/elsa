@@ -32,7 +32,7 @@ public class AclEntryEditor extends GroupEditor {
         for (int n = 0; n < rules.size(); n++) {
             var editor = (AclRuleEditor) ExceptionUtils.wrapException(() -> createItemEditor(context));
             var rule = rules.get(n);
-            editor.setActions(rule.getActions(), isReadonly(), elementMetadata.getActions(), context);
+            editor.setActions(rule.getActions(), elementMetadata.getActions(), context);
             addChild(context, editor, n);
         }
     }
@@ -40,7 +40,7 @@ public class AclEntryEditor extends GroupEditor {
     @Override
     protected BaseUiElement createItemEditor(OperationUiContext context) throws Exception {
         var editor = new AclRuleEditor("rule", context);
-        editor.setActions(List.of(), isReadonly(), metadataElement.getActions(), context);
+        editor.setActions(List.of(), metadataElement.getActions(), context);
         return editor;
     }
 

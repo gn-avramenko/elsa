@@ -671,6 +671,7 @@ public class MongoStorage implements Storage {
                 interceptor.onDelete(uac.oldAsset, uac.operationContext);
             }
             database.deleteAsset(asset.getClass(), asset.getId());
+            database.deleteCaptions(asset.getClass(), asset.getId());
             return;
         }
         advices.get(idx).onDeleteAsset(asset, (asset2) -> deleteAsset(asset2, advices, ctx, idx + 1));

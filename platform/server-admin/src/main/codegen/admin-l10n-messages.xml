@@ -34,4 +34,7 @@
     <message id="l10nSimple"/>
     <message id="Property"/>
     <message id="Condition"/>
+    <message id="Equals"/>
+    <message id="Not_Equals"/>
+    <message id="Value_Empty"/>
 </messages-bundle>

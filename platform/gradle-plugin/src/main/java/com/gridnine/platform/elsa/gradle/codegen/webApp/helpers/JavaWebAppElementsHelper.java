@@ -346,6 +346,8 @@ public class JavaWebAppElementsHelper {
                                                 gen.printLine("return;");
                                                 return;
                                             }
+                                            gen.addImport("com.gridnine.platform.elsa.webApp.WebAppUtils");
+                                            gen.addImport("com.gridnine.platform.elsa.common.meta.common.StandardValueType");
                                             var actionClassName = getPropertyType(StandardValueType.ENTITY, "%s%sAction".formatted(className, BuildTextUtils.capitalize(action.getId())), gen);
                                             gen.printLine("var actionValue = WebAppUtils.fromJsonValue(data, StandardValueType.ENTITY, %s.class);".formatted(actionClassName));
                                             gen.printLine("this.%sListener.run(actionValue, ctx);".formatted(action.getId()));

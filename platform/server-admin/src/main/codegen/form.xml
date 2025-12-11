@@ -76,6 +76,28 @@
             </service>
         </services>
     </custom>
+    <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormRemoteMultiSelect">
+        <server-managed-state>
+            <property id="title" type="STRING"/>
+            <property id="validation" type="STRING"/>
+            <property id="deferred" type="BOOLEAN"/>
+            <property id="hidden" type="BOOLEAN"/>
+            <property id="readonly" type="BOOLEAN"/>
+        </server-managed-state>
+        <input-value>
+            <collection id="values" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
+        </input-value>
+        <services>
+            <service id="autocomplete">
+                <request>
+                    <property id="pattern" type="STRING"/>
+                </request>
+                <response>
+                    <collection id="items" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.web.common.Option"/>
+                </response>
+            </service>
+        </services>
+    </custom>
     <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormSelect">
         <server-managed-state>
             <property id="title" type="STRING"/>

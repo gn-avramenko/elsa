@@ -27,6 +27,9 @@ function AclTreeEditorFC(props: { element: AclTreeEditorComponent }) {
                     showIcon={true}
                     defaultExpandedKeys={expandedNodesIds}
                     onSelect={(n) => {
+                        if (!n || !n[0]) {
+                            return;
+                        }
                         props.element.sendSelectNode({
                             nodeId: n[0] as string,
                         });

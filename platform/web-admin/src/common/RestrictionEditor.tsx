@@ -8,4 +8,7 @@ function RestrictionEditorFC(props: { element: RestrictionEditorComponent }) {
 
 export class RestrictionEditorComponent extends RestrictionEditorSkeleton {
     functionalComponent = RestrictionEditorFC;
+    redraw() {
+        this.parent?.redraw();
+    }
 }

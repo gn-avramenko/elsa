@@ -52,11 +52,11 @@ public class AclRuleEditor extends AclRuleEditorSkeleton{
         var actionsEditor = new ActionsEditor("actions", ctx);
         addChild(ctx, actionsEditor, 0);
 	}
-    public void setActions(List<AclAction> actions, boolean readonly, List<AclActionMetadata<?>> actionsMetadata, OperationUiContext operationUiContext){
+    public void setActions(List<AclAction> actions, List<AclActionMetadata<?>> actionsMetadata, OperationUiContext operationUiContext){
         var actionsEditor = (ActionsEditor) getUnmodifiableListOfChildren().get(0);
         actionsEditor.setMetadata(actionsMetadata.stream().map(it ->
                 new ActionsEditor.ActionMetadata(it.getId(), it.getRendererId(), it.getRendererParameters(), it.getName().toString(LocaleUtils.getCurrentLocale()))).toList());
-        actionsEditor.setData(actions.stream().map(it -> new ActionsEditor.ActionData(it.getId(), it.getValue())).toList(), readonly, operationUiContext);
+        actionsEditor.setData(actions.stream().map(it -> new ActionsEditor.ActionData(it.getId(), it.getValue())).toList(), operationUiContext);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class AclRuleEditor extends AclRuleEditorSkeleton{
             var fs = (FormSelect) ch.findChildByTag("action");
             if(fs.getValue() != null) {
                 var rendererId = ae.getActionsMetadata().stream().filter(it -> it.id().equals(fs.getValue())).findFirst().get().rendererId();
-                var renderer = renderersRegistry.getRenderer(rendererId);
+                var renderer = renderersRegistry.getValueRenderer(rendererId);
                 var valueComp = ch.findChildByTag("value");
                 var value = ExceptionUtils.wrapException(()->renderer.getData(valueComp));
                 var action = new AclAction();

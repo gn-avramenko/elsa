@@ -16,6 +16,7 @@ import java.util.Map;
 public class AclEngine {
 
     public static final String ROOT_NODE_ID="root";
+
     private AclMetadataElement rootElement;
 
     private final Map<String, AclMetadataElement> inverseMap = new HashMap<>();

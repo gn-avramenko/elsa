@@ -438,7 +438,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                    //TODO process all types
                     return;
                }
-                var prop = new RestrictionsEditor.RestrictionPropertyMetadata(it.getId(), it.getValueType().name(), it.getValueClassName(), it.getTitle());
+                var prop = new RestrictionsEditor.RestrictionPropertyMetadata(it.getId(), "%s-%s".formatted(it.getValueType().name(), it.getValueClassName()), null, it.getTitle());
                 props.add(prop);
             });
             listItem.getActions().add(new ListRestrictionsMetadata(localizer, new RestrictionsValueRenderer.RestrictionsValueParameters(Collections.unmodifiableList(props))));

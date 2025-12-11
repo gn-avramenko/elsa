@@ -1,12 +1,12 @@
 import { initStateSetters } from 'admin/src/common/component';
-import { FormRemoteSelectSkeleton } from 'admin/src-gen/form/FormRemoteSelectSkeleton';
-import { FormElementWrapper } from 'admin/src/form/FormElementWrapper';
-import { DebounceSelect } from 'admin/src/components/DebounceSelect';
+import { FormRemoteMultiSelectSkeleton } from 'admin/src-gen/form/FormRemoteMultiSelectSkeleton';
 import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from 'admin/src/common/extension';
 import { useEditor } from 'admin/src/entityEditor/EntityEditor';
+import { FormElementWrapper } from 'admin/src/form/FormElementWrapper';
+import { DebounceSelect } from 'admin/src/components/DebounceSelect';
 
-function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
+function FormRemoteMultiSelectFC(props: { element: FormRemoteMultiSelectComponent }) {
     initStateSetters(props.element);
     const { breakpoint } = useBreakpoint(BREAKPOINTS);
     const editor = useEditor();
@@ -33,21 +33,16 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
             <DebounceSelect
                 size="middle"
                 allowClear
+                mode="multiple"
                 hasError={!!props.element.getValidation()}
                 disabled={!!props.element.getReadonly() || viewMode}
                 debounceTimeout={300}
                 value={
-                    props.element.getValue()
-                        ? [
-                              {
-                                  key: props.element.getValue().id,
-                                  label: shrinkName(
-                                      props.element.getValue().displayName
-                                  ),
-                                  value: props.element.getValue().id,
-                              },
-                          ]
-                        : []
+                    props.element.getValue()?.map((it) => ({
+                        key: it.id,
+                        label: shrinkName(it.displayName),
+                        value: it.id,
+                    })) ?? []
                 }
                 fetchOptions={async (query) => {
                     const response = await props.element.doAutocomplete({
@@ -66,14 +61,14 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
                 }}
                 onChange={(newValue) => {
                     props.element.resetValidation();
-                    props.element.setValue(
-                        newValue
-                            ? {
-                                  id: (newValue as any).value,
-                                  displayName: (newValue as any).label,
-                              }
-                            : undefined
-                    );
+                    if (Array.isArray(newValue || [])) {
+                        props.element.setValue(
+                            (newValue as any[]).map((it) => ({
+                                id: it.value,
+                                displayName: it.label,
+                            }))
+                        );
+                    }
                     if (editor) {
                         editor.addTag('has-changes');
                     }
@@ -83,9 +78,8 @@ function FormRemoteSelectFC(props: { element: FormRemoteSelectComponent }) {
     );
 }
 
-export class FormRemoteSelectComponent extends FormRemoteSelectSkeleton {
-    functionalComponent = FormRemoteSelectFC;
-
+export class FormRemoteMultiSelectComponent extends FormRemoteMultiSelectSkeleton {
+    functionalComponent = FormRemoteMultiSelectFC;
     resetValidation() {
         this.stateSetters.get('validation')!(null);
         this.sendCommand(

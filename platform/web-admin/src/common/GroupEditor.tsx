@@ -7,10 +7,13 @@ import {
     PlusOutlined,
     UpOutlined,
 } from '@ant-design/icons';
+import { useEditor } from 'admin/src/entityEditor/EntityEditor';
 
 function GroupEditorFC(props: { element: GroupEditorComponent }) {
     initStateSetters(props.element);
     const { token } = theme.useToken();
+    const editor = useEditor();
+    const viewMode = editor != null && !editor.hasTag('edit-mode');
     return (
         <>
             {props.element.children!.map((ch, idx, arr) => {
@@ -41,12 +44,12 @@ function GroupEditorFC(props: { element: GroupEditorComponent }) {
                             <PlusOutlined
                                 style={{
                                     paddingLeft: token.paddingXS,
-                                    color: props.element.isReadonly()
+                                    color: viewMode
                                         ? token.colorTextDisabled
                                         : undefined,
                                 }}
                                 onClick={() => {
-                                    if (!props.element.isReadonly()) {
+                                    if (!viewMode) {
                                         props.element.sendAdd({
                                             idx,
                                         });
@@ -56,12 +59,12 @@ function GroupEditorFC(props: { element: GroupEditorComponent }) {
                             <MinusOutlined
                                 style={{
                                     paddingLeft: token.paddingXS,
-                                    color: props.element.isReadonly()
+                                    color: viewMode
                                         ? token.colorTextDisabled
                                         : undefined,
                                 }}
                                 onClick={() => {
-                                    if (!props.element.isReadonly()) {
+                                    if (!viewMode) {
                                         props.element.sendDelete({
                                             idx,
                                         });
@@ -72,12 +75,12 @@ function GroupEditorFC(props: { element: GroupEditorComponent }) {
                                 style={{
                                     paddingLeft: token.paddingXS,
                                     color:
-                                        props.element.isReadonly() || idx === 0
+                                        viewMode || idx === 0
                                             ? token.colorTextDisabled
                                             : undefined,
                                 }}
                                 onClick={() => {
-                                    if (!props.element.isReadonly() && idx !== 0) {
+                                    if (!viewMode && idx !== 0) {
                                         props.element.sendMoveUp({
                                             idx,
                                         });
@@ -88,16 +91,12 @@ function GroupEditorFC(props: { element: GroupEditorComponent }) {
                                 style={{
                                     paddingLeft: token.paddingXS,
                                     color:
-                                        props.element.isReadonly() ||
-                                        idx === arr.length - 1
+                                        viewMode || idx === arr.length - 1
                                             ? token.colorTextDisabled
                                             : undefined,
                                 }}
                                 onClick={() => {
-                                    if (
-                                        !props.element.isReadonly() &&
-                                        idx !== arr.length - 1
-                                    ) {
+                                    if (!viewMode && idx !== arr.length - 1) {
                                         props.element.sendMoveDown({
                                             idx,
                                         });

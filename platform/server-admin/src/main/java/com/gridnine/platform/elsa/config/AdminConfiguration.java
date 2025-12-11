@@ -25,6 +25,7 @@ import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.common.BooleanValueRenderer;
 import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
 import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
+import com.gridnine.platform.elsa.admin.web.common.AutocompleteUtils;
 import com.gridnine.platform.elsa.admin.web.mainFrame.HomePageRouterPathHandler;
 import com.gridnine.platform.elsa.admin.workspace.LinkWorkspaceItemHandler;
 import com.gridnine.platform.elsa.admin.workspace.ListWorkspaceItemHandler;
@@ -68,4 +69,10 @@ public class AdminConfiguration {
     public RestrictionsValueRenderer  restrictionsValueRenderer(){
         return new RestrictionsValueRenderer();
     }
+
+    @Bean
+    public AutocompleteUtils  autocompleteUtils(){
+        return new AutocompleteUtils();
+    }
+
 }

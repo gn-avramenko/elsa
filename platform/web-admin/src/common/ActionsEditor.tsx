@@ -8,11 +8,14 @@ import {
 } from '@ant-design/icons';
 import { theme } from 'antd';
 import { ReactElement } from 'react';
+import { useEditor } from 'admin/src/entityEditor/EntityEditor';
 
 function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
     initStateSetters(props.element);
     const { token } = theme.useToken();
     const divs = [] as ReactElement[];
+    const editor = useEditor();
+    const viewMode = editor != null && !editor.hasTag('edit-mode');
     props.element.children?.forEach((ch, idx, arr) => {
         const item = ch as BaseReactUiElement;
         divs.push(
@@ -29,10 +32,10 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
             <div
                 key={`tools-${ch.id}`}
                 style={{
-                    width: 35,
+                    width: 90,
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'center',
+                    alignSelf: 'start',
                     gridRow: idx + 1,
                     gridColumn: 3,
                 }}
@@ -40,12 +43,10 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                 <PlusOutlined
                     style={{
                         paddingLeft: token.paddingXS,
-                        color: props.element.isReadonly()
-                            ? token.colorTextDisabled
-                            : undefined,
+                        color: viewMode ? token.colorTextDisabled : undefined,
                     }}
                     onClick={() => {
-                        if (!props.element.isReadonly()) {
+                        if (!viewMode) {
                             props.element.sendAdd({
                                 idx,
                             });
@@ -55,12 +56,10 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                 <MinusOutlined
                     style={{
                         paddingLeft: token.paddingXS,
-                        color: props.element.isReadonly()
-                            ? token.colorTextDisabled
-                            : undefined,
+                        color: viewMode ? token.colorTextDisabled : undefined,
                     }}
                     onClick={() => {
-                        if (!props.element.isReadonly()) {
+                        if (!viewMode) {
                             props.element.sendDelete({
                                 idx,
                             });
@@ -71,12 +70,10 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                     style={{
                         paddingLeft: token.paddingXS,
                         color:
-                            props.element.isReadonly() || idx === 0
-                                ? token.colorTextDisabled
-                                : undefined,
+                            viewMode || idx === 0 ? token.colorTextDisabled : undefined,
                     }}
                     onClick={() => {
-                        if (!props.element.isReadonly() && idx !== 0) {
+                        if (!viewMode && idx !== 0) {
                             props.element.sendMoveUp({
                                 idx,
                             });
@@ -87,12 +84,12 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                     style={{
                         paddingLeft: token.paddingXS,
                         color:
-                            props.element.isReadonly() || idx === arr.length - 1
+                            viewMode || idx === arr.length - 1
                                 ? token.colorTextDisabled
                                 : undefined,
                     }}
                     onClick={() => {
-                        if (!props.element.isReadonly() && idx !== arr.length - 1) {
+                        if (!viewMode && idx !== arr.length - 1) {
                             props.element.sendMoveDown({
                                 idx,
                             });

@@ -20,10 +20,10 @@ public class RestrictionsValueRenderer implements ValueRenderer<RestrictionsValu
     }
 
     @Override
-    public RestrictionsEditor createUiElement(RestrictionsValueParameters rendererParameters, RestrictionsValueWrapper value, boolean readonly, String tag, OperationUiContext context) throws Exception {
+    public RestrictionsEditor createUiElement(RestrictionsValueParameters rendererParameters, RestrictionsValueWrapper value, String tag, OperationUiContext context) throws Exception {
         var result = new RestrictionsEditor(tag, context);
         result.setPropertiesMetadata(rendererParameters.properties);
-        result.setData(value == null? List.of(): value.getRestrictions(), readonly, context);
+        result.setData(value == null? List.of(): value.getRestrictions(), context);
         return result;
     }
 

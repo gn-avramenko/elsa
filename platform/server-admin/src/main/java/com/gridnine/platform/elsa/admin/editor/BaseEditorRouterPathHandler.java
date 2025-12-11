@@ -145,9 +145,9 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         config.setDisabledByDefault(true);
         config.getEnablingTags().add("has-changes");
         config.setClickListener((ctx) -> {
-            editor.removeTag("has-changes", ctx);
             var res = writeData(editor, ctx);
             if(res.success()) {
+                editor.removeTag("has-changes", ctx);
                 editor.removeTag("new", ctx);
                 if("new".equals(editor.getObjectId())){
                     MainFrame.lookup(editor).getMainRouter().navigate("/%s/%s?editMode=true".formatted(getSection(), res.id()), true, ctx);

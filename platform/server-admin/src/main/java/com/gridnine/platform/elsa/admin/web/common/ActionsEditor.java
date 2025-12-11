@@ -57,8 +57,7 @@ public class ActionsEditor extends ActionsEditorSkeleton{
         renderersRegistry = ctx.getParameter(StandardParameters.BEAN_FACTORY).getBean(RenderersRegistry.class);
 	}
 
-    public void setData(List<ActionData> actions, boolean readonly, OperationUiContext ctx){
-        setReadonly(readonly, ctx);
+    public void setData(List<ActionData> actions, OperationUiContext ctx){
         var currentChildren = new ArrayList<>(getUnmodifiableListOfChildren());
         currentChildren.forEach(it -> removeChild(ctx, it));
         if(actions.isEmpty()){
@@ -75,7 +74,6 @@ public class ActionsEditor extends ActionsEditorSkeleton{
         var actionConfig  = new FormSelectConfiguration();
         actionConfig.setDeferred(false);
         actionConfig.setTitle(adminL10nFactory.Action());
-        actionConfig.setReadonly(isReadonly());
         actionConfig.setValue(data == null? null: data.id);
         actionConfig.getOptions().addAll(actionsMetadata.stream().map(it ->{
             var item = new Option();
@@ -102,8 +100,8 @@ public class ActionsEditor extends ActionsEditorSkeleton{
         if(existingComp != null){
             contentWrapper.removeChild(ctx, existingComp);
         }
-        var renderer = renderersRegistry.getRenderer(rendererId);
-        var elm = renderer.createUiElement(parameters, value, isReadonly(), "value", ctx);
+        var renderer = renderersRegistry.getValueRenderer(rendererId);
+        var elm = renderer.createUiElement(parameters, value, "value", ctx);
         contentWrapper.addChild(ctx, elm, 0);
     }
 
@@ -139,7 +137,7 @@ public class ActionsEditor extends ActionsEditorSkeleton{
             var actionControl = (FormSelect) child.findChildByTag("action");
             if(actionControl != null && actionControl.getValue() != null){
                 var rendererId = actionsMetadata.stream().filter(it -> it.id.equals(actionControl.getValue())).findFirst().get().rendererId;
-                var renderer = renderersRegistry.getRenderer(rendererId);
+                var renderer = renderersRegistry.getValueRenderer(rendererId);
                 var valueComp = child.findChildByTag("value");
                 if(!renderer.validate(valueComp, ctx)){
                     result.set(false);

@@ -55,9 +55,6 @@
         </server-managed-state>
     </custom-container>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.GroupEditor">
-        <server-managed-state>
-            <property id="readonly" type="BOOLEAN" non-nullable="true"/>
-        </server-managed-state>
         <commands-from-client>
             <command id="add">
                 <property id="idx" type="INT"/>
@@ -81,23 +78,33 @@
     </enum>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.RestrictionEditor">
         <server-managed-state>
-            <property id="readonly" type="BOOLEAN" non-nullable="true"/>
             <property id="restrictionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.web.common.RestrictionType"/>
         </server-managed-state>
     </custom-container>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.RestrictionsEditor">
         <server-managed-state>
-            <property id="readonly" type="BOOLEAN" non-nullable="true"/>
             <property id="l10nAnd" type="STRING" non-nullable="true"/>
             <property id="l10nOr" type="STRING" non-nullable="true"/>
             <property id="l10nNot" type="STRING" non-nullable="true"/>
             <property id="l10nSimple" type="STRING" non-nullable="true"/>
         </server-managed-state>
+        <commands-from-client>
+            <command id="add">
+                <property id="elementId" type="STRING"/>
+                <property id="restrictionType" type="STRING"/>
+            </command>
+            <command id="delete">
+                <property id="elementId" type="STRING"/>
+            </command>
+            <command id="moveUp">
+                <property id="elementId" type="STRING"/>
+            </command>
+            <command id="moveDown">
+                <property id="elementId" type="STRING"/>
+            </command>
+        </commands-from-client>
     </custom-container>
     <custom-container class-name="com.gridnine.platform.elsa.admin.web.common.ActionsEditor">
-        <server-managed-state>
-            <property id="readonly" type="BOOLEAN" non-nullable="true"/>
-        </server-managed-state>
         <commands-from-client>
             <command id="add">
                 <property id="idx" type="INT"/>
