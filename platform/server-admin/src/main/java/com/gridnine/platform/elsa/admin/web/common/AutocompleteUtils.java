@@ -15,7 +15,7 @@ public class AutocompleteUtils {
     @Autowired
     private Storage storage;
 
-    public<E extends BaseIdentity> WebAppServiceHandler<FormRemoteMultiSelectAutocompleteRequest, FormRemoteMultiSelectAutocompleteResponse> createStandardAutocomplete(Class<E> cls){
+    public<E extends BaseIdentity> WebAppServiceHandler<FormRemoteMultiSelectAutocompleteRequest, FormRemoteMultiSelectAutocompleteResponse> createMultiSelectAutocomplete(Class<E> cls){
         return (request, context) -> {
             var refs = storage.searchCaptions(cls, request.getPattern(), 10);
             var result = new FormRemoteMultiSelectAutocompleteResponse();

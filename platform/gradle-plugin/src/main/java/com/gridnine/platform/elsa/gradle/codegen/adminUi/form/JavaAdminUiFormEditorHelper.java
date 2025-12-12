@@ -100,6 +100,7 @@ public class JavaAdminUiFormEditorHelper {
             case DATE_INTERVAL_FIELD -> "com.gridnine.platform.elsa.admin.web.form.FormDateIntervalField";
             case TEXT_AREA -> "com.gridnine.platform.elsa.admin.web.form.FormTextArea";
             case REMOTE_SELECT -> "com.gridnine.platform.elsa.admin.web.form.FormRemoteSelect";
+            case REMOTE_MULTI_SELECT -> "com.gridnine.platform.elsa.admin.web.form.FormRemoteMultiSelect";
             case SELECT -> "com.gridnine.platform.elsa.admin.web.form.FormSelect";
             case CUSTOM -> ((FormCustomElementDescription) pd).getClassName();
         };

@@ -50,6 +50,9 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                             props.element.sendAdd({
                                 idx,
                             });
+                            if (editor) {
+                                editor.addTag('has-changes');
+                            }
                         }
                     }}
                 />
@@ -63,6 +66,9 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                             props.element.sendDelete({
                                 idx,
                             });
+                            if (editor) {
+                                editor.addTag('has-changes');
+                            }
                         }
                     }}
                 />
@@ -77,6 +83,9 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                             props.element.sendMoveUp({
                                 idx,
                             });
+                            if (editor) {
+                                editor.addTag('has-changes');
+                            }
                         }
                     }}
                 />
@@ -93,6 +102,9 @@ function ActionsEditorFC(props: { element: ActionsEditorComponent }) {
                             props.element.sendMoveDown({
                                 idx,
                             });
+                            if (editor) {
+                                editor.addTag('has-changes');
+                            }
                         }
                     }}
                 />

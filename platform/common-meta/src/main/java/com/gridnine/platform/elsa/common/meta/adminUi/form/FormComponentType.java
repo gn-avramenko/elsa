@@ -27,6 +27,7 @@ public enum FormComponentType {
     DATE_INTERVAL_FIELD,
     TEXT_AREA,
     REMOTE_SELECT,
+    REMOTE_MULTI_SELECT,
     SELECT,
     CUSTOM
 }

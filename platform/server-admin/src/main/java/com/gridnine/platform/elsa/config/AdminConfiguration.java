@@ -22,6 +22,10 @@
 package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
+import com.gridnine.platform.elsa.admin.acl.standard.form.FormAclElementHandler;
+import com.gridnine.platform.elsa.admin.acl.standard.form.FormRemoteSelectAclElementHandler;
+import com.gridnine.platform.elsa.admin.acl.standard.form.FormTextFieldAclElementHandler;
+import com.gridnine.platform.elsa.admin.acl.standard.grid.GridAclElementHandler;
 import com.gridnine.platform.elsa.admin.common.BooleanValueRenderer;
 import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
 import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
@@ -75,4 +79,23 @@ public class AdminConfiguration {
         return new AutocompleteUtils();
     }
 
+    @Bean
+    public FormAclElementHandler  formAclElementHandler(){
+        return new FormAclElementHandler();
+    }
+
+    @Bean
+    public GridAclElementHandler gridAclElementHandler(){
+        return new GridAclElementHandler();
+    }
+
+    @Bean
+    public FormTextFieldAclElementHandler  formTextFieldAclElementHandler(){
+        return new FormTextFieldAclElementHandler();
+    }
+
+    @Bean
+    public FormRemoteSelectAclElementHandler  formRemoteSelectAclElementHandler(){
+        return new FormRemoteSelectAclElementHandler();
+    }
 }

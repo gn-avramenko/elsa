@@ -30,6 +30,7 @@ import com.gridnine.platform.elsa.admin.web.common.*;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
 import com.gridnine.platform.elsa.common.core.l10n.Localizer;
+import com.gridnine.platform.elsa.common.core.l10n.SupportedLocalesProvider;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIntrospectableObject;
 import com.gridnine.platform.elsa.common.core.model.common.Localizable;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments;
@@ -37,7 +38,9 @@ import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.model.domain.BaseAsset;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.serialization.meta.SerializablePropertyType;
+import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
+import com.gridnine.platform.elsa.common.meta.common.StandardValueType;
 import com.gridnine.platform.elsa.common.meta.domain.DatabaseCollectionType;
 import com.gridnine.platform.elsa.common.meta.domain.DatabasePropertyType;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
@@ -65,6 +68,9 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
     @Autowired
     protected Localizer localizer;
+
+    @Autowired
+    protected SupportedLocalesProvider supportedLocalesProvider;
 
     public BaseAssetUiListHandler(Class<T> assetClass) {
         this.assetClass = assetClass;
@@ -193,7 +199,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 }
             });
             query.getOrders().put(entityList.getSort().getField(), com.gridnine.platform.elsa.common.core.search.SortOrder.valueOf(entityList.getSort().getOrder().name()));
-            var items = storage.searchAssets(assetClass, query, false);
+            var items = searchAssets(query);
             var result = new ArrayList<RowData>();
             int idx = 0;
             boolean hasMore = false;
@@ -241,6 +247,10 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         entityList.addChild(context, tools, 0);
         entityList.refreshData(context, true);
         return entityList;
+    }
+
+    protected List<T> searchAssets(SearchQuery query) {
+        return storage.searchAssets(assetClass, query, false);
     }
 
 
@@ -294,7 +304,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
             @Override
             public Localizable getTitle() {
-                return prop == null ? createLocalizable(coll.getDisplayNames()) : createLocalizable(prop.getDisplayNames());
+                return prop == null ? com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(coll.getDisplayNames()) : com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(prop.getDisplayNames());
             }
 
             @Override
@@ -419,9 +429,24 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     @Override
     public void updateAclMetadata(AclEngine aclEngine) {
         var asset = domainMetaRegistry.getAssets().get(assetClass.getName());
-        var listNames = asset.getDisplayNames();
         var groupItem = new AclMetadataElement();
-        groupItem.setName(createLocalizable(listNames));
+        {
+            var locales = new ArrayList<>(supportedLocalesProvider.getSupportedLocales());
+            if(locales.isEmpty()) {
+                locales.add(Locale.ENGLISH);
+            }
+            var names = new HashMap<Locale, String>();
+            locales.forEach(locale -> {
+                var oldLocale = LocaleUtils.getCurrentLocale();
+                try {
+                    LocaleUtils.setCurrentLocale(locale);
+                    names.put(locale, ExceptionUtils.wrapException(()->getTitle("/"+getSection(), null)));
+                } finally {
+                    LocaleUtils.setCurrentLocale(oldLocale);
+                }
+            });
+            groupItem.setName(com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(names));
+        }
         groupItem.setId(assetClass.getName());
         groupItem.setHandlerId(getClass().getName());
         groupItem.getActions().add(new AllActionsMetadata(localizer));
@@ -433,6 +458,10 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         listItem.getActions().add(new AllActionsMetadata(localizer));
         {
             List<RestrictionsEditor.RestrictionPropertyMetadata> props = new ArrayList<>();
+            {
+                var prop = new RestrictionsEditor.RestrictionPropertyMetadata("_id", "%s-%s".formatted(StandardValueType.ENTITY_REFERENCE, asset.getId()), null, com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(AdminL10nFactory.List_ObjectMessage(), localizer));
+                props.add(prop);
+            }
             getColumns().forEach(it ->{
                if(it.getValueType() != SerializablePropertyType.ENTITY_REFERENCE) {
                    //TODO process all types
@@ -454,7 +483,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         tools.stream().filter(it -> it instanceof ListToolHandler).forEach(ti -> {
             var tool = (ListToolHandler) ti;
             var item = new AclMetadataElement();
-            var locales = new ArrayList<>(listNames.keySet());
+            var locales = new ArrayList<>(supportedLocalesProvider.getSupportedLocales());
             if(locales.isEmpty()) {
                 locales.add(Locale.ENGLISH);
             }
@@ -469,22 +498,11 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 }
             });
             item.setId("%s.tools.%s".formatted(assetClass.getName(), tool.getId()));
-            item.setName(createLocalizable(names));
+            item.setName(com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(names));
             item.setHandlerId(getClass().getName());
             item.getActions().add(new AllActionsMetadata(localizer));
             aclEngine.addNode(toolsItem.getId(), item);
         });
     }
 
-    protected Localizable createLocalizable(Map<Locale, String> locales) {
-        return locale -> {
-            if (locales.containsKey(locale)) {
-                return locales.get(locale);
-            }
-            if (locales.containsKey(Locale.ENGLISH)) {
-                return locales.get(Locale.ENGLISH);
-            }
-            return "???";
-        };
-    }
 }

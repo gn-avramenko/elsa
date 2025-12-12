@@ -26,10 +26,11 @@ package com.gridnine.platform.elsa.admin.web.acl;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.AclActionMetadata;
+import com.gridnine.platform.elsa.admin.acl.AclPropertyMetadata;
 import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
-import com.gridnine.platform.elsa.admin.domain.AclAction;
-import com.gridnine.platform.elsa.admin.domain.AclRule;
+import com.gridnine.platform.elsa.admin.domain.*;
 import com.gridnine.platform.elsa.admin.web.common.ActionsEditor;
+import com.gridnine.platform.elsa.admin.web.common.RestrictionsEditor;
 import com.gridnine.platform.elsa.admin.web.form.FormSelect;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
@@ -51,9 +52,11 @@ public class AclRuleEditor extends AclRuleEditorSkeleton{
         setConditionsTitle(adminL10n.Conditions(), ctx);
         var actionsEditor = new ActionsEditor("actions", ctx);
         addChild(ctx, actionsEditor, 0);
+        var conditionsEditor = new RestrictionsEditor("conditions", ctx);
+        addChild(ctx, conditionsEditor, 0);
 	}
     public void setActions(List<AclAction> actions, List<AclActionMetadata<?>> actionsMetadata, OperationUiContext operationUiContext){
-        var actionsEditor = (ActionsEditor) getUnmodifiableListOfChildren().get(0);
+        var actionsEditor = (ActionsEditor) findChildByTag("actions");
         actionsEditor.setMetadata(actionsMetadata.stream().map(it ->
                 new ActionsEditor.ActionMetadata(it.getId(), it.getRendererId(), it.getRendererParameters(), it.getName().toString(LocaleUtils.getCurrentLocale()))).toList());
         actionsEditor.setData(actions.stream().map(it -> new ActionsEditor.ActionData(it.getId(), it.getValue())).toList(), operationUiContext);
@@ -66,11 +69,14 @@ public class AclRuleEditor extends AclRuleEditorSkeleton{
 
     public boolean validate(OperationUiContext ctx) {
         var result = new AtomicBoolean(true);
-        var actionsEditor = (ActionsEditor) getUnmodifiableListOfChildren().stream().filter(it -> it.getTag().equals("actions")).findFirst().get();
+        var actionsEditor = (ActionsEditor) findChildByTag("actions");
         if(!actionsEditor.validate(ctx)){
             result.set(false);
         }
-
+        var conditionsEditor = (RestrictionsEditor) findChildByTag("conditions");
+        if(!conditionsEditor.validate(ctx)){
+            result.set(false);
+        }
         return result.get();
     }
 
@@ -90,6 +96,52 @@ public class AclRuleEditor extends AclRuleEditorSkeleton{
                 rule.getActions().add(action);
             }
         });
-        return rule.getActions().isEmpty()? null:rule;
+        var ce = (RestrictionsEditor) findChildByTag("conditions");
+        ce.getData().getRestrictions().forEach(restriction -> {
+            var cond = new AclCondition();
+            toCondition(cond, restriction);
+            if(cond.getConditionType() == AclConditionType.SIMPLE && (cond.getConditionId() == null || cond.getPropertyId() == null)){
+                return;
+            }
+            if(cond.getConditionType() != AclConditionType.SIMPLE && cond.getNestedConditions().isEmpty()){
+                return;
+            }
+            rule.getConditions().add(cond);
+        });
+        return rule.getActions().isEmpty() && rule.getConditions().isEmpty()? null:rule;
+    }
+
+    private void toCondition(AclCondition cond, Restriction restriction) {
+        cond.setConditionId(restriction.getConditionId());
+        cond.setValue(restriction.getValue());
+        cond.setConditionType(AclConditionType.valueOf(restriction.getRestrictionType().name()));
+        cond.setPropertyId(restriction.getPropertyId());
+        restriction.getNestedRestrictions().forEach(restr -> {
+            var item2= new AclCondition();
+            toCondition(item2, restr);
+            cond.getNestedConditions().add(item2);
+        });
+    }
+
+    public void setConditions(List<AclCondition> conditions, List<AclPropertyMetadata<?>> conditionsMetadata, OperationUiContext context) {
+        var conditionsEditor = (RestrictionsEditor) findChildByTag("conditions");
+        conditionsEditor.setPropertiesMetadata(conditionsMetadata.stream().map(condition -> new RestrictionsEditor.RestrictionPropertyMetadata(condition.getId(), condition.getRestrictionRendererId(), condition.getRestrictionRendererParameters(), condition.getName())).toList());
+        conditionsEditor.setData(conditions.stream().map(it -> {
+            var item = new Restriction();
+            toRestriction(item, it);
+            return item;
+        }).toList(), context);
+    }
+
+    private void toRestriction(Restriction item, AclCondition it) {
+        item.setRestrictionType(RestrictionType.valueOf(it.getConditionType().name()));
+        item.setConditionId(it.getConditionId());
+        item.setPropertyId(it.getPropertyId());
+        item.setValue(it.getValue());
+        it.getNestedConditions().forEach(cond -> {
+            var item2 = new Restriction();
+            toRestriction(item2, cond);
+            item.getNestedRestrictions().add(item2);
+        });
     }
 }

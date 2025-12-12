@@ -38,7 +38,9 @@ function AclRuleEditorFC(props: { element: AclRuleEditorComponent }) {
     initStateSetters(props.element);
     return (
         <>
-            <AclBlock title={props.element.getConditionsTitle()} />
+            <AclBlock title={props.element.getConditionsTitle()}>
+                {props.element.findByTag('conditions').createReactElement()}
+            </AclBlock>
             <AclBlock title={props.element.getActionsTitle()}>
                 {props.element.findByTag('actions').createReactElement()}
             </AclBlock>

@@ -36,7 +36,7 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
             const newCount = calculateMaxColumnsCount(
                 value,
                 nestedCount + 1,
-                ed.children!
+                ed.children || []
             );
             if (newCount > value) {
                 value = newCount;
@@ -44,7 +44,7 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
         });
         return value;
     };
-    const maxColumnCount = calculateMaxColumnsCount(4, 0, props.element.children!);
+    const maxColumnCount = calculateMaxColumnsCount(4, 0, props.element.children || []);
 
     let columns = '';
     for (let n of range(1, maxColumnCount + 1)) {
@@ -150,6 +150,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                         restrictionType: info.key,
                                         elementId: ch.id,
                                     });
+                                    if (editor) {
+                                        editor.addTag('has-changes');
+                                    }
                                 },
                             }}
                         >
@@ -175,6 +178,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                     props.element.sendDelete({
                                         elementId: ch.id,
                                     });
+                                    if (editor) {
+                                        editor.addTag('has-changes');
+                                    }
                                 }
                             }}
                         />
@@ -191,6 +197,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                     props.element.sendMoveUp({
                                         elementId: ch.id,
                                     });
+                                    if (editor) {
+                                        editor.addTag('has-changes');
+                                    }
                                 }
                             }}
                         />
@@ -207,6 +216,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                     props.element.sendMoveDown({
                                         elementId: ch.id,
                                     });
+                                    if (editor) {
+                                        editor.addTag('has-changes');
+                                    }
                                 }
                             }}
                         />
@@ -270,6 +282,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                             restrictionType: info.key,
                                             elementId: ch.id,
                                         });
+                                        if (editor) {
+                                            editor.addTag('has-changes');
+                                        }
                                     },
                                 }}
                             >
@@ -297,6 +312,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                         props.element.sendDelete({
                                             elementId: ch.id,
                                         });
+                                        if (editor) {
+                                            editor.addTag('has-changes');
+                                        }
                                     }
                                 }}
                             />
@@ -313,6 +331,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                         props.element.sendMoveUp({
                                             elementId: ch.id,
                                         });
+                                        if (editor) {
+                                            editor.addTag('has-changes');
+                                        }
                                     }
                                 }}
                             />
@@ -329,6 +350,9 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
                                         props.element.sendMoveDown({
                                             elementId: ch.id,
                                         });
+                                        if (editor) {
+                                            editor.addTag('has-changes');
+                                        }
                                     }
                                 }}
                             />
@@ -357,7 +381,7 @@ function RestrictionsEditorFC(props: { element: RestrictionsEditorComponent }) {
         });
         return result;
     };
-    collectElements(props.element.children!, 0, 0, rows);
+    collectElements(props.element.children || [], 0, 0, rows);
     const elements = [] as ReactElement[];
     rows.forEach((row) => row.forEach((i) => elements.push(i)));
     return (

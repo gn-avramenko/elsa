@@ -68,7 +68,7 @@ public class EntityReferenceRestrictionRenderer<E extends BaseIdentity> implemen
             }
         }
         config.setDeferred(true);
-        config.setAutocompleteServiceHandler(autocompleteUtils.createStandardAutocomplete(entityClass));
+        config.setAutocompleteServiceHandler(autocompleteUtils.createMultiSelectAutocomplete(entityClass));
         var result = new FormRemoteMultiSelect(tag, config, context);
         return result;
     }
@@ -92,13 +92,11 @@ public class EntityReferenceRestrictionRenderer<E extends BaseIdentity> implemen
 
 
     @Override
-    public boolean validate(FormRemoteMultiSelect valueComp, OperationUiContext ctx) {
+    public boolean validate(String conditionId, FormRemoteMultiSelect valueComp, OperationUiContext ctx) {
         if (valueComp.getValue().isEmpty()) {
             valueComp.setValidation(adminL10nFactory.Value_Empty(), ctx);
             return false;
         }
         return true;
     }
-
-
 }

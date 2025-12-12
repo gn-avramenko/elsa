@@ -22,13 +22,13 @@
 package com.gridnine.platform.elsa.gradle.meta.adminUi.form;
 
 
-public class FormRemoteSelectDescription extends BaseAdminUiFormComponentDescription {
+public class FormRemoteMultiSelectDescription extends BaseAdminUiFormComponentDescription {
 
     private String className;
 
     @Override
     public FormComponentType getType() {
-        return FormComponentType.REMOTE_SELECT;
+        return FormComponentType.REMOTE_MULTI_SELECT;
     }
 
     public String getClassName() {

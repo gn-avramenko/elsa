@@ -33,8 +33,12 @@
     <message id="l10nNot"/>
     <message id="l10nSimple"/>
     <message id="Property"/>
+    <message id="Editor"/>
     <message id="Condition"/>
     <message id="Equals"/>
     <message id="Not_Equals"/>
     <message id="Value_Empty"/>
+    <message id="List_Object"/>
+    <message id="Equals_Dynamic"/>
+    <message id="Not_Equals_Dynamic"/>
 </messages-bundle>

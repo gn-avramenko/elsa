@@ -256,7 +256,7 @@ public class JavaCodeGeneratorUtils {
         }
         if(ed.isSealable()){
             if (implementsId != null){
-                cnsb.append("%s, Sealable".formatted(implementsId));
+                cnsb.append(", Sealable");
             } else {
                 cnsb.append(" implements Sealable");
             }

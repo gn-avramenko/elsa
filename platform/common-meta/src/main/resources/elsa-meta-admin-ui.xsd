@@ -53,6 +53,7 @@
             <element type="tns:FormSelectType" name="select"/>
             <element type="tns:FormTextFieldType" name="text-field"/>
             <element type="tns:FormRemoteSelectType" name="remote-select"/>
+            <element type="tns:FormRemoteMultiSelectType" name="remote-multi-select"/>
             <element type="tns:FormCustomType" name="custom"/>
             <element type="tns:FormDateIntervalFieldType" name="date-interval-field"/>
             <element type="tns:FormBooleanFieldType" name="boolean-field"/>
@@ -110,7 +111,16 @@
     </complexType>
     <complexType name="FormRemoteSelectType">
         <complexContent>
-            <extension base="tns:BaseFormElementType"/>
+            <extension base="tns:BaseFormElementType">
+                <attribute name="class-name" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="FormRemoteMultiSelectType">
+        <complexContent>
+            <extension base="tns:BaseFormElementType">
+                <attribute name="class-name" type="string" use="required"/>
+            </extension>
         </complexContent>
     </complexType>
     <complexType name="FormCustomType">

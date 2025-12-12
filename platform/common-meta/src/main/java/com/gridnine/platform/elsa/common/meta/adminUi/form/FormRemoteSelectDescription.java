@@ -25,8 +25,18 @@ package com.gridnine.platform.elsa.common.meta.adminUi.form;
 
 public class FormRemoteSelectDescription extends BaseAdminUiFormComponentDescription {
 
+    private String className;
+
     @Override
     public FormComponentType getType() {
         return FormComponentType.REMOTE_SELECT;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 }

@@ -33,6 +33,7 @@ public class AclEntryEditor extends GroupEditor {
             var editor = (AclRuleEditor) ExceptionUtils.wrapException(() -> createItemEditor(context));
             var rule = rules.get(n);
             editor.setActions(rule.getActions(), elementMetadata.getActions(), context);
+            editor.setConditions(rule.getConditions(), elementMetadata.getProperties(), context);
             addChild(context, editor, n);
         }
     }
@@ -41,6 +42,7 @@ public class AclEntryEditor extends GroupEditor {
     protected BaseUiElement createItemEditor(OperationUiContext context) throws Exception {
         var editor = new AclRuleEditor("rule", context);
         editor.setActions(List.of(), metadataElement.getActions(), context);
+        editor.setConditions(List.of(), metadataElement.getProperties(), context);
         return editor;
     }
 

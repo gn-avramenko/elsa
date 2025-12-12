@@ -14,6 +14,7 @@ public class AclMetadataElement {
     private String handlerId;
     private String parentId;
     private final List<AclActionMetadata<?>> actions = new ArrayList<>();
+    private final List<AclPropertyMetadata<?>> properties = new ArrayList<>();
 
     private final List<AclMetadataElement> children = new ArrayList<>();
 
@@ -57,5 +58,9 @@ public class AclMetadataElement {
 
     public List<AclActionMetadata<?>> getActions() {
         return actions;
+    }
+
+    public List<AclPropertyMetadata<?>> getProperties() {
+        return properties;
     }
 }

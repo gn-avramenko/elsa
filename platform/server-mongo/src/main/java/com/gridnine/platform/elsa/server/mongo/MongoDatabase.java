@@ -237,7 +237,7 @@ public class MongoDatabase {
         var collectionName = "%s-captions".formatted(getCollectionName(cls));
         var columnName = "caption";
         if(domainMetaRegistry.getAssets().get(cls.getName()).getLocalizableCaptionExpression() != null){
-            columnName = "caption-%s".formatted(LocaleUtils.getCurrentLocale().getLanguage());
+            columnName = "caption%s".formatted(TextUtils.capitalize(LocaleUtils.getCurrentLocale().getLanguage()));
         }
         var query = new Query().with(Sort.by(Sort.Direction.ASC, columnName)).limit(limit);
         if(TextUtils.isNotBlank(pattern)){

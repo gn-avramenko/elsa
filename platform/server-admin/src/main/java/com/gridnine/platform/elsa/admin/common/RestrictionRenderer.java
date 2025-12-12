@@ -12,5 +12,5 @@ public interface RestrictionRenderer<P,E extends BaseUiElement> {
     List<Option> getConditions();
     E createValueUiElement(P restrictionParameters, Restriction value, String tag, OperationUiContext context) throws Exception;
     Restriction getData(String propertyId, String conditionId, E uiElement) throws Exception;
-    boolean validate(E valueComp, OperationUiContext ctx);
+    boolean validate(String conditionId, E valueComp, OperationUiContext ctx);
 }

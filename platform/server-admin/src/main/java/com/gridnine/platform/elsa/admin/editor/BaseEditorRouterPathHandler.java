@@ -1,12 +1,23 @@
 package com.gridnine.platform.elsa.admin.editor;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
+import com.gridnine.platform.elsa.admin.acl.AclHandler;
+import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
+import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
+import com.gridnine.platform.elsa.admin.acl.standard.EditActionMetadata;
+import com.gridnine.platform.elsa.admin.acl.standard.ViewActionMetadata;
 import com.gridnine.platform.elsa.admin.web.common.Glue;
 import com.gridnine.platform.elsa.admin.web.entityEditor.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
 import com.gridnine.platform.elsa.admin.web.mainFrame.RouterPathHandler;
+import com.gridnine.platform.elsa.common.core.l10n.Localizer;
+import com.gridnine.platform.elsa.common.core.l10n.SupportedLocalesProvider;
+import com.gridnine.platform.elsa.common.core.model.common.Localizable;
+import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
+import com.gridnine.platform.elsa.common.meta.adminUi.AdminUiMetaRegistry;
+import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.storage.Storage;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
@@ -14,14 +25,20 @@ import com.gridnine.webpeer.core.utils.TypedParameter;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> implements RouterPathHandler {
+public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> implements RouterPathHandler, AclHandler {
 
     public static final TypedParameter<EntityEditor<?>> ENTITY_EDITOR = new TypedParameter<>("ENTITY_EDITOR");
 
     private final AtomicInteger index = new AtomicInteger(0);
+
+    @Autowired
+    private SupportedLocalesProvider  supportedLocalesProvider;
 
     @Autowired
     private AdminL10nFactory adminL10nFactory;
@@ -32,18 +49,17 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     @Autowired
     private ListableBeanFactory beanFactory;
 
-    private volatile AclEngine aclEngine;
+    @Autowired
+    private AdminUiMetaRegistry adminUiMetaRegistry;
 
-    protected AclEngine getAclEngine() {
-       if(aclEngine == null) {
-           synchronized (this) {
-               if(aclEngine == null) {
-                   aclEngine = beanFactory.getBean(AclEngine.class);
-               }
-           }
-       }
-       return aclEngine;
-    }
+    @Autowired
+    private Localizer localizer;
+
+    private AclEngine aclEngine;
+
+    @Autowired
+    private DomainMetaRegistry  domainMetaRegistry;
+
     @Override
     public boolean canHandle(String path) {
         if (TextUtils.isBlank(path)) {
@@ -57,8 +73,6 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     public BaseUiElement createElement(String path, OperationUiContext context) throws Exception {
         var result = new EntityEditor<E>(context);
         context.setParameter(ENTITY_EDITOR, result);
-        var content = createContent("content", context);
-        result.setContent(content, context);
         var correctedPath = path;
         if(correctedPath.contains("?")){
             correctedPath = correctedPath.substring(0,correctedPath.indexOf("?"));
@@ -71,11 +85,40 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         if(path.contains("?editMode=true")){
             result.addTag("edit-mode", context);
         }
+        var content = createContent("content", context);
+        result.setContent(content, context);
+        var tools = new ArrayList<BaseUiElement>();
+        var elms = getTools(result.getTags().contains("edit-mode"));
+       for(int n=0; n < elms.size(); n++){
+           var elm = elms.get(n);
+            if (elm instanceof com.gridnine.platform.elsa.admin.list.Glue) {
+                var glue = new com.gridnine.platform.elsa.admin.web.common.Glue("glue-%s".formatted(n), context);
+                tools.add(glue);
+                continue;
+            }
+            var toolHandler = (EditorToolHandler<E>) elm;
+           var config = new EditorToolConfiguration();
+           config.setButtonType(toolHandler.getButtonType());
+           config.setIcon(toolHandler.getIcon());
+           config.getEnablingTags().addAll(toolHandler.getEnablingTags());
+           config.getDisablingTags().addAll(toolHandler.getDisablingTags());
+           config.setDisabledByDefault(toolHandler.isDisabledByDefault());
+           var tool = new EditorTool(toolHandler.getId(), config, context);
+           tool.setClickListener((ctx)->{
+               toolHandler.onClicked(ctx, tool, result);
+           });
+            tools.add(tool);
+        }
+        result.setTools(tools, context);
         readData(result, context);
         return result;
     }
 
+    protected abstract Class<E> getEditorClass();
+
     protected abstract E createContent(String tag, OperationUiContext context) throws Exception;
+
+    protected abstract List<?> getTools(boolean editMode) throws Exception;
 
     protected abstract void readData(EntityEditor<E> result, OperationUiContext context) throws Exception;
 
@@ -92,78 +135,199 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         return "/" + getSection();
     }
 
-    protected BaseUiElement glue(OperationUiContext context) {
-        return new Glue("glue-" + index.incrementAndGet(), context);
+    protected com.gridnine.platform.elsa.admin.list.Glue glue() {
+        return new com.gridnine.platform.elsa.admin.list.Glue(){};
     }
 
-    protected EditorTool deleteTool(EntityEditor<E> editor, OperationUiContext context) {
-        var config = new EditorToolConfiguration();
-        config.setButtonType(EntityEditorToolType.ERROR);
-        config.setIcon("DeleteOutlined");
-        config.setTooltip(adminL10nFactory.Delete());
-        config.setDisabledByDefault(false);
-        config.getDisablingTags().add("new");
-        config.setClickListener((ctx) -> {
-            MainFrame.lookup(editor).confirm(adminL10nFactory.Are_you_sure_to_delete(), (ctx2)->{
-               var asset = storage.loadAsset((Class)getObjectClass(), editor.getObjectId(), true);
-               storage.deleteAsset(asset);
-               MainFrame.lookup(editor).getMainRouter().navigate("/%s".formatted(getSection()), true, ctx2);
-                MainFrame.lookup(editor).showInfo(adminL10nFactory.Object_deleted(), ctx2);
-            }, ctx);
-        });
-        return new EditorTool("delete", config, context);
-    }
-
-    protected EditorTool editTool(EntityEditor<E> editor, OperationUiContext context) {
-        var config = new EditorToolConfiguration();
-        config.setButtonType(EntityEditorToolType.STANDARD);
-        var em = editor.getTags().contains("edit-mode");
-        config.setIcon(em? "EyeOutlined": "EditOutlined");
-        config.setTooltip(em? adminL10nFactory.View(): adminL10nFactory.Edit());
-        config.getDisablingTags().add("has-changes");
-        var tool = new EditorTool("edit", config, context);
-        tool.setClickListener((ctx) -> {
-            if (editor.getTags().contains("edit-mode")) {
-                editor.removeTag("edit-mode", ctx);
-                tool.setTooltip(adminL10nFactory.Edit(), ctx);
-                tool.setIcon("EditOutlined", ctx);
-                return;
+    protected EditorToolHandler<E> deleteTool() {
+        return new EditorToolHandler<E>() {
+            @Override
+            public String getId() {
+                return "delete";
             }
-            editor.addTag("edit-mode", ctx);
-            tool.setTooltip(adminL10nFactory.View(), ctx);
-            tool.setIcon("EyeOutlined", ctx);
-            return;
-        });
-        return tool;
+
+            @Override
+            public String getIcon() {
+                return "DeleteOutlined";
+            }
+
+            @Override
+            public Localizable getDescription() {
+                return com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(AdminL10nFactory.DeleteMessage(), localizer);
+            }
+
+            @Override
+            public void onClicked(OperationUiContext context, EditorTool tool, EntityEditor<E> editor) throws Exception {
+                MainFrame.lookup(editor).confirm(adminL10nFactory.Are_you_sure_to_delete(), (ctx2)->{
+                    var asset = storage.loadAsset((Class)getObjectClass(), editor.getObjectId(), true);
+                    storage.deleteAsset(asset);
+                    MainFrame.lookup(editor).getMainRouter().navigate("/%s".formatted(getSection()), true, ctx2);
+                    MainFrame.lookup(editor).showInfo(adminL10nFactory.Object_deleted(), ctx2);
+                }, context);
+            }
+
+            @Override
+            public EntityEditorToolType getButtonType() {
+                return EntityEditorToolType.ERROR;
+            }
+        };
     }
 
-    protected EditorTool saveTool(EntityEditor<E> editor, OperationUiContext context) {
-        var config = new EditorToolConfiguration();
-        config.setButtonType(EntityEditorToolType.STANDARD);
-        config.setIcon("SaveOutlined");
-        config.setTooltip(adminL10nFactory.Save());
-        config.setDisabledByDefault(true);
-        config.getEnablingTags().add("has-changes");
-        config.setClickListener((ctx) -> {
-            var res = writeData(editor, ctx);
-            if(res.success()) {
-                editor.removeTag("has-changes", ctx);
-                editor.removeTag("new", ctx);
-                if("new".equals(editor.getObjectId())){
-                    MainFrame.lookup(editor).getMainRouter().navigate("/%s/%s?editMode=true".formatted(getSection(), res.id()), true, ctx);
+    protected EditorToolHandler<E> editTool(boolean defaultEditMode) {
+        return new EditorToolHandler<E>() {
+            @Override
+            public String getId() {
+                return "edit";
+            }
+
+            @Override
+            public String getIcon() {
+                return defaultEditMode? "EyeOutlined": "EditOutlined";
+            }
+
+            @Override
+            public Localizable getDescription() {
+                return defaultEditMode? com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(AdminL10nFactory.ViewMessage(),localizer): com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(AdminL10nFactory.EditMessage(), localizer);
+            }
+
+            @Override
+            public void onClicked(OperationUiContext context, EditorTool tool, EntityEditor<E> editor) throws Exception {
+                if (editor.getTags().contains("edit-mode")) {
+                    editor.removeTag("edit-mode", context);
+                    tool.setTooltip(adminL10nFactory.Edit(), context);
+                    tool.setIcon("EditOutlined", context);
+                    return;
                 }
-                MainFrame.lookup(editor).setTitle(editor.getTitle(), ctx);
-                return;
+                editor.addTag("edit-mode", context);
+                tool.setTooltip(adminL10nFactory.View(), context);
+                tool.setIcon("EyeOutlined", context);
             }
-            var errorMessage = res.errorMessage();
-            if(TextUtils.isBlank(errorMessage)){
-                errorMessage = adminL10nFactory.Editor_has_validation_errors();
+
+            @Override
+            public EntityEditorToolType getButtonType() {
+                return EntityEditorToolType.STANDARD;
             }
-            MainFrame.lookup(editor).showWarning(errorMessage, ctx);
+        };
+    }
+
+    protected EditorToolHandler<E> saveTool() {
+        return new  EditorToolHandler<E>() {
+
+            @Override
+            public String getId() {
+                return "save";
+            }
+
+            @Override
+            public String getIcon() {
+                return "SaveOutlined";
+            }
+
+            @Override
+            public Localizable getDescription() {
+                return com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(AdminL10nFactory.SaveMessage(), localizer);
+            }
+
+            @Override
+            public void onClicked(OperationUiContext ctx, EditorTool tool, EntityEditor<E> editor) throws Exception {
+                var res = writeData(editor, ctx);
+                if(res.success()) {
+                    editor.removeTag("has-changes", ctx);
+                    editor.removeTag("new", ctx);
+                    if("new".equals(editor.getObjectId())){
+                        MainFrame.lookup(editor).getMainRouter().navigate("/%s/%s?editMode=true".formatted(getSection(), res.id()), true, ctx);
+                    }
+                    MainFrame.lookup(editor).setTitle(editor.getTitle(), ctx);
+                    return;
+                }
+                var errorMessage = res.errorMessage();
+                if(TextUtils.isBlank(errorMessage)){
+                    errorMessage = adminL10nFactory.Editor_has_validation_errors();
+                }
+                MainFrame.lookup(editor).showWarning(errorMessage, ctx);
+            }
+
+            @Override
+            public EntityEditorToolType getButtonType() {
+                return EntityEditorToolType.STANDARD;
+            }
+
+            @Override
+            public boolean isDisabledByDefault() {
+                return true;
+            }
+
+            @Override
+            public List<String> getEnablingTags() {
+                return List.of("has-changes");
+            }
+        };
+    }
+
+    @Override
+    public double getPriority() {
+        return 2;
+    }
+
+    public AclEngine getAclEngine() {
+        return aclEngine;
+    }
+
+    @Override
+    public void updateAclMetadata(AclEngine aclEngine) {
+        this.aclEngine = aclEngine;
+        var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
+        if(container == null){
+            return;
+        }
+        var groupItem = aclEngine.getNode(getObjectClass().getName());
+        var objectItem = new AclMetadataElement();
+        objectItem.setName(AdminL10nFactory.EditorMessage(), localizer);
+        objectItem.setId("%s.editor".formatted(getObjectClass().getName()));
+        objectItem.setHandlerId(getClass().getName());
+        objectItem.getActions().add(new AllActionsMetadata(localizer));
+        objectItem.getActions().add(new EditActionMetadata(localizer));
+        objectItem.getActions().add(new ViewActionMetadata(localizer));
+        aclEngine.addNode(groupItem.getId(), objectItem);
+        var toolsItem = new AclMetadataElement();
+        toolsItem.setId("%s.editor.tools".formatted(getObjectClass().getName()));
+        toolsItem.setName(AdminL10nFactory.ToolsMessage(), localizer);
+        toolsItem.setHandlerId(getClass().getName());
+        toolsItem.getActions().add(new AllActionsMetadata(localizer));
+        aclEngine.addNode(objectItem.getId(), toolsItem);
+        ExceptionUtils.wrapException(() -> getTools(true)).stream().filter(it -> it instanceof EditorToolHandler<?>).forEach(ti -> {
+            var tool = (EditorToolHandler<?>) ti;
+            var item = new AclMetadataElement();
+            var locales = new ArrayList<>(supportedLocalesProvider.getSupportedLocales());
+            if(locales.isEmpty()) {
+                locales.add(Locale.ENGLISH);
+            }
+            var names = new HashMap<Locale, String>();
+            locales.forEach(locale -> {
+                names.put(locale, tool.getDescription().toString(locale));
+            });
+            item.setId("%s.tools.%s".formatted(getObjectClass().getName(), tool.getId()));
+            item.setName(com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(names));
+            item.setHandlerId(getClass().getName());
+            item.getActions().add(new AllActionsMetadata(localizer));
+            aclEngine.addNode(toolsItem.getId(), item);
         });
-        return new EditorTool("save", config, context);
+        var contentItem = new AclMetadataElement();
+        contentItem.setId("%s.editor.content".formatted(getObjectClass().getName()));
+        contentItem.setName(AdminL10nFactory.ContentMessage(), localizer);
+        contentItem.setHandlerId(getClass().getName());
+        contentItem.getActions().add(new AllActionsMetadata(localizer));
+        contentItem.getActions().add(new EditActionMetadata(localizer));
+        contentItem.getActions().add(new ViewActionMetadata(localizer));
+        aclEngine.addNode(objectItem.getId(), contentItem);
+        String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
+        var elementHandler = aclEngine.getElementHandler(handlerId);
+        if(elementHandler != null){
+            ExceptionUtils.wrapException(()->elementHandler.updateAclMetadata(contentItem, container, aclEngine));
+        }
     }
 
     protected abstract Class<?> getObjectClass();
     protected abstract String getSection();
+
 }

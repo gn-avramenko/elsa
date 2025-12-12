@@ -19,23 +19,29 @@
  * SOFTWARE.
  */
 
-package com.gridnine.platform.elsa.gradle.meta.adminUi.form;
+package com.gridnine.platform.elsa.admin.editor;
 
+import com.gridnine.platform.elsa.admin.web.entityEditor.EditorTool;
+import com.gridnine.platform.elsa.admin.web.entityEditor.EntityEditor;
+import com.gridnine.platform.elsa.admin.web.entityEditor.EntityEditorToolType;
+import com.gridnine.platform.elsa.common.core.model.common.Localizable;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
+import com.gridnine.webpeer.core.ui.OperationUiContext;
 
-public class FormRemoteSelectDescription extends BaseAdminUiFormComponentDescription {
+import java.util.List;
 
-    private String className;
-
-    @Override
-    public FormComponentType getType() {
-        return FormComponentType.REMOTE_SELECT;
+public interface EditorToolHandler<E extends BaseUiElement> {
+    String getId();
+    String getIcon();
+    Localizable getDescription();
+    void onClicked(OperationUiContext context, EditorTool tool, EntityEditor<E> editor) throws Exception;
+    EntityEditorToolType getButtonType();
+    default List<String> getDisablingTags() {
+        return List.of();
     }
-
-    public String getClassName() {
-        return className;
+    default List<String> getEnablingTags() {
+        return List.of();
     }
-
-    public void setClassName(String className) {
-        this.className = className;
+    default boolean isDisabledByDefault() {return false;
     }
 }

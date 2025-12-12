@@ -25,6 +25,8 @@ import com.gridnine.platform.elsa.gradle.codegen.adminUi.common.JavaAdminUiCodeG
 import com.gridnine.platform.elsa.gradle.codegen.common.JavaCodeGenerator;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormContainerDescription;
 import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormCustomElementDescription;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormRemoteMultiSelectDescription;
+import com.gridnine.platform.elsa.gradle.meta.adminUi.form.FormRemoteSelectDescription;
 import com.gridnine.platform.elsa.gradle.utils.BuildRunnableWithException;
 
 public class JavaAdminUiFormConfiguratorHelper {
@@ -88,10 +90,21 @@ public class JavaAdminUiFormConfiguratorHelper {
                                 gen.wrapWithBlock(null, () -> {
                                     gen.printLine("var comp = new FormRemoteSelectDescription();");
                                     gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    gen.printLine("comp.setClassName(\"%s\");".formatted(((FormRemoteSelectDescription)comp).getClassName()));
                                     JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
                                     gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
                                 });
 
+                            }
+                            case REMOTE_MULTI_SELECT -> {
+                                gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormRemoteMultiSelectDescription");
+                                gen.wrapWithBlock(null, () -> {
+                                    gen.printLine("var comp = new FormRemoteMultiSelectDescription();");
+                                    gen.printLine("comp.setId(\"%s\");".formatted(comp.getId()));
+                                    gen.printLine("comp.setClassName(\"%s\");".formatted(((FormRemoteMultiSelectDescription)comp).getClassName()));
+                                    JavaAdminUiCodeGenUtils.updateTitle(comp.getTitle(), gen);
+                                    gen.printLine("%s.getComponents().put(comp.getId(), comp);".formatted(containerDescriptionName));
+                                });
                             }
                             case SELECT -> {
                                 gen.addImport("com.gridnine.platform.elsa.common.meta.adminUi.form.FormSelectDescription");

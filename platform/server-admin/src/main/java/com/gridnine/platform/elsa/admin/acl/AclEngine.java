@@ -1,6 +1,7 @@
 package com.gridnine.platform.elsa.admin.acl;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
+import com.gridnine.platform.elsa.admin.acl.standard.AclElementHandler;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.common.ValueRenderer;
 import com.gridnine.platform.elsa.common.core.l10n.Localizer;
@@ -24,6 +25,12 @@ public class AclEngine {
     @Autowired(required = false)
     private List<AclHandler> handlers;
 
+    @Autowired(required = false)
+    private List<AclElementHandler> elementHandlers;
+
+
+    private final Map<String, AclElementHandler> elementsHandlersMap = new HashMap<>();
+
     @Autowired
     private Localizer localizer;
 
@@ -40,6 +47,9 @@ public class AclEngine {
         }
     }
 
+    public<E> AclElementHandler<E> getElementHandler(String elementId) {
+        return (AclElementHandler<E>) elementsHandlersMap.get(elementId);
+    }
     @PostConstruct
     public void init() {
         rootElement = new AclMetadataElement();
@@ -47,12 +57,13 @@ public class AclEngine {
         rootElement.setName(AdminL10nFactory.All_ObjectsMessage(), localizer);
         rootElement.getActions().add(new AllActionsMetadata(localizer));
         inverseMap.put(ROOT_NODE_ID, rootElement);
+        if(elementHandlers != null) {
+            elementHandlers.forEach(it -> elementsHandlersMap.put(it.getElementId(), it));
+        }
         if (handlers != null) {
             for (AclHandler handler : handlers.stream().sorted(Comparator.comparing(AclHandler::getPriority)).toList()) {
                 handler.updateAclMetadata(this);
             }
         }
     }
-
-
 }

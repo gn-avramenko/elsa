@@ -297,7 +297,7 @@ public class RestrictionsEditor extends RestrictionsEditorSkeleton {
                         var value = re.findChildByTag("value");
                         var rendererId = propertiesMetadata.stream().filter(it -> it.propertyId.equals(property.getValue())).findFirst().get().rendererId;
                         var renderer = renderersRegistry.getRestrictionRenderer(rendererId);
-                        return renderer.validate(value, ctx);
+                        return renderer.validate(cd.getValue(), value, ctx);
                     }
                 }
                 return true;

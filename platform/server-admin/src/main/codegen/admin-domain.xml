@@ -29,7 +29,21 @@
         <property id="id" type="STRING" non-nullable="true"/>
         <property id="value" type="ENTITY" class-name="Object"/>
     </entity>
+    <enum id="com.gridnine.platform.elsa.admin.domain.AclConditionType">
+        <enum-item id="SIMPLE"/>
+        <enum-item id="OR"/>
+        <enum-item id="NOT"/>
+        <enum-item id="AND"/>
+    </enum>
+    <entity id="com.gridnine.platform.elsa.admin.domain.AclCondition">
+        <property id="propertyId" type="STRING"/>
+        <property id="conditionId" type="STRING"/>
+        <property id="conditionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.domain.AclConditionType" non-nullable="true"/>
+        <property id="value" type="ENTITY" class-name="Object"/>
+        <collection element-type="ENTITY" id="nestedConditions" element-class-name="com.gridnine.platform.elsa.admin.domain.AclCondition"/>
+    </entity>
     <entity id="com.gridnine.platform.elsa.admin.domain.AclRule">
+        <collection id="conditions" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.AclCondition"/>
         <collection id="actions" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.AclAction"/>
     </entity>
     <entity id="com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper">

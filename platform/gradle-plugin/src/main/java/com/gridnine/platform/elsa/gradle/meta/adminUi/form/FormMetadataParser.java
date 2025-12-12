@@ -74,8 +74,17 @@ public class FormMetadataParser {
             if("remote-select".equals(tag)){
                 var remoteSelectDescription = new FormRemoteSelectDescription();
                 remoteSelectDescription.setId(CommonParserUtils.getIdAttribute(childNode));
+                remoteSelectDescription.setClassName(childNode.getAttribute("class-name"));
                 AdminUiParserHelper.updateTitle(childNode, remoteSelectDescription.getTitle());
                 formDescription.getComponents().put(remoteSelectDescription.getId(), remoteSelectDescription);
+                return;
+            }
+            if("remote-multi-select".equals(tag)){
+                var remoteMultiSelectDescription = new FormRemoteMultiSelectDescription();
+                remoteMultiSelectDescription.setId(CommonParserUtils.getIdAttribute(childNode));
+                remoteMultiSelectDescription.setClassName(childNode.getAttribute("class-name"));
+                AdminUiParserHelper.updateTitle(childNode, remoteMultiSelectDescription.getTitle());
+                formDescription.getComponents().put(remoteMultiSelectDescription.getId(), remoteMultiSelectDescription);
                 return;
             }
             if("select".equals(tag)){
