@@ -38,7 +38,7 @@
             <property id="readonly" type="BOOLEAN"/>
         </server-managed-state>
         <input-value>
-            <property id="value" type="BOOLEAN"/>
+            <property id="value" type="BOOLEAN" non-nullable="true"/>
         </input-value>
     </custom>
     <custom class-name="com.gridnine.platform.elsa.admin.web.form.FormDateIntervalField">

@@ -22,6 +22,7 @@
 package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
+import com.gridnine.platform.elsa.admin.acl.standard.BooleanRestrictionValueRenderer;
 import com.gridnine.platform.elsa.admin.acl.standard.form.FormAclElementHandler;
 import com.gridnine.platform.elsa.admin.acl.standard.form.FormRemoteSelectAclElementHandler;
 import com.gridnine.platform.elsa.admin.acl.standard.form.FormTextFieldAclElementHandler;
@@ -97,5 +98,10 @@ public class AdminConfiguration {
     @Bean
     public FormRemoteSelectAclElementHandler  formRemoteSelectAclElementHandler(){
         return new FormRemoteSelectAclElementHandler();
+    }
+
+    @Bean
+    public BooleanRestrictionValueRenderer booleanRestrictionValueRenderer(){
+        return new BooleanRestrictionValueRenderer();
     }
 }

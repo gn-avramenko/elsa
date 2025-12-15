@@ -62,6 +62,9 @@
     <entity id="com.gridnine.platform.elsa.admin.domain.EntityReferenceRestrictionValue">
         <collection id="values" element-type="ENTITY" element-class-name="com.gridnine.platform.elsa.admin.domain.EntityReferenceWrapper"/>
     </entity>
+    <entity id="com.gridnine.platform.elsa.admin.domain.BooleanRestrictionValue">
+        <property id="value" type="BOOLEAN" non-nullable="true"/>
+     </entity>
     <entity id="com.gridnine.platform.elsa.admin.domain.Restriction">
         <property id="restrictionType" type="ENUM" class-name="com.gridnine.platform.elsa.admin.domain.RestrictionType"/>
         <property id="propertyId" type="STRING" />
