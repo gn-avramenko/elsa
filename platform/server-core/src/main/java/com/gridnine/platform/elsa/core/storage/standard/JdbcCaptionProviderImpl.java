@@ -104,7 +104,7 @@ public class JdbcCaptionProviderImpl implements CaptionProvider {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    <I extends BaseIdentity> void invalidateCaptionsCache(Class<I> cls, String id) {
+    public void invalidateCaptionsCache(Class<?> cls, String id) {
         if (cacheMetadataProvider.isCacheCaption(cls)) {
             getOrCreateCaptionCache(captionsCache, cls, String.class).put(id, new CachedValue<>(System.nanoTime(), null));
             return;

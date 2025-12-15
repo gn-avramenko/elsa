@@ -25,4 +25,6 @@ public interface CaptionProvider {
 
     String getCaption(EntityReference<?> ref);
 
+
+    default void invalidateCaptionsCache(Class<?> aClass, String id){};
 }

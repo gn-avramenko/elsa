@@ -187,7 +187,7 @@ public class InvalidateCacheStorageInterceptor implements StorageInterceptor {
         }
         if (supportedLocalesProvider.getSupportedLocales().stream().anyMatch(it ->
                 !Objects.equals(getCaption(asset, it), getCaption(oldObject, it)))) {
-            ((JdbcCaptionProviderImpl) storageCaptionProvider).invalidateCaptionsCache(asset.getClass(), asset.getId());
+             storageCaptionProvider.invalidateCaptionsCache(asset.getClass(), asset.getId());
         }
     }
 
