@@ -12,9 +12,7 @@ function AclTreeEditorFC(props: { element: AclTreeEditorComponent }) {
         const item: TreeDataNode = {
             title:
                 hasRulesIds.indexOf(entry.id) !== -1 ? (
-                    <Text type="success">
-                        {entry.name}
-                    </Text>
+                    <Text type="success">{entry.name}</Text>
                 ) : hasChildrenWithRulesIds.indexOf(entry.id) !== -1 ? (
                     <Text type="warning">{entry.name}</Text>
                 ) : (
