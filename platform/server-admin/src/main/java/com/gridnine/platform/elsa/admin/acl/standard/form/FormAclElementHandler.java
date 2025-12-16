@@ -23,7 +23,6 @@ public class FormAclElementHandler implements AclElementHandler<FormContainerDes
             if(handler != null){
                 ExceptionUtils.wrapException(()->handler.updateAclMetadata(parent, elm, aclEngine));
             }
-
         });
     }
 }

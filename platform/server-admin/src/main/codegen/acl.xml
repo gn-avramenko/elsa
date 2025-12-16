@@ -9,6 +9,8 @@
         <server-managed-state>
             <property id="rootEntry" type="ENTITY" class-name="com.gridnine.platform.elsa.admin.web.acl.AclMetadataElementWrapper"/>
             <property id="selectedNodeId" type="STRING" non-nullable="true"/>
+            <collection id="hasRulesIds" element-type="STRING"/>
+            <collection id="hasChildrenWithRulesIds" element-type="STRING"/>
         </server-managed-state>
         <commands-from-client>
             <command id="selectNode">

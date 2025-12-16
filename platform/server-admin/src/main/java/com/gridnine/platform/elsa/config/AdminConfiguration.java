@@ -23,9 +23,7 @@ package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.acl.standard.BooleanRestrictionValueRenderer;
-import com.gridnine.platform.elsa.admin.acl.standard.form.FormAclElementHandler;
-import com.gridnine.platform.elsa.admin.acl.standard.form.FormRemoteSelectAclElementHandler;
-import com.gridnine.platform.elsa.admin.acl.standard.form.FormTextFieldAclElementHandler;
+import com.gridnine.platform.elsa.admin.acl.standard.form.*;
 import com.gridnine.platform.elsa.admin.acl.standard.grid.GridAclElementHandler;
 import com.gridnine.platform.elsa.admin.common.BooleanValueRenderer;
 import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
@@ -103,5 +101,30 @@ public class AdminConfiguration {
     @Bean
     public BooleanRestrictionValueRenderer booleanRestrictionValueRenderer(){
         return new BooleanRestrictionValueRenderer();
+    }
+
+    @Bean
+    public FormBooleanFieldAclElementHandler formBooleanFieldAclElementHandler(){
+        return new FormBooleanFieldAclElementHandler();
+    }
+
+    @Bean
+    public FormTextAreaAclElementHandler formTextAreaAclElementHandler(){
+        return new FormTextAreaAclElementHandler();
+    }
+
+    @Bean
+    public FormRemoteMultiSelectAclElementHandler formRemoteMultiSelectAclElementHandler(){
+        return new FormRemoteMultiSelectAclElementHandler();
+    }
+
+    @Bean
+    public FormSelectAclElementHandler formSelectAclElementHandler(){
+        return new FormSelectAclElementHandler();
+    }
+
+    @Bean
+    public FormDateIntervalElementHandler formDateIntervalElementHandler(){
+        return new FormDateIntervalElementHandler();
     }
 }

@@ -63,6 +63,7 @@ public class AclTreeEditor extends AclTreeEditorSkeleton{
                 aclEntries.put(getSelectedNodeId(), entry);
             }
             setSelectedNodeId(act.getNodeId(), ctx);
+            updateHasRules(ctx);
             var newEntry = aclEntries.get(act.getNodeId());
             entryEditor.setData(metadata.get(act.getNodeId()), newEntry == null? List.of(): newEntry.getRules(), ctx);
         });
@@ -85,8 +86,33 @@ public class AclTreeEditor extends AclTreeEditorSkeleton{
         entries.forEach(entry -> {
             aclEntries.put(entry.getId(), entry);
         });
+        updateHasRules(context);
         var rootEntry = aclEntries.get(rootNode.getId());
         entryEditor.setData(rootNode, rootEntry == null? List.of(): rootEntry.getRules(), context);
+    }
+
+    private void updateHasRules(OperationUiContext context) {
+        var hasRulesIds = new ArrayList<String>();
+        var hasChildrenWithRulesIds = new ArrayList<String>();
+        collectRulesIds(hasRulesIds, hasChildrenWithRulesIds, metadata.get(AclEngine.ROOT_NODE_ID));
+        setHasRulesIds(hasRulesIds, context);
+        setHasChildrenWithRulesIds(hasChildrenWithRulesIds, context);
+    }
+
+    private boolean collectRulesIds(ArrayList<String> hasRulesIds, ArrayList<String> hasChildrenWithRulesIds, AclMetadataElement rootNode) {
+        boolean result = false;
+        if(aclEntries.containsKey(rootNode.getId())){
+            hasRulesIds.add(rootNode.getId());
+            result = true;
+        }
+        for(var child: rootNode.getChildren()){
+            if(collectRulesIds(hasRulesIds, hasChildrenWithRulesIds, child)){
+                hasChildrenWithRulesIds.add(child.getId());
+                result = true;
+            }
+        }
+        return result;
+
     }
 
     private void convert(AclMetadataElement rootNode, AclMetadataElementWrapper rootNodeWrapper) {
