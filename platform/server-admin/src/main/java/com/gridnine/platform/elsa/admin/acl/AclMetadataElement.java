@@ -63,4 +63,5 @@ public class AclMetadataElement {
     public List<AclPropertyMetadata<?>> getProperties() {
         return properties;
     }
+
 }

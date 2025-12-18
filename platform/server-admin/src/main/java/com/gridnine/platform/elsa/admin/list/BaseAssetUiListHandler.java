@@ -22,9 +22,13 @@
 package com.gridnine.platform.elsa.admin.list;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
+import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
+import com.gridnine.platform.elsa.admin.acl.standard.AclConfigurator;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ListRestrictionsMetadata;
+import com.gridnine.platform.elsa.admin.acl.standard.RootNodeAclHandler;
 import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
+import com.gridnine.platform.elsa.admin.domain.AclAction;
 import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
 import com.gridnine.platform.elsa.admin.web.common.*;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
@@ -54,8 +58,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiListHandler, AclHandler {
+public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiListHandler, AclHandler, AclConfigurator {
     protected final Class<T> assetClass;
+
+    @Override
+    public String getId() {
+        return getClass().getName();
+    }
 
     @Autowired
     protected DomainMetaRegistry domainMetaRegistry;
@@ -450,7 +459,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         groupItem.setId(assetClass.getName());
         groupItem.setHandlerId(getClass().getName());
         groupItem.getActions().add(new AllActionsMetadata(localizer));
-        aclEngine.addNode(AclEngine.ROOT_NODE_ID, groupItem);
+        aclEngine.addNode(RootNodeAclHandler.ROOT_NODE_ID, groupItem);
         var listItem = new AclMetadataElement();
         listItem.setName(AdminL10nFactory.ListMessage(), localizer);
         listItem.setId("%s.list".formatted(assetClass.getName()));
@@ -505,4 +514,23 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
         });
     }
 
+    @Override
+    public void fillProperties(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine) {
+        //noops
+    }
+
+    @Override
+    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+
+    }
+
+    @Override
+    public void mergeActions(AclObjectProxy root, Object metadata) {
+
+    }
+
+    @Override
+    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
+
+    }
 }

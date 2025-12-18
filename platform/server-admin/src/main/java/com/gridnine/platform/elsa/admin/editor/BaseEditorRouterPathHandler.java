@@ -3,9 +3,12 @@ package com.gridnine.platform.elsa.admin.editor;
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.AclHandler;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
+import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
+import com.gridnine.platform.elsa.admin.acl.standard.AclConfigurator;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.EditActionMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ViewActionMetadata;
+import com.gridnine.platform.elsa.admin.domain.AclAction;
 import com.gridnine.platform.elsa.admin.web.common.Glue;
 import com.gridnine.platform.elsa.admin.web.entityEditor.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
@@ -25,13 +28,10 @@ import com.gridnine.webpeer.core.utils.TypedParameter;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> implements RouterPathHandler, AclHandler {
+public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> implements RouterPathHandler, AclHandler, AclConfigurator {
 
     public static final TypedParameter<EntityEditor<?>> ENTITY_EDITOR = new TypedParameter<>("ENTITY_EDITOR");
 
@@ -56,6 +56,11 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     private Localizer localizer;
 
     private AclEngine aclEngine;
+
+    @Override
+    public String getId() {
+        return getClass().getSimpleName();
+    }
 
     @Autowired
     private DomainMetaRegistry  domainMetaRegistry;
@@ -327,7 +332,26 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         }
     }
 
+    @Override
+    public void fillProperties(AclObjectProxy root, Object aclObject, Object metadata,AclEngine aclEngine) {
+        //TODO implement
+    }
+
     protected abstract Class<?> getObjectClass();
     protected abstract String getSection();
 
+    @Override
+    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+
+    }
+
+    @Override
+    public void mergeActions(AclObjectProxy root, Object metadata) {
+
+    }
+
+    @Override
+    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
+
+    }
 }

@@ -23,6 +23,7 @@ package com.gridnine.platform.elsa.config;
 
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.acl.standard.BooleanRestrictionValueRenderer;
+import com.gridnine.platform.elsa.admin.acl.standard.RootNodeAclHandler;
 import com.gridnine.platform.elsa.admin.acl.standard.form.*;
 import com.gridnine.platform.elsa.admin.acl.standard.grid.GridAclElementHandler;
 import com.gridnine.platform.elsa.admin.common.BooleanValueRenderer;
@@ -126,5 +127,10 @@ public class AdminConfiguration {
     @Bean
     public FormDateIntervalElementHandler formDateIntervalElementHandler(){
         return new FormDateIntervalElementHandler();
+    }
+
+    @Bean
+    public RootNodeAclHandler  rootNodeAclHandler(){
+        return new RootNodeAclHandler();
     }
 }

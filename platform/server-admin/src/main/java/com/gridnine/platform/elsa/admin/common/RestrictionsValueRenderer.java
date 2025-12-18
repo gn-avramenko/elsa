@@ -1,8 +1,13 @@
 package com.gridnine.platform.elsa.admin.common;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
+import com.gridnine.platform.elsa.admin.domain.Restriction;
 import com.gridnine.platform.elsa.admin.domain.RestrictionsValueWrapper;
 import com.gridnine.platform.elsa.admin.web.common.RestrictionsEditor;
+import com.gridnine.platform.elsa.common.core.search.JunctionCriterion;
+import com.gridnine.platform.elsa.common.core.search.NotCriterion;
+import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
+import com.gridnine.platform.elsa.common.core.search.SimpleCriterion;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,9 +15,6 @@ import java.util.List;
 
 public class RestrictionsValueRenderer implements ValueRenderer<RestrictionsValueRenderer.RestrictionsValueParameters, RestrictionsValueWrapper, RestrictionsEditor> {
     public final static String RENDERER_ID = "restrictions";
-
-    @Autowired
-    private AdminL10nFactory adminL10nFactory;
 
     @Override
     public String getId() {
@@ -36,6 +38,8 @@ public class RestrictionsValueRenderer implements ValueRenderer<RestrictionsValu
     public boolean validate(RestrictionsEditor valueComp, OperationUiContext ctx) {
         return valueComp.validate(ctx);
     }
+
+
 
 
     public record RestrictionsValueParameters(List<RestrictionsEditor.RestrictionPropertyMetadata> properties){}

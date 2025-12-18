@@ -10,6 +10,11 @@ import com.gridnine.platform.elsa.admin.web.common.Option;
 import com.gridnine.platform.elsa.admin.web.form.FormRemoteMultiSelect;
 import com.gridnine.platform.elsa.admin.web.form.FormRemoteMultiSelectConfiguration;
 import com.gridnine.platform.elsa.common.core.model.common.BaseIdentity;
+import com.gridnine.platform.elsa.common.core.model.domain.EntityReference;
+import com.gridnine.platform.elsa.common.core.search.InCriterion;
+import com.gridnine.platform.elsa.common.core.search.NotCriterion;
+import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
+import com.gridnine.platform.elsa.common.core.search.SimpleCriterion;
 import com.gridnine.platform.elsa.common.core.serialization.meta.SerializablePropertyType;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
@@ -98,5 +103,27 @@ public class EntityReferenceRestrictionRenderer<E extends BaseIdentity> implemen
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean match(Object propValue, Object restrValue, String conditionId) {
+        var pv = (EntityReference<?>) propValue;
+        if(pv == null) {
+            return false;
+        }
+        var rv = (EntityReferenceRestrictionValue) restrValue;
+        if(Conditions.EQUALS.name().equals(conditionId)) {
+            return rv.getValues().stream().anyMatch(it -> it.getId().equals(pv.getId()));
+        }
+        return rv.getValues().stream().noneMatch(it -> it.getId().equals(pv.getId()));
+    }
+
+    @Override
+    public SearchCriterion getSearchCriterion(String propertyId, String conditionId, Object value) {
+        var rv = (EntityReferenceRestrictionValue) value;
+        if(conditionId.equals(Conditions.EQUALS.name())) {
+            return new InCriterion<>(propertyId, rv.getValues().stream().map(it -> new EntityReference<E>(it.getId(), entityClass, it.getDisplayName())).toList());
+        }
+        return new NotCriterion(new InCriterion<>(propertyId, rv.getValues().stream().map(it -> new EntityReference<E>(it.getId(), entityClass, it.getDisplayName())).toList()));
     }
 }

@@ -24,11 +24,22 @@
 
 package com.gridnine.platform.elsa.admin.web.form;
 
+import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 public class FormRemoteMultiSelect extends FormRemoteMultiSelectSkeleton{
 
+    private SearchCriterion additionalCriterion;
+
 	public FormRemoteMultiSelect(String tag, FormRemoteMultiSelectConfiguration config, OperationUiContext ctx){
 		super(tag, config, ctx);
 	}
+    public void setAdditionalCriterion(SearchCriterion additionalCriterion) {
+        this.additionalCriterion = additionalCriterion;
+    }
+
+    public SearchCriterion getAdditionalCriterion() {
+        return additionalCriterion;
+    }
+
 }

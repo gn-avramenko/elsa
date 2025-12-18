@@ -24,8 +24,8 @@
 
 package com.gridnine.platform.elsa.admin.web.acl;
 
-import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
+import com.gridnine.platform.elsa.admin.acl.standard.RootNodeAclHandler;
 import com.gridnine.platform.elsa.admin.domain.AclEntry;
 import com.gridnine.platform.elsa.common.core.utils.LocaleUtils;
 import com.gridnine.platform.elsa.webApp.StandardParameters;
@@ -81,7 +81,7 @@ public class AclTreeEditor extends AclTreeEditorSkeleton{
         convert(rootNode, rootNodeWrapper);
         rootNodeWrapper.getChildren().sort(Comparator.comparing(AclMetadataElementWrapper::getName));
         setRootEntry(rootNodeWrapper, context);
-        setSelectedNodeId(AclEngine.ROOT_NODE_ID, context);
+        setSelectedNodeId(RootNodeAclHandler.ROOT_NODE_ID, context);
         aclEntries.clear();
         entries.forEach(entry -> {
             aclEntries.put(entry.getId(), entry);
@@ -94,7 +94,7 @@ public class AclTreeEditor extends AclTreeEditorSkeleton{
     private void updateHasRules(OperationUiContext context) {
         var hasRulesIds = new ArrayList<String>();
         var hasChildrenWithRulesIds = new ArrayList<String>();
-        collectRulesIds(hasRulesIds, hasChildrenWithRulesIds, metadata.get(AclEngine.ROOT_NODE_ID));
+        collectRulesIds(hasRulesIds, hasChildrenWithRulesIds, metadata.get(RootNodeAclHandler.ROOT_NODE_ID));
         setHasRulesIds(hasRulesIds, context);
         setHasChildrenWithRulesIds(hasChildrenWithRulesIds, context);
     }

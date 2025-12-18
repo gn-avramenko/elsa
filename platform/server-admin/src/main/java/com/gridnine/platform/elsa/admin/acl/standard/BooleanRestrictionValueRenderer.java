@@ -6,6 +6,8 @@ import com.gridnine.platform.elsa.admin.common.RestrictionRenderer;
 import com.gridnine.platform.elsa.admin.domain.*;
 import com.gridnine.platform.elsa.admin.web.common.Option;
 import com.gridnine.platform.elsa.admin.web.form.*;
+import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
+import com.gridnine.platform.elsa.common.core.search.SimpleCriterion;
 import com.gridnine.platform.elsa.common.core.serialization.meta.SerializablePropertyType;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,4 +67,20 @@ public class BooleanRestrictionValueRenderer implements RestrictionRenderer<Void
     public boolean validate(String conditionId, FormBooleanField valueComp, OperationUiContext ctx) {
         return true;
     }
+
+    @Override
+    public boolean match(Object propValue, Object restrValue, String conditionId) {
+        var pv = (Boolean) propValue;
+        var rv = (BooleanRestrictionValue) restrValue;
+        if(Conditions.EQUALS.name().equals(conditionId)){
+            return pv == rv.isValue();
+        }
+        return pv != rv.isValue();
+    }
+
+    @Override
+    public SearchCriterion getSearchCriterion(String propertyId, String conditionId, Object value) {
+        return new SimpleCriterion(propertyId, Conditions.EQUALS.name().equals(conditionId)? SimpleCriterion.Operation.EQ: SimpleCriterion.Operation.NE, value);
+    }
+
 }

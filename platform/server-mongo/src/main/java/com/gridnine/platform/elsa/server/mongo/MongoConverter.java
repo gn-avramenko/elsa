@@ -81,6 +81,9 @@ public class MongoConverter {
                 SerializableCollectionDescription coll = provider.getCollection(sc.property);
                 switch (sc.operation) {
                     case CONTAINS -> {
+                        if(coll.elementType() == SerializablePropertyType.ENTITY_REFERENCE){
+                            return Criteria.where(sc.property).is(((EntityReference<?>)sc.value).getId());
+                        }
                         return Criteria.where(sc.property).is(sc.value);
                     }
                     default -> throw Xeption.forDeveloper("unsupported operation " + sc.operation);
