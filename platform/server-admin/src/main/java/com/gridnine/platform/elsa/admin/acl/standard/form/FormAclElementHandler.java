@@ -28,6 +28,9 @@ public class FormAclElementHandler implements AclElementHandler<FormContainerDes
         root.getChildren().forEach(child -> {
            aclEngine.getElementHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, description.getComponents().get(child.getId().substring(child.getId().lastIndexOf(".")+1)) , aclEngine);
         });
+        root.getChildren().forEach(child -> {
+            child.getProperties().putAll(root.getProperties());
+        });
     }
 
     @Override
@@ -58,6 +61,9 @@ public class FormAclElementHandler implements AclElementHandler<FormContainerDes
             if(handler != null){
                 ExceptionUtils.wrapException(()->handler.updateAclMetadata(parent, elm, aclEngine));
             }
+        });
+        parent.getChildren().forEach(child -> {
+            child.getProperties().addAll(parent.getProperties());
         });
     }
 }

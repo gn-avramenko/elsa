@@ -9,6 +9,8 @@ import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.EditActionMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ViewActionMetadata;
 import com.gridnine.platform.elsa.admin.domain.AclAction;
+import com.gridnine.platform.elsa.admin.domain.AclEntry;
+import com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper;
 import com.gridnine.platform.elsa.admin.web.common.Glue;
 import com.gridnine.platform.elsa.admin.web.entityEditor.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
@@ -22,6 +24,7 @@ import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.common.meta.adminUi.AdminUiMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.storage.Storage;
+import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import com.gridnine.webpeer.core.utils.TypedParameter;
@@ -59,7 +62,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
 
     @Override
     public String getId() {
-        return getClass().getSimpleName();
+        return getClass().getName();
     }
 
     @Autowired
@@ -94,6 +97,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         result.setContent(content, context);
         var tools = new ArrayList<BaseUiElement>();
         var elms = getTools(result.getTags().contains("edit-mode"));
+        var toolsElements =  new ArrayList<EditorTool>();
        for(int n=0; n < elms.size(); n++){
            var elm = elms.get(n);
             if (elm instanceof com.gridnine.platform.elsa.admin.list.Glue) {
@@ -113,7 +117,12 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
                toolHandler.onClicked(ctx, tool, result);
            });
             tools.add(tool);
+            toolsElements.add(tool);
         }
+        var aclObject = new UiEditorAclObject();
+       aclObject.setEditor(result.getContent());
+       aclObject.setTools(toolsElements);
+       context.getParameter(StandardParameters.BEAN_FACTORY).getBean(AclEngine.class).applyAcl("%s.editor".formatted(getObjectClass().getName()), aclObject,getAcl(), context);
         result.setTools(tools, context);
         readData(result, context);
         return result;
@@ -128,6 +137,8 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     protected abstract void readData(EntityEditor<E> result, OperationUiContext context) throws Exception;
 
     protected abstract WriteDataResult writeData(EntityEditor<E> result, OperationUiContext context) throws Exception;
+
+    protected abstract List<List<AclEntry>> getAcl();
 
     @Override
     public String getTitle(String path, OperationUiContext context) throws Exception {
@@ -311,7 +322,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
             locales.forEach(locale -> {
                 names.put(locale, tool.getDescription().toString(locale));
             });
-            item.setId("%s.tools.%s".formatted(getObjectClass().getName(), tool.getId()));
+            item.setId("%s.editor.tools.%s".formatted(getObjectClass().getName(), tool.getId()));
             item.setName(com.gridnine.platform.elsa.admin.utils.LocaleUtils.createLocalizable(names));
             item.setHandlerId(getClass().getName());
             item.getActions().add(new AllActionsMetadata(localizer));
@@ -334,7 +345,19 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
 
     @Override
     public void fillProperties(AclObjectProxy root, Object aclObject, Object metadata,AclEngine aclEngine) {
-        //TODO implement
+        if (root.getId().endsWith(".editor") || root.getId().endsWith(".editor.tools")) {
+            root.getChildren().forEach(child -> {
+                aclEngine.getHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, null, aclEngine);
+            });
+            return;
+        }
+        if(root.getId().endsWith(".editor.content") || root.getId().contains(".editor.tools.")){
+            var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
+            String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
+            var elementHandler = aclEngine.getElementHandler(handlerId);
+            ExceptionUtils.wrapException(() -> elementHandler.fillProperties(root, ((UiEditorAclObject) aclObject).getEditor(), container, aclEngine));
+            return;
+        }
     }
 
     protected abstract Class<?> getObjectClass();
@@ -342,16 +365,75 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
 
     @Override
     public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
-
+        if (obj.getId().endsWith(".editor") || obj.getId().endsWith(".editor.tools") || obj.getId().contains(".editor.tools.")) {
+            obj.getCurrentActions().putAll(parentActions);
+            actions.forEach(action -> {
+                var value = ((BooleanValueWrapper) action.getValue()).isValue();
+                obj.getCurrentActions().put(AllActionsMetadata.ACTION_ID, value);
+            });
+            return;
+        }
+        if (obj.getId().endsWith(".editor.content")) {
+            var parentValue = Boolean.TRUE.equals(parentActions.get(AllActionsMetadata.ACTION_ID));
+            obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID, parentValue);
+            obj.getCurrentActions().put(EditActionMetadata.ACTION_ID, parentValue);
+            actions.forEach(action -> {
+                var value = ((BooleanValueWrapper) action.getValue()).isValue();
+                if (action.getId().equals(AllActionsMetadata.ACTION_ID)) {
+                    obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID, value);
+                    obj.getCurrentActions().put(EditActionMetadata.ACTION_ID, value);
+                } else if (action.getId().equals(ViewActionMetadata.ACTION_ID)) {
+                    obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID, value);
+                } else if (action.getId().equals(EditActionMetadata.ACTION_ID)) {
+                    obj.getCurrentActions().put(EditActionMetadata.ACTION_ID, value);
+                }
+            });
+            return;
+        }
     }
 
     @Override
     public void mergeActions(AclObjectProxy root, Object metadata) {
-
+        if (root.getId().endsWith(".editor") || root.getId().endsWith(".editor.tools") || root.getId().contains(".editor.tools.")) {
+            var value = Boolean.TRUE.equals(root.getTotalActions().get(AllActionsMetadata.ACTION_ID));
+            if (value) {
+                return;
+            }
+            root.getTotalActions().putAll(root.getCurrentActions());
+            return;
+        }
+        if (root.getId().endsWith(".editor.content")) {
+            var view = Boolean.TRUE.equals(root.getTotalActions().get(ViewActionMetadata.ACTION_ID));
+            if (!view) {
+                root.getTotalActions().put(ViewActionMetadata.ACTION_ID, root.getCurrentActions().get(ViewActionMetadata.ACTION_ID));
+            }
+            var edit = Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID));
+            if (!edit) {
+                root.getTotalActions().put(EditActionMetadata.ACTION_ID, root.getCurrentActions().get(EditActionMetadata.ACTION_ID));
+            }
+            return;
+        }
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
-
+    public void applyResults(AclObjectProxy proxy, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
+        if (proxy.getId().endsWith(".editor.content")) {
+            var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
+            String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
+            var elementHandler = aclEngine.getElementHandler(handlerId);
+            ExceptionUtils.wrapException(() -> elementHandler.applyResults(proxy, ((UiEditorAclObject)aclObject).getEditor(), container, aclEngine, context));
+            return;
+        }
+        if (proxy.getId().contains(".editor.tools.")) {
+            var toolId = proxy.getId().substring(proxy.getId().lastIndexOf('.') + 1);
+            if(aclObject instanceof UiEditorAclObject obj){
+                var tool = obj.getTools().stream().filter(it  -> it.getTag().equals(toolId)).findFirst().get();
+                tool.setDisabled(!Boolean.TRUE.equals(proxy.getTotalActions().get(AllActionsMetadata.ACTION_ID)), context);
+            }
+            return;
+        }
+        proxy.getChildren().forEach(it -> {
+            applyResults(it, aclObject, metadata, aclEngine, context);
+        });
     }
 }

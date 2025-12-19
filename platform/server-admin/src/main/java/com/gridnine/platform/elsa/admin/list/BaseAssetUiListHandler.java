@@ -27,9 +27,10 @@ import com.gridnine.platform.elsa.admin.acl.standard.AclConfigurator;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ListRestrictionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.RootNodeAclHandler;
+import com.gridnine.platform.elsa.admin.common.BasicAclObject;
 import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
-import com.gridnine.platform.elsa.admin.domain.AclAction;
-import com.gridnine.platform.elsa.admin.domain.ListWorkspaceItem;
+import com.gridnine.platform.elsa.admin.domain.*;
+import com.gridnine.platform.elsa.admin.domain.RestrictionType;
 import com.gridnine.platform.elsa.admin.web.common.*;
 import com.gridnine.platform.elsa.admin.web.entityList.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
@@ -40,6 +41,7 @@ import com.gridnine.platform.elsa.common.core.model.common.Localizable;
 import com.gridnine.platform.elsa.common.core.model.common.RunnableWithExceptionAnd2Arguments;
 import com.gridnine.platform.elsa.common.core.model.common.Xeption;
 import com.gridnine.platform.elsa.common.core.model.domain.BaseAsset;
+import com.gridnine.platform.elsa.common.core.search.SearchCriterion;
 import com.gridnine.platform.elsa.common.core.search.SearchQuery;
 import com.gridnine.platform.elsa.common.core.serialization.meta.SerializablePropertyType;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
@@ -52,6 +54,7 @@ import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.admin.acl.AclHandler;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
 import com.gridnine.platform.elsa.core.storage.Storage;
+import com.gridnine.platform.elsa.webApp.StandardParameters;
 import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +83,8 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
     @Autowired
     protected SupportedLocalesProvider supportedLocalesProvider;
+
+    private SearchCriterion additionalCriterion;
 
     public BaseAssetUiListHandler(Class<T> assetClass) {
         this.assetClass = assetClass;
@@ -201,6 +206,9 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             var query = new SearchQuery();
             query.setLimit(entityList.getLimit() + 1);
             query.setFreeText(entityList.getSearchField().getValue());
+            if(additionalCriterion != null) {
+                query.getCriterions().add(additionalCriterion);
+            }
             filters.forEach(filter -> {
                 var crit = filter.getSearchCriterion();
                 if (crit != null) {
@@ -234,6 +242,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             entityList.setLoading(false, ctx);
         });
         var tools = new ContentWrapper("tools", new ContentWrapperConfiguration(), context);
+        var buttonsComponents = new ArrayList<EntityListButton>();
         var idx = 0;
         for (var tool : getTools()) {
             idx++;
@@ -249,10 +258,14 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             config.setClickListener((ctx) -> {
                 th.onClicked(ctx, entityList);
             });
-            var button = new EntityListButton("button-%s".formatted(idx), config, context);
+            var button = new EntityListButton(th.getId(), config, context);
             tools.addChild(context, button, idx - 1);
+            buttonsComponents.add(button);
         }
-
+        var aclObj = new AssetUiListAclObject();
+        aclObj.setButtons(buttonsComponents);
+        aclObj.setList(this);
+        context.getParameter(StandardParameters.BEAN_FACTORY).getBean(AclEngine.class).applyAcl("%s.list".formatted(assetClass.getName()), aclObj, getAclGroups(), context);
         entityList.addChild(context, tools, 0);
         entityList.refreshData(context, true);
         return entityList;
@@ -521,16 +534,126 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
     @Override
     public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
-
+        if(obj.getId().endsWith(".list")){
+            obj.getCurrentActions().putAll(parentActions);
+            actions.forEach(action -> {
+                if (action.getId().equals(AllActionsMetadata.ACTION_ID)) {
+                    var value = ((BooleanValueWrapper) action.getValue()).isValue();
+                    obj.getCurrentActions().put(AllActionsMetadata.ACTION_ID, value);
+                    return;
+                }
+                obj.getCurrentActions().put(ListRestrictionsMetadata.ACTION_ID, ((RestrictionsValueWrapper) action.getValue()).getRestrictions());
+            });
+            return;
+        }
+        if(obj.getId().contains(".tools.")){
+            var parentValue = Boolean.TRUE.equals(parentActions.get(AllActionsMetadata.ACTION_ID));
+            actions.forEach(action -> {
+                var value = ((BooleanValueWrapper) action.getValue()).isValue();
+                if (!parentValue) {
+                    obj.getCurrentActions().put(AllActionsMetadata.ACTION_ID, value);
+                }
+            });
+            return;
+        }
     }
 
     @Override
-    public void mergeActions(AclObjectProxy root, Object metadata) {
+    public void mergeActions(AclObjectProxy obj, Object metadata) {
+        if(obj.getId().endsWith(".list")){
+            var firstTime = obj.getTotalActions().isEmpty();
+            if (!Boolean.TRUE.equals(obj.getTotalActions().get(AllActionsMetadata.ACTION_ID))) {
+                obj.getTotalActions().put(AllActionsMetadata.ACTION_ID, obj.getCurrentActions().get(AllActionsMetadata.ACTION_ID));
+            }
+            var currentRestrictions = (List<Restriction>) obj.getCurrentActions().get(ListRestrictionsMetadata.ACTION_ID);
+            var totalRestrictions = (List<Restriction>) obj.getTotalActions().get(ListRestrictionsMetadata.ACTION_ID);
+            if (firstTime) {
+                if (currentRestrictions != null && !currentRestrictions.isEmpty()) {
+                    obj.getTotalActions().put(ListRestrictionsMetadata.ACTION_ID, currentRestrictions);
+                }
+                return;
+            }
+            if (totalRestrictions != null && !totalRestrictions.isEmpty()) {
+                if (currentRestrictions == null || currentRestrictions.isEmpty()) {
+                    obj.getTotalActions().remove(ListRestrictionsMetadata.ACTION_ID);
+                    return;
+                }
+                var compoundRestriction = new Restriction();
+                compoundRestriction.setRestrictionType(com.gridnine.platform.elsa.admin.domain.RestrictionType.OR);
+                var restr1 = new Restriction();
+                if (totalRestrictions.size() > 1) {
+                    restr1.setRestrictionType(com.gridnine.platform.elsa.admin.domain.RestrictionType.AND);
+                    restr1.getNestedRestrictions().addAll(totalRestrictions);
+                } else {
+                    restr1 = totalRestrictions.get(0);
+                }
+                var restr2 = new Restriction();
+                if (currentRestrictions.size() > 1) {
+                    restr2.setRestrictionType(RestrictionType.AND);
+                    restr2.getNestedRestrictions().addAll(currentRestrictions);
+                } else {
+                    restr2 = currentRestrictions.get(0);
+                }
+                compoundRestriction.getNestedRestrictions().add(restr1);
+                compoundRestriction.getNestedRestrictions().add(restr2);
+                obj.getTotalActions().put(ListRestrictionsMetadata.ACTION_ID, currentRestrictions);
+                return;
+            }
+            if (currentRestrictions == null || currentRestrictions.isEmpty()) {
+                obj.getTotalActions().remove(ListRestrictionsMetadata.ACTION_ID);
+                return;
+            }
+            obj.getTotalActions().put(ListRestrictionsMetadata.ACTION_ID, currentRestrictions);
+            return;
+        }
+        if(obj.getId().contains(".tools.")) {
+            var act = Boolean.TRUE.equals(obj.getTotalActions().get(AllActionsMetadata.ACTION_ID));
+            if (!act) {
+                obj.getTotalActions().put(AllActionsMetadata.ACTION_ID, obj.getCurrentActions().get(AllActionsMetadata.ACTION_ID));
+            }
+            return;
+        }
+    }
 
+    public void setAdditionalCriterion(SearchCriterion additionalCriterion) {
+        this.additionalCriterion = additionalCriterion;
     }
 
     @Override
     public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
+        if(root.getId().endsWith(".list")){
+            if(aclObject instanceof BasicAclObject basicAclObject){
+                basicAclObject.setAccessAllowed(Boolean.TRUE.equals(root.getTotalActions().get(AllActionsMetadata.ACTION_ID)));
+                return;
+            }
+            var listObject = (AssetUiListAclObject) aclObject;
+            List<Restriction> restrictions = (List<Restriction>) root.getTotalActions().get(ListRestrictionsMetadata.ACTION_ID);
+            if (restrictions != null && !restrictions.isEmpty()) {
+                var act = root.getAclElement().getActions().stream().filter(it -> it.getId().equals(ListRestrictionsMetadata.ACTION_ID)).findFirst().get();
+                var crit = aclEngine.toSearchCriterion(restrictions, ((RestrictionsValueRenderer.RestrictionsValueParameters) act.getRendererParameters()).properties());
+                listObject.getList().setAdditionalCriterion(crit);
+            }
+            root.getChildren().forEach(it -> {
+                applyResults(it, aclObject, metadata, aclEngine, context);
+            });
+            return;
+        }
+        if(root.getId().endsWith(".tools")){
+            root.getChildren().forEach(it -> {
+                applyResults(it, aclObject, metadata, aclEngine, context);
+            });
+            return;
+        }
+        if(root.getId().contains(".tools.")){
+            if(aclObject instanceof AssetUiListAclObject obj){
+                var toolId = root.getId().substring(root.getId().lastIndexOf('.') + 1);
+                var button = obj.getButtons().stream().filter(it2 -> it2.getTag().equals(toolId)).findFirst().get();
+                button.setDisabled(!Boolean.TRUE.equals(root.getTotalActions().get(AllActionsMetadata.ACTION_ID)), context);
+            }
+            return;
+        }
 
     }
+
+    protected abstract List<List<AclEntry>> getAclGroups();
 }
