@@ -45,7 +45,7 @@ public class FormSelectAclElementHandler implements AclHandler<FormSelectDescrip
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, FormSelectDescription metadata,AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject,AclEngine aclEngine) {
         //noops
     }
 

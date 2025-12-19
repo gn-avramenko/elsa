@@ -76,7 +76,7 @@ public class FormRemoteSelectAclElementHandler implements AclHandler<FormRemoteS
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject,FormRemoteSelectDescription metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
         //noops
     }
 

@@ -51,7 +51,7 @@ public class FormDateIntervalElementHandler implements AclHandler<FormDateInterv
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, FormDateIntervalFieldDescription metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
         //noops
     }
 

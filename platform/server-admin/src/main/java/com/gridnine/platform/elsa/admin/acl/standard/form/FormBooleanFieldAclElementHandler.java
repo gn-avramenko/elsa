@@ -50,11 +50,11 @@ public class FormBooleanFieldAclElementHandler implements AclHandler<FormBoolean
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, FormBooleanFieldDescription metadata,AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
         if(aclObject instanceof BaseUiElement){
-            var mtd =  (FormBooleanFieldDescription) metadata;
-            var value = getElement(aclObject, mtd.getId(), FormBooleanField.class).isValue();
-            root.getParent().getProperties().put(mtd.getId(), value);
+            var id = root.getId().substring(root.getId().lastIndexOf('.') + 1);
+            var value = getElement(aclObject, id, FormBooleanField.class).isValue();
+            root.getParent().getProperties().put(id, value);
         }
     }
 

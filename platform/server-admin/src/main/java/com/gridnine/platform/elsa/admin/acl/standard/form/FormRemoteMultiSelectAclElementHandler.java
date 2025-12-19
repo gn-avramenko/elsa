@@ -49,7 +49,7 @@ public class FormRemoteMultiSelectAclElementHandler implements AclHandler<FormRe
         aclEngine.addNode(parent.getId(), fieldMetadata);
     }
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject,FormRemoteMultiSelectDescription metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
         //noops
     }
 

@@ -527,7 +527,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject,  AclEngine aclEngine) {
         //noops
     }
 

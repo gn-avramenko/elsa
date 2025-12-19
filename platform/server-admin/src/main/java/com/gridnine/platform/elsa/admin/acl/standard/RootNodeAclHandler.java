@@ -42,9 +42,9 @@ public class RootNodeAclHandler implements AclHandler<Void> {
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
         root.getChildren().forEach(child -> {
-            aclEngine.getHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, null, aclEngine);
+            aclEngine.getHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, aclEngine);
         });
     }
 

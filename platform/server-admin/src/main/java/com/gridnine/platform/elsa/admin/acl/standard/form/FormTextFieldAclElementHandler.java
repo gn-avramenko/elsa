@@ -45,7 +45,7 @@ public class FormTextFieldAclElementHandler implements AclHandler<FormTextFieldD
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject,FormTextFieldDescription metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
         //noops
     }
 

@@ -28,10 +28,9 @@ public class FormAclElementHandler implements AclHandler<FormContainerDescriptio
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject,FormContainerDescription metadata, AclEngine aclEngine) {
-        var description = (FormContainerDescription) metadata;
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
         root.getChildren().forEach(child -> {
-           aclEngine.getHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, description.getComponents().get(child.getId().substring(child.getId().lastIndexOf(".")+1)) , aclEngine);
+           aclEngine.getHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, aclEngine);
         });
         root.getChildren().forEach(child -> {
             child.getProperties().putAll(root.getProperties());

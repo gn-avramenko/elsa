@@ -16,7 +16,7 @@ public interface AclHandler<M> {
 
     void updateAclMetadata(AclMetadataElement parent, M elementMetadata, AclEngine aclEngine) throws Exception;
 
-    void fillProperties(AclObjectProxy root, Object aclObject, M metadata, AclEngine aclEngine);
+    void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine);
 
     void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions);
 

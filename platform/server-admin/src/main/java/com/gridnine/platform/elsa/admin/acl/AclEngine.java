@@ -66,7 +66,7 @@ public class AclEngine {
         });
         var root = createParent(proxy, node);
         var handler = handlersMap.get(inverseMap.get(root.getId()).getHandlerId());
-        handler.fillProperties(root, aclObject, null, this);
+        handler.fillProperties(root, aclObject,  this);
         acls.forEach(acl ->{
             var entries = new HashMap<String, AclEntry>();
             acl.forEach(it -> entries.put(it.getId(), it));

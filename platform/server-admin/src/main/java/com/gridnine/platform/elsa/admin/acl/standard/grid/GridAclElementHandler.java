@@ -9,6 +9,7 @@ import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.meta.adminUi.AdminUiContainerType;
 import com.gridnine.platform.elsa.common.meta.adminUi.BaseAdminUiContainerDescription;
 import com.gridnine.platform.elsa.common.meta.adminUi.grid.GridContainerDescription;
+import com.gridnine.webpeer.core.ui.BaseUiElement;
 import com.gridnine.webpeer.core.ui.OperationUiContext;
 
 import java.util.List;
@@ -22,19 +23,12 @@ public class GridAclElementHandler implements AclHandler<GridContainerDescriptio
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject,GridContainerDescription metadata, AclEngine aclEngine) {
-        var description = (GridContainerDescription) metadata;
-        description.getRows().forEach( r->
-                r.getColumns().forEach(c->{
-                    BaseAdminUiContainerDescription container = c.getContent();
-                    String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
-                    var elementHandler = aclEngine.getHandler(handlerId);
-                    if(elementHandler != null){
-                        ExceptionUtils.wrapException(()->elementHandler.fillProperties(root, aclObject, metadata, aclEngine));
-                    }
-                })
-        );
-
+    public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
+        root.getChildren().forEach(child -> {
+            var elementHandler = aclEngine.getHandler(child.getAclElement().getHandlerId());
+            var childId = child.getId().substring(child.getId().lastIndexOf('.') + 1);
+            ExceptionUtils.wrapException(()->elementHandler.fillProperties(root, getElement(aclObject, childId, BaseUiElement.class), aclEngine));
+        });
     }
 
     @Override
