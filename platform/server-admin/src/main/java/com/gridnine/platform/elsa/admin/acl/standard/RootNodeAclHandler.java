@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Map;
 
-public class RootNodeAclHandler implements AclHandler,AclConfigurator {
+public class RootNodeAclHandler implements AclHandler<Void> {
 
     public static final String ROOT_NODE_ID="root";
 
@@ -27,7 +27,7 @@ public class RootNodeAclHandler implements AclHandler,AclConfigurator {
     }
 
     @Override
-    public void updateAclMetadata(AclEngine aclEngine) {
+    public void updateAclMetadata(AclMetadataElement parent, Void elementMetadata, AclEngine aclEngine) throws Exception {
         var rootElement = new AclMetadataElement();
         rootElement.setId(RootNodeAclHandler.ROOT_NODE_ID);
         rootElement.setHandlerId(getId());
@@ -42,14 +42,14 @@ public class RootNodeAclHandler implements AclHandler,AclConfigurator {
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine) {
         root.getChildren().forEach(child -> {
             aclEngine.getHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, null, aclEngine);
         });
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, Void metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         actions.forEach(action -> {
             var value = ((BooleanValueWrapper)action.getValue()).isValue();
             obj.getCurrentActions().put(AllActionsMetadata.ACTION_ID, value);
@@ -61,7 +61,7 @@ public class RootNodeAclHandler implements AclHandler,AclConfigurator {
     }
 
     @Override
-    public void mergeActions(AclObjectProxy root, Object metadata) {
+    public void mergeActions(AclObjectProxy root, Void metadata) {
         if(!root.getTotalActions().isEmpty() && (Boolean) root.getTotalActions().get(AllActionsMetadata.ACTION_ID)){
             return;
         }
@@ -69,7 +69,7 @@ public class RootNodeAclHandler implements AclHandler,AclConfigurator {
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine, OperationUiContext  context) {
         //noops
     }
 }

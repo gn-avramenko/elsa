@@ -4,14 +4,12 @@ import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.AclHandler;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
 import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
-import com.gridnine.platform.elsa.admin.acl.standard.AclConfigurator;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.EditActionMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ViewActionMetadata;
 import com.gridnine.platform.elsa.admin.domain.AclAction;
 import com.gridnine.platform.elsa.admin.domain.AclEntry;
 import com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper;
-import com.gridnine.platform.elsa.admin.web.common.Glue;
 import com.gridnine.platform.elsa.admin.web.entityEditor.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
 import com.gridnine.platform.elsa.admin.web.mainFrame.RouterPathHandler;
@@ -34,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> implements RouterPathHandler, AclHandler, AclConfigurator {
+public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> implements RouterPathHandler, AclHandler<Void> {
 
     public static final TypedParameter<EntityEditor<?>> ENTITY_EDITOR = new TypedParameter<>("ENTITY_EDITOR");
 
@@ -290,7 +288,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     }
 
     @Override
-    public void updateAclMetadata(AclEngine aclEngine) {
+    public void updateAclMetadata(AclMetadataElement parent, Void elementMetadata, AclEngine aclEngine) throws Exception {
         this.aclEngine = aclEngine;
         var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
         if(container == null){
@@ -337,14 +335,14 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         contentItem.getActions().add(new ViewActionMetadata(localizer));
         aclEngine.addNode(objectItem.getId(), contentItem);
         String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
-        var elementHandler = aclEngine.getElementHandler(handlerId);
+        var elementHandler = aclEngine.getHandler(handlerId);
         if(elementHandler != null){
             ExceptionUtils.wrapException(()->elementHandler.updateAclMetadata(contentItem, container, aclEngine));
         }
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, Object metadata,AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, Void metadata,AclEngine aclEngine) {
         if (root.getId().endsWith(".editor") || root.getId().endsWith(".editor.tools")) {
             root.getChildren().forEach(child -> {
                 aclEngine.getHandler(child.getAclElement().getHandlerId()).fillProperties(child, aclObject, null, aclEngine);
@@ -354,7 +352,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         if(root.getId().endsWith(".editor.content") || root.getId().contains(".editor.tools.")){
             var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
             String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
-            var elementHandler = aclEngine.getElementHandler(handlerId);
+            var elementHandler = aclEngine.getHandler(handlerId);
             ExceptionUtils.wrapException(() -> elementHandler.fillProperties(root, ((UiEditorAclObject) aclObject).getEditor(), container, aclEngine));
             return;
         }
@@ -364,7 +362,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     protected abstract String getSection();
 
     @Override
-    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, Void metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         if (obj.getId().endsWith(".editor") || obj.getId().endsWith(".editor.tools") || obj.getId().contains(".editor.tools.")) {
             obj.getCurrentActions().putAll(parentActions);
             actions.forEach(action -> {
@@ -393,7 +391,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     }
 
     @Override
-    public void mergeActions(AclObjectProxy root, Object metadata) {
+    public void mergeActions(AclObjectProxy root, Void metadata) {
         if (root.getId().endsWith(".editor") || root.getId().endsWith(".editor.tools") || root.getId().contains(".editor.tools.")) {
             var value = Boolean.TRUE.equals(root.getTotalActions().get(AllActionsMetadata.ACTION_ID));
             if (value) {
@@ -416,11 +414,11 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     }
 
     @Override
-    public void applyResults(AclObjectProxy proxy, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
+    public void applyResults(AclObjectProxy proxy, Object aclObject, Void metadata, AclEngine aclEngine, OperationUiContext  context) {
         if (proxy.getId().endsWith(".editor.content")) {
             var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
             String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
-            var elementHandler = aclEngine.getElementHandler(handlerId);
+            var elementHandler = aclEngine.getHandler(handlerId);
             ExceptionUtils.wrapException(() -> elementHandler.applyResults(proxy, ((UiEditorAclObject)aclObject).getEditor(), container, aclEngine, context));
             return;
         }

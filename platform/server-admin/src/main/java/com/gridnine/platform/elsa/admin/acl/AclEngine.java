@@ -1,7 +1,5 @@
 package com.gridnine.platform.elsa.admin.acl;
 
-import com.gridnine.platform.elsa.admin.acl.standard.AclConfigurator;
-import com.gridnine.platform.elsa.admin.acl.standard.AclElementHandler;
 import com.gridnine.platform.elsa.admin.common.RenderersRegistry;
 import com.gridnine.platform.elsa.admin.domain.AclCondition;
 import com.gridnine.platform.elsa.admin.domain.AclEntry;
@@ -18,23 +16,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AclEngine {
 
     private final Map<String, AclMetadataElement> inverseMap = new HashMap<>();
 
     @Autowired(required = false)
-    private List<AclHandler> handlers;
+    private List<AclHandler<?>> handlers;
 
-    @Autowired(required = false)
-    private List<AclElementHandler<?>> elementHandlers;
-
-    @Autowired(required = false)
-    private List<AclConfigurator> configurators;
-
-    private final Map<String, AclHandler> handlersMap = new HashMap<>();
-
-    private final Map<String, AclElementHandler<?>> elementsHandlersMap = new HashMap<>();
+    private final Map<String, AclHandler<?>> handlersMap = new HashMap<>();
 
     @Autowired
     private RenderersRegistry renderersRegistry;
@@ -55,22 +46,11 @@ public class AclEngine {
             inverseMap.put(element.getId(), element);
         }
     }
-
-    public<E> AclElementHandler<E> getElementHandler(String elementId) {
-        return (AclElementHandler<E>) elementsHandlersMap.get(elementId);
-    }
     @PostConstruct
-    public void init() {
-        if(elementHandlers != null) {
-            elementHandlers.forEach(it -> elementsHandlersMap.put(it.getId(), it));
-        }
-        if (configurators != null) {
-            for (AclConfigurator handler : configurators.stream().sorted(Comparator.comparing(AclConfigurator::getPriority)).toList()) {
-                handler.updateAclMetadata(this);
-            }
-        }
+    public void init() throws Exception {
         if (handlers != null) {
-            for (AclHandler handler : handlers) {
+            for (AclHandler<?> handler : handlers.stream().sorted(Comparator.comparing(AclHandler::getPriority)).toList()) {
+                handler.updateAclMetadata(null, null, this);
                 handlersMap.put(handler.getId(), handler);
             }
         }

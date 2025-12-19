@@ -1,10 +1,7 @@
 package com.gridnine.platform.elsa.admin.acl.standard.form;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
-import com.gridnine.platform.elsa.admin.acl.AclEngine;
-import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
-import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
-import com.gridnine.platform.elsa.admin.acl.AclPropertyMetadata;
+import com.gridnine.platform.elsa.admin.acl.*;
 import com.gridnine.platform.elsa.admin.acl.standard.*;
 import com.gridnine.platform.elsa.admin.common.RestrictionsValueRenderer;
 import com.gridnine.platform.elsa.admin.domain.*;
@@ -26,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class FormRemoteSelectAclElementHandler implements AclElementHandler<FormRemoteSelectDescription> {
+public class FormRemoteSelectAclElementHandler implements AclHandler<FormRemoteSelectDescription> {
     @Autowired
     private Localizer localizer;
 
@@ -43,6 +40,9 @@ public class FormRemoteSelectAclElementHandler implements AclElementHandler<Form
 
     @Override
     public void updateAclMetadata(AclMetadataElement parent, FormRemoteSelectDescription element, AclEngine aclEngine) throws Exception {
+        if(parent == null){
+            return;
+        }
         var fieldMetadata = new AclMetadataElement();
         fieldMetadata.setId("%s.%s".formatted(parent.getId(), element.getId()));
         fieldMetadata.setName(LocaleUtils.createLocalizable(element.getTitle()));
@@ -76,12 +76,12 @@ public class FormRemoteSelectAclElementHandler implements AclElementHandler<Form
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject,Object metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject,FormRemoteSelectDescription metadata, AclEngine aclEngine) {
         //noops
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, FormRemoteSelectDescription metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         parentActions.forEach((k,v) ->{
             if(AllActionsMetadata.ACTION_ID.equals(k)){
                 obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID,v);
@@ -111,7 +111,7 @@ public class FormRemoteSelectAclElementHandler implements AclElementHandler<Form
     }
 
     @Override
-    public void mergeActions(AclObjectProxy obj, Object metadata) {
+    public void mergeActions(AclObjectProxy obj, FormRemoteSelectDescription metadata) {
         var view = Boolean.TRUE.equals(obj.getTotalActions().get(ViewActionMetadata.ACTION_ID));
         if(!view){
             obj.getTotalActions().put(ViewActionMetadata.ACTION_ID, obj.getCurrentActions().get(ViewActionMetadata.ACTION_ID));
@@ -163,7 +163,7 @@ public class FormRemoteSelectAclElementHandler implements AclElementHandler<Form
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine,  OperationUiContext context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, FormRemoteSelectDescription metadata, AclEngine aclEngine,  OperationUiContext context) {
         if(aclObject instanceof FormRemoteSelect field){
             field.setReadonly(Boolean.FALSE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
             List<Restriction> restrictions = (List<Restriction>) root.getTotalActions().get(ListRestrictionsMetadata.ACTION_ID);
@@ -173,5 +173,10 @@ public class FormRemoteSelectAclElementHandler implements AclElementHandler<Form
                 field.setAdditionalCriterion(crit);
             }
         }
+    }
+
+    @Override
+    public double getPriority() {
+        return 0;
     }
 }

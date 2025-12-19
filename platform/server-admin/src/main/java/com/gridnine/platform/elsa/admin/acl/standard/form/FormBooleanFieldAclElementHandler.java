@@ -1,9 +1,6 @@
 package com.gridnine.platform.elsa.admin.acl.standard.form;
 
-import com.gridnine.platform.elsa.admin.acl.AclEngine;
-import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
-import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
-import com.gridnine.platform.elsa.admin.acl.AclPropertyMetadata;
+import com.gridnine.platform.elsa.admin.acl.*;
 import com.gridnine.platform.elsa.admin.acl.standard.*;
 import com.gridnine.platform.elsa.admin.domain.AclAction;
 import com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper;
@@ -21,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Map;
 
-public class FormBooleanFieldAclElementHandler implements AclElementHandler<FormBooleanFieldDescription> {
+public class FormBooleanFieldAclElementHandler implements AclHandler<FormBooleanFieldDescription> {
     @Autowired
     private Localizer localizer;
 
@@ -32,6 +29,9 @@ public class FormBooleanFieldAclElementHandler implements AclElementHandler<Form
 
     @Override
     public void updateAclMetadata(AclMetadataElement parent, FormBooleanFieldDescription element, AclEngine aclEngine) throws Exception {
+        if(parent == null){
+            return;
+        }
         var fieldMetadata = new AclMetadataElement();
         fieldMetadata.setId("%s.%s".formatted(parent.getId(), element.getId()));
         fieldMetadata.setName(LocaleUtils.createLocalizable(element.getTitle()));
@@ -50,7 +50,7 @@ public class FormBooleanFieldAclElementHandler implements AclElementHandler<Form
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, Object metadata,AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, FormBooleanFieldDescription metadata,AclEngine aclEngine) {
         if(aclObject instanceof BaseUiElement){
             var mtd =  (FormBooleanFieldDescription) metadata;
             var value = getElement(aclObject, mtd.getId(), FormBooleanField.class).isValue();
@@ -59,7 +59,7 @@ public class FormBooleanFieldAclElementHandler implements AclElementHandler<Form
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, FormBooleanFieldDescription metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         parentActions.forEach((k,v) ->{
             if(AllActionsMetadata.ACTION_ID.equals(k)){
                 obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID,v);
@@ -84,7 +84,7 @@ public class FormBooleanFieldAclElementHandler implements AclElementHandler<Form
     }
 
     @Override
-    public void mergeActions(AclObjectProxy obj, Object metadata) {
+    public void mergeActions(AclObjectProxy obj, FormBooleanFieldDescription metadata) {
         var view = Boolean.TRUE.equals(obj.getTotalActions().get(ViewActionMetadata.ACTION_ID));
         if(!view){
             obj.getTotalActions().put(ViewActionMetadata.ACTION_ID, obj.getCurrentActions().get(ViewActionMetadata.ACTION_ID));
@@ -96,9 +96,14 @@ public class FormBooleanFieldAclElementHandler implements AclElementHandler<Form
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, FormBooleanFieldDescription metadata, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormBooleanField editor){
             editor.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }
+    }
+
+    @Override
+    public double getPriority() {
+        return 0;
     }
 }

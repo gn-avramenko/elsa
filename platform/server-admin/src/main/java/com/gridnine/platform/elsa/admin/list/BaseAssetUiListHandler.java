@@ -23,7 +23,6 @@ package com.gridnine.platform.elsa.admin.list;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
-import com.gridnine.platform.elsa.admin.acl.standard.AclConfigurator;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ListRestrictionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.RootNodeAclHandler;
@@ -61,7 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiListHandler, AclHandler, AclConfigurator {
+public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiListHandler, AclHandler<Void> {
     protected final Class<T> assetClass;
 
     @Override
@@ -449,7 +448,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void updateAclMetadata(AclEngine aclEngine) {
+    public void updateAclMetadata(AclMetadataElement parent, Void elementMetadata, AclEngine aclEngine) throws Exception {
         var asset = domainMetaRegistry.getAssets().get(assetClass.getName());
         var groupItem = new AclMetadataElement();
         {
@@ -528,12 +527,12 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine) {
         //noops
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, Void metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         if(obj.getId().endsWith(".list")){
             obj.getCurrentActions().putAll(parentActions);
             actions.forEach(action -> {
@@ -559,7 +558,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void mergeActions(AclObjectProxy obj, Object metadata) {
+    public void mergeActions(AclObjectProxy obj, Void metadata) {
         if(obj.getId().endsWith(".list")){
             var firstTime = obj.getTotalActions().isEmpty();
             if (!Boolean.TRUE.equals(obj.getTotalActions().get(AllActionsMetadata.ACTION_ID))) {
@@ -620,7 +619,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext  context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine, OperationUiContext  context) {
         if(root.getId().endsWith(".list")){
             if(aclObject instanceof BasicAclObject basicAclObject){
                 basicAclObject.setAccessAllowed(Boolean.TRUE.equals(root.getTotalActions().get(AllActionsMetadata.ACTION_ID)));

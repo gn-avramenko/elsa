@@ -1,17 +1,15 @@
 package com.gridnine.platform.elsa.admin.acl.standard.form;
 
-import com.gridnine.platform.elsa.admin.AdminL10nFactory;
 import com.gridnine.platform.elsa.admin.acl.AclEngine;
+import com.gridnine.platform.elsa.admin.acl.AclHandler;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
 import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
-import com.gridnine.platform.elsa.admin.acl.standard.AclElementHandler;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.EditActionMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ViewActionMetadata;
 import com.gridnine.platform.elsa.admin.domain.AclAction;
 import com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper;
 import com.gridnine.platform.elsa.admin.utils.LocaleUtils;
-import com.gridnine.platform.elsa.admin.web.form.FormDateIntervalField;
 import com.gridnine.platform.elsa.admin.web.form.FormTextField;
 import com.gridnine.platform.elsa.common.core.l10n.Localizer;
 import com.gridnine.platform.elsa.common.meta.adminUi.form.FormComponentType;
@@ -22,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Map;
 
-public class FormTextFieldAclElementHandler implements AclElementHandler<FormTextFieldDescription> {
+public class FormTextFieldAclElementHandler implements AclHandler<FormTextFieldDescription> {
     @Autowired
     private Localizer localizer;
 
@@ -33,6 +31,9 @@ public class FormTextFieldAclElementHandler implements AclElementHandler<FormTex
 
     @Override
     public void updateAclMetadata(AclMetadataElement parent, FormTextFieldDescription element, AclEngine aclEngine) throws Exception {
+        if(parent == null){
+            return;
+        }
         var fieldMetadata = new AclMetadataElement();
         fieldMetadata.setId("%s.%s".formatted(parent.getId(), element.getId()));
         fieldMetadata.setName(LocaleUtils.createLocalizable(element.getTitle()));
@@ -44,12 +45,12 @@ public class FormTextFieldAclElementHandler implements AclElementHandler<FormTex
     }
 
     @Override
-    public void fillProperties(AclObjectProxy root, Object aclObject,Object metadata, AclEngine aclEngine) {
+    public void fillProperties(AclObjectProxy root, Object aclObject,FormTextFieldDescription metadata, AclEngine aclEngine) {
         //noops
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, Object metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, FormTextFieldDescription metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         parentActions.forEach((k,v) ->{
             if(AllActionsMetadata.ACTION_ID.equals(k)){
                 obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID,v);
@@ -74,7 +75,7 @@ public class FormTextFieldAclElementHandler implements AclElementHandler<FormTex
     }
 
     @Override
-    public void mergeActions(AclObjectProxy obj, Object metadata) {
+    public void mergeActions(AclObjectProxy obj, FormTextFieldDescription metadata) {
         var view = Boolean.TRUE.equals(obj.getTotalActions().get(ViewActionMetadata.ACTION_ID));
         if(!view){
             obj.getTotalActions().put(ViewActionMetadata.ACTION_ID, obj.getCurrentActions().get(ViewActionMetadata.ACTION_ID));
@@ -86,9 +87,14 @@ public class FormTextFieldAclElementHandler implements AclElementHandler<FormTex
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, FormTextFieldDescription metadata, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormTextField field){
             field.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }
+    }
+
+    @Override
+    public double getPriority() {
+        return 0;
     }
 }
