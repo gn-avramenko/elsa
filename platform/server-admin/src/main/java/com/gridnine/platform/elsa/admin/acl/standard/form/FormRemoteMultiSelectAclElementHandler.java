@@ -34,9 +34,6 @@ public class FormRemoteMultiSelectAclElementHandler implements AclHandler<FormRe
         return "admin-ui-form-%s".formatted(FormComponentType.REMOTE_MULTI_SELECT.name());
     }
 
-    @Autowired
-    private RestrictionsValueRenderer restrictionsValueRenderer;
-
     @Override
     public void updateAclMetadata(AclMetadataElement parent, FormRemoteMultiSelectDescription element, AclEngine aclEngine) throws Exception {
         if(parent == null){
@@ -87,7 +84,7 @@ public class FormRemoteMultiSelectAclElementHandler implements AclHandler<FormRe
     }
 
     @Override
-    public void mergeActions(AclObjectProxy obj, FormRemoteMultiSelectDescription metadata) {
+    public void mergeActions(AclObjectProxy obj) {
         var view = Boolean.TRUE.equals(obj.getTotalActions().get(ViewActionMetadata.ACTION_ID));
         if(!view){
             obj.getTotalActions().put(ViewActionMetadata.ACTION_ID, obj.getCurrentActions().get(ViewActionMetadata.ACTION_ID));

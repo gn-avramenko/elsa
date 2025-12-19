@@ -391,7 +391,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     }
 
     @Override
-    public void mergeActions(AclObjectProxy root, Void metadata) {
+    public void mergeActions(AclObjectProxy root) {
         if (root.getId().endsWith(".editor") || root.getId().endsWith(".editor.tools") || root.getId().contains(".editor.tools.")) {
             var value = Boolean.TRUE.equals(root.getTotalActions().get(AllActionsMetadata.ACTION_ID));
             if (value) {

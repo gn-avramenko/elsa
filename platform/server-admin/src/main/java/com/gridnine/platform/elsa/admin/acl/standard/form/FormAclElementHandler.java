@@ -44,7 +44,7 @@ public class FormAclElementHandler implements AclHandler<FormContainerDescriptio
     }
 
     @Override
-    public void mergeActions(AclObjectProxy root, FormContainerDescription metadata) {
+    public void mergeActions(AclObjectProxy root) {
 //noops
     }
 

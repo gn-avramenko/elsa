@@ -111,7 +111,7 @@ public class FormRemoteSelectAclElementHandler implements AclHandler<FormRemoteS
     }
 
     @Override
-    public void mergeActions(AclObjectProxy obj, FormRemoteSelectDescription metadata) {
+    public void mergeActions(AclObjectProxy obj) {
         var view = Boolean.TRUE.equals(obj.getTotalActions().get(ViewActionMetadata.ACTION_ID));
         if(!view){
             obj.getTotalActions().put(ViewActionMetadata.ACTION_ID, obj.getCurrentActions().get(ViewActionMetadata.ACTION_ID));

@@ -20,7 +20,7 @@ public interface AclHandler<M> {
 
     void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions);
 
-    void mergeActions(AclObjectProxy root, M metadata);
+    void mergeActions(AclObjectProxy root);
 
     void applyResults(AclObjectProxy root, Object aclObject, M metadata, AclEngine aclEngine, OperationUiContext context);
 

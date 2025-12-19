@@ -42,7 +42,7 @@ public class GridAclElementHandler implements AclHandler<GridContainerDescriptio
             }
 
     @Override
-    public void mergeActions(AclObjectProxy root, GridContainerDescription metadata) {
+    public void mergeActions(AclObjectProxy root) {
 //noops
     }
 

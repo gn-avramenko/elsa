@@ -78,7 +78,7 @@ public class AclEngine {
 
     private void mergeActions(AclObjectProxy root) {
         var handler =  handlersMap.get(inverseMap.get(root.getId()).getHandlerId());
-        handler.mergeActions(root, null);
+        handler.mergeActions(root);
         root.getCurrentActions().clear();
         root.getChildren().forEach(this::mergeActions);
     }

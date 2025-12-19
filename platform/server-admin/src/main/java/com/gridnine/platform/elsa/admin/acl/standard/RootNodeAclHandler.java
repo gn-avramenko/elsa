@@ -61,7 +61,7 @@ public class RootNodeAclHandler implements AclHandler<Void> {
     }
 
     @Override
-    public void mergeActions(AclObjectProxy root, Void metadata) {
+    public void mergeActions(AclObjectProxy root) {
         if(!root.getTotalActions().isEmpty() && (Boolean) root.getTotalActions().get(AllActionsMetadata.ACTION_ID)){
             return;
         }

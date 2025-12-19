@@ -558,7 +558,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void mergeActions(AclObjectProxy obj, Void metadata) {
+    public void mergeActions(AclObjectProxy obj) {
         if(obj.getId().endsWith(".list")){
             var firstTime = obj.getTotalActions().isEmpty();
             if (!Boolean.TRUE.equals(obj.getTotalActions().get(AllActionsMetadata.ACTION_ID))) {
