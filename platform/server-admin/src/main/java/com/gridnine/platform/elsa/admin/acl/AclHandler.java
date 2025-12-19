@@ -18,7 +18,7 @@ public interface AclHandler<M> {
 
     void fillProperties(AclObjectProxy root, Object aclObject, M metadata, AclEngine aclEngine);
 
-    void applyActions(AclObjectProxy obj, M metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions);
+    void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions);
 
     void mergeActions(AclObjectProxy root, M metadata);
 

@@ -362,7 +362,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     protected abstract String getSection();
 
     @Override
-    public void applyActions(AclObjectProxy obj, Void metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         if (obj.getId().endsWith(".editor") || obj.getId().endsWith(".editor.tools") || obj.getId().contains(".editor.tools.")) {
             obj.getCurrentActions().putAll(parentActions);
             actions.forEach(action -> {

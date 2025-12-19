@@ -39,7 +39,7 @@ public class FormAclElementHandler implements AclHandler<FormContainerDescriptio
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, FormContainerDescription metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
 //noops
     }
 

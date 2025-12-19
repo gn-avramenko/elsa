@@ -38,20 +38,8 @@ public class GridAclElementHandler implements AclHandler<GridContainerDescriptio
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, GridContainerDescription metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
-        var description = (GridContainerDescription) metadata;
-        description.getRows().forEach( r->
-                r.getColumns().forEach(c->{
-                    BaseAdminUiContainerDescription container = c.getContent();
-                    String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
-                    var elementHandler = aclEngine.getHandler(handlerId);
-                    if(elementHandler != null){
-                        ExceptionUtils.wrapException(()->elementHandler.applyActions(obj, container, actions, aclEngine, parentActions));
-                    }
-                })
-        );
-
-    }
+    public void applyActions(AclObjectProxy obj,  List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+            }
 
     @Override
     public void mergeActions(AclObjectProxy root, GridContainerDescription metadata) {

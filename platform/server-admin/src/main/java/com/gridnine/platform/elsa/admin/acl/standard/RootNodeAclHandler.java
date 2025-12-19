@@ -49,7 +49,7 @@ public class RootNodeAclHandler implements AclHandler<Void> {
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, Void metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         actions.forEach(action -> {
             var value = ((BooleanValueWrapper)action.getValue()).isValue();
             obj.getCurrentActions().put(AllActionsMetadata.ACTION_ID, value);

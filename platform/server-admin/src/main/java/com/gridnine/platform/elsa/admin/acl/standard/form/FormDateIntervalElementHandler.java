@@ -56,7 +56,7 @@ public class FormDateIntervalElementHandler implements AclHandler<FormDateInterv
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, FormDateIntervalFieldDescription metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj,  List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         parentActions.forEach((k,v) ->{
             if(AllActionsMetadata.ACTION_ID.equals(k)){
                 obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID,v);

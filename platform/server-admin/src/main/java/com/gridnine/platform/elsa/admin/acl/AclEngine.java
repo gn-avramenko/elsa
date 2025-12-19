@@ -90,13 +90,13 @@ public class AclEngine {
         if(entry != null){
             for(var rule : entry.getRules()) {
                 if(rule.getConditions().isEmpty() || rule.getConditions().stream().allMatch(it-> match(it, root))){
-                   handler.applyActions(root, null, rule.getActions(),  this, parentActions);
+                   handler.applyActions(root, rule.getActions(),  this, parentActions);
                    rulesApplied = true;
                 }
             }
         }
         if(!rulesApplied){
-            handler.applyActions(root, null, List.of(),  this, parentActions);
+            handler.applyActions(root, List.of(),  this, parentActions);
         }
         root.getChildren().forEach(child -> {
             applyRules(child, root.getCurrentActions(), entries);;

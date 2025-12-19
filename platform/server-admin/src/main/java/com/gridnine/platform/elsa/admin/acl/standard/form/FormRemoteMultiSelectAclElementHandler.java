@@ -57,7 +57,7 @@ public class FormRemoteMultiSelectAclElementHandler implements AclHandler<FormRe
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, FormRemoteMultiSelectDescription metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         parentActions.forEach((k,v) ->{
             if(AllActionsMetadata.ACTION_ID.equals(k)){
                 obj.getCurrentActions().put(ViewActionMetadata.ACTION_ID,v);

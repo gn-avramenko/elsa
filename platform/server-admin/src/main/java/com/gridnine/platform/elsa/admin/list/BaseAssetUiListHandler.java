@@ -532,7 +532,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void applyActions(AclObjectProxy obj, Void metadata, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
+    public void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
         if(obj.getId().endsWith(".list")){
             obj.getCurrentActions().putAll(parentActions);
             actions.forEach(action -> {
