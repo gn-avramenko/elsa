@@ -132,7 +132,7 @@ public class FormRemoteMultiSelectAclElementHandler implements AclElementHandler
     @Override
     public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormRemoteMultiSelect field){
-            field.setReadonly(Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
+            field.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
             List<Restriction> restrictions = (List<Restriction>) root.getTotalActions().get(ListRestrictionsMetadata.ACTION_ID);
             if(restrictions != null && !restrictions.isEmpty()){
                 var act = root.getAclElement().getActions().stream().filter(it -> it.getId().equals(ListRestrictionsMetadata.ACTION_ID)).findFirst().get();

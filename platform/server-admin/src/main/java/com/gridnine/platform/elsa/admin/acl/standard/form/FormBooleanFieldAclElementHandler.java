@@ -97,11 +97,8 @@ public class FormBooleanFieldAclElementHandler implements AclElementHandler<Form
 
     @Override
     public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext context) {
-        if(aclObject instanceof BaseUiElement editor){
-            var elm = getElement(editor, root.getId().substring(root.getId().lastIndexOf(".")+1), FormBooleanField.class);
-            if(elm != null) {
-                elm.setReadonly(Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
-            }
+        if(aclObject instanceof FormBooleanField editor){
+            editor.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }
     }
 }

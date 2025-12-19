@@ -88,7 +88,7 @@ public class FormTextAreaAclElementHandler implements AclElementHandler<FormText
     @Override
     public void applyResults(AclObjectProxy root, Object aclObject, Object metadata, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormTextArea field){
-            field.setReadonly(Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
+            field.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }
     }
 }
