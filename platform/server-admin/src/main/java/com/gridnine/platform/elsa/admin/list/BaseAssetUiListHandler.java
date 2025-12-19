@@ -619,7 +619,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine, OperationUiContext  context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext  context) {
         if(root.getId().endsWith(".list")){
             if(aclObject instanceof BasicAclObject basicAclObject){
                 basicAclObject.setAccessAllowed(Boolean.TRUE.equals(root.getTotalActions().get(AllActionsMetadata.ACTION_ID)));
@@ -633,13 +633,13 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
                 listObject.getList().setAdditionalCriterion(crit);
             }
             root.getChildren().forEach(it -> {
-                applyResults(it, aclObject, metadata, aclEngine, context);
+                applyResults(it, aclObject, aclEngine, context);
             });
             return;
         }
         if(root.getId().endsWith(".tools")){
             root.getChildren().forEach(it -> {
-                applyResults(it, aclObject, metadata, aclEngine, context);
+                applyResults(it, aclObject, aclEngine, context);
             });
             return;
         }

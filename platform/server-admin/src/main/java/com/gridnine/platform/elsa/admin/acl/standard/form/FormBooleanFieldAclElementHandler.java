@@ -96,7 +96,7 @@ public class FormBooleanFieldAclElementHandler implements AclHandler<FormBoolean
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, FormBooleanFieldDescription metadata, AclEngine aclEngine, OperationUiContext context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormBooleanField editor){
             editor.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }

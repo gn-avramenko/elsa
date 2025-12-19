@@ -69,7 +69,7 @@ public class RootNodeAclHandler implements AclHandler<Void> {
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, Void metadata, AclEngine aclEngine, OperationUiContext  context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext  context) {
         //noops
     }
 }

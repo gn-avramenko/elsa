@@ -73,7 +73,7 @@ public class AclEngine {
             applyRules(root, new HashMap<>(), entries);
             mergeActions(root);
         });
-        handlersMap.get(inverseMap.get(nodeId).getHandlerId()).applyResults(proxy, aclObject, null, this, context);
+        handlersMap.get(inverseMap.get(nodeId).getHandlerId()).applyResults(proxy, aclObject, this, context);
     }
 
     private void mergeActions(AclObjectProxy root) {

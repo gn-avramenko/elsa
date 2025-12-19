@@ -22,7 +22,7 @@ public interface AclHandler<M> {
 
     void mergeActions(AclObjectProxy root);
 
-    void applyResults(AclObjectProxy root, Object aclObject, M metadata, AclEngine aclEngine, OperationUiContext context);
+    void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext context);
 
     default <T extends BaseUiElement> T getElement(Object aclObject, String fieldId, Class<T> cls) {
         return ExceptionUtils.wrapException(() -> {

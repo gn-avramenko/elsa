@@ -48,12 +48,10 @@ public class FormAclElementHandler implements AclHandler<FormContainerDescriptio
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, FormContainerDescription metadata, AclEngine aclEngine,  OperationUiContext context) {
-        var description = (FormContainerDescription) metadata;
+    public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine,  OperationUiContext context) {
         root.getChildren().forEach(child -> {
             var childId = child.getId().substring(child.getId().lastIndexOf(".")+1);
-            aclEngine.getHandler(child.getAclElement().getHandlerId()).applyResults(child, getElement(aclObject, childId, BaseUiElement.class),
-                    description.getComponents().get( childId), aclEngine, context);
+            aclEngine.getHandler(child.getAclElement().getHandlerId()).applyResults(child, getElement(aclObject, childId, BaseUiElement.class),aclEngine, context);
         });
     }
 

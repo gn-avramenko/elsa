@@ -41,13 +41,11 @@ public class GridAclElementHandler implements AclHandler<GridContainerDescriptio
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, GridContainerDescription metadata, AclEngine aclEngine, OperationUiContext context) {
-        ((GridContainerDescription) metadata).getRows().forEach(row -> {
-            row.getColumns().forEach(column -> {
-                BaseAdminUiContainerDescription container = column.getContent();
-                String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
-                aclEngine.getHandler(handlerId).applyResults(root, aclObject, container, aclEngine, context);
-            });
+    public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext context) {
+        root.getChildren().forEach(child -> {
+            var childId = child.getId().substring(child.getId().lastIndexOf('.') + 1);
+            var elementHandler = aclEngine.getHandler(child.getAclElement().getHandlerId());
+            elementHandler.applyResults(root, getElement(aclObject, childId, BaseUiElement.class) , aclEngine, context);
         });
     }
 

@@ -93,7 +93,7 @@ public class FormDateIntervalElementHandler implements AclHandler<FormDateInterv
     }
 
     @Override
-    public void applyResults(AclObjectProxy root, Object aclObject, FormDateIntervalFieldDescription metadata, AclEngine aclEngine, OperationUiContext context) {
+    public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormDateIntervalField field){
             field.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }

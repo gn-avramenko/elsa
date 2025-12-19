@@ -414,12 +414,12 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     }
 
     @Override
-    public void applyResults(AclObjectProxy proxy, Object aclObject, Void metadata, AclEngine aclEngine, OperationUiContext  context) {
+    public void applyResults(AclObjectProxy proxy, Object aclObject, AclEngine aclEngine, OperationUiContext  context) {
         if (proxy.getId().endsWith(".editor.content")) {
             var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
             String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
             var elementHandler = aclEngine.getHandler(handlerId);
-            ExceptionUtils.wrapException(() -> elementHandler.applyResults(proxy, ((UiEditorAclObject)aclObject).getEditor(), container, aclEngine, context));
+            ExceptionUtils.wrapException(() -> elementHandler.applyResults(proxy, ((UiEditorAclObject)aclObject).getEditor(), aclEngine, context));
             return;
         }
         if (proxy.getId().contains(".editor.tools.")) {
@@ -431,7 +431,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
             return;
         }
         proxy.getChildren().forEach(it -> {
-            applyResults(it, aclObject, metadata, aclEngine, context);
+            applyResults(it, aclObject, aclEngine, context);
         });
     }
 }
