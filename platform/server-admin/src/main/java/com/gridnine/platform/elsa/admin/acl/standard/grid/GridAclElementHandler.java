@@ -5,6 +5,7 @@ import com.gridnine.platform.elsa.admin.acl.AclHandler;
 import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
 import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
 import com.gridnine.platform.elsa.admin.domain.AclAction;
+import com.gridnine.platform.elsa.admin.utils.ReflectionUtils;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.meta.adminUi.AdminUiContainerType;
 import com.gridnine.platform.elsa.common.meta.adminUi.BaseAdminUiContainerDescription;
@@ -27,7 +28,7 @@ public class GridAclElementHandler implements AclHandler<GridContainerDescriptio
         root.getChildren().forEach(child -> {
             var elementHandler = aclEngine.getHandler(child.getAclElement().getHandlerId());
             var childId = child.getId().substring(child.getId().lastIndexOf('.') + 1);
-            ExceptionUtils.wrapException(()->elementHandler.fillProperties(root, getElement(aclObject, childId, BaseUiElement.class), aclEngine));
+            ExceptionUtils.wrapException(()->elementHandler.fillProperties(root, ReflectionUtils.getChild(aclObject, childId, BaseUiElement.class), aclEngine));
         });
     }
 
@@ -45,7 +46,7 @@ public class GridAclElementHandler implements AclHandler<GridContainerDescriptio
         root.getChildren().forEach(child -> {
             var childId = child.getId().substring(child.getId().lastIndexOf('.') + 1);
             var elementHandler = aclEngine.getHandler(child.getAclElement().getHandlerId());
-            elementHandler.applyResults(root, getElement(aclObject, childId, BaseUiElement.class) , aclEngine, context);
+            elementHandler.applyResults(root, ReflectionUtils.getChild(aclObject, childId, BaseUiElement.class) , aclEngine, context);
         });
     }
 

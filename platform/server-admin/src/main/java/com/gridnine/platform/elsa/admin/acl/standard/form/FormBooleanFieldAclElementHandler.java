@@ -5,6 +5,7 @@ import com.gridnine.platform.elsa.admin.acl.standard.*;
 import com.gridnine.platform.elsa.admin.domain.AclAction;
 import com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper;
 import com.gridnine.platform.elsa.admin.utils.LocaleUtils;
+import com.gridnine.platform.elsa.admin.utils.ReflectionUtils;
 import com.gridnine.platform.elsa.admin.web.form.FormBooleanField;
 import com.gridnine.platform.elsa.admin.web.form.FormDateIntervalField;
 import com.gridnine.platform.elsa.common.core.l10n.Localizer;
@@ -51,10 +52,9 @@ public class FormBooleanFieldAclElementHandler implements AclHandler<FormBoolean
 
     @Override
     public void fillProperties(AclObjectProxy root, Object aclObject, AclEngine aclEngine) {
-        if(aclObject instanceof BaseUiElement){
+        if(aclObject instanceof FormBooleanField fbf){
             var id = root.getId().substring(root.getId().lastIndexOf('.') + 1);
-            var value = getElement(aclObject, id, FormBooleanField.class).isValue();
-            root.getParent().getProperties().put(id, value);
+            root.getParent().getProperties().put(id, fbf.isValue());
         }
     }
 
@@ -98,7 +98,7 @@ public class FormBooleanFieldAclElementHandler implements AclHandler<FormBoolean
     @Override
     public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormBooleanField editor){
-            editor.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
+            editor.setReadonlyByAcl(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }
     }
 

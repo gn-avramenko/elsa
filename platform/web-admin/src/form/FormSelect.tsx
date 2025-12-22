@@ -25,12 +25,20 @@ function FormSelectFC(props: { element: FormSelectComponent }) {
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
-            readonly={!!props.element.getReadonly() || viewMode}
+            readonly={
+                !!props.element.getReadonly() ||
+                viewMode ||
+                !!props.element.getReadonlyByAcl()
+            }
         >
             <Select
                 size="middle"
                 allowClear
-                disabled={!!props.element.getReadonly() || viewMode}
+                disabled={
+                    !!props.element.getReadonly() ||
+                    viewMode ||
+                    !!props.element.getReadonlyByAcl()
+                }
                 className={props.element.getValidation() ? 'admin-form-error' : ''}
                 options={(props.element.getOptions() || []).map((it) => ({
                     key: it.id,

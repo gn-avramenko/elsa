@@ -67,20 +67,25 @@ public class AclEngine {
         var root = createParent(proxy, node);
         var handler = handlersMap.get(inverseMap.get(root.getId()).getHandlerId());
         handler.fillProperties(root, aclObject,  this);
-        acls.forEach(acl ->{
+        for(var n =0; n < acls.size(); n++){
+            var acl =acls.get(n);
             var entries = new HashMap<String, AclEntry>();
             acl.forEach(it -> entries.put(it.getId(), it));
             applyRules(root, new HashMap<>(), entries);
-            mergeActions(root);
-        });
+            mergeActions(root, n==0);
+        }
         handlersMap.get(inverseMap.get(nodeId).getHandlerId()).applyResults(proxy, aclObject, this, context);
     }
 
-    private void mergeActions(AclObjectProxy root) {
-        var handler =  handlersMap.get(inverseMap.get(root.getId()).getHandlerId());
-        handler.mergeActions(root);
+    private void mergeActions(AclObjectProxy root,boolean firstTime) {
+        if(firstTime) {
+            root.getTotalActions().putAll(root.getCurrentActions());
+        } else {
+            var handler = handlersMap.get(inverseMap.get(root.getId()).getHandlerId());
+            handler.mergeActions(root);
+        }
         root.getCurrentActions().clear();
-        root.getChildren().forEach(this::mergeActions);
+        root.getChildren().forEach(it -> mergeActions(it, firstTime));
     }
 
     private void applyRules(AclObjectProxy root, Map<String, Object> parentActions, Map<String, AclEntry> entries) {

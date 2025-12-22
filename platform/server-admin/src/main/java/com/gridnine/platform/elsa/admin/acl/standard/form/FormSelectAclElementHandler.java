@@ -89,7 +89,7 @@ public class FormSelectAclElementHandler implements AclHandler<FormSelectDescrip
     @Override
     public void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext context) {
         if(aclObject instanceof FormSelect field){
-            field.setReadonly(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
+            field.setReadonlyByAcl(!Boolean.TRUE.equals(root.getTotalActions().get(EditActionMetadata.ACTION_ID)), context);
         }
     }
 

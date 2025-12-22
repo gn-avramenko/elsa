@@ -31,7 +31,15 @@ function AclTreeEditorFC(props: { element: AclTreeEditorComponent }) {
     treeData[0].children!.forEach((ch) => expandedNodesIds.push(ch.key));
     return (
         <>
-            <div style={{ flexGrow: 0, flexShrink: 0, height: '100%', padding: '5px' }}>
+            <div
+                style={{
+                    flexGrow: 0,
+                    flexShrink: 0,
+                    padding: '5px',
+                    height: 'calc(100vh - 150px)',
+                    overflowY: 'auto',
+                }}
+            >
                 <Tree
                     showLine={true}
                     showIcon={true}

@@ -28,14 +28,22 @@ function FormRemoteMultiSelectFC(props: { element: FormRemoteMultiSelectComponen
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
-            readonly={!!props.element.getReadonly() || viewMode}
+            readonly={
+                !!props.element.getReadonly() ||
+                viewMode ||
+                !!props.element.getReadonlyByAcl()
+            }
         >
             <DebounceSelect
                 size="middle"
                 allowClear
                 mode="multiple"
                 hasError={!!props.element.getValidation()}
-                disabled={!!props.element.getReadonly() || viewMode}
+                disabled={
+                    !!props.element.getReadonly() ||
+                    viewMode ||
+                    !!props.element.getReadonlyByAcl()
+                }
                 debounceTimeout={300}
                 value={
                     props.element.getValue()?.map((it) => ({

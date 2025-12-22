@@ -13,11 +13,19 @@ function FormTextFieldFC(props: { element: FormTextFieldComponent }) {
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
-            readonly={!!props.element.getReadonly() || viewMode}
+            readonly={
+                !!props.element.getReadonly() ||
+                viewMode ||
+                !!props.element.getReadonlyByAcl()
+            }
         >
             <Input
                 type="text"
-                disabled={props.element.getReadonly() || viewMode}
+                disabled={
+                    props.element.getReadonly() ||
+                    viewMode ||
+                    !!props.element.getReadonlyByAcl()
+                }
                 status={props.element.getValidation() ? 'error' : undefined}
                 value={props.element.getValue()}
                 onChange={(e) => {

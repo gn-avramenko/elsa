@@ -58,6 +58,7 @@ function EntityEditorFC(props: { element: EntityEditorComponent }) {
                     flexDirection: 'column',
                     flexGrow: 1,
                     margin: token.paddingXXS,
+                    height: 'calc(100% - 20px)',
                 }}
             >
                 <div

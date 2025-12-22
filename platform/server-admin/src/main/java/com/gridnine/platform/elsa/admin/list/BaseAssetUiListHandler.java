@@ -533,7 +533,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
     @Override
     public void applyActions(AclObjectProxy obj, List<AclAction> actions, AclEngine aclEngine, Map<String, Object> parentActions) {
-        if(obj.getId().endsWith(".list")){
+        if(obj.getId().endsWith(".list")) {
             obj.getCurrentActions().putAll(parentActions);
             actions.forEach(action -> {
                 if (action.getId().equals(AllActionsMetadata.ACTION_ID)) {
@@ -545,13 +545,11 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             });
             return;
         }
-        if(obj.getId().contains(".tools.")){
-            var parentValue = Boolean.TRUE.equals(parentActions.get(AllActionsMetadata.ACTION_ID));
+        if(obj.getId().endsWith(".tools") || obj.getId().contains(".tools.") || obj.getId().endsWith(assetClass.getName())){
+            obj.getCurrentActions().putAll(parentActions);
             actions.forEach(action -> {
                 var value = ((BooleanValueWrapper) action.getValue()).isValue();
-                if (!parentValue) {
-                    obj.getCurrentActions().put(AllActionsMetadata.ACTION_ID, value);
-                }
+                obj.getCurrentActions().put(AllActionsMetadata.ACTION_ID, value);
             });
             return;
         }
@@ -605,7 +603,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
             obj.getTotalActions().put(ListRestrictionsMetadata.ACTION_ID, currentRestrictions);
             return;
         }
-        if(obj.getId().contains(".tools.")) {
+        if(obj.getId().contains(".tools.")  || obj.getId().endsWith(assetClass.getName())) {
             var act = Boolean.TRUE.equals(obj.getTotalActions().get(AllActionsMetadata.ACTION_ID));
             if (!act) {
                 obj.getTotalActions().put(AllActionsMetadata.ACTION_ID, obj.getCurrentActions().get(AllActionsMetadata.ACTION_ID));

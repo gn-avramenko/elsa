@@ -174,7 +174,7 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
                     icon: mg.icon,
                     name: mg.name,
                     id: `group-${idx}`,
-                    children: mg.items.map((mi) => {
+                    children: (mg.items || []).map((mi) => {
                         return {
                             icon: mi.icon,
                             name: mi.name,

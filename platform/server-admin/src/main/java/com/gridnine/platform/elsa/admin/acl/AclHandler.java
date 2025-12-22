@@ -24,18 +24,4 @@ public interface AclHandler<M> {
 
     void applyResults(AclObjectProxy root, Object aclObject, AclEngine aclEngine, OperationUiContext context);
 
-    default <T extends BaseUiElement> T getElement(Object aclObject, String fieldId, Class<T> cls) {
-        return ExceptionUtils.wrapException(() -> {
-                    if (aclObject instanceof BaseUiElement) {
-                        var field = Arrays.stream(aclObject.getClass().getDeclaredFields()).filter(it -> it.getName().equals(fieldId)).findFirst().orElse(null);
-                        if(field == null){
-                            return null;
-                        }
-                        field.setAccessible(true);
-                        return (T) field.get(aclObject);
-                    }
-                    return null;
-                }
-        );
-    }
 }

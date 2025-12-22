@@ -290,10 +290,6 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     @Override
     public void updateAclMetadata(AclMetadataElement parent, Void elementMetadata, AclEngine aclEngine) throws Exception {
         this.aclEngine = aclEngine;
-        var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
-        if(container == null){
-            return;
-        }
         var groupItem = aclEngine.getNode(getObjectClass().getName());
         var objectItem = new AclMetadataElement();
         objectItem.setName(AdminL10nFactory.EditorMessage(), localizer);
@@ -334,6 +330,10 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         contentItem.getActions().add(new EditActionMetadata(localizer));
         contentItem.getActions().add(new ViewActionMetadata(localizer));
         aclEngine.addNode(objectItem.getId(), contentItem);
+        var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
+        if(container == null){
+            return;
+        }
         String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
         var elementHandler = aclEngine.getHandler(handlerId);
         if(elementHandler != null){
@@ -417,6 +417,9 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
     public void applyResults(AclObjectProxy proxy, Object aclObject, AclEngine aclEngine, OperationUiContext  context) {
         if (proxy.getId().endsWith(".editor.content")) {
             var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
+            if(container == null){
+                return;
+            }
             String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
             var elementHandler = aclEngine.getHandler(handlerId);
             ExceptionUtils.wrapException(() -> elementHandler.applyResults(proxy, ((UiEditorAclObject)aclObject).getEditor(), aclEngine, context));

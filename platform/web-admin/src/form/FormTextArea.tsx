@@ -13,10 +13,18 @@ function FormTextAreaFC(props: { element: FormTextAreaComponent }) {
             title={props.element.getTitle()}
             validation={props.element.getValidation()}
             hidden={props.element.getHidden()}
-            readonly={!!props.element.getReadonly() || viewMode}
+            readonly={
+                !!props.element.getReadonly() ||
+                viewMode ||
+                !!props.element.getReadonlyByAcl()
+            }
         >
             <TextArea
-                disabled={props.element.getReadonly() || viewMode}
+                disabled={
+                    props.element.getReadonly() ||
+                    viewMode ||
+                    !!props.element.getReadonlyByAcl()
+                }
                 rows={5}
                 style={{ resize: 'none' }}
                 status={props.element.getValidation() ? 'error' : undefined}
