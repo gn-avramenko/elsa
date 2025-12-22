@@ -1,15 +1,15 @@
 package com.gridnine.platform.elsa.admin.editor;
 
 import com.gridnine.platform.elsa.admin.AdminL10nFactory;
-import com.gridnine.platform.elsa.admin.acl.AclHandler;
-import com.gridnine.platform.elsa.admin.acl.AclMetadataElement;
-import com.gridnine.platform.elsa.admin.acl.AclObjectProxy;
+import com.gridnine.platform.elsa.admin.acl.*;
 import com.gridnine.platform.elsa.admin.acl.standard.AllActionsMetadata;
+import com.gridnine.platform.elsa.admin.acl.standard.BooleanRestrictionValueRenderer;
 import com.gridnine.platform.elsa.admin.acl.standard.EditActionMetadata;
 import com.gridnine.platform.elsa.admin.acl.standard.ViewActionMetadata;
 import com.gridnine.platform.elsa.admin.domain.AclAction;
 import com.gridnine.platform.elsa.admin.domain.AclEntry;
 import com.gridnine.platform.elsa.admin.domain.BooleanValueWrapper;
+import com.gridnine.platform.elsa.admin.utils.LocaleUtils;
 import com.gridnine.platform.elsa.admin.web.entityEditor.*;
 import com.gridnine.platform.elsa.admin.web.mainFrame.MainFrame;
 import com.gridnine.platform.elsa.admin.web.mainFrame.RouterPathHandler;
@@ -18,7 +18,6 @@ import com.gridnine.platform.elsa.common.core.l10n.SupportedLocalesProvider;
 import com.gridnine.platform.elsa.common.core.model.common.Localizable;
 import com.gridnine.platform.elsa.common.core.utils.ExceptionUtils;
 import com.gridnine.platform.elsa.common.core.utils.TextUtils;
-import com.gridnine.platform.elsa.admin.acl.AclEngine;
 import com.gridnine.platform.elsa.common.meta.adminUi.AdminUiMetaRegistry;
 import com.gridnine.platform.elsa.common.meta.domain.DomainMetaRegistry;
 import com.gridnine.platform.elsa.core.storage.Storage;
@@ -96,7 +95,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         var tools = new ArrayList<BaseUiElement>();
         var elms = getTools(result.getTags().contains("edit-mode"));
         var toolsElements =  new ArrayList<EditorTool>();
-       for(int n=0; n < elms.size(); n++){
+        for(int n=0; n < elms.size(); n++){
            var elm = elms.get(n);
             if (elm instanceof com.gridnine.platform.elsa.admin.list.Glue) {
                 var glue = new com.gridnine.platform.elsa.admin.web.common.Glue("glue-%s".formatted(n), context);
@@ -120,6 +119,7 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         var aclObject = new UiEditorAclObject();
        aclObject.setEditor(result.getContent());
        aclObject.setTools(toolsElements);
+       aclObject.setNewEntity("new".equals(id));
        context.getParameter(StandardParameters.BEAN_FACTORY).getBean(AclEngine.class).applyAcl("%s.editor".formatted(getObjectClass().getName()), aclObject,getAcl(), context);
         result.setTools(tools, context);
         readData(result, context);
@@ -339,6 +339,16 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
         if(elementHandler != null){
             ExceptionUtils.wrapException(()->elementHandler.updateAclMetadata(contentItem, container, aclEngine));
         }
+        addNewEntityFlagMetadata(contentItem);
+    }
+
+    private void addNewEntityFlagMetadata(AclMetadataElement contentItem) {
+        var newElementProperty = new AclPropertyMetadata<Void>();
+        newElementProperty.setRestrictionRendererId(BooleanRestrictionValueRenderer.RENDERER_ID);
+        newElementProperty.setName(LocaleUtils.createLocalizable(AdminL10nFactory.New_itemMessage(), localizer));
+        newElementProperty.setId("new-entity");
+        contentItem.getProperties().add(newElementProperty);
+        contentItem.getChildren().forEach(this::addNewEntityFlagMetadata);
     }
 
     @Override
@@ -350,12 +360,22 @@ public abstract class BaseEditorRouterPathHandler<E extends BaseUiElement> imple
             return;
         }
         if(root.getId().endsWith(".editor.content") || root.getId().contains(".editor.tools.")){
+            var editorAclObject = (UiEditorAclObject) aclObject;
             var container = adminUiMetaRegistry.getContainers().get(getEditorClass().getName());
             String handlerId = "admin-ui-container-%s".formatted(container.getType().name());
             var elementHandler = aclEngine.getHandler(handlerId);
-            ExceptionUtils.wrapException(() -> elementHandler.fillProperties(root, ((UiEditorAclObject) aclObject).getEditor(), aclEngine));
+            ExceptionUtils.wrapException(() -> elementHandler.fillProperties(root, editorAclObject.getEditor(), aclEngine));
+            addNewEntityFlagPropertyValue(root, editorAclObject.isNewEntity());
             return;
         }
+
+    }
+
+    private void addNewEntityFlagPropertyValue(AclObjectProxy root, boolean newEntity) {
+        root.getProperties().put("new-entity", newEntity);
+        root.getChildren().forEach(child -> {
+            addNewEntityFlagPropertyValue(child, newEntity);
+        });
     }
 
     protected abstract Class<?> getObjectClass();

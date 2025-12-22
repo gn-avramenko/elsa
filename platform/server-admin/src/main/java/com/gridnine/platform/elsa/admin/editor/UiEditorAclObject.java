@@ -10,6 +10,7 @@ import java.util.List;
 public class UiEditorAclObject {
     private List<EditorTool> tools;
     private BaseUiElement editor;
+    private boolean newEntity;
 
     public List<EditorTool> getTools() {
         return tools;
@@ -25,5 +26,13 @@ public class UiEditorAclObject {
 
     public void setEditor(BaseUiElement editor) {
         this.editor = editor;
+    }
+
+    public boolean isNewEntity() {
+        return newEntity;
+    }
+
+    public void setNewEntity(boolean newEntity) {
+        this.newEntity = newEntity;
     }
 }
