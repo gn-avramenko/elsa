@@ -380,7 +380,7 @@ public abstract class BaseAssetUiListHandler<T extends BaseAsset> implements UiL
 
             @Override
             public String getTooltip() {
-                return aL10nFactory.New_item();
+                return aL10nFactory.Create_new_item();
             }
 
             @Override

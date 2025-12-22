@@ -18,7 +18,7 @@
     <message id="Editor_has_validation_errors"/>
     <message id="Are_you_sure_to_delete"/>
     <message id="Object_deleted"/>
-    <message id="New_item"/>
+    <message id="Create_new_item"/>
     <message id="List"/>
     <message id="Tools"/>
     <message id="All_Objects"/>
@@ -41,4 +41,5 @@
     <message id="List_Object"/>
     <message id="Equals_Dynamic"/>
     <message id="Not_Equals_Dynamic"/>
+    <message id="New_item"/>
 </messages-bundle>
