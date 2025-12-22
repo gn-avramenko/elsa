@@ -55,6 +55,13 @@ export class MainRouterComponent extends MainRouterSkeleton {
         super.updatePropertyValue(pn, pv);
         if (pn === 'path') {
             window.history.pushState(null, '', pv);
+            window.parent?.postMessage(
+                {
+                    command: 'updatePath',
+                    path: pv,
+                },
+                '*'
+            );
             return;
         }
     }

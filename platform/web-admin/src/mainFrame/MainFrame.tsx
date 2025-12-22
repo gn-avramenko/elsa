@@ -448,6 +448,16 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
 }
 
 export class MainFrameComponent extends MainFrameSkeleton {
+    constructor(model: any) {
+        super(model);
+        window.parent?.postMessage(
+            {
+                command: 'updateTitle',
+                title: this.getTitle(),
+            },
+            '*'
+        );
+    }
     processShowNotificationInternal(
         value: MainFrameShowNotificationInternalAction
     ): void {
@@ -507,6 +517,19 @@ export class MainFrameComponent extends MainFrameSkeleton {
                 });
             },
         });
+    }
+
+    protected updatePropertyValue(pn: string, pv: any) {
+        if (pn === 'title' && this.getEmbeddedMode()) {
+            window.parent?.postMessage(
+                {
+                    command: 'updateTitle',
+                    title: pv,
+                },
+                '*'
+            );
+        }
+        super.updatePropertyValue(pn, pv);
     }
 
     processSaveFile(value: MainFrameSaveFileAction): void {

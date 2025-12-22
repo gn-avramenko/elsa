@@ -61,7 +61,7 @@ public class MainRouter extends MainRouterSkeleton{
         init();
         var p = path;
         if(p.contains("?")){
-            p = p.substring(0, p.indexOf("?")-1);
+            p = p.substring(0, p.indexOf("?"));
         }
         var cp = p.startsWith("/") ? p.substring(1): p;
         var handler = routerPathHandlers.stream().filter(it -> it.canHandle(cp)).findFirst().orElse(null);

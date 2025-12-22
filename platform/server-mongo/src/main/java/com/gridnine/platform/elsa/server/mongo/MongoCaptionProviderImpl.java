@@ -35,6 +35,7 @@ import com.gridnine.platform.elsa.core.cache.CacheMetadataProvider;
 import com.gridnine.platform.elsa.core.cache.CachedValue;
 import com.gridnine.platform.elsa.core.cache.KeyValueCache;
 import com.gridnine.platform.elsa.core.storage.database.Database;
+import org.bson.BsonString;
 import org.bson.Document;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -98,9 +99,9 @@ public class MongoCaptionProviderImpl implements CaptionProvider {
                 var res = new HashMap<Locale, String>();
                 var obj = getCaptions(ref.getType(), ref.getId());
                 for(var loc: supportedLocalesProvider.getSupportedLocales()){
-                    var ar = obj.get("caption_%s".formatted(loc.getLanguage().toLowerCase()));
+                    var ar = obj.get("caption%s".formatted(TextUtils.capitalize(loc.getLanguage().toLowerCase())));
                     if(ar == null){
-                        ar = obj.get("caption_en");
+                        ar = obj.get("captionEn");
                     }
                     res.put(loc, ar);
                 }
@@ -117,7 +118,7 @@ public class MongoCaptionProviderImpl implements CaptionProvider {
         if(TextUtils.isBlank(colName)){
             return Collections.emptyMap();
         }
-        var elm = mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(id)), Document.class, "%s-captions".formatted(colName));
+        var elm = mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(new BsonString(id))), Document.class, "%s-captions".formatted(colName));
         if(elm == null){
             return Collections.emptyMap();
         }
