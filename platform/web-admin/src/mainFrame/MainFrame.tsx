@@ -56,6 +56,12 @@ export const useDialog = (): DialogContextType | undefined => {
     return useContext(DialogContext);
 };
 
+let backUrlHandler = () => {};
+window.addEventListener('message', (msg) => {
+    if (msg.data === 'process-click-back') {
+        backUrlHandler();
+    }
+});
 function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) {
     initStateSetters(props.element);
     const [drawerOpened, setDrawerOpened] = useState(false);
@@ -80,6 +86,15 @@ function MainFrameFC(props: PropsWithChildren<{ element: MainFrameComponent }>) 
             (it: any) => (theme as any)[it]
         );
     }
+    backUrlHandler = () => {
+        if (!props.element.getBackUrl() || '/' === props.element.getBackUrl()) {
+            return;
+        }
+        (props.element.findByTag('mainRouter') as MainRouterComponent).navigate({
+            path: props.element.getBackUrl()!!,
+            force: false,
+        });
+    };
     let { token } = theme.useToken();
     const ext = themeConfig.ext;
     const th = useTheme(themeConfig);
