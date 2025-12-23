@@ -47,11 +47,18 @@ public class AdminLocaleInterceptor<T> implements UiServletInterceptor<T> {
     @Override
     public T onInit(OperationUiContext context, JsonObject state, CallableWithExceptionAnd2Arguments<T, OperationUiContext, JsonObject> callback) throws Exception {
         var ls = context.getParameter(OperationUiContext.LOCAL_STORAGE_DATA);
-        var ruLang = ls.has("lang") && ls.get("lang").getAsString().equals("ru");
-        var locale = ruLang? LocaleUtils.ruLocale: Locale.ENGLISH;
-        GlobalUiContext.setParameter(context.getParameter(OperationUiContext.PATH), context.getParameter(OperationUiContext.CLIENT_ID), AdminParameters.LOCALE, locale);
+        var path = context.getParameter(OperationUiContext.PARAMS).get("initPath").getAsString();
+        if(path.contains("embeddedMode=true")){
+            var locale = path.contains("lang=ru")? LocaleUtils.ruLocale: Locale.ENGLISH;
+            GlobalUiContext.setParameter(context.getParameter(OperationUiContext.PATH), context.getParameter(OperationUiContext.CLIENT_ID), AdminParameters.LOCALE, locale);
+            LocaleUtils.setCurrentLocale(locale);
+        } else {
+            var ruLang = ls.has("lang") && ls.get("lang").getAsString().equals("ru");
+            var locale = ruLang? LocaleUtils.ruLocale: Locale.ENGLISH;
+            GlobalUiContext.setParameter(context.getParameter(OperationUiContext.PATH), context.getParameter(OperationUiContext.CLIENT_ID), AdminParameters.LOCALE, locale);
+            LocaleUtils.setCurrentLocale(locale);
+        }
         context.setParameter(StandardParameters.BEAN_FACTORY, beanFactory);
-        LocaleUtils.setCurrentLocale(locale);
         try {
             return callback.call(context, state);
         } finally {
