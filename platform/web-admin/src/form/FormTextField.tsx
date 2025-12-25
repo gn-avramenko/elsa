@@ -21,6 +21,7 @@ function FormTextFieldFC(props: { element: FormTextFieldComponent }) {
         >
             <Input
                 type="text"
+                autoFocus
                 disabled={
                     props.element.getReadonly() ||
                     viewMode ||
